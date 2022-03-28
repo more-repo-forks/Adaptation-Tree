@@ -1,24 +1,24 @@
 let modInfo = {
-	name: "The ??? Tree",
-	id: "mymod",
-	author: "nobody",
-	pointsName: "points",
+	name: "Realm Creator",
+	id: "realmcreatoryrahcaz7",
+	author: "Yrahcaz7",
+	pointsName: "coins",
 	modFiles: ["layers.js", "tree.js"],
 
 	discordName: "",
 	discordLink: "",
-	initialStartPoints: new Decimal (10), // Used for hard resets and new players
+	initialStartPoints: new Decimal (0), // Used for hard resets and new players
 	offlineLimit: 1,  // In hours
 }
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.0",
-	name: "Literally nothing",
+	num: "0.1",
+	name: "Beta Test",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
-	<h3>v0.0</h3><br>
+	<br><h3>v0.1 - Beta Test</h3><br>
 		- Added things.<br>
 		- Added stuff.`
 
@@ -59,10 +59,6 @@ function isEndgame() {
 	return player.points.gte(new Decimal("e280000000"))
 }
 
-
-
-// Less important things beyond this point!
-
 // Style for the background, can be a function
 var backgroundStyle = {
 
@@ -70,7 +66,7 @@ var backgroundStyle = {
 
 // You can change this if you have things that can be messed up by long tick lengths
 function maxTickLength() {
-	return(3600) // Default is 1 hour which is just arbitrarily large
+	return(1) // Default is 1 hour which is just arbitrarily large
 }
 
 // Use this if you need to undo inflation from an older version. If the version is older than the version that fixed the issue,
