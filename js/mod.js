@@ -4,14 +4,10 @@ let modInfo = {
 	author: "Yrahcaz7",
 	pointsName: "coins",
 	modFiles: ["layers.js", "tree.js"],
-
-	discordName: "",
-	discordLink: "",
 	initialStartPoints: new Decimal (0),
-	offlineLimit: 1,  // In hours
+	offlineLimit: 24,  // In hours
 }
 
-// Set your version in num and name
 let VERSION = {
 	num: "0.1",
 	name: "Beta Test",
@@ -19,8 +15,9 @@ let VERSION = {
 
 let changelog = `<h1>Changelog:</h1><br>
 	<br><h3>v0.1 - Beta Test</h3><br>
-		- Added things.<br>
-		- Added stuff.`
+		- Added a clickable.<br>
+		- Added three buyables.<br>
+		- Added a stats menu.`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
 
@@ -28,23 +25,29 @@ let winText = `Congratulations! You have reached the end and beaten this game, b
 // (The ones here are examples, all official functions are already taken care of)
 var doNotCallTheseFunctionsEveryTick = ["blowUpEverything"]
 
-function getStartPoints(){
+function getStartPoints() {
     return new Decimal(modInfo.initialStartPoints)
 }
 
-// Determines if it should show points/sec
-function canGenPoints(){
+function canGenPoints() {
 	return true
 }
 
-// Calculate points/sec!
 function getPointGen() {
 	let gain = new Decimal(0)
+	if (getBuyableAmount('1', 12) > new Decimal(0)) gain = new Decimal(gain.add(getBuyableAmount('1', 12) * 0.2));
+	if (getBuyableAmount('1', 13) > new Decimal(0)) gain = new Decimal(gain.add(getBuyableAmount('1', 13)));
 	return gain
 }
 
 // You can add non-layer related variables that should to into "player" and be saved here, along with default values
 function addedPlayerData() { return {
+	best: new Decimal(0),
+	total: new Decimal(0),
+	bestR: new Decimal(0),
+	totalR: new Decimal(0),
+	bestT: new Decimal(0),
+	totalT: new Decimal(0),
 }}
 
 // Display extra things at the top of the page
@@ -58,15 +61,14 @@ function isEndgame() {
 
 // Style for the background, can be a function
 var backgroundStyle = {
-
 }
 
 // You can change this if you have things that can be messed up by long tick lengths
 function maxTickLength() {
-	return(3600) // Default is 1 hour which is just arbitrarily large
+	return(1)
 }
 
 // Use this if you need to undo inflation from an older version. If the version is older than the version that fixed the issue,
 // you can cap their current resources with this.
-function fixOldSave(oldVersion){
+function fixOldSave(oldVersion) {
 }
