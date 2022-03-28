@@ -1,6 +1,6 @@
-addLayer("a", {
-    name: "Abdication",
-    symbol: "A",
+addLayer("1", {
+    name: "Main Tab",
+    symbol: "M",
     position: 0,
     startData() { return {
         unlocked: true,
@@ -27,13 +27,15 @@ addLayer("a", {
         {key: "a", description: "A: Abdicate for gems", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown(){return true},
+    tooltip() {return "Main Tab"},
     clickables: {
         11: {
             title: "Click Button",
-            display() {return "your clicks are worth " + player['1'].clickValue + " coins"},
+            display() {return "\nyour clicks are worth " + player['1'].clickValue + " coins"},
+            canClick() {return true},
             onClick() {
                 player['1'].clickTimes = player['1'].clickTimes + 1
-                player.points = new Decimal(player.points + player['1'].clickValue)
+                player.points = new Decimal(player.points.add(player['1'].clickValue))
             },
         }
     },

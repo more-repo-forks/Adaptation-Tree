@@ -1,13 +1,13 @@
 let modInfo = {
 	name: "Realm Creator",
-	id: "realmcreatoryrahcaz7",
+	id: "realm-creator-yrahcaz7",
 	author: "Yrahcaz7",
 	pointsName: "coins",
 	modFiles: ["layers.js", "tree.js"],
 
 	discordName: "",
 	discordLink: "",
-	initialStartPoints: new Decimal (0), // Used for hard resets and new players
+	initialStartPoints: new Decimal (0),
 	offlineLimit: 1,  // In hours
 }
 
@@ -63,7 +63,7 @@ var backgroundStyle = {
 
 // You can change this if you have things that can be messed up by long tick lengths
 function maxTickLength() {
-	return(1) // Default is 1 hour which is just arbitrarily large
+	return(3600) // Default is 1 hour which is just arbitrarily large
 }
 
 // Use this if you need to undo inflation from an older version. If the version is older than the version that fixed the issue,
