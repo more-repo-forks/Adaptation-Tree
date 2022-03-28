@@ -1,4 +1,6 @@
-addLayer("1", {
+addLayer("a", {
+    name: "Abdication",
+    symbol: "A",
     position: 0,
     startData() { return {
         unlocked: true,
