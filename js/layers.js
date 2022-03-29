@@ -105,7 +105,7 @@ addLayer("1", {
                     function() { return '<h2>Creation Tier Upgrades'},
                     {}],
                 "blank",
-                ["upgrades", [9, 10, 11]],
+                ["upgrades", [9, 10, 11, 12]],
             ],
         },
         "Faction Tab": {
@@ -130,10 +130,10 @@ addLayer("1", {
                 ]],
                 "blank",
                 ["display-text",
-                    function() { if (hasUpgrade('1', 11) == false && hasUpgrade('1', 21) == false) return '<h2>First, choose a side' },
+                    function() { if (hasUpgrade('1', 11) == false && hasUpgrade('1', 21) == false) return '<h3>first, choose an alignment' },
                     {}],
                 ["display-text",
-                    function() { if (hasUpgrade('1', 11) == true || hasUpgrade('1', 21) == true) return '<h2>Next, choose a faction' },
+                    function() { if (hasUpgrade('1', 11) == true || hasUpgrade('1', 21) == true) return '<h3>next, choose a faction' },
                     {}],
                 "blank",
                 ["row", [["upgrades", [1]], ["blank", ["17px"]], ["upgrades", [2]]]],
@@ -227,12 +227,14 @@ addLayer("1", {
             title() {
                 let title = "Pebbles";
                 if (hasUpgrade('1', 92) == true) title = "Rocks";
+                if (hasUpgrade('1', 102) == true) title = "Boulders";
                 return title;
             },
             cost() { return new Decimal(Math.pow(getBuyableAmount('1', this.id).add(1), 1.5) * 100) },
             effect() {
                 let eff = new Decimal(0.25)
                 if (hasUpgrade('1', 92)) eff = eff.add(0.5)
+                if (hasUpgrade('1', 102)) eff = eff.add(1.25)
                 return eff
             },
             display() { return "\nCost: " + format(this.cost()) + " coins\n\nAmount: " + getBuyableAmount('1', this.id) + "\n\nEffect: +" + format(buyableEffect('1', this.id)) + " to passive production\n\nTotal Effect: +" + format(getBuyableAmount('1', this.id) * buyableEffect('1', this.id))},
@@ -360,18 +362,18 @@ addLayer("1", {
             unlocked() { if (hasUpgrade('1', 21) == true) return true },
         },
         91: {
-            fullDisplay() { return '<h3>Rich Dirt</h3><br>increases dirt\'s base effect by +0.05<br><br>Req: 10 dirt<br><br>Cost: 150 coins'},
+            fullDisplay() { return '<h3>Rich Dirt</h3><br>increases dirt\'s base effect by +0.05<br><br>Req: 10 dirt<br><br>Cost: 250 coins'},
             canAfford() {
-                if (player.points.gte(150)) return true;
+                if (player.points.gte(250)) return true;
                 else return false
             },
             pay() {
-                player.points = player.points.sub(150)
+                player.points = player.points.sub(250)
             },
             unlocked() { if (getBuyableAmount('1', 11).gte(10)) return true },
         },
         92: {
-            fullDisplay() { return '<h3>Rocks</h3><br>increases pebbles\' base effect by +0.50<br><br>Req: 10 pebbles<br><br>Cost: 5,000 coins'},
+            fullDisplay() { return '<h3>Rocks</h3><br>increases pebble\'s base effect by +0.50<br><br>Req: 10 pebbles<br><br>Cost: 5,000 coins'},
             canAfford() {
                 if (player.points.gte(5000)) return true;
                 else return false
@@ -382,35 +384,46 @@ addLayer("1", {
             unlocked() { if (getBuyableAmount('1', 12).gte(10)) return true },
         },
         101: {
-            fullDisplay() { return '<h3>Richer Dirt</h3><br>increases rich dirt\'s base effect by +0.10<br><br>Req: 25 rich dirt<br><br>Cost: 500 coins'},
+            fullDisplay() { return '<h3>Richer Dirt</h3><br>increases rich dirt\'s base effect by +0.10<br><br>Req: 25 rich dirt<br><br>Cost: 1,000 coins'},
             canAfford() {
-                if (player.points.gte(500)) return true;
+                if (player.points.gte(1000)) return true;
                 else return false
             },
             pay() {
-                player.points = player.points.sub(500)
+                player.points = player.points.sub(1000)
             },
             unlocked() { if (getBuyableAmount('1', 11).gte(25) && hasUpgrade('1', 91) == true) return true },
         },
-        111: {
-            fullDisplay() { return '<h3>Soil</h3><br>double richer dirt\'s base effect<br><br>Req: 50 richer dirt<br><br>Cost: 1,500 coins'},
+        102: {
+            fullDisplay() { return '<h3>Boulders</h3><br>increases stone\'s base effect by +1.25<br><br>Req: 25 stones<br><br>Cost: 15,000 coins'},
             canAfford() {
-                if (player.points.gte(1500)) return true;
+                if (player.points.gte(15000)) return true;
                 else return false
             },
             pay() {
-                player.points = player.points.sub(1500)
+                player.points = player.points.sub(15000)
+            },
+            unlocked() { if (getBuyableAmount('1', 12).gte(25) && hasUpgrade('1', 92) == true) return true },
+        },
+        111: {
+            fullDisplay() { return '<h3>Soil</h3><br>double richer dirt\'s base effect<br><br>Req: 50 richer dirt<br><br>Cost: 5,000 coins'},
+            canAfford() {
+                if (player.points.gte(5000)) return true;
+                else return false
+            },
+            pay() {
+                player.points = player.points.sub(5000)
             },
             unlocked() { if (getBuyableAmount('1', 11).gte(50) && hasUpgrade('1', 101) == true) return true },
         },
         121: {
-            fullDisplay() { return '<h3>Fertile Soil</h3><br>double soil\'s base effect<br><br>Req: 100 soil<br><br>Cost: 7,500 coins'},
+            fullDisplay() { return '<h3>Fertile Soil</h3><br>double soil\'s base effect<br><br>Req: 100 soil<br><br>Cost: 25,000 coins'},
             canAfford() {
-                if (player.points.gte(7500)) return true;
+                if (player.points.gte(25000)) return true;
                 else return false
             },
             pay() {
-                player.points = player.points.sub(7500)
+                player.points = player.points.sub(25000)
             },
             unlocked() { if (getBuyableAmount('1', 11).gte(100) && hasUpgrade('1', 111) == true) return true },
         },

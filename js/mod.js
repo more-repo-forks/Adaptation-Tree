@@ -5,7 +5,7 @@ let modInfo = {
 	pointsName: "coins",
 	modFiles: ["layers.js", "tree.js"],
 	initialStartPoints: new Decimal (0),
-	offlineLimit: 24,  // In hours
+	offlineLimit: 1,  // In hours
 }
 
 let VERSION = {
@@ -36,7 +36,7 @@ function randint(min, max) {
 	min = Math.ceil(min);
 	max = Math.floor(max);
 	return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
-} 
+}
 
 function getStartPoints() {
     return new Decimal(modInfo.initialStartPoints)
