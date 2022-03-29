@@ -250,7 +250,7 @@ addLayer("1", {
             },
             cost() { return new Decimal(Math.pow(getBuyableAmount('1', this.id).add(1), 1.5) * 10000) },
             effect() {
-                let eff = new Decimal(1)
+                let eff = new Decimal(2)
                 return eff
             },
             display() { return "\nCost: " + format(this.cost()) + " coins\n\nAmount: " + getBuyableAmount('1', this.id) + "\n\nEffect: +" + format(buyableEffect('1', this.id)) + " to click production and passive production\n\nTotal Effect: +" + format(getBuyableAmount('1', this.id) * buyableEffect('1', this.id))},
