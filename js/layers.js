@@ -231,8 +231,8 @@ addLayer("1", {
             },
             cost() { return new Decimal(Math.pow(getBuyableAmount('1', this.id).add(1), 1.5) * 100) },
             effect() {
-                let eff = new Decimal(0.2)
-                if (hasUpgrade('1', 92)) eff = eff.add(0.3)
+                let eff = new Decimal(0.25)
+                if (hasUpgrade('1', 92)) eff = eff.add(0.5)
                 return eff
             },
             display() { return "\nCost: " + format(this.cost()) + " coins\n\nAmount: " + getBuyableAmount('1', this.id) + "\n\nEffect: +" + format(buyableEffect('1', this.id)) + " to passive production\n\nTotal Effect: +" + format(getBuyableAmount('1', this.id) * buyableEffect('1', this.id))},
@@ -371,7 +371,7 @@ addLayer("1", {
             unlocked() { if (getBuyableAmount('1', 11).gte(10)) return true },
         },
         92: {
-            fullDisplay() { return '<h3>Rocks</h3><br>increases pebbles\' base effect by +0.30<br><br>Req: 10 pebbles<br><br>Cost: 5,000 coins'},
+            fullDisplay() { return '<h3>Rocks</h3><br>increases pebbles\' base effect by +0.50<br><br>Req: 10 pebbles<br><br>Cost: 5,000 coins'},
             canAfford() {
                 if (player.points.gte(5000)) return true;
                 else return false
