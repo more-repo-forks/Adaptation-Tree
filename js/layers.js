@@ -22,7 +22,7 @@ addLayer("1", {
         gemMult: new Decimal(1),
     }},
     color: "#CCCCCC",
-    requires: new Decimal(2500),
+    requires: new Decimal(10000),
     resource: "gems",
     baseResource: "coins",
     baseAmount() {return player.points},
@@ -48,10 +48,13 @@ addLayer("1", {
         layerDataReset('1', keep);
     },
     update() {
+        let clickGain = new Decimal(1);
         let pointGain = getPointGen();
         let FCchance = new Decimal(2.5);
         // click value
-        player['1'].clickValue = new Decimal((new Decimal(getBuyableAmount('1', 11) * 0.1)).add(getBuyableAmount('1', 13)).add(1));
+        if (getBuyableAmount('1', 11).gt(0)) clickGain = clickGain.add(getBuyableAmount('1', 11) * buyableEffect('1', 11))
+        if (getBuyableAmount('1', 13).gt(0)) clickGain = clickGain.add(getBuyableAmount('1', 13) * buyableEffect('1', 13))
+        player['1'].clickValue = clickGain;
         // best coins
         if (player.points.gt(player.best)) player.best = player.points;
 	    if (player.points.gt(player.bestR)) player.bestR = player.points;
@@ -71,7 +74,7 @@ addLayer("1", {
         if (player._FC.gt(player.FCbestT)) player.FCbestT = player._FC;
     },
     tabFormat: {
-        "Things Tab": {
+        "Creation Tab": {
             content: [
                 "main-display",
                 "prestige-button",
@@ -84,15 +87,25 @@ addLayer("1", {
                     ["display-text",
                         function() { return 'You have ' + formatWhole(player.fairyCoins) + ' fairy coins<br>You have ' + formatWhole(player.elfCoins) + ' elf coins<br>You have ' + formatWhole(player.angelCoins) + ' angel coins'},
                         {}],
-                    ["blank", ["17px", "17px"]],
+                    ["blank", ["17px"]],
                     "clickables",
-                    ["blank", ["17px", "17px"]],
+                    ["blank", ["17px"]],
                     ["display-text",
                         function() { return 'You have ' + formatWhole(player.goblinCoins) + ' goblin coins<br>You have ' + formatWhole(player.undeadCoins) + ' undead coins<br>You have ' + formatWhole(player.demonCoins) + ' demon coins'},
                         {}]
                 ]],
                 "blank",
+                ["display-text",
+                    function() { return '<h2>Creations'},
+                    {}],
+                "blank",
                 "buyables",
+                "blank",
+                ["display-text",
+                    function() { return '<h2>Creation Tier Upgrades'},
+                    {}],
+                "blank",
+                ["upgrades", [9, 10, 11]],
             ],
         },
         "Faction Tab": {
@@ -108,9 +121,9 @@ addLayer("1", {
                     ["display-text",
                         function() { return 'You have ' + formatWhole(player.fairyCoins) + ' fairy coins<br>You have ' + formatWhole(player.elfCoins) + ' elf coins<br>You have ' + formatWhole(player.angelCoins) + ' angel coins'},
                         {}],
-                    ["blank", ["17px", "17px"]],
+                    ["blank", ["17px"]],
                     "clickables",
-                    ["blank", ["17px", "17px"]],
+                    ["blank", ["17px"]],
                     ["display-text",
                         function() { return 'You have ' + formatWhole(player.goblinCoins) + ' goblin coins<br>You have ' + formatWhole(player.undeadCoins) + ' undead coins<br>You have ' + formatWhole(player.demonCoins) + ' demon coins'},
                         {}]
@@ -123,9 +136,9 @@ addLayer("1", {
                     function() { if (hasUpgrade('1', 11) == true || hasUpgrade('1', 21) == true) return '<h2>Next, choose a faction' },
                     {}],
                 "blank",
-                ["row", [["upgrades", [1]], ["blank", ["17px", "17px"]], ["upgrades", [2]]]],
-                ["row", [["upgrades", [3]], ["blank", ["17px", "17px"]], ["upgrades", [4]], ["blank", ["17px", "17px"]], ["upgrades", [5]]]],
-                ["row", [["upgrades", [6]], ["blank", ["17px", "17px"]], ["upgrades", [7]], ["blank", ["17px", "17px"]], ["upgrades", [8]]]],
+                ["row", [["upgrades", [1]], ["blank", ["17px"]], ["upgrades", [2]]]],
+                ["row", [["upgrades", [3]], ["blank", ["17px"]], ["upgrades", [4]], ["blank", ["17px"]], ["upgrades", [5]]]],
+                ["row", [["upgrades", [6]], ["blank", ["17px"]], ["upgrades", [7]], ["blank", ["17px"]], ["upgrades", [8]]]],
             ],
         },
     },
@@ -182,11 +195,26 @@ addLayer("1", {
     },
     buyables: {
         11: {
-            title: "Dirt",
+            title() {
+                let title = "Dirt";
+                if (hasUpgrade('1', 91) == true) title = "Rich Dirt";
+                if (hasUpgrade('1', 101) == true) title = "Richer Dirt";
+                if (hasUpgrade('1', 111) == true) title = "Soil";
+                if (hasUpgrade('1', 121) == true) title = "Fertile Soil";
+                return title;
+            },
             cost() { return new Decimal(Math.pow(getBuyableAmount('1', this.id).add(1), 1.5)) },
+            effect() {
+                let eff = new Decimal(0.1)
+                if (hasUpgrade('1', 91)) eff = eff.add(0.05)
+                if (hasUpgrade('1', 101)) eff = eff.add(0.1)
+                if (hasUpgrade('1', 111)) eff = eff.mul(2)
+                if (hasUpgrade('1', 121)) eff = eff.mul(2)
+                return eff
+            },
             display() {
-                if (this.cost() == new Decimal(1)) return "\nCost: 1 coin\n\nAmount: " + getBuyableAmount('1', this.id) + "\n\nEffect: +0.1 to click production\n\nTotal Effect: +" + format(getBuyableAmount('1', this.id) * 0.1);
-                else return "\nCost: " + format(this.cost()) + " coins\n\nAmount: " + getBuyableAmount('1', this.id) + "\n\nEffect: +0.1 to click production\n\nTotal Effect: +" + format(getBuyableAmount('1', this.id) * 0.1);
+                if (this.cost() == new Decimal(1)) return "\nCost: 1 coin\n\nAmount: " + getBuyableAmount('1', this.id) + "\n\nEffect: +" + format(buyableEffect('1', this.id)) + " to click production\n\nTotal Effect: +" + format(getBuyableAmount('1', this.id) * buyableEffect('1', this.id));
+                else return "\nCost: " + format(this.cost()) + " coins\n\nAmount: " + getBuyableAmount('1', this.id) + "\n\nEffect: +" + format(buyableEffect('1', this.id)) + " to click production\n\nTotal Effect: +" + format(getBuyableAmount('1', this.id) * buyableEffect('1', this.id));
             },
             canAfford() { return player.points.gte(this.cost()) },
             buy() {
@@ -196,9 +224,18 @@ addLayer("1", {
             style: {'width':'180px', 'height':'180px'},
         },
         12: {
-            title: "Rocks",
+            title() {
+                let title = "Pebbles";
+                if (hasUpgrade('1', 92) == true) title = "Rocks";
+                return title;
+            },
             cost() { return new Decimal(Math.pow(getBuyableAmount('1', this.id).add(1), 1.5) * 100) },
-            display() { return "\nCost: " + format(this.cost()) + " coins\n\nAmount: " + getBuyableAmount('1', this.id) + "\n\nEffect: +0.2 to passive production\n\nTotal Effect: +" + format(getBuyableAmount('1', this.id) * 0.2)},
+            effect() {
+                let eff = new Decimal(0.2)
+                if (hasUpgrade('1', 92)) eff = eff.add(0.3)
+                return eff
+            },
+            display() { return "\nCost: " + format(this.cost()) + " coins\n\nAmount: " + getBuyableAmount('1', this.id) + "\n\nEffect: +" + format(buyableEffect('1', this.id)) + " to passive production\n\nTotal Effect: +" + format(getBuyableAmount('1', this.id) * buyableEffect('1', this.id))},
             canAfford() { return player.points.gte(this.cost()) },
             buy() {
                 player.points = player.points.sub(this.cost())
@@ -207,9 +244,16 @@ addLayer("1", {
             style: {'width':'180px', 'height':'180px'},
         },
         13: {
-            title: "Grass",
+            title() {
+                let title = "Weeds";
+                return title;
+            },
             cost() { return new Decimal(Math.pow(getBuyableAmount('1', this.id).add(1), 1.5) * 10000) },
-            display() { return "\nCost: " + format(this.cost()) + " coins\n\nAmount: " + getBuyableAmount('1', this.id) + "\n\nEffect: +1 to click production and passive production\n\nTotal Effect: +" + getBuyableAmount('1', this.id)},
+            effect() {
+                let eff = new Decimal(1)
+                return eff
+            },
+            display() { return "\nCost: " + format(this.cost()) + " coins\n\nAmount: " + getBuyableAmount('1', this.id) + "\n\nEffect: +" + format(buyableEffect('1', this.id)) + " to click production and passive production\n\nTotal Effect: +" + format(getBuyableAmount('1', this.id) * buyableEffect('1', this.id))},
             canAfford() { return player.points.gte(this.cost()) },
             buy() {
                 player.points = player.points.sub(this.cost())
@@ -222,11 +266,11 @@ addLayer("1", {
         11: {
             fullDisplay() { return '<h3>Proof of Good Deed</h3><br>ally yourself with the side of good, which focuses on active production<br><br>Cost: 250 coins'},
             canAfford() {
-                if (player.points.gte(new Decimal(250))) return true;
+                if (player.points.gte(250)) return true;
                 else return false
             },
             pay() {
-                player.points = player.points.sub(new Decimal(250))
+                player.points = player.points.sub(250)
             },
             style: {'color':'#0000FF'},
             unlocked() { if (hasUpgrade('1', 11) == false && hasUpgrade('1', 21) == false) return true },
@@ -234,11 +278,11 @@ addLayer("1", {
         21: {
             fullDisplay() { return '<h3>Proof of Evil Deed</h3><br>ally yourself with the side of evil, which focuses on passive production<br><br>Cost: 250 coins'},
             canAfford() {
-                if (player.points.gte(new Decimal(250))) return true;
+                if (player.points.gte(250)) return true;
                 else return false
             },
             pay() {
-                player.points = player.points.sub(new Decimal(250))
+                player.points = player.points.sub(250)
             },
             style: {'color':'#FF0000'},
             unlocked() { if (hasUpgrade('1', 11) == false && hasUpgrade('1', 21) == false) return true },
@@ -246,11 +290,11 @@ addLayer("1", {
         31: {
             fullDisplay() { return '<h3>Fairy Alliance</h3><br>ally yourself with the fairies, which focus on basic buildings<br><br>Cost: 10 fairy coins'},
             canAfford() {
-                if (player.fairyCoins.gte(new Decimal(10))) return true;
+                if (player.fairyCoins.gte(10)) return true;
                 else return false
             },
             pay() {
-                player.fairyCoins = player.fairyCoins.sub(new Decimal(10))
+                player.fairyCoins = player.fairyCoins.sub(10)
             },
             style: {'color':'#FF00FF'},
             unlocked() { if (hasUpgrade('1', 11) == true) return true },
@@ -258,11 +302,11 @@ addLayer("1", {
         41: {
             fullDisplay() { return '<h3>Elven Alliance</h3><br>ally yourself with the elves, which focus on click production<br><br>Cost: 10 elf coins'},
             canAfford() {
-                if (player.elfCoins.gte(new Decimal(10))) return true;
+                if (player.elfCoins.gte(10)) return true;
                 else return false
             },
             pay() {
-                player.elfCoins = player.elfCoins.sub(new Decimal(10))
+                player.elfCoins = player.elfCoins.sub(10)
             },
             style: {'color':'#00FF00'},
             unlocked() { if (hasUpgrade('1', 11) == true) return true },
@@ -270,11 +314,11 @@ addLayer("1", {
         51: {
             fullDisplay() { return '<h3>Angel Alliance</h3><br>ally yourself with the angels, which focus on mana and spells<br><br>Cost: 10 angel coins'},
             canAfford() {
-                if (player.angelCoins.gte(new Decimal(10))) return true;
+                if (player.angelCoins.gte(10)) return true;
                 else return false
             },
             pay() {
-                player.angelCoins = player.angelCoins.sub(new Decimal(10))
+                player.angelCoins = player.angelCoins.sub(10)
             },
             style: {'color':'#00FFFF'},
             unlocked() { if (hasUpgrade('1', 11) == true) return true },
@@ -282,11 +326,11 @@ addLayer("1", {
         61: {
             fullDisplay() { return '<h3>Goblin Alliance</h3><br>ally yourself with the goblins, which focus on faction coins<br><br>Cost: 10 goblin coins'},
             canAfford() {
-                if (player.goblinCoins.gte(new Decimal(10))) return true;
+                if (player.goblinCoins.gte(10)) return true;
                 else return false
             },
             pay() {
-                player.goblinCoins = player.goblinCoins.sub(new Decimal(10))
+                player.goblinCoins = player.goblinCoins.sub(10)
             },
             style: {'color':'#888800'},
             unlocked() { if (hasUpgrade('1', 21) == true) return true },
@@ -294,11 +338,11 @@ addLayer("1", {
         71: {
             fullDisplay() { return '<h3>Undead Alliance</h3><br>ally yourself with the undead, which focus purely on passive production<br><br>Cost: 10 undead coins'},
             canAfford() {
-                if (player.undeadCoins.gte(new Decimal(10))) return true;
+                if (player.undeadCoins.gte(10)) return true;
                 else return false
             },
             pay() {
-                player.undeadCoins = player.undeadCoins.sub(new Decimal(10))
+                player.undeadCoins = player.undeadCoins.sub(10)
             },
             style: {'color':'#8800FF'},
             unlocked() { if (hasUpgrade('1', 21) == true) return true },
@@ -306,14 +350,69 @@ addLayer("1", {
         81: {
             fullDisplay() { return '<h3>Demon Alliance</h3><br>ally yourself with the demons, which focus on non-basic buildings<br><br>Cost: 10 demon coins'},
             canAfford() {
-                if (player.demonCoins.gte(new Decimal(10))) return true;
+                if (player.demonCoins.gte(10)) return true;
                 else return false
             },
             pay() {
-                player.demonCoins = player.demonCoins.sub(new Decimal(10))
+                player.demonCoins = player.demonCoins.sub(10)
             },
             style: {'color':'#880000'},
             unlocked() { if (hasUpgrade('1', 21) == true) return true },
+        },
+        91: {
+            fullDisplay() { return '<h3>Rich Dirt</h3><br>increases dirt\'s base effect by +0.05<br><br>Req: 10 dirt<br><br>Cost: 150 coins'},
+            canAfford() {
+                if (player.points.gte(150)) return true;
+                else return false
+            },
+            pay() {
+                player.points = player.points.sub(150)
+            },
+            unlocked() { if (getBuyableAmount('1', 11).gte(10)) return true },
+        },
+        92: {
+            fullDisplay() { return '<h3>Rocks</h3><br>increases pebbles\' base effect by +0.30<br><br>Req: 10 pebbles<br><br>Cost: 5,000 coins'},
+            canAfford() {
+                if (player.points.gte(5000)) return true;
+                else return false
+            },
+            pay() {
+                player.points = player.points.sub(5000)
+            },
+            unlocked() { if (getBuyableAmount('1', 12).gte(10)) return true },
+        },
+        101: {
+            fullDisplay() { return '<h3>Richer Dirt</h3><br>increases rich dirt\'s base effect by +0.10<br><br>Req: 25 rich dirt<br><br>Cost: 500 coins'},
+            canAfford() {
+                if (player.points.gte(500)) return true;
+                else return false
+            },
+            pay() {
+                player.points = player.points.sub(500)
+            },
+            unlocked() { if (getBuyableAmount('1', 11).gte(25) && hasUpgrade('1', 91) == true) return true },
+        },
+        111: {
+            fullDisplay() { return '<h3>Soil</h3><br>double richer dirt\'s base effect<br><br>Req: 50 richer dirt<br><br>Cost: 1,500 coins'},
+            canAfford() {
+                if (player.points.gte(1500)) return true;
+                else return false
+            },
+            pay() {
+                player.points = player.points.sub(1500)
+            },
+            unlocked() { if (getBuyableAmount('1', 11).gte(50) && hasUpgrade('1', 101) == true) return true },
+        },
+        121: {
+            fullDisplay() { return '<h3>Fertile Soil</h3><br>double soil\'s base effect<br><br>Req: 100 soil<br><br>Cost: 7,500 coins'},
+            canAfford() {
+                if (player.points.gte(7500)) return true;
+                else return false
+            },
+            pay() {
+                player.points = player.points.sub(7500)
+            },
+            unlocked() { if (getBuyableAmount('1', 11).gte(100) && hasUpgrade('1', 111) == true) return true },
         },
     },
 });

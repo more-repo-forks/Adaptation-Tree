@@ -15,6 +15,7 @@ let VERSION = {
 
 let changelog = `<h1>Changelog:</h1><br>
 	<br><h3>v0.2 - Beta V2</h3><br>
+		- Added five new upgrades.<br>
 		- Added faction coins.<br>
 		- Added choosing a faction.<br>
 		- Added a new tab for faction stuff.<br>
@@ -47,8 +48,8 @@ function canGenPoints() {
 
 function getPointGen() {
 	let gain = new Decimal(0)
-	if (getBuyableAmount('1', 12) > new Decimal(0)) gain = gain.add(getBuyableAmount('1', 12) * 0.2);
-	if (getBuyableAmount('1', 13) > new Decimal(0)) gain = gain.add(getBuyableAmount('1', 13));
+	if (getBuyableAmount('1', 12).gt(0)) gain = gain.add(getBuyableAmount('1', 12) * buyableEffect('1', 12));
+	if (getBuyableAmount('1', 13).gt(0)) gain = gain.add(getBuyableAmount('1', 13) * buyableEffect('1', 13));
 	return gain
 }
 
