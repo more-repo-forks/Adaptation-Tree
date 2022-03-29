@@ -9,11 +9,17 @@ let modInfo = {
 }
 
 let VERSION = {
-	num: "0.1",
-	name: "Beta Test",
+	num: "0.2",
+	name: "Beta V2",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<br><h3>v0.2 - Beta V2</h3><br>
+		- Added faction coins.<br>
+		- Added choosing a faction.<br>
+		- Added a new tab for faction stuff.<br>
+		- Fixed various issues with the stats menu.<br>
+		- Added faction coin stats to the stat menu.<br>
 	<br><h3>v0.1 - Beta Test</h3><br>
 		- Added a clickable.<br>
 		- Added three buyables.<br>
@@ -25,6 +31,12 @@ let winText = `Congratulations! You have reached the end and beaten this game, b
 // (The ones here are examples, all official functions are already taken care of)
 var doNotCallTheseFunctionsEveryTick = ["blowUpEverything"]
 
+function randint(min, max) {
+	min = Math.ceil(min);
+	max = Math.floor(max);
+	return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
+} 
+
 function getStartPoints() {
     return new Decimal(modInfo.initialStartPoints)
 }
@@ -35,8 +47,8 @@ function canGenPoints() {
 
 function getPointGen() {
 	let gain = new Decimal(0)
-	if (getBuyableAmount('1', 12) > new Decimal(0)) gain = new Decimal(gain.add(getBuyableAmount('1', 12) * 0.2));
-	if (getBuyableAmount('1', 13) > new Decimal(0)) gain = new Decimal(gain.add(getBuyableAmount('1', 13)));
+	if (getBuyableAmount('1', 12) > new Decimal(0)) gain = gain.add(getBuyableAmount('1', 12) * 0.2);
+	if (getBuyableAmount('1', 13) > new Decimal(0)) gain = gain.add(getBuyableAmount('1', 13));
 	return gain
 }
 
@@ -48,6 +60,22 @@ function addedPlayerData() { return {
 	totalR: new Decimal(0),
 	bestT: new Decimal(0),
 	totalT: new Decimal(0),
+	fairyCoins: new Decimal(0),
+	elfCoins: new Decimal(0),
+	angelCoins: new Decimal(0),
+	goblinCoins: new Decimal(0),
+	undeadCoins: new Decimal(0),
+	demonCoins: new Decimal(0),
+	FCchance: new Decimal(2.5),
+	FCchancebest: new Decimal(2.5),
+	FCchancebestT: new Decimal(2.5),
+	_FC: new Decimal(0),
+	FCbest: new Decimal(0),
+	FCbestR: new Decimal(0),
+	FCbestT: new Decimal(0),
+	FCtotal: new Decimal(0),
+	FCtotalR: new Decimal(0),
+	FCtotalT: new Decimal(0),
 }}
 
 // Display extra things at the top of the page
