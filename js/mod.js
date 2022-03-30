@@ -15,10 +15,11 @@ let VERSION = {
 
 let changelog = `<h1>Changelog:</h1><br>
 	<br><h3>v0.3 - Spells Beta</h3><br>
-		- Added one new creation tier.<br>
+		- Added five new creation tiers.<br>
 		- Added casting, mana, and spells.<br>
+		- Added 3 fairy upgrades.<br>
 		- Added 6 goblin upgrades.<br>
-		- Added mana and cast stats to the stat menu.<br>
+		- Added more types of stats to the stat menu.<br>
 		- Minor fixes.<br>
 	<br><h3>v0.2 - Factions Beta</h3><br>
 		- Added five new creation tiers.<br>
