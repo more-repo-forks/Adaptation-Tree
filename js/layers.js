@@ -151,16 +151,6 @@ addLayer("1", {
                         {}]
                 ]],
                 "blank",
-                ["display-text",
-                    function() { if (hasUpgrade('1', 11) == false && hasUpgrade('1', 21) == false) return '<h3>first, choose an side' },
-                    {}],
-                ["display-text",
-                    function() { if (hasUpgrade('1', 11) == true && hasUpgrade('1', 31) == false && hasUpgrade('1', 41) == false && hasUpgrade('1', 51) == false && hasUpgrade('1', 61) == false && hasUpgrade('1', 71) == false && hasUpgrade('1', 81) == false) return '<h3>next, choose a faction' },
-                    {}],
-                ["display-text",
-                    function() { if (hasUpgrade('1', 21) == true && hasUpgrade('1', 31) == false && hasUpgrade('1', 41) == false && hasUpgrade('1', 51) == false && hasUpgrade('1', 61) == false && hasUpgrade('1', 71) == false && hasUpgrade('1', 81) == false) return '<h3>next, choose a faction' },
-                    {}],
-                "blank",
                 ["row", [["upgrades", [1]], ["blank", ["17px"]], ["upgrades", [2]]]],
                 ["row", [["upgrades", [3]], ["blank", ["17px"]], ["upgrades", [4]], ["blank", ["17px"]], ["upgrades", [5]]]],
                 ["row", [["upgrades", [6]], ["blank", ["17px"]], ["upgrades", [7]], ["blank", ["17px"]], ["upgrades", [8]]]],
@@ -675,7 +665,7 @@ addLayer("2", {
         callcastsR: new Decimal(0),
         callcastsT: new Decimal(0),
         calleffboost: new Decimal(1),
-        calltime: new Decimal(30),
+        calltime: new Decimal(0),
         holycasts: new Decimal(0),
         holycastsR: new Decimal(0),
         holycastsT: new Decimal(0),
@@ -683,7 +673,7 @@ addLayer("2", {
         frenzycastsR: new Decimal(0),
         frenzycastsT: new Decimal(0),
         sidespellboost: new Decimal(1),
-        sidespelltime: new Decimal(15),
+        sidespelltime: new Decimal(0),
     }},
     color: "#AA55AA",
     type: "none",
@@ -716,8 +706,8 @@ addLayer("2", {
         if (getClickableState('2', 12) == "ON") player['2'].calltime = player['2'].calltime.sub(diff);
         if (getClickableState('2', 13) == "ON") player['2'].sidespelltime = player['2'].sidespelltime.sub(diff);
         // spell done time
-        if (player['2'].calltime.lte(0)) setClickableState('2', 12) == "OFF";
-        if (player['2'].sidespelltime.lte(0)) setClickableState('2', 13) == "OFF";
+        if (player['2'].calltime.lte(0)) setClickableState('2', 12) == "OFF", player['2'].calltime = new Decimal(0);
+        if (player['2'].sidespelltime.lte(0)) setClickableState('2', 13) == "OFF", player['2'].sidespelltime = new Decimal(0);
     },
     tabFormat: [
         ["display-text",
@@ -743,7 +733,7 @@ addLayer("2", {
         },
         12: {
             title: '<font color = "#000000">Call to Arms',
-            display() { return '<font color = "#000000">boost all production based on your creations created for 30 seconds<br><br>Effect: x' + format(clickableEffect('2', this.id)) + '<br><br>Cost: 160 mana' },
+            display() { return '<font color = "#000000">boost all production based on your creations created for 30 seconds<br>Time left: ' + format(player['2'].calltime) + '<br><br>Effect: x' + format(clickableEffect('2', this.id)) + '<br><br>Cost: 160 mana' },
             effect() { return player['1'].creations.add(1).pow(0.1).mul(player['2'].calleffboost)},
             canClick() {
                 if (getClickableState('2', this.id) == "ON") return false;
@@ -751,7 +741,8 @@ addLayer("2", {
                 else return false;
             },
             onClick() {
-                player['2'].mana.sub(160);
+                player['2'].sidespelltime = new Decimal(30);
+                player['2'].mana = player['2'].mana.sub(160);
                 player['2'].callcasts = player['2'].callcasts.add(1);
                 player['2'].callcastsR = player['2'].callcastsR.add(1);
                 player['2'].callcastsT = player['2'].callcastsT.add(1);
@@ -765,8 +756,8 @@ addLayer("2", {
                 else return '<h1>LOCKED</h1><br><br>CHOOSE A SIDE TO UNLOCK';
             },
             display() {
-                if (hasUpgrade('1', 11)) return '<font color = "#0000FF">boost click production based on your mana for 15 seconds<br><br>Effect: x' + format(clickableEffect('2', this.id)) + '<br><br>Cost: 120 mana';
-                else if (hasUpgrade('1', 21)) return '<font color = "#FF0000">boost passive production based on your mana for 15 seconds<br><br>Effect: x' + format(clickableEffect('2', this.id)) + '<br><br>Cost: 120 mana';
+                if (hasUpgrade('1', 11)) return '<font color = "#0000FF">boost click production based on your mana for 15 seconds<br>Time left: ' + format(player['2'].sidespelltime) + '<br><br>Effect: x' + format(clickableEffect('2', this.id)) + '<br><br>Cost: 120 mana';
+                else if (hasUpgrade('1', 21)) return '<font color = "#FF0000">boost passive production based on your mana for 15 seconds<br>Time left: ' + format(player['2'].sidespelltime) + '<br><br>Effect: x' + format(clickableEffect('2', this.id)) + '<br><br>Cost: 120 mana';
                 else return "";
             },
             effect() { return player['2'].mana.add(1).pow(0.2).mul(player['2'].sidespellboost)},
@@ -776,7 +767,8 @@ addLayer("2", {
                 else return false;
             },
             onClick() {
-                player['2'].mana.sub(120);
+                player['2'].sidespelltime = new Decimal(15);
+                player['2'].mana = player['2'].mana.sub(120);
                 if (hasUpgrade('1', 11))
                     player['2'].holycasts = player['2'].holycasts.add(1),
                     player['2'].holycastsR = player['2'].holycastsR.add(1),
