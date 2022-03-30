@@ -58,7 +58,8 @@ addLayer("1", {
         let pointGain = getPointGen();
         let FCchance = new Decimal(2.5);
         // click value
-        if (getBuyableAmount('1', 11).gt(0)) clickGain = clickGain.add(getBuyableAmount('1', 11) * buyableEffect('1', 11));
+        if (getBuyableAmount('1', 11).gt(0)) clickGain = clickGain.add(getBuyableAmount('1', 11).mul(buyableEffect('1', 11)));
+        if (hasUpgrade('1', 1033)) clickGain = ClickGain.mul(upgradeEffect('1', 1033))
         player['1'].clickValue = clickGain;
         // best coins
         if (player.points.gt(player.best)) player.best = player.points;
@@ -70,6 +71,7 @@ addLayer("1", {
 	    player.totalT = new Decimal(player.totalT.add(pointGain));
         // FC chance
         if (getBuyableAmount('1', 13).gt(0)) FCchance = FCchance.add(getBuyableAmount('1', 13).mul(buyableEffect('1', 13).div(10)));
+        if (hasUpgrade('1', 1033)) FCchance = FCchance.add(upgradeEffect('1', 1033).mul(3))
         if (hasUpgrade('1', 1061)) FCchance = FCchance.add(upgradeEffect('1', 1061));
         if (hasUpgrade('1', 1063)) FCchance = FCchance.add(upgradeEffect('1', 1063));
         player.FCchance = new Decimal(FCchance);
@@ -227,6 +229,8 @@ addLayer("1", {
                 if (hasUpgrade('1', 101)) eff = eff.add(0.1);
                 if (hasUpgrade('1', 111)) eff = eff.mul(2);
                 if (hasUpgrade('1', 121)) eff = eff.mul(2);
+                if (hasUpgrade('1', 1031)) eff = eff.mul(upgradeEffect('1', 1031));
+                if (hasUpgrade('1', 1031)) eff = eff.mul(upgradeEffect('1', 1032));
                 return eff;
             },
             display() {
@@ -252,6 +256,8 @@ addLayer("1", {
                 let eff = new Decimal(0.25);
                 if (hasUpgrade('1', 92)) eff = eff.add(0.5);
                 if (hasUpgrade('1', 102)) eff = eff.add(1.25);
+                if (hasUpgrade('1', 1031)) eff = eff.mul(upgradeEffect('1', 1031));
+                if (hasUpgrade('1', 1031)) eff = eff.mul(upgradeEffect('1', 1032));
                 return eff;
             },
             display() { return "\nCost: " + format(this.cost()) + " coins\n\nAmount: " + getBuyableAmount('1', this.id) + "\n\nEffect: +" + format(buyableEffect('1', this.id)) + " to passive production\n\nTotal Effect: +" + format(getBuyableAmount('1', this.id) * buyableEffect('1', this.id))},
@@ -270,6 +276,8 @@ addLayer("1", {
             cost() { return new Decimal(Math.pow(getBuyableAmount('1', this.id).add(1), 1.5) * 10000) },
             effect() {
                 let eff = new Decimal(2.5);
+                if (hasUpgrade('1', 1031)) eff = eff.mul(upgradeEffect('1', 1031));
+                if (hasUpgrade('1', 1031)) eff = eff.mul(upgradeEffect('1', 1032));
                 return eff;
             },
             display() { return "\nCost: " + format(this.cost()) + " coins\n\nAmount: " + getBuyableAmount('1', this.id) + "\n\nEffect: +" + format(buyableEffect('1', this.id)) + " to passive production and\n+" + format(buyableEffect('1', this.id).div(10)) + "% to FC find chance\n\nTotal Effect: +" + format(getBuyableAmount('1', this.id) * buyableEffect('1', this.id)) + "\nand +" + format((getBuyableAmount('1', this.id) * buyableEffect('1', this.id).div(10))) + "%"},
@@ -307,79 +315,79 @@ addLayer("1", {
             unlocked() { if (hasUpgrade('1', 11) == false && hasUpgrade('1', 21) == false) return true },
         },
         31: {
-            fullDisplay() { return '<h3>Fairy Alliance</h3><br>ally yourself with the fairies, which focus on basic buildings<br><br>Cost: 10 fairy coins'},
+            fullDisplay() { return '<h3>Fairy Alliance</h3><br>ally yourself with the fairies, which focus on basic buildings<br><br>Cost: 5 fairy coins'},
             canAfford() {
-                if (player.fairyCoins.gte(10)) return true;
+                if (player.fairyCoins.gte(5)) return true;
                 else return false;
             },
             pay() {
-                player.fairyCoins = player.fairyCoins.sub(10);
-                player._FC = player._FC.sub(10);
+                player.fairyCoins = player.fairyCoins.sub(5);
+                player._FC = player._FC.sub(5);
             },
             style: {'color':'#FF00FF'},
             unlocked() { if (hasUpgrade('1', 11) && hasUpgrade('1', 31) == false && hasUpgrade('1', 41) == false && hasUpgrade('1', 51) == false && hasUpgrade('1', 61) == false && hasUpgrade('1', 71) == false && hasUpgrade('1', 81) == false) return true },
         },
         41: {
-            fullDisplay() { return '<h3>Elven Alliance</h3><br>ally yourself with the elves, which focus on click production<br><br>Cost: 10 elf coins'},
+            fullDisplay() { return '<h3>Elven Alliance</h3><br>ally yourself with the elves, which focus on click production<br><br>Cost: 5 elf coins'},
             canAfford() {
-                if (player.elfCoins.gte(10)) return true;
+                if (player.elfCoins.gte(5)) return true;
                 else return false;
             },
             pay() {
-                player.elfCoins = player.elfCoins.sub(10);
-                player._FC = player._FC.sub(10);
+                player.elfCoins = player.elfCoins.sub(5);
+                player._FC = player._FC.sub(5);
             },
             style: {'color':'#00FF00'},
             unlocked() { if (hasUpgrade('1', 11) && hasUpgrade('1', 31) == false && hasUpgrade('1', 41) == false && hasUpgrade('1', 51) == false && hasUpgrade('1', 61) == false && hasUpgrade('1', 71) == false && hasUpgrade('1', 81) == false) return true },
         },
         51: {
-            fullDisplay() { return '<h3>Angel Alliance</h3><br>ally yourself with the angels, which focus on mana and spells<br><br>Cost: 10 angel coins'},
+            fullDisplay() { return '<h3>Angel Alliance</h3><br>ally yourself with the angels, which focus on mana and spells<br><br>Cost: 5 angel coins'},
             canAfford() {
-                if (player.angelCoins.gte(10)) return true;
+                if (player.angelCoins.gte(5)) return true;
                 else return false;
             },
             pay() {
-                player.angelCoins = player.angelCoins.sub(10);
-                player._FC = player._FC.sub(10);
+                player.angelCoins = player.angelCoins.sub(5);
+                player._FC = player._FC.sub(5);
             },
             style: {'color':'#00FFFF'},
             unlocked() { if (hasUpgrade('1', 11) && hasUpgrade('1', 31) == false && hasUpgrade('1', 41) == false && hasUpgrade('1', 51) == false && hasUpgrade('1', 61) == false && hasUpgrade('1', 71) == false && hasUpgrade('1', 81) == false) return true },
         },
         61: {
-            fullDisplay() { return '<h3>Goblin Alliance</h3><br>ally yourself with the goblins, which focus on faction coins<br><br>Cost: 10 goblin coins'},
+            fullDisplay() { return '<h3>Goblin Alliance</h3><br>ally yourself with the goblins, which focus on faction coins<br><br>Cost: 5 goblin coins'},
             canAfford() {
-                if (player.goblinCoins.gte(10)) return true;
+                if (player.goblinCoins.gte(5)) return true;
                 else return false;
             },
             pay() {
-                player.goblinCoins = player.goblinCoins.sub(10);
-                player._FC = player._FC.sub(10);
+                player.goblinCoins = player.goblinCoins.sub(5);
+                player._FC = player._FC.sub(5);
             },
             style: {'color':'#888800'},
             unlocked() { if (hasUpgrade('1', 21) && hasUpgrade('1', 31) == false && hasUpgrade('1', 41) == false && hasUpgrade('1', 51) == false && hasUpgrade('1', 61) == false && hasUpgrade('1', 71) == false && hasUpgrade('1', 81) == false) return true },
         },
         71: {
-            fullDisplay() { return '<h3>Undead Alliance</h3><br>ally yourself with the undead, which focus purely on passive production<br><br>Cost: 10 undead coins'},
+            fullDisplay() { return '<h3>Undead Alliance</h3><br>ally yourself with the undead, which focus purely on passive production<br><br>Cost: 5 undead coins'},
             canAfford() {
-                if (player.undeadCoins.gte(10)) return true;
+                if (player.undeadCoins.gte(5)) return true;
                 else return false;
             },
             pay() {
-                player.undeadCoins = player.undeadCoins.sub(10);
-                player._FC = player._FC.sub(10);
+                player.undeadCoins = player.undeadCoins.sub(5);
+                player._FC = player._FC.sub(5);
             },
             style: {'color':'#8800FF'},
             unlocked() { if (hasUpgrade('1', 21) && hasUpgrade('1', 31) == false && hasUpgrade('1', 41) == false && hasUpgrade('1', 51) == false && hasUpgrade('1', 61) == false && hasUpgrade('1', 71) == false && hasUpgrade('1', 81) == false) return true },
         },
         81: {
-            fullDisplay() { return '<h3>Demon Alliance</h3><br>ally yourself with the demons, which focus on non-basic buildings<br><br>Cost: 10 demon coins'},
+            fullDisplay() { return '<h3>Demon Alliance</h3><br>ally yourself with the demons, which focus on non-basic buildings<br><br>Cost: 5 demon coins'},
             canAfford() {
-                if (player.demonCoins.gte(10)) return true;
+                if (player.demonCoins.gte(5)) return true;
                 else return false;
             },
             pay() {
-                player.demonCoins = player.demonCoins.sub(10);
-                player._FC = player._FC.sub(10);
+                player.demonCoins = player.demonCoins.sub(5);
+                player._FC = player._FC.sub(5);
             },
             style: {'color':'#880000'},
             unlocked() { if (hasUpgrade('1', 21) && hasUpgrade('1', 31) == false && hasUpgrade('1', 41) == false && hasUpgrade('1', 51) == false && hasUpgrade('1', 61) == false && hasUpgrade('1', 71) == false && hasUpgrade('1', 81) == false) return true },
@@ -450,6 +458,45 @@ addLayer("1", {
             },
             unlocked() { if (getBuyableAmount('1', 11).gte(100) && hasUpgrade('1', 111)) return true },
         },
+        1031: {
+            fullDisplay() { return '<h3>Fairy Dust</h3><br>multiply the effect of basic creations based on your mana regen<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500 coins'},
+            effect() { return player['2'].manaregen.add(1).mul(2).pow(0.5) },
+            canAfford() {
+                if (player.points.gte(500)) return true;
+                else return false;
+            },
+            pay() {
+                player.points = player.points.sub(500)
+            },
+            style: {'color':'#FF00FF'},
+            unlocked() { if (hasUpgrade('1', 31)) return true },
+        },
+        1032: {
+            fullDisplay() { return '<h3>Fairy Workers</h3><br>multiply the effect of basic creations based on your creations<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 5,000 coins'},
+            effect() { return player['1'].creations.add(1).pow(0.2) },
+            canAfford() {
+                if (player.points.gte(5000)) return true;
+                else return false;
+            },
+            pay() {
+                player.points = player.points.sub(5000)
+            },
+            style: {'color':'#FF00FF'},
+            unlocked() { if (hasUpgrade('1', 31)) return true },
+        },
+        1033: {
+            fullDisplay() { return '<h3>Fairy Traders</h3><br>multiply click production and faction coin find chance based on your creations<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br>and +' + format(upgradeEffect('1', this.id).mul(3)) + '%<br><br>Cost: 50,000 coins'},
+            effect() { return player['1'].creations.add(1).pow(0.2) },
+            canAfford() {
+                if (player.points.gte(50000)) return true;
+                else return false;
+            },
+            pay() {
+                player.points = player.points.sub(50000)
+            },
+            style: {'color':'#FF00FF', 'height':'120px'},
+            unlocked() { if (hasUpgrade('1', 31)) return true },
+        },
         1061: {
             fullDisplay() { return '<h3>Jackpot</h3><br>increase faction coin find chance based on your coins<br><br>Effect: +' + format(upgradeEffect('1', this.id)) + '%<br><br>Cost: 500 coins'},
             effect() { return player.points.add(1).pow(0.2) },
@@ -503,7 +550,7 @@ addLayer("1", {
             unlocked() { if (hasUpgrade('1', 61)) return true },
         },
         1161: {
-            fullDisplay() { return '<h3>Moneyload</h3><br>increase passive production based on your faction coin find chance<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500,000 coins'},
+            fullDisplay() { return '<h3>Moneyload</h3><br>multiply passive production based on your faction coin find chance<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500,000 coins'},
             effect() { return player.FCchance.add(1).pow(0.4) },
             canAfford() {
                 if (player.points.gte(500000)) return true;
@@ -528,7 +575,7 @@ addLayer("1", {
             unlocked() { if (hasUpgrade('1', 1064)) return true },
         },
         1163: {
-            fullDisplay() { return '<h3>Pride</h3><br>increase passive production based on your goblin coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 50,000,000 coins'},
+            fullDisplay() { return '<h3>Pride</h3><br>multiply passive production based on your goblin coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 50,000,000 coins'},
             effect() { return player.goblinCoins.add(1).pow(0.5) },
             canAfford() {
                 if (player.points.gte(50000000)) return true;
@@ -574,7 +621,6 @@ addLayer("2", {
         frenzycasts: new Decimal(0),
         frenzycastsR: new Decimal(0),
         frenzycastsT: new Decimal(0),
-        sidespellcolor: '#000000',
         sidespellboost: new Decimal(1),
         sidespelltime: new Decimal(15),
     }},
@@ -588,9 +634,6 @@ addLayer("2", {
         let prevmana = player['2'].mana;
         // spell boosts
         if (hasUpgrade('1', 1064)) taxeff = taxeff.add(30);
-        // spell color
-        if (hasUpgrade('1', 11)) player['2'].sidespellcolor = '#0000FF';
-        if (hasUpgrade('1', 21)) player['2'].sidespellcolor = '#FF0000';
         // increase mana
         if (player['2'].mana.add(player['2'].manaregen).gte(player['2'].maxmana))
             player['2'].mana = player['2'].maxmana,
@@ -626,8 +669,8 @@ addLayer("2", {
     ],
     clickables: {
         11: {
-            title: "Tax Collection",
-            display() { return "get coins equal to " + formatWhole(player['2'].taxeff) + " seconds of passive production<br><br>Effect: +" + format(getPointGen().mul(player['2'].taxeff)) + "<br><br>Cost: 80 mana" },
+            title: '<font color = "#000000">Tax Collection',
+            display() { return '<font color = "#000000">get coins equal to ' + formatWhole(player['2'].taxeff) + ' seconds of passive production<br><br>Effect: +' + format(getPointGen().mul(player['2'].taxeff)) + '<br><br>Cost: 80 mana' },
             canClick() { if (player['2'].mana.gte(80)) return true },
             onClick() {
                 player['2'].mana = player['2'].mana.sub(80);
@@ -638,8 +681,8 @@ addLayer("2", {
             },
         },
         12: {
-            title: "Call to Arms",
-            display() { return "boost all production based on your creations created for 30 seconds<br><br>Effect: x" + format(clickableEffect('2', this.id)) + "<br><br>Cost: 160 mana" },
+            title: '<font color = "#000000">Call to Arms',
+            display() { return '<font color = "#000000">boost all production based on your creations created for 30 seconds<br><br>Effect: x' + format(clickableEffect('2', this.id)) + '<br><br>Cost: 160 mana' },
             effect() { return player['1'].creations.add(1).pow(0.1).mul(player['2'].calleffboost)},
             canClick() {
                 if (getClickableState('2', this.id) == "ON") return false;
@@ -656,13 +699,13 @@ addLayer("2", {
         },
         13: {
             title() {
-                if (hasUpgrade('1', 11)) return 'Holy Light';
-                else if (hasUpgrade('1', 21)) return 'Blood Frenzy';
+                if (hasUpgrade('1', 11)) return '<font color = "#0000FF">Holy Light';
+                else if (hasUpgrade('1', 21)) return '<font color = "#FF0000">Blood Frenzy';
                 else return '<h1>LOCKED</h1><br><br>CHOOSE A SIDE TO UNLOCK';
             },
             display() {
-                if (hasUpgrade('1', 11)) return "boost click production based on your mana for 15 seconds<br><br>Effect: x" + format(clickableEffect('2', this.id)) + "<br><br>Cost: 120 mana";
-                else if (hasUpgrade('1', 21)) return "boost passive production based on your mana for 15 seconds<br><br>Effect: x" + format(clickableEffect('2', this.id)) + "<br><br>Cost: 120 mana";
+                if (hasUpgrade('1', 11)) return '<font color = "#0000FF">boost click production based on your mana for 15 seconds<br><br>Effect: x' + format(clickableEffect('2', this.id)) + '<br><br>Cost: 120 mana';
+                else if (hasUpgrade('1', 21)) return '<font color = "#FF0000">boost passive production based on your mana for 15 seconds<br><br>Effect: x' + format(clickableEffect('2', this.id)) + '<br><br>Cost: 120 mana';
                 else return "";
             },
             effect() { return player['2'].mana.add(1).pow(0.2).mul(player['2'].sidespellboost)},
@@ -683,7 +726,6 @@ addLayer("2", {
                     player['2'].frenzycastsT = player['2'].frenzycastsT.add(1);
                 setClickableState('2', this.id, "ON");
             },
-            style: {'color':'#0000FF'},
         },
     },
     bars: {
