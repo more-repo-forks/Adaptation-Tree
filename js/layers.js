@@ -46,9 +46,12 @@ addLayer("1", {
     layerShown(){return true},
     tooltip() {return "Main Tab"},
     doReset(resettingLayer) {
-        let keep = ["clickValueBestT", "clickTotalValueBestT", "clickTotalValueTotalT", "clickTimesBestT", "clickTimesTotalT"];
-        if (resettingLayer == '1') keep.push("points", "best", "clickValueBest", "clickTotalValueBest", "clickTotalValueTotal", "clickTimesBest", "clickTimesTotal");
-        layerDataReset('1', keep);
+        let keep1 = ["clickValueBestT", "clickTotalValueBestT", "clickTotalValueTotalT", "clickTimesBestT", "clickTimesTotalT"];
+        let keep2 = ["manatotalT", "maxmanabestT", "manaregenbestT", "taxcastsT", "callcastsT", "holycastsT", "frenzycastsT"];
+        if (resettingLayer == '1') keep1.push("points", "best", "clickValueBest", "clickTotalValueBest", "clickTotalValueTotal", "clickTimesBest", "clickTimesTotal");
+        if (resettingLayer == '1') keep2.push("manatotalR", "maxmanabest", "manaregenbest", "taxcastsR", "callcastsR", "holycastsR", "frenzycastsR");
+        layerDataReset('1', keep1);
+        layerDataReset('2', keep2);
     },
     update() {
         let clickGain = new Decimal(1);
@@ -614,7 +617,7 @@ addLayer("2", {
     },
     tabFormat: [
         ["display-text",
-            function() { return '<h2>Spells'},
+            function() { return '<h2>Casting'},
             {}],
         "blank",
         "clickables",
@@ -731,9 +734,6 @@ addLayer("9", {
         "blank",
         ["display-text",
             function() { return '<h3>CURRENCY' },
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + format(player.points) + '</b> coins' },
             {}],
         ["display-text",
             function() { return 'You have <b>' + format(player.best) + '</b> best coins' },
