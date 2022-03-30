@@ -22,7 +22,7 @@ addLayer("1", {
         gemMult: new Decimal(1),
     }},
     color: "#CCCCCC",
-    requires: new Decimal(10000),
+    requires: new Decimal(100000),
     resource: "gems",
     baseResource: "coins",
     baseAmount() {return player.points},
@@ -53,7 +53,6 @@ addLayer("1", {
         let FCchance = new Decimal(2.5);
         // click value
         if (getBuyableAmount('1', 11).gt(0)) clickGain = clickGain.add(getBuyableAmount('1', 11) * buyableEffect('1', 11))
-        if (getBuyableAmount('1', 13).gt(0)) clickGain = clickGain.add(getBuyableAmount('1', 13) * buyableEffect('1', 13))
         player['1'].clickValue = clickGain;
         // best coins
         if (player.points.gt(player.best)) player.best = player.points;
@@ -64,7 +63,7 @@ addLayer("1", {
 	    player.totalR = new Decimal(player.totalR.add(pointGain));
 	    player.totalT = new Decimal(player.totalT.add(pointGain));
         // FC chance
-        // upgrades that improve FC chance will be added here
+        if (getBuyableAmount('1', 13).gt(0)) FCchance = FCchance.add(getBuyableAmount('1', 13).mul(buyableEffect('1', 13).div(10)))
         player.FCchance = new Decimal(FCchance);
         // FC bests
         if (player.FCchance.gt(player.FCchancebest)) player.FCchancebest = player.FCchance;
@@ -252,10 +251,10 @@ addLayer("1", {
             },
             cost() { return new Decimal(Math.pow(getBuyableAmount('1', this.id).add(1), 1.5) * 10000) },
             effect() {
-                let eff = new Decimal(2)
+                let eff = new Decimal(2.5)
                 return eff
             },
-            display() { return "\nCost: " + format(this.cost()) + " coins\n\nAmount: " + getBuyableAmount('1', this.id) + "\n\nEffect: +" + format(buyableEffect('1', this.id)) + " to click production and passive production\n\nTotal Effect: +" + format(getBuyableAmount('1', this.id) * buyableEffect('1', this.id))},
+            display() { return "\nCost: " + format(this.cost()) + " coins\n\nAmount: " + getBuyableAmount('1', this.id) + "\n\nEffect: +" + format(buyableEffect('1', this.id)) + " to passive production and\n+" + format(buyableEffect('1', this.id).div(10)) + "% to FC find chance\n\nTotal Effect: +" + format(getBuyableAmount('1', this.id) * buyableEffect('1', this.id)) + "\nand +" + format((getBuyableAmount('1', this.id) * buyableEffect('1', this.id).div(10))) + "%"},
             canAfford() { return player.points.gte(this.cost()) },
             buy() {
                 player.points = player.points.sub(this.cost())
