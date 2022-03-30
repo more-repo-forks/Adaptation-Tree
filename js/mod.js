@@ -14,11 +14,11 @@ let VERSION = {
 }
 
 let changelog = `<h1>Changelog:</h1><br>
-	<br><h3>v0.2 - Spells Beta</h3><br>
+	<br><h3>v0.3 - Spells Beta</h3><br>
 		- Added one new creation tier.<br>
 		- Added casting, mana, and spells.<br>
 		- Added 6 goblin upgrades.<br>
-		- Added mana stats to the stat menu.<br>
+		- Added mana and cast stats to the stat menu.<br>
 		- Minor fixes.<br>
 	<br><h3>v0.2 - Factions Beta</h3><br>
 		- Added five new creation tiers.<br>
@@ -62,6 +62,7 @@ function getPointGen() {
 	if (hasUpgrade('1', 1161)) gain = gain.mul(upgradeEffect('1', 1161))
 	if (hasUpgrade('1', 1163)) gain = gain.mul(upgradeEffect('1', 1163))
 	if (getClickableState('2', 12) == "ON") gain = gain.mul(clickableEffect('2', 12))
+	if (hasUpgrade('1', 21) && getClickableState('2', 13) == "ON") gain = gain.mul(clickableEffect('2', 13))
 	return gain
 }
 
