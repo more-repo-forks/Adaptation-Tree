@@ -9,21 +9,27 @@ let modInfo = {
 }
 
 let VERSION = {
-	num: "0.2",
-	name: "Beta V2",
+	num: "0.3",
+	name: "Spells Beta",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
-	<br><h3>v0.2 - Beta V2</h3><br>
-		- Added five new upgrades.<br>
+	<br><h3>v0.2 - Spells Beta</h3><br>
+		- Added one new creation tier.<br>
+		- Added casting, mana, and spells.<br>
+		- Added 6 goblin upgrades.<br>
+		- Added mana stats to the stat menu.<br>
+		- Minor fixes.<br>
+	<br><h3>v0.2 - Factions Beta</h3><br>
+		- Added five new creation tiers.<br>
 		- Added faction coins.<br>
 		- Added choosing a faction.<br>
 		- Added a new tab for faction stuff.<br>
 		- Fixed various issues with the stats menu.<br>
 		- Added faction coin stats to the stat menu.<br>
 	<br><h3>v0.1 - Beta Test</h3><br>
-		- Added a clickable.<br>
-		- Added three buyables.<br>
+		- Added the click button.<br>
+		- Added three creations.<br>
 		- Added a stats menu.`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
@@ -48,8 +54,14 @@ function canGenPoints() {
 
 function getPointGen() {
 	let gain = new Decimal(0)
+	// addtitive
 	if (getBuyableAmount('1', 12).gt(0)) gain = gain.add(getBuyableAmount('1', 12) * buyableEffect('1', 12));
 	if (getBuyableAmount('1', 13).gt(0)) gain = gain.add(getBuyableAmount('1', 13) * buyableEffect('1', 13));
+	// multiplicative
+	if (hasUpgrade('1', 1062)) gain = gain.mul(upgradeEffect('1', 1062))
+	if (hasUpgrade('1', 1161)) gain = gain.mul(upgradeEffect('1', 1161))
+	if (hasUpgrade('1', 1163)) gain = gain.mul(upgradeEffect('1', 1163))
+	if (getClickableState('2', 12) == "ON") gain = gain.mul(clickableEffect('2', 12))
 	return gain
 }
 

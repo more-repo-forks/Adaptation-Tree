@@ -6,6 +6,7 @@ addLayer("1", {
         unlocked: true,
 		points: new Decimal(0),
         best: new Decimal(0),
+        creations: new Decimal(0),
         clickValue: new Decimal(1),
         clickValueBest: new Decimal(1),
         clickValueBestT: new Decimal(1),
@@ -64,6 +65,8 @@ addLayer("1", {
 	    player.totalT = new Decimal(player.totalT.add(pointGain));
         // FC chance
         if (getBuyableAmount('1', 13).gt(0)) FCchance = FCchance.add(getBuyableAmount('1', 13).mul(buyableEffect('1', 13).div(10)))
+        if (hasUpgrade('1', 1061)) FCchance = FCchance.add(upgradeEffect('1', 1061))
+        if (hasUpgrade('1', 1063)) FCchance = FCchance.add(upgradeEffect('1', 1063))
         player.FCchance = new Decimal(FCchance);
         // FC bests
         if (player.FCchance.gt(player.FCchancebest)) player.FCchancebest = player.FCchance;
@@ -71,6 +74,8 @@ addLayer("1", {
         if (player._FC.gt(player.FCbest)) player.FCbest = player._FC;
         if (player._FC.gt(player.FCbestR)) player.FCbestR = player._FC;
         if (player._FC.gt(player.FCbestT)) player.FCbestT = player._FC;
+        // other
+        player['1'].creations = getBuyableAmount('1', 11).add(getBuyableAmount('1', 12)).add(getBuyableAmount('1', 13))
     },
     tabFormat: {
         "Creation Tab": {
@@ -101,7 +106,7 @@ addLayer("1", {
                 "buyables",
                 "blank",
                 ["display-text",
-                    function() { return '<h2>Creation Tier Upgrades'},
+                    function() { if (getBuyableAmount('1', 11).gte(10) || getBuyableAmount('1', 12).gte(10) || getBuyableAmount('1', 13).gte(10)) return '<h2>Creation Tier Upgrades'},
                     {}],
                 "blank",
                 ["upgrades", [9, 10, 11, 12]],
@@ -132,12 +137,16 @@ addLayer("1", {
                     function() { if (hasUpgrade('1', 11) == false && hasUpgrade('1', 21) == false) return '<h3>first, choose an alignment' },
                     {}],
                 ["display-text",
-                    function() { if (hasUpgrade('1', 11) == true || hasUpgrade('1', 21) == true) return '<h3>next, choose a faction' },
+                    function() { if (hasUpgrade('1', 11) == true && hasUpgrade('1', 31) == false && hasUpgrade('1', 41) == false && hasUpgrade('1', 51) == false && hasUpgrade('1', 61) == false && hasUpgrade('1', 71) == false && hasUpgrade('1', 81) == false) return '<h3>next, choose a faction' },
+                    {}],
+                ["display-text",
+                    function() { if (hasUpgrade('1', 21) == true && hasUpgrade('1', 31) == false && hasUpgrade('1', 41) == false && hasUpgrade('1', 51) == false && hasUpgrade('1', 61) == false && hasUpgrade('1', 71) == false && hasUpgrade('1', 81) == false) return '<h3>next, choose a faction' },
                     {}],
                 "blank",
                 ["row", [["upgrades", [1]], ["blank", ["17px"]], ["upgrades", [2]]]],
                 ["row", [["upgrades", [3]], ["blank", ["17px"]], ["upgrades", [4]], ["blank", ["17px"]], ["upgrades", [5]]]],
                 ["row", [["upgrades", [6]], ["blank", ["17px"]], ["upgrades", [7]], ["blank", ["17px"]], ["upgrades", [8]]]],
+                ["upgrades", [103, 104, 105, 106, 107, 108, 113, 114, 115, 116, 117, 118]],
             ],
         },
     },
@@ -196,10 +205,10 @@ addLayer("1", {
         11: {
             title() {
                 let title = "Dirt";
-                if (hasUpgrade('1', 91) == true) title = "Rich Dirt";
-                if (hasUpgrade('1', 101) == true) title = "Richer Dirt";
-                if (hasUpgrade('1', 111) == true) title = "Soil";
-                if (hasUpgrade('1', 121) == true) title = "Fertile Soil";
+                if (hasUpgrade('1', 91)) title = "Rich Dirt";
+                if (hasUpgrade('1', 101)) title = "Richer Dirt";
+                if (hasUpgrade('1', 111)) title = "Soil";
+                if (hasUpgrade('1', 121)) title = "Fertile Soil";
                 return title;
             },
             cost() { return new Decimal(Math.pow(getBuyableAmount('1', this.id).add(1), 1.5)) },
@@ -225,8 +234,8 @@ addLayer("1", {
         12: {
             title() {
                 let title = "Pebbles";
-                if (hasUpgrade('1', 92) == true) title = "Rocks";
-                if (hasUpgrade('1', 102) == true) title = "Boulders";
+                if (hasUpgrade('1', 92)) title = "Rocks";
+                if (hasUpgrade('1', 102)) title = "Boulders";
                 return title;
             },
             cost() { return new Decimal(Math.pow(getBuyableAmount('1', this.id).add(1), 1.5) * 100) },
@@ -296,9 +305,10 @@ addLayer("1", {
             },
             pay() {
                 player.fairyCoins = player.fairyCoins.sub(10)
+                player._FC = player._FC.sub(10)
             },
             style: {'color':'#FF00FF'},
-            unlocked() { if (hasUpgrade('1', 11) == true) return true },
+            unlocked() { if (hasUpgrade('1', 11) && hasUpgrade('1', 31) == false && hasUpgrade('1', 41) == false && hasUpgrade('1', 51) == false && hasUpgrade('1', 61) == false && hasUpgrade('1', 71) == false && hasUpgrade('1', 81) == false) return true },
         },
         41: {
             fullDisplay() { return '<h3>Elven Alliance</h3><br>ally yourself with the elves, which focus on click production<br><br>Cost: 10 elf coins'},
@@ -308,9 +318,10 @@ addLayer("1", {
             },
             pay() {
                 player.elfCoins = player.elfCoins.sub(10)
+                player._FC = player._FC.sub(10)
             },
             style: {'color':'#00FF00'},
-            unlocked() { if (hasUpgrade('1', 11) == true) return true },
+            unlocked() { if (hasUpgrade('1', 11) && hasUpgrade('1', 31) == false && hasUpgrade('1', 41) == false && hasUpgrade('1', 51) == false && hasUpgrade('1', 61) == false && hasUpgrade('1', 71) == false && hasUpgrade('1', 81) == false) return true },
         },
         51: {
             fullDisplay() { return '<h3>Angel Alliance</h3><br>ally yourself with the angels, which focus on mana and spells<br><br>Cost: 10 angel coins'},
@@ -320,9 +331,10 @@ addLayer("1", {
             },
             pay() {
                 player.angelCoins = player.angelCoins.sub(10)
+                player._FC = player._FC.sub(10)
             },
             style: {'color':'#00FFFF'},
-            unlocked() { if (hasUpgrade('1', 11) == true) return true },
+            unlocked() { if (hasUpgrade('1', 11) && hasUpgrade('1', 31) == false && hasUpgrade('1', 41) == false && hasUpgrade('1', 51) == false && hasUpgrade('1', 61) == false && hasUpgrade('1', 71) == false && hasUpgrade('1', 81) == false) return true },
         },
         61: {
             fullDisplay() { return '<h3>Goblin Alliance</h3><br>ally yourself with the goblins, which focus on faction coins<br><br>Cost: 10 goblin coins'},
@@ -332,9 +344,10 @@ addLayer("1", {
             },
             pay() {
                 player.goblinCoins = player.goblinCoins.sub(10)
+                player._FC = player._FC.sub(10)
             },
             style: {'color':'#888800'},
-            unlocked() { if (hasUpgrade('1', 21) == true) return true },
+            unlocked() { if (hasUpgrade('1', 21) && hasUpgrade('1', 31) == false && hasUpgrade('1', 41) == false && hasUpgrade('1', 51) == false && hasUpgrade('1', 61) == false && hasUpgrade('1', 71) == false && hasUpgrade('1', 81) == false) return true },
         },
         71: {
             fullDisplay() { return '<h3>Undead Alliance</h3><br>ally yourself with the undead, which focus purely on passive production<br><br>Cost: 10 undead coins'},
@@ -344,9 +357,10 @@ addLayer("1", {
             },
             pay() {
                 player.undeadCoins = player.undeadCoins.sub(10)
+                player._FC = player._FC.sub(10)
             },
             style: {'color':'#8800FF'},
-            unlocked() { if (hasUpgrade('1', 21) == true) return true },
+            unlocked() { if (hasUpgrade('1', 21) && hasUpgrade('1', 31) == false && hasUpgrade('1', 41) == false && hasUpgrade('1', 51) == false && hasUpgrade('1', 61) == false && hasUpgrade('1', 71) == false && hasUpgrade('1', 81) == false) return true },
         },
         81: {
             fullDisplay() { return '<h3>Demon Alliance</h3><br>ally yourself with the demons, which focus on non-basic buildings<br><br>Cost: 10 demon coins'},
@@ -356,9 +370,10 @@ addLayer("1", {
             },
             pay() {
                 player.demonCoins = player.demonCoins.sub(10)
+                player._FC = player._FC.sub(10)
             },
             style: {'color':'#880000'},
-            unlocked() { if (hasUpgrade('1', 21) == true) return true },
+            unlocked() { if (hasUpgrade('1', 21) && hasUpgrade('1', 31) == false && hasUpgrade('1', 41) == false && hasUpgrade('1', 51) == false && hasUpgrade('1', 61) == false && hasUpgrade('1', 71) == false && hasUpgrade('1', 81) == false) return true },
         },
         91: {
             fullDisplay() { return '<h3>Rich Dirt</h3><br>increases dirt\'s base effect by +0.05<br><br>Req: 10 dirt<br><br>Cost: 250 coins'},
@@ -391,18 +406,18 @@ addLayer("1", {
             pay() {
                 player.points = player.points.sub(1000)
             },
-            unlocked() { if (getBuyableAmount('1', 11).gte(25) && hasUpgrade('1', 91) == true) return true },
+            unlocked() { if (getBuyableAmount('1', 11).gte(25) && hasUpgrade('1', 91)) return true },
         },
         102: {
-            fullDisplay() { return '<h3>Boulders</h3><br>increases stone\'s base effect by +1.25<br><br>Req: 25 stones<br><br>Cost: 15,000 coins'},
+            fullDisplay() { return '<h3>Boulders</h3><br>increases stone\'s base effect by +1.25<br><br>Req: 25 stones<br><br>Cost: 25,000 coins'},
             canAfford() {
-                if (player.points.gte(15000)) return true;
+                if (player.points.gte(25000)) return true;
                 else return false
             },
             pay() {
-                player.points = player.points.sub(15000)
+                player.points = player.points.sub(25000)
             },
-            unlocked() { if (getBuyableAmount('1', 12).gte(25) && hasUpgrade('1', 92) == true) return true },
+            unlocked() { if (getBuyableAmount('1', 12).gte(25) && hasUpgrade('1', 92)) return true },
         },
         111: {
             fullDisplay() { return '<h3>Soil</h3><br>double richer dirt\'s base effect<br><br>Req: 50 richer dirt<br><br>Cost: 5,000 coins'},
@@ -413,7 +428,7 @@ addLayer("1", {
             pay() {
                 player.points = player.points.sub(5000)
             },
-            unlocked() { if (getBuyableAmount('1', 11).gte(50) && hasUpgrade('1', 101) == true) return true },
+            unlocked() { if (getBuyableAmount('1', 11).gte(50) && hasUpgrade('1', 101)) return true },
         },
         121: {
             fullDisplay() { return '<h3>Fertile Soil</h3><br>double soil\'s base effect<br><br>Req: 100 soil<br><br>Cost: 25,000 coins'},
@@ -424,7 +439,203 @@ addLayer("1", {
             pay() {
                 player.points = player.points.sub(25000)
             },
-            unlocked() { if (getBuyableAmount('1', 11).gte(100) && hasUpgrade('1', 111) == true) return true },
+            unlocked() { if (getBuyableAmount('1', 11).gte(100) && hasUpgrade('1', 111)) return true },
+        },
+        1061: {
+            fullDisplay() { return '<h3>Jackpot</h3><br>increase faction coin find chance based on your coins<br><br>Effect: +' + format(upgradeEffect('1', this.id)) + '%<br><br>Cost: 500 coins'},
+            effect() { return player.points.add(1).pow(0.2) },
+            canAfford() {
+                if (player.points.gte(500)) return true;
+                else return false
+            },
+            pay() {
+                player.points = player.points.sub(500)
+            },
+            style: {'color':'#888800'},
+            unlocked() { if (hasUpgrade('1', 61)) return true },
+        },
+        1062: {
+            fullDisplay() { return '<h3>Greed</h3><br>multiply passive production based on your faction coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 5,000 coins'},
+            effect() { return player._FC.add(1).pow(0.15) },
+            canAfford() {
+                if (player.points.gte(5000)) return true;
+                else return false
+            },
+            pay() {
+                player.points = player.points.sub(5000)
+            },
+            style: {'color':'#888800'},
+            unlocked() { if (hasUpgrade('1', 61)) return true },
+        },
+        1063: {
+            fullDisplay() { return '<h3>Currency Revolution</h3><br>increase faction coin find chance based on your faction coins<br><br>Effect: +' + format(upgradeEffect('1', this.id)) + '%<br><br>Cost: 50,000 coins'},
+            effect() { return player._FC.add(1).pow(0.5) },
+            canAfford() {
+                if (player.points.gte(50000)) return true;
+                else return false
+            },
+            pay() {
+                player.points = player.points.sub(50000)
+            },
+            style: {'color':'#888800'},
+            unlocked() { if (hasUpgrade('1', 61)) return true },
+        },
+        1064: {
+            fullDisplay() { return '<h3>Goblin Trade Route</h3><br>unlock 3 more goblin upgrades<br><br>Cost: 25 goblin coins'},
+            canAfford() {
+                if (player.goblinCoins.gte(25)) return true;
+                else return false
+            },
+            pay() {
+                player.goblinCoins = player.goblinCoins.sub(25)
+                player._FC = player._FC.sub(25)
+            },
+            style: {'color':'#888800'},
+            unlocked() { if (hasUpgrade('1', 61)) return true },
+        },
+        1161: {
+            fullDisplay() { return '<h3>Moneyload</h3><br>increase passive production based on your faction coin find chance<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500,000 coins'},
+            effect() { return player.FCchance.add(1).pow(0.4) },
+            canAfford() {
+                if (player.points.gte(500000)) return true;
+                else return false
+            },
+            pay() {
+                player.points = player.points.sub(500000)
+            },
+            style: {'color':'#888800'},
+            unlocked() { if (hasUpgrade('1', 1064)) return true },
+        },
+        1162: {
+            fullDisplay() { return '<h3>Absurd Taxes</h3><br>increase the base effect of Tax Collection by +30 seconds<br><br>Cost: 5,000,000 coins'},
+            canAfford() {
+                if (player.points.gte(5000000)) return true;
+                else return false
+            },
+            pay() {
+                player.points = player.points.sub(5000000)
+            },
+            style: {'color':'#888800'},
+            unlocked() { if (hasUpgrade('1', 1064)) return true },
+        },
+        1163: {
+            fullDisplay() { return '<h3>Pride</h3><br>increase passive production based on your goblin coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 50,000,000 coins'},
+            effect() { return player.goblinCoins.add(1).pow(0.5) },
+            canAfford() {
+                if (player.points.gte(50000000)) return true;
+                else return false
+            },
+            pay() {
+                player.points = player.points.sub(50000000)
+            },
+            style: {'color':'#888800'},
+            unlocked() { if (hasUpgrade('1', 1064)) return true },
+        },
+    },
+});
+
+addLayer("2", {
+    name: "Casting",
+    symbol: "C",
+    position: 1,
+    startData() { return {
+        unlocked: true,
+        mana: new Decimal(0),
+        manatotal: new Decimal(0),
+        manatotalR: new Decimal(0),
+        manatotalT: new Decimal(0),
+        maxmana: new Decimal(100),
+        maxmanabest: new Decimal(100),
+        maxmanabestT: new Decimal(100),
+        manaregen: new Decimal(0.1),
+        manaregenbest: new Decimal(0.1),
+        manaregenbestT: new Decimal(0.1),
+        taxcasts: new Decimal(0),
+        taxeff: new Decimal(30),
+        callcasts: new Decimal(0),
+        calleffboost: new Decimal(1),
+    }},
+    color: "#AA55AA",
+    type: "none",
+    row: 0,
+    layerShown() {return true },
+    tooltip() {return "Casting"},
+    update() {
+        let manacapped = false;
+        let prevmana = player['2'].mana;
+        // spell things
+        if (hasUpgrade('1', 1064)) taxeff = taxeff.add(30)
+        // increase mana
+        if (player['2'].mana.add(player['2'].manaregen).gte(player['2'].maxmana))
+            player['2'].mana = player['2'].maxmana,
+            manacapped = true;
+        else player['2'].mana = player['2'].mana.add(player['2'].manaregen);
+        // total mana
+        if (manacapped == false) player['2'].manatotal = player['2'].manatotal.add(player['2'].manaregen);
+        else player['2'].manatotal = player['2'].manatotal.add(player['2'].maxmana.sub(prevmana));
+        if (manacapped == false) player['2'].manatotalR = player['2'].manatotalR.add(player['2'].manaregen);
+        else player['2'].manatotalR = player['2'].manatotalR.add(player['2'].maxmana.sub(prevmana));
+        if (manacapped == false) player['2'].manatotalT = player['2'].manatotalT.add(player['2'].manaregen);
+        else player['2'].manatotalT = player['2'].manatotalT.add(player['2'].maxmana.sub(prevmana));
+        // best mana
+        if (player['2'].maxmana.gt(player['2'].maxmanabest)) player['2'].maxmanabest = player['2'].maxmana;
+        if (player['2'].maxmana.gt(player['2'].maxmanabestT)) player['2'].maxmanabestT = player['2'].maxmana;
+        if (player['2'].manaregen.gt(player['2'].manaregenbest)) player['2'].manaregenbest = player['2'].manaregen;
+        if (player['2'].manaregen.gt(player['2'].manaregenbestT)) player['2'].manaregenbestT = player['2'].manaregen;
+    },
+    tabFormat: [
+        ["display-text",
+            function() { return '<h2>Spells'},
+            {}],
+        "blank",
+        "clickables",
+        "blank",
+        ["bar", "manabar"],
+    ],
+    clickables: {
+        11: {
+            title: "Tax Collection",
+            display() { return "get coins equal to " + formatWhole(player['2'].taxeff) + " seconds of passive production<br><br>Cost: 80 mana" },
+            canClick() { if (player['2'].mana.gte(80)) return true },
+            onClick() {
+                player['2'].mana = player['2'].mana.sub(80)
+                player['2'].taxcasts = player['2'].taxcasts.add(1)
+                player.points = player.points.add(getPointGen().mul(player['2'].taxeff))
+            },
+        },
+        12: {
+            title: "Call to Arms",
+            display() { return "boost all production based on your creations created for 30 seconds<br><br>Effect: x" + format(clickableEffect('2', this.id)) + "<br><br>Cost: 160 mana" },
+            effect() { return player['1'].creations.add(1).pow(0.1).mul(player['2'].calleffboost)},
+            canClick() {
+                if (getClickableState('2', this.id) == "ON") return false;
+                else if (player['2'].mana.gte(160)) return true;
+                else return false;
+            },
+            onClick() {
+                player['2'].mana.sub(160)
+                player['2'].callcasts = player['2'].callcasts.add(1)
+                setClickableState('2', this.id, "ON")
+            },
+        },
+    },
+    bars: {
+        manabar: {
+            direction: RIGHT,
+            width: 500,
+            height: 20,
+            display() { return 'MANA REGEN: ' + format(player['2'].manaregen) + ' | MANA: ' + format(player['2'].mana) + ' | MAX MANA: ' + format(player['2'].maxmana)},
+            fillStyle() { return {"background-color": "#AA55AA" } },
+            borderStyle() { return {"border-color": "#AA55AA"} },
+            progress() { return player['2'].mana.div(player['2'].maxmana)},
+        },
+    },
+    upgrades: {
+        11: {
+            canAfford() {
+                if (player['2'].mana.eq(player['2'].maxmana)) return true;
+                else return false;
+            },
         },
     },
 });
@@ -436,7 +647,7 @@ addLayer("9", {
     startData() { return {
         unlocked: true,
     }},
-    color: "#55EE55",
+    color: "#66DD66",
     type: "none",
     row: 1,
     layerShown(){return true},
@@ -499,6 +710,22 @@ addLayer("9", {
             function() { return 'You have <b>' + format(player.FCchance) + '%</b> faction coin chance' },
             {}],
         "blank",
+        ["display-text",
+            function() { return '<h3>MANA' },
+            {}],
+        ["display-text",
+            function() { return 'You have <b>' + format(player['2'].mana) + '</b> mana'},
+            {}],
+        ["display-text",
+            function() { return 'You have <b>' + format(player['2'].maxmana) + '</b> max mana'},
+            {}],
+        ["display-text",
+            function() { return 'You have <b>' + format(player['2'].manaregen) + '</b> mana regen'},
+            {}],
+        ["display-text",
+            function() { return 'You have generated a total of <b>' + format(player['2'].manatotal) + '</b> mana' },
+            {}],
+        "blank",
         "h-line",
         "blank",
         ["display-text",
@@ -552,6 +779,19 @@ addLayer("9", {
             function() { return 'You have <b>' + format(player.FCchancebest) + '%</b> best faction coin chance' },
             {}],
         "blank",
+        ["display-text",
+            function() { return '<h3>MANA' },
+            {}],
+        ["display-text",
+            function() { return 'You have <b>' + format(player['2'].maxmanabest) + '</b> best max mana'},
+            {}],
+        ["display-text",
+            function() { return 'You have <b>' + format(player['2'].manaregenbest) + '</b> best mana regen'},
+            {}],
+        ["display-text",
+            function() { return 'You have generated a total of <b>' + format(player['2'].manatotalR) + '</b> mana' },
+            {}],
+        "blank",
         "h-line",
         "blank",
         ["display-text",
@@ -603,6 +843,19 @@ addLayer("9", {
             {}],
         ["display-text",
             function() { return 'You have <b>' + format(player.FCchancebestT) + '%</b> best faction coin chance' },
+            {}],
+        "blank",
+        ["display-text",
+            function() { return '<h3>MANA' },
+            {}],
+        ["display-text",
+            function() { return 'You have <b>' + format(player['2'].maxmanabestT) + '</b> best max mana'},
+            {}],
+        ["display-text",
+            function() { return 'You have <b>' + format(player['2'].manaregenbestT) + '</b> best mana regen'},
+            {}],
+        ["display-text",
+            function() { return 'You have generated a total of <b>' + format(player['2'].manatotalT) + '</b> mana' },
             {}],
         "blank",
     ],

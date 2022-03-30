@@ -19,18 +19,15 @@
       return result;
     }
 
-
     var length = result.length;
     if (length >= targetLen) {
       return result;
     }
 
-
     var filled = fillString === null ? '' : String(fillString);
     if (filled === '') {
       filled = ' ';
     }
-
 
     var fillLen = targetLen - length;
 
@@ -463,10 +460,10 @@
       return D(value).cmp(other);
     };
 
-	Decimal.cmpabs = function (value, other) {
+	  Decimal.cmpabs = function (value, other) {
       return D(value).cmpabs(other);
     };
-	
+
     Decimal.compare = function (value, other) {
       return D(value).cmp(other);
     };
@@ -686,7 +683,6 @@
      * Adapted from Trimps source code.
      */
 
-
     Decimal.affordGeometricSeries = function (resourcesAvailable, priceStart, priceRatio, currentOwned) {
       return this.affordGeometricSeries_core(D(resourcesAvailable), D(priceStart), D(priceRatio), currentOwned);
     };
@@ -694,7 +690,6 @@
      * How much resource would it cost to buy (numItems) items if you already have currentOwned,
      * the initial price is priceStart and it multiplies by priceRatio each purchase?
      */
-
 
     Decimal.sumGeometricSeries = function (numItems, priceStart, priceRatio, currentOwned) {
       return this.sumGeometricSeries_core(numItems, D(priceStart), D(priceRatio), currentOwned);
@@ -705,7 +700,6 @@
      * how much of it can you buy?
      */
 
-
     Decimal.affordArithmeticSeries = function (resourcesAvailable, priceStart, priceAdd, currentOwned) {
       return this.affordArithmeticSeries_core(D(resourcesAvailable), D(priceStart), D(priceAdd), D(currentOwned));
     };
@@ -714,7 +708,6 @@
      * the initial price is priceStart and it adds priceAdd each purchase?
      * Adapted from http://www.mathwords.com/a/arithmetic_series.htm
      */
-
 
     Decimal.sumArithmeticSeries = function (numItems, priceStart, priceAdd, currentOwned) {
       return this.sumArithmeticSeries_core(D(numItems), D(priceStart), D(priceAdd), D(currentOwned));
@@ -725,7 +718,6 @@
      * From Frozen Cookies:
      * http://cookieclicker.wikia.com/wiki/Frozen_Cookies_(JavaScript_Add-on)#Efficiency.3F_What.27s_that.3F
      */
-
 
     Decimal.efficiencyOfPurchase = function (cost, currentRpS, deltaRpS) {
       return this.efficiencyOfPurchase_core(D(cost), D(currentRpS), D(deltaRpS));
