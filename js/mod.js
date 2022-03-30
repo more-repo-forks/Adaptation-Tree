@@ -59,11 +59,12 @@ function getPointGen() {
 	if (getBuyableAmount('1', 12).gt(0)) gain = gain.add(getBuyableAmount('1', 12) * buyableEffect('1', 12));
 	if (getBuyableAmount('1', 13).gt(0)) gain = gain.add(getBuyableAmount('1', 13) * buyableEffect('1', 13));
 	// multiplicative
-	if (hasUpgrade('1', 1062)) gain = gain.mul(upgradeEffect('1', 1062))
-	if (hasUpgrade('1', 1161)) gain = gain.mul(upgradeEffect('1', 1161))
-	if (hasUpgrade('1', 1163)) gain = gain.mul(upgradeEffect('1', 1163))
-	if (getClickableState('2', 12) == "ON") gain = gain.mul(clickableEffect('2', 12))
-	if (hasUpgrade('1', 21) && getClickableState('2', 13) == "ON") gain = gain.mul(clickableEffect('2', 13))
+	if (hasUpgrade('1', 1062)) gain = gain.mul(upgradeEffect('1', 1062));
+	if (hasUpgrade('1', 1161)) gain = gain.mul(upgradeEffect('1', 1161));
+	if (hasUpgrade('1', 1163)) gain = gain.mul(upgradeEffect('1', 1163));
+	gain = gain.mul(tmp['1'].effect);
+	if (getClickableState('2', 12) == "ON") gain = gain.mul(clickableEffect('2', 12));
+	if (hasUpgrade('1', 21) && getClickableState('2', 13) == "ON") gain = gain.mul(clickableEffect('2', 13));
 	return gain
 }
 

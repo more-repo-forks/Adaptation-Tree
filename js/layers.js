@@ -39,7 +39,8 @@ addLayer("1", {
         return new Decimal(1)
     },
     row: 0,
-    effectDescription() {return "which effect is increasing all production by " + player['1'].gemMult + "% each, for a total of " + (format(1 + (player['1'].points) * player['1'].gemMult * 0.01)) + 'x'},
+    effect() {return player['1'].points.mul(player['1'].gemMult).mul(0.01).add(1)},
+    effectDescription() {return "which effect is increasing all production by " + player['1'].gemMult + "% each, for a total of " + format(tmp['1'].effect) + 'x'},
     hotkeys: [
         {key: "a", description: "A: Abdicate for gems", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
@@ -48,10 +49,6 @@ addLayer("1", {
     doReset(resettingLayer) {
         let keep1 = ["clickValueBestT", "clickTotalValueBestT", "clickTotalValueTotalT", "clickTimesBestT", "clickTimesTotalT"];
         let keep2 = ["manatotalT", "maxmanabestT", "manaregenbestT", "taxcastsT", "callcastsT", "holycastsT", "frenzycastsT"];
-        if (resettingLayer == '1') keep1.push("points", "best", "clickValueBest", "clickTotalValueBest", "clickTotalValueTotal", "clickTimesBest", "clickTimesTotal");
-        if (resettingLayer == '1') keep2.push("manatotalR", "maxmanabest", "manaregenbest", "taxcastsR", "callcastsR", "holycastsR", "frenzycastsR");
-        layerDataReset('1', keep1);
-        layerDataReset('2', keep2);
         player.fairyCoins = new Decimal(0);
         player.elfCoins = new Decimal(0);
         player.angelCoins = new Decimal(0);
@@ -59,6 +56,10 @@ addLayer("1", {
         player.undeadCoins = new Decimal(0);
         player.demonCoins = new Decimal(0);
         player._FC = new Decimal(0);
+        if (resettingLayer == '1') keep1.push("points", "best", "clickValueBest", "clickTotalValueBest", "clickTotalValueTotal", "clickTimesBest", "clickTimesTotal");
+        if (resettingLayer == '1') keep2.push("manatotalR", "maxmanabest", "manaregenbest", "taxcastsR", "callcastsR", "holycastsR", "frenzycastsR");
+        layerDataReset('1', keep1);
+        layerDataReset('2', keep2);
     },
     update() {
         let clickGain = new Decimal(1);
@@ -67,6 +68,7 @@ addLayer("1", {
         // click value
         if (getBuyableAmount('1', 11).gt(0)) clickGain = clickGain.add(getBuyableAmount('1', 11).mul(buyableEffect('1', 11)));
         if (hasUpgrade('1', 1033)) clickGain = clickGain.mul(upgradeEffect('1', 1033))
+        clickGain = clickGain.mul(tmp['1'].effect)
         player['1'].clickValue = clickGain;
         // best coins
         if (player.points.gt(player.best)) player.best = player.points;
@@ -105,13 +107,13 @@ addLayer("1", {
                 "blank",
                 ["row", [
                     ["display-text",
-                        function() { return 'You have ' + formatWhole(player.fairyCoins) + ' fairy coins<br>You have ' + formatWhole(player.elfCoins) + ' elf coins<br>You have ' + formatWhole(player.angelCoins) + ' angel coins'},
+                        function() { return '<font color = "#FF00FF">You have ' + formatWhole(player.fairyCoins) + ' fairy coins<br><font color = "#00FF00">You have ' + formatWhole(player.elfCoins) + ' elf coins<br><font color = "#00FFFF">You have ' + formatWhole(player.angelCoins) + ' angel coins'},
                         {}],
                     ["blank", ["17px"]],
                     "clickables",
                     ["blank", ["17px"]],
                     ["display-text",
-                        function() { return 'You have ' + formatWhole(player.goblinCoins) + ' goblin coins<br>You have ' + formatWhole(player.undeadCoins) + ' undead coins<br>You have ' + formatWhole(player.demonCoins) + ' demon coins'},
+                        function() { return '<font color = "#888800">You have ' + formatWhole(player.goblinCoins) + ' goblin coins<br><font color = "#8800FF">You have ' + formatWhole(player.undeadCoins) + ' undead coins<br><font color = "#880000">You have ' + formatWhole(player.demonCoins) + ' demon coins'},
                         {}]
                 ]],
                 "blank",
@@ -139,18 +141,18 @@ addLayer("1", {
                 "blank",
                 ["row", [
                     ["display-text",
-                        function() { return 'You have ' + formatWhole(player.fairyCoins) + ' fairy coins<br>You have ' + formatWhole(player.elfCoins) + ' elf coins<br>You have ' + formatWhole(player.angelCoins) + ' angel coins'},
+                        function() { return '<font color = "#FF00FF">You have ' + formatWhole(player.fairyCoins) + ' fairy coins<br><font color = "#00FF00">You have ' + formatWhole(player.elfCoins) + ' elf coins<br><font color = "#00FFFF">You have ' + formatWhole(player.angelCoins) + ' angel coins'},
                         {}],
                     ["blank", ["17px"]],
                     "clickables",
                     ["blank", ["17px"]],
                     ["display-text",
-                        function() { return 'You have ' + formatWhole(player.goblinCoins) + ' goblin coins<br>You have ' + formatWhole(player.undeadCoins) + ' undead coins<br>You have ' + formatWhole(player.demonCoins) + ' demon coins'},
+                        function() { return '<font color = "#888800">You have ' + formatWhole(player.goblinCoins) + ' goblin coins<br><font color = "#8800FF">You have ' + formatWhole(player.undeadCoins) + ' undead coins<br><font color = "#880000">You have ' + formatWhole(player.demonCoins) + ' demon coins'},
                         {}]
                 ]],
                 "blank",
                 ["display-text",
-                    function() { if (hasUpgrade('1', 11) == false && hasUpgrade('1', 21) == false) return '<h3>first, choose an alignment' },
+                    function() { if (hasUpgrade('1', 11) == false && hasUpgrade('1', 21) == false) return '<h3>first, choose an side' },
                     {}],
                 ["display-text",
                     function() { if (hasUpgrade('1', 11) == true && hasUpgrade('1', 31) == false && hasUpgrade('1', 41) == false && hasUpgrade('1', 51) == false && hasUpgrade('1', 61) == false && hasUpgrade('1', 71) == false && hasUpgrade('1', 81) == false) return '<h3>next, choose a faction' },
@@ -236,10 +238,10 @@ addLayer("1", {
                 let eff = new Decimal(0.1);
                 if (hasUpgrade('1', 91)) eff = eff.add(0.05);
                 if (hasUpgrade('1', 101)) eff = eff.add(0.1);
-                if (hasUpgrade('1', 111)) eff = eff.mul(2);
-                if (hasUpgrade('1', 121)) eff = eff.mul(2);
-                if (hasUpgrade('1', 131)) eff = eff.pow(1.1);
-                if (hasUpgrade('1', 141)) eff = eff.pow(1.2);
+                if (hasUpgrade('1', 111)) eff = eff.add(0.2);
+                if (hasUpgrade('1', 121)) eff = eff.add(0.4);
+                if (hasUpgrade('1', 131)) eff = eff.add(0.65);
+                if (hasUpgrade('1', 141)) eff = eff.add(1);
                 if (hasUpgrade('1', 1031)) eff = eff.mul(upgradeEffect('1', 1031));
                 if (hasUpgrade('1', 1031)) eff = eff.mul(upgradeEffect('1', 1032));
                 return eff;
@@ -463,7 +465,7 @@ addLayer("1", {
             unlocked() { if (getBuyableAmount('1', 12).gte(25) && hasUpgrade('1', 92)) return true },
         },
         111: {
-            fullDisplay() { return '<h3>Soil</h3><br>double richer dirt\'s base effect<br><br>Req: 50 richer dirt<br><br>Cost: 5,000 coins'},
+            fullDisplay() { return '<h3>Soil</h3><br>increase richer dirt\'s base effect by +0.20<br><br>Req: 50 richer dirt<br><br>Cost: 5,000 coins'},
             canAfford() {
                 if (player.points.gte(5000)) return true;
                 else return false;
@@ -485,7 +487,7 @@ addLayer("1", {
             unlocked() { if (getBuyableAmount('1', 12).gte(50) && hasUpgrade('1', 102)) return true },
         },
         121: {
-            fullDisplay() { return '<h3>Fertile Soil</h3><br>double soil\'s base effect<br><br>Req: 100 soil<br><br>Cost: 25,000 coins'},
+            fullDisplay() { return '<h3>Fertile Soil</h3><br>increase soil\'s base effect by +0.40<br><br>Req: 100 soil<br><br>Cost: 25,000 coins'},
             canAfford() {
                 if (player.points.gte(25000)) return true;
                 else return false;
@@ -496,7 +498,7 @@ addLayer("1", {
             unlocked() { if (getBuyableAmount('1', 11).gte(100) && hasUpgrade('1', 111)) return true },
         },
         131: {
-            fullDisplay() { return '<h3>Fertilized Soil</h3><br>raise fertile soil\'s base effect to ^1.1<br><br>Req: 250 soil<br><br>Cost: 100,000 coins'},
+            fullDisplay() { return '<h3>Fertilized Soil</h3><br>increase fertile soil\'s base effect by +0.65<br><br>Req: 250 soil<br><br>Cost: 100,000 coins'},
             canAfford() {
                 if (player.points.gte(100000)) return true;
                 else return false;
@@ -507,7 +509,7 @@ addLayer("1", {
             unlocked() { if (getBuyableAmount('1', 11).gte(250) && hasUpgrade('1', 121)) return true },
         },
         141: {
-            fullDisplay() { return '<h3>Perfected Soil</h3><br>raise fertilized soil\'s base effect to ^1.2<br><br>Req: 500 soil<br><br>Cost: 500,000 coins'},
+            fullDisplay() { return '<h3>Perfected Soil</h3><br>increase fertilized soil\'s base effect by +1.00<br><br>Req: 500 soil<br><br>Cost: 500,000 coins'},
             canAfford() {
                 if (player.points.gte(500000)) return true;
                 else return false;
