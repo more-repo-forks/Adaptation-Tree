@@ -59,7 +59,7 @@ addLayer("1", {
         let FCchance = new Decimal(2.5);
         // click value
         if (getBuyableAmount('1', 11).gt(0)) clickGain = clickGain.add(getBuyableAmount('1', 11).mul(buyableEffect('1', 11)));
-        if (hasUpgrade('1', 1033)) clickGain = ClickGain.mul(upgradeEffect('1', 1033))
+        if (hasUpgrade('1', 1033)) clickGain = clickGain.mul(upgradeEffect('1', 1033))
         player['1'].clickValue = clickGain;
         // best coins
         if (player.points.gt(player.best)) player.best = player.points;
@@ -118,7 +118,7 @@ addLayer("1", {
                     function() { if (getBuyableAmount('1', 11).gte(10) || getBuyableAmount('1', 12).gte(10) || getBuyableAmount('1', 13).gte(10)) return '<h2>Creation Tier Upgrades'},
                     {}],
                 "blank",
-                ["upgrades", [9, 10, 11, 12]],
+                ["upgrades", [9, 10, 11, 12, 13, 14]],
             ],
         },
         "Faction Tab": {
@@ -220,6 +220,8 @@ addLayer("1", {
                 if (hasUpgrade('1', 101)) title = "Richer Dirt";
                 if (hasUpgrade('1', 111)) title = "Soil";
                 if (hasUpgrade('1', 121)) title = "Fertile Soil";
+                if (hasUpgrade('1', 131)) title = "Fertilized Soil";
+                if (hasUpgrade('1', 141)) title = "Perfected Soil";
                 return title;
             },
             cost() { return new Decimal(Math.pow(getBuyableAmount('1', this.id).add(1), 1.5)) },
@@ -229,6 +231,8 @@ addLayer("1", {
                 if (hasUpgrade('1', 101)) eff = eff.add(0.1);
                 if (hasUpgrade('1', 111)) eff = eff.mul(2);
                 if (hasUpgrade('1', 121)) eff = eff.mul(2);
+                if (hasUpgrade('1', 131)) eff = eff.pow(1.05);
+                if (hasUpgrade('1', 141)) eff = eff.pow(1.05);
                 if (hasUpgrade('1', 1031)) eff = eff.mul(upgradeEffect('1', 1031));
                 if (hasUpgrade('1', 1031)) eff = eff.mul(upgradeEffect('1', 1032));
                 return eff;
@@ -249,6 +253,7 @@ addLayer("1", {
                 let title = "Pebbles";
                 if (hasUpgrade('1', 92)) title = "Rocks";
                 if (hasUpgrade('1', 102)) title = "Boulders";
+                if (hasUpgrade('1', 112)) title = "Stone Hills";
                 return title;
             },
             cost() { return new Decimal(Math.pow(getBuyableAmount('1', this.id).add(1), 1.5) * 100) },
@@ -256,6 +261,7 @@ addLayer("1", {
                 let eff = new Decimal(0.25);
                 if (hasUpgrade('1', 92)) eff = eff.add(0.5);
                 if (hasUpgrade('1', 102)) eff = eff.add(1.25);
+                if (hasUpgrade('1', 112)) eff = eff.mul(2);
                 if (hasUpgrade('1', 1031)) eff = eff.mul(upgradeEffect('1', 1031));
                 if (hasUpgrade('1', 1031)) eff = eff.mul(upgradeEffect('1', 1032));
                 return eff;
@@ -271,11 +277,13 @@ addLayer("1", {
         13: {
             title() {
                 let title = "Weeds";
+                if (hasUpgrade('1', 93)) title = "Grass";
                 return title;
             },
             cost() { return new Decimal(Math.pow(getBuyableAmount('1', this.id).add(1), 1.5) * 10000) },
             effect() {
                 let eff = new Decimal(2.5);
+                if (hasUpgrade('1', 93)) eff = eff.add(0.5);
                 if (hasUpgrade('1', 1031)) eff = eff.mul(upgradeEffect('1', 1031));
                 if (hasUpgrade('1', 1031)) eff = eff.mul(upgradeEffect('1', 1032));
                 return eff;
@@ -414,6 +422,17 @@ addLayer("1", {
             },
             unlocked() { if (getBuyableAmount('1', 12).gte(10)) return true },
         },
+        93: {
+            fullDisplay() { return '<h3>Grass</h3><br>increases weed\'s first base effect by +0.5, second by +0.05%<br><br>Req: 10 weeds<br><br>Cost: 1,000,000 coins'},
+            canAfford() {
+                if (player.points.gte(1000000)) return true;
+                else return false;
+            },
+            pay() {
+                player.points = player.points.sub(1000000)
+            },
+            unlocked() { if (getBuyableAmount('1', 13).gte(10)) return true },
+        },
         101: {
             fullDisplay() { return '<h3>Richer Dirt</h3><br>increases rich dirt\'s base effect by +0.10<br><br>Req: 25 rich dirt<br><br>Cost: 1,000 coins'},
             canAfford() {
@@ -447,6 +466,17 @@ addLayer("1", {
             },
             unlocked() { if (getBuyableAmount('1', 11).gte(50) && hasUpgrade('1', 101)) return true },
         },
+        112: {
+            fullDisplay() { return '<h3>Stone Hills</h3><br>double boulder\'s base effect<br><br>Req: 50 boulders<br><br>Cost: 200,000 coins'},
+            canAfford() {
+                if (player.points.gte(200000)) return true;
+                else return false;
+            },
+            pay() {
+                player.points = player.points.sub(200000)
+            },
+            unlocked() { if (getBuyableAmount('1', 12).gte(50) && hasUpgrade('1', 102)) return true },
+        },
         121: {
             fullDisplay() { return '<h3>Fertile Soil</h3><br>double soil\'s base effect<br><br>Req: 100 soil<br><br>Cost: 25,000 coins'},
             canAfford() {
@@ -457,6 +487,28 @@ addLayer("1", {
                 player.points = player.points.sub(25000)
             },
             unlocked() { if (getBuyableAmount('1', 11).gte(100) && hasUpgrade('1', 111)) return true },
+        },
+        131: {
+            fullDisplay() { return '<h3>Fertilized Soil</h3><br>raise fertile soil\'s base effect to ^1.05<br><br>Req: 200 soil<br><br>Cost: 250,000 coins'},
+            canAfford() {
+                if (player.points.gte(250000)) return true;
+                else return false;
+            },
+            pay() {
+                player.points = player.points.sub(250000)
+            },
+            unlocked() { if (getBuyableAmount('1', 11).gte(200) && hasUpgrade('1', 121)) return true },
+        },
+        141: {
+            fullDisplay() { return '<h3>Perfected Soil</h3><br>raise fertilized soil\'s base effect to ^1.05<br><br>Req: 300 soil<br><br>Cost: 1,000,000 coins'},
+            canAfford() {
+                if (player.points.gte(1000000)) return true;
+                else return false;
+            },
+            pay() {
+                player.points = player.points.sub(1000000)
+            },
+            unlocked() { if (getBuyableAmount('1', 11).gte(300) && hasUpgrade('1', 121)) return true },
         },
         1031: {
             fullDisplay() { return '<h3>Fairy Dust</h3><br>multiply the effect of basic creations based on your mana regen<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500 coins'},
@@ -472,7 +524,7 @@ addLayer("1", {
             unlocked() { if (hasUpgrade('1', 31)) return true },
         },
         1032: {
-            fullDisplay() { return '<h3>Fairy Workers</h3><br>multiply the effect of basic creations based on your creations<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 5,000 coins'},
+            fullDisplay() { return '<h3>Fairy Workers</h3><br>multiply the effect of basic creations based on your basic creations<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 5,000 coins'},
             effect() { return player['1'].creations.add(1).pow(0.2) },
             canAfford() {
                 if (player.points.gte(5000)) return true;
@@ -486,7 +538,7 @@ addLayer("1", {
         },
         1033: {
             fullDisplay() { return '<h3>Fairy Traders</h3><br>multiply click production and faction coin find chance based on your creations<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br>and +' + format(upgradeEffect('1', this.id).mul(3)) + '%<br><br>Cost: 50,000 coins'},
-            effect() { return player['1'].creations.add(1).pow(0.2) },
+            effect() { return player['1'].creations.add(1).pow(0.1) },
             canAfford() {
                 if (player.points.gte(50000)) return true;
                 else return false;
