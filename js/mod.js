@@ -15,9 +15,10 @@ let VERSION = {
 
 let changelog = `<h1>Changelog:</h1><br>
 	<br><h3>v0.4 - Super Beta</h3><br>
-		- Added 1 gem power upgrade.<br>
+		- Added 2 gem power upgrades.<br>
 		- Added 1 autocating upgrades.<br>
 		- Added 2 autocasters.<br>
+		- Added 6 elf upgrades.<br>
 		- Added 2 angel upgrades.<br>
 		- Added 3 demon upgrades.<br>
 		- Added relevant mana stats to casting menu.<br>
@@ -91,7 +92,7 @@ function getPointGen() {
 	let gain = new Decimal(0);
 	// addtitive
 	if (getBuyableAmount('1', 12).gt(0)) gain = gain.add(getBuyableAmount('1', 12) * buyableEffect('1', 12));
-	if (getBuyableAmount('1', 13).gt(0)) gain = gain.add(getBuyableAmount('1', 13) * buyableEffect('1', 13));
+	if (getBuyableAmount('1', 13).gt(0) && !hasUpgrade('1', 1143)) gain = gain.add(getBuyableAmount('1', 13) * buyableEffect('1', 13));
 	// multiplicative
 	if (hasUpgrade('1', 1062)) gain = gain.mul(upgradeEffect('1', 1062));
 	if (hasUpgrade('1', 1161)) gain = gain.mul(upgradeEffect('1', 1161));

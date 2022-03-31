@@ -30,7 +30,7 @@ addLayer("1", {
     baseResource: "coins",
     baseAmount() {return player.points},
     type: "normal",
-    exponent: 1,
+    exponent: 0.5,
     gainMult() {
         mult = new Decimal(1)
         return mult
@@ -71,7 +71,11 @@ addLayer("1", {
         let FCchance = new Decimal(2.5);
         // click value
         if (getBuyableAmount('1', 11).gt(0)) clickGain = clickGain.add(getBuyableAmount('1', 11).mul(buyableEffect('1', 11)));
+        if (getBuyableAmount('1', 13).gt(0) && hasUpgrade('1', 1143)) gain = gain.add(getBuyableAmount('1', 13) * buyableEffect('1', 13));
         if (hasUpgrade('1', 1033)) clickGain = clickGain.mul(upgradeEffect('1', 1033));
+        if (hasUpgrade('1', 1041)) clickGain = clickGain.mul(upgradeEffect('1', 1041));
+        if (hasUpgrade('1', 1043)) clickGain = clickGain.mul(upgradeEffect('1', 1043));
+        if (hasUpgrade('1', 1141)) clickGain = clickGain.mul(upgradeEffect('1', 1141));
         clickGain = clickGain.mul(tmp['1'].effect);
         if (hasUpgrade('1', 11) && getClickableState('2', 13) == "ON") clickGain = clickGain.mul(clickableEffect('2', 13));
         player['1'].clickValue = clickGain;
@@ -86,9 +90,11 @@ addLayer("1", {
         // FC chance
         if (getBuyableAmount('1', 13).gt(0)) FCchance = FCchance.add(getBuyableAmount('1', 13).mul(buyableEffect('1', 13).div(10)));
         if (hasUpgrade('1', 1033)) FCchance = FCchance.add(upgradeEffect('1', 1033).mul(3));
+        if (hasUpgrade('1', 1042)) FCchance = FCchance.add(upgradeEffect('1', 1042));
         if (hasUpgrade('1', 1061)) FCchance = FCchance.add(upgradeEffect('1', 1061));
         if (hasUpgrade('1', 1063)) FCchance = FCchance.add(upgradeEffect('1', 1063));
-        if (hasUpgrade('1', 2011)) FCchance = FCchance.add(upgradeEffect('1', 2011));
+        if (hasUpgrade('1', 2011) && !hasUpgrade('1', 2012)) FCchance = FCchance.add(upgradeEffect('1', 2011));
+        if (hasUpgrade('1', 2011) && hasUpgrade('1', 2012)) FCchance = FCchance.add(upgradeEffect('1', 2011).mul(upgradeEffect('1', 2012)));
         player.FCchance = new Decimal(FCchance);
         // FC bests
         if (player.FCchance.gt(player.FCchancebest)) player.FCchancebest = player.FCchance;
@@ -276,7 +282,10 @@ addLayer("1", {
                 if (hasUpgrade('1', 1031)) eff = eff.mul(upgradeEffect('1', 1032));
                 return eff;
             },
-            display() { return "\nCost: " + format(this.cost()) + " coins\n\nAmount: " + getBuyableAmount('1', this.id) + "\n\nEffect: +" + format(buyableEffect('1', this.id)) + " to passive production\n\nTotal Effect: +" + format(getBuyableAmount('1', this.id) * buyableEffect('1', this.id))},
+            display() {
+                if (hasUpgrade('1', 1143)) return "\nCost: " + format(this.cost()) + " coins\n\nAmount: " + getBuyableAmount('1', this.id) + "\n\nEffect: +" + format(buyableEffect('1', this.id)) + " to click production\n\nTotal Effect: +" + format(getBuyableAmount('1', this.id) * buyableEffect('1', this.id));
+                else return "\nCost: " + format(this.cost()) + " coins\n\nAmount: " + getBuyableAmount('1', this.id) + "\n\nEffect: +" + format(buyableEffect('1', this.id)) + " to passive production\n\nTotal Effect: +" + format(getBuyableAmount('1', this.id) * buyableEffect('1', this.id));
+            },
             canAfford() { return player.points.gte(this.cost()) },
             buy() {
                 player.points = player.points.sub(this.cost());
@@ -502,7 +511,7 @@ addLayer("1", {
             unlocked() { if (getBuyableAmount('1', 11).gte(100) && hasUpgrade('1', 111)) return true },
         },
         131: {
-            fullDisplay() { return '<h3>Fertilized Soil</h3><br>increase fertile soil\'s base effect by +0.65<br><br>Req: 250 soil<br><br>Cost: 100,000 coins'},
+            fullDisplay() { return '<h3>Fertilized Soil</h3><br>increase fertile soil\'s base effect by +0.65<br><br>Req: 250 fertile soil<br><br>Cost: 100,000 coins'},
             canAfford() {
                 if (player.points.gte(100000)) return true;
                 else return false;
@@ -513,7 +522,7 @@ addLayer("1", {
             unlocked() { if (getBuyableAmount('1', 11).gte(250) && hasUpgrade('1', 121)) return true },
         },
         141: {
-            fullDisplay() { return '<h3>Perfected Soil</h3><br>increase fertilized soil\'s base effect by +1.00<br><br>Req: 500 soil<br><br>Cost: 500,000 coins'},
+            fullDisplay() { return '<h3>Perfected Soil</h3><br>increase fertilized soil\'s base effect by +1.00<br><br>Req: 500 fertilized soil<br><br>Cost: 500,000 coins'},
             canAfford() {
                 if (player.points.gte(500000)) return true;
                 else return false;
@@ -526,7 +535,7 @@ addLayer("1", {
         // faction upgrades
         // fairy faction
         1031: {
-            fullDisplay() { return '<h3>Fairy Dust</h3><br>multiply the effect of basic creations based on your mana regen<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500 coins'},
+            fullDisplay() { return '<h3>Magic Dust</h3><br>multiply the effect of basic creations based on your mana regen<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500 coins'},
             effect() { return player['2'].manaregen.add(1).mul(2).pow(0.5) },
             canAfford() {
                 if (player.points.gte(500)) return true;
@@ -564,6 +573,97 @@ addLayer("1", {
             style: {'color':'#FF00FF', 'height':'120px'},
             unlocked() { if (hasUpgrade('1', 31)) return true },
         },
+        // elf faction
+        1041: {
+            fullDisplay() { return '<h3>Super Clicks</h3><br>multiply click production based on your creations<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500 coins'},
+            effect() { return player['1'].creations.add(1).pow(0.25) },
+            canAfford() {
+                if (player.points.gte(500)) return true;
+                else return false;
+            },
+            pay() {
+                player.points = player.points.sub(500)
+            },
+            style: {'color':'#00FF00'},
+            unlocked() { if (hasUpgrade('1', 41)) return true },
+        },
+        1042: {
+            fullDisplay() { return '<h3>Elven Luck</h3><br>increase faction coin find chance based on your click production<br><br>Effect: +' + format(upgradeEffect('1', this.id)) + '%<br><br>Cost: 5,000 coins'},
+            effect() { return player['1'].clickValue.add(1).pow(0.4) },
+            canAfford() {
+                if (player.points.gte(5000)) return true;
+                else return false;
+            },
+            pay() {
+                player.points = player.points.sub(5000)
+            },
+            style: {'color':'#00FF00'},
+            unlocked() { if (hasUpgrade('1', 41)) return true },
+        },
+        1043: {
+            fullDisplay() { return '<h3>Elven Spirit</h3><br>multiply click production based on your elf coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 50,000 coins'},
+            effect() { return player.elfCoins.add(1).pow(0.5) },
+            canAfford() {
+                if (player.points.gte(50000)) return true;
+                else return false;
+            },
+            pay() {
+                player.points = player.points.sub(50000)
+            },
+            style: {'color':'#00FF00'},
+            unlocked() { if (hasUpgrade('1', 41)) return true },
+        },
+        1044: {
+            fullDisplay() { return '<h3>Elven Trade Route</h3><br>unlock 3 more elf upgrades<br><br>Cost: 25 elf coins'},
+            canAfford() {
+                if (player.elfCoins.gte(25)) return true;
+                else return false;
+            },
+            pay() {
+                player.elfCoins = player.elfCoins.sub(25);
+                player._FC = player._FC.sub(25);
+            },
+            style: {'color':'#00FF00'},
+            unlocked() { if (hasUpgrade('1', 41)) return true },
+        },
+        1141: {
+            fullDisplay() { return '<h3>Elven Clicks</h3><br>multiply click production based on your coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500,000 coins'},
+            effect() { return player.points.add(1).pow(0.01) },
+            canAfford() {
+                if (player.points.gte(500000)) return true;
+                else return false;
+            },
+            pay() {
+                player.points = player.points.sub(500000)
+            },
+            style: {'color':'#00FF00'},
+            unlocked() { if (hasUpgrade('1', 1044)) return true },
+        },
+        1142: {
+            fullDisplay() { return '<h3>Enchanted Clicks</h3><br>multiply click production based on your mana regen<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 5,000,000 coins'},
+            effect() { return player['2'].manaregen.add(1).pow(0.5) },
+            canAfford() {
+                if (player.points.gte(5000000)) return true;
+                else return false;
+            },
+            pay() {
+                player.points = player.points.sub(5000000)
+            },
+            style: {'color':'#00FF00'},
+            unlocked() { if (hasUpgrade('1', 1044)) return true },
+        },
+        1143: {
+            fullDisplay() { return '<h3>All on One</h3><br>the 3rd creation\'s first effect now applies to click production instead of passive production<br><br>Cost: 50,000,000 coins'},
+            canAfford() {
+                if (player.points.gte(50000000)) return true;
+                else return false;
+            },
+            pay() {
+                player.points = player.points.sub(50000000)
+            },
+            style: {'color':'#00FF00'},
+            unlocked() { if (hasUpgrade('1', 1044)) return true },
+        },
         // angel faction
         1051: {
             fullDisplay() { return '<h3>Angelic Capacity</h3><br>multiply max mana based on your mana generated<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500 coins'},
@@ -579,7 +679,7 @@ addLayer("1", {
             unlocked() { if (hasUpgrade('1', 51)) return true },
         },
         1052: {
-            fullDisplay() { return '<h3>Angelic Capacity</h3><br>multiply mana regen based on your angel coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 5,000 coins'},
+            fullDisplay() { return '<h3>Angel Road</h3><br>multiply mana regen based on your angel coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 5,000 coins'},
             effect() { return player.angelCoins.add(1).pow(0.5) },
             canAfford() {
                 if (player.points.gte(5000)) return true;
@@ -606,7 +706,7 @@ addLayer("1", {
             unlocked() { if (hasUpgrade('1', 61)) return true },
         },
         1062: {
-            fullDisplay() { return '<h3>Greed</h3><br>multiply passive production based on your faction coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 5,000 coins'},
+            fullDisplay() { return '<h3>Goblin\'s Greed</h3><br>multiply passive production based on your faction coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 5,000 coins'},
             effect() { return player._FC.add(1).pow(0.15) },
             canAfford() {
                 if (player.points.gte(5000)) return true;
@@ -670,7 +770,7 @@ addLayer("1", {
             unlocked() { if (hasUpgrade('1', 1064)) return true },
         },
         1163: {
-            fullDisplay() { return '<h3>Pride</h3><br>multiply passive production based on your goblin coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 50,000,000 coins'},
+            fullDisplay() { return '<h3>Goblin Pride</h3><br>multiply passive production based on your goblin coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 50,000,000 coins'},
             effect() { return player.goblinCoins.add(1).pow(0.5) },
             canAfford() {
                 if (player.points.gte(50000000)) return true;
@@ -724,10 +824,19 @@ addLayer("1", {
         },
         // other upgrades
         2011: {
-            fullDisplay() { return '<h3>Gem Influence</h3><br>increase faction coin find chance based on your gems<br><br>Effect: +' + format(upgradeEffect('1', this.id)) + '%<br><br>Req: 20 1st creations'},
+            fullDisplay() { return '<h3>Gem Influence</h3><br>increase faction coin find chance based on your gems<br><br>Effect: +' + format(upgradeEffect('1', this.id)) + '%<br><br>Req: 25 1st creations'},
             effect() { return player['1'].points.add(1).pow(0.5) },
             canAfford() {
-                if (getBuyableAmount('1', 11).gte(20)) return true;
+                if (getBuyableAmount('1', 11).gte(25)) return true;
+                else return false;
+            },
+            unlocked() { if (player['1'].points.gte(1)) return true },
+        },
+        2012: {
+            fullDisplay() { return '<h3>Gem Displays</h3><br>increase the effect of <b>Gem Influence</b> based on your gems<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Req: 25 2nd creations'},
+            effect() { return player['1'].points.add(1).pow(0.2) },
+            canAfford() {
+                if (getBuyableAmount('1', 12).gte(25)) return true;
                 else return false;
             },
             unlocked() { if (player['1'].points.gte(1)) return true },
