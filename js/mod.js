@@ -20,7 +20,7 @@ let changelog = `<h1>Changelog:</h1><br>
 		- Added 1 autocating upgrades.<br>
 		- Added 2 autocasters.<br>
 		- Added 6 elf upgrades.<br>
-		- Added 5 angel upgrades.<br>
+		- Added 6 angel upgrades.<br>
 		- Added 3 demon upgrades.<br>
 		- Added relevant mana stats to casting menu.<br>
 		- Minor fixes.<br>

@@ -75,7 +75,7 @@ addLayer("1", {
         if (hasUpgrade('1', 1033)) clickGain = clickGain.mul(upgradeEffect('1', 1033));
         if (hasUpgrade('1', 1041)) clickGain = clickGain.mul(upgradeEffect('1', 1041));
         if (hasUpgrade('1', 1043)) clickGain = clickGain.mul(upgradeEffect('1', 1043));
-        if (hasUpgrade('1', 1141)) clickGain = clickGain.mul(upgradeEffect('1', 1141));
+        if (hasUpgrade('1', 1153)) clickGain = clickGain.mul(upgradeEffect('1', 1153));
         clickGain = clickGain.mul(tmp['1'].effect);
         if (getClickableState('2', 12) == "ON") clickGain = clickGain.mul(clickableEffect('2', 12));
         if (hasUpgrade('1', 11) && getClickableState('2', 13) == "ON") clickGain = clickGain.mul(clickableEffect('2', 13));
@@ -745,26 +745,39 @@ addLayer("1", {
             unlocked() { if (hasUpgrade('1', 51)) return true },
         },
         1151: {
-            fullDisplay() { return '<h3>Rainbows</h3><br>multiply max mana based on your faction coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 50,000 coins'},
+            fullDisplay() { return '<h3>Rainbows</h3><br>multiply max mana based on your faction coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500,000 coins'},
             effect() { return player._FC.add(1).pow(0.2) },
-            canAfford() {
-                if (player.points.gte(50000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(50000)
-            },
-            style: {'color':'#00FFFF'},
-            unlocked() { if (hasUpgrade('1', 1054)) return true },
-        },
-        1152: {
-            fullDisplay() { return '<h3>Prism Upgrade</h3><br>double spell effects, but triple their mana cost<br><br>Cost: 500,000 coins'},
             canAfford() {
                 if (player.points.gte(500000)) return true;
                 else return false;
             },
             pay() {
                 player.points = player.points.sub(500000)
+            },
+            style: {'color':'#00FFFF'},
+            unlocked() { if (hasUpgrade('1', 1054)) return true },
+        },
+        1152: {
+            fullDisplay() { return '<h3>Prism Upgrade</h3><br>double spell effects, but triple their mana cost<br><br>Cost: 5,000,000 coins'},
+            canAfford() {
+                if (player.points.gte(5000000)) return true;
+                else return false;
+            },
+            pay() {
+                player.points = player.points.sub(5000000)
+            },
+            style: {'color':'#00FFFF'},
+            unlocked() { if (hasUpgrade('1', 1054)) return true },
+        },
+        1153: {
+            fullDisplay() { return '<h3>Angelic Clicks</h3><br>multiply click production based on your max mana<br><br>Cost: 50,000,000 coins'},
+            effect() { return player['2'].maxmana.add(1).pow(0.15) },
+            canAfford() {
+                if (player.points.gte(50000000)) return true;
+                else return false;
+            },
+            pay() {
+                player.points = player.points.sub(50000000)
             },
             style: {'color':'#00FFFF'},
             unlocked() { if (hasUpgrade('1', 1054)) return true },
