@@ -47,7 +47,7 @@ addLayer("1", {
     layerShown(){return true},
     tooltip() {return "Main Tab"},
     doReset(resettingLayer) {
-        let keep1 = ["clickValueBestT", "clickTotalValueBestT", "clickTotalValueTotalT", "clickTimesBestT", "clickTimesTotalT"];
+        let keep1 = ["creationsT", "clickValueBestT", "clickTotalValueBestT", "clickTotalValueTotalT", "clickTimesBestT", "clickTimesTotalT"];
         let keep2 = ["manatotalT", "maxmanabestT", "manaregenbestT", "taxcastsT", "callcastsT", "holycastsT", "frenzycastsT"];
         player.fairyCoins = new Decimal(0);
         player.elfCoins = new Decimal(0);
@@ -56,7 +56,11 @@ addLayer("1", {
         player.undeadCoins = new Decimal(0);
         player.demonCoins = new Decimal(0);
         player._FC = new Decimal(0);
-        if (resettingLayer == '1') keep1.push("points", "best", "clickValueBest", "clickTotalValueBest", "clickTotalValueTotal", "clickTimesBest", "clickTimesTotal");
+        player.FCbest = new Decimal(0);
+        player.FCtotal = new Decimal(0);
+        player.best = new Decimal(0);
+        player.total = new Decimal(0);
+        if (resettingLayer == '1') keep1.push("points", "creationsR", "clickValueBest", "clickTotalValueBest", "clickTotalValueTotal", "clickTimesBest", "clickTimesTotal");
         if (resettingLayer == '1') keep2.push("manatotalR", "maxmanabest", "manaregenbest", "taxcastsR", "callcastsR", "holycastsR", "frenzycastsR");
         layerDataReset('1', keep1);
         layerDataReset('2', keep2);
@@ -67,8 +71,9 @@ addLayer("1", {
         let FCchance = new Decimal(2.5);
         // click value
         if (getBuyableAmount('1', 11).gt(0)) clickGain = clickGain.add(getBuyableAmount('1', 11).mul(buyableEffect('1', 11)));
-        if (hasUpgrade('1', 1033)) clickGain = clickGain.mul(upgradeEffect('1', 1033))
-        clickGain = clickGain.mul(tmp['1'].effect)
+        if (hasUpgrade('1', 1033)) clickGain = clickGain.mul(upgradeEffect('1', 1033));
+        clickGain = clickGain.mul(tmp['1'].effect);
+        if (hasUpgrade('1', 11) && getClickableState('2', 13) == "ON") clickGain = clickGain.mul(clickableEffect('2', 13));
         player['1'].clickValue = clickGain;
         // best coins
         if (player.points.gt(player.best)) player.best = player.points;
@@ -80,9 +85,10 @@ addLayer("1", {
 	    player.totalT = new Decimal(player.totalT.add(pointGain));
         // FC chance
         if (getBuyableAmount('1', 13).gt(0)) FCchance = FCchance.add(getBuyableAmount('1', 13).mul(buyableEffect('1', 13).div(10)));
-        if (hasUpgrade('1', 1033)) FCchance = FCchance.add(upgradeEffect('1', 1033).mul(3))
+        if (hasUpgrade('1', 1033)) FCchance = FCchance.add(upgradeEffect('1', 1033).mul(3));
         if (hasUpgrade('1', 1061)) FCchance = FCchance.add(upgradeEffect('1', 1061));
         if (hasUpgrade('1', 1063)) FCchance = FCchance.add(upgradeEffect('1', 1063));
+        if (hasUpgrade('1', 2011)) FCchance = FCchance.add(upgradeEffect('1', 2011));
         player.FCchance = new Decimal(FCchance);
         // FC bests
         if (player.FCchance.gt(player.FCchancebest)) player.FCchancebest = player.FCchance;
@@ -128,6 +134,11 @@ addLayer("1", {
                     {}],
                 "blank",
                 ["upgrades", [9, 10, 11, 12, 13, 14]],
+                ["display-text",
+                    function() { if (player['1'].points.gte(1)) return '<h2>Gem Power Upgrades'},
+                    {}],
+                "blank",
+                ["upgrades", [201]],
             ],
         },
         "Faction Tab": {
@@ -297,6 +308,7 @@ addLayer("1", {
         },
     },
     upgrades: {
+        // side picking
         11: {
             fullDisplay() { return '<h3>Proof of Good Deed</h3><br>ally yourself with the side of good, which focuses on active production<br><br>Cost: 250 coins'},
             canAfford() {
@@ -321,6 +333,7 @@ addLayer("1", {
             style: {'color':'#FF0000'},
             unlocked() { if (hasUpgrade('1', 11) == false && hasUpgrade('1', 21) == false) return true },
         },
+        // faction picking
         31: {
             fullDisplay() { return '<h3>Fairy Alliance</h3><br>ally yourself with the fairies, which focus on basic buildings<br><br>Cost: 5 fairy coins'},
             canAfford() {
@@ -399,6 +412,7 @@ addLayer("1", {
             style: {'color':'#880000'},
             unlocked() { if (hasUpgrade('1', 21) && hasUpgrade('1', 31) == false && hasUpgrade('1', 41) == false && hasUpgrade('1', 51) == false && hasUpgrade('1', 61) == false && hasUpgrade('1', 71) == false && hasUpgrade('1', 81) == false) return true },
         },
+        // creation tiers
         91: {
             fullDisplay() { return '<h3>Rich Dirt</h3><br>increases dirt\'s base effect by +0.05<br><br>Req: 10 dirt<br><br>Cost: 250 coins'},
             canAfford() {
@@ -509,6 +523,8 @@ addLayer("1", {
             },
             unlocked() { if (getBuyableAmount('1', 11).gte(500) && hasUpgrade('1', 131)) return true },
         },
+        // faction upgrades
+        // fairy faction
         1031: {
             fullDisplay() { return '<h3>Fairy Dust</h3><br>multiply the effect of basic creations based on your mana regen<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500 coins'},
             effect() { return player['2'].manaregen.add(1).mul(2).pow(0.5) },
@@ -548,6 +564,34 @@ addLayer("1", {
             style: {'color':'#FF00FF', 'height':'120px'},
             unlocked() { if (hasUpgrade('1', 31)) return true },
         },
+        // angel faction
+        1051: {
+            fullDisplay() { return '<h3>Angelic Capacity</h3><br>multiply max mana based on your mana generated<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500 coins'},
+            effect() { return player['2'].manatotal.add(1).pow(0.075) },
+            canAfford() {
+                if (player.points.gte(500)) return true;
+                else return false;
+            },
+            pay() {
+                player.points = player.points.sub(500)
+            },
+            style: {'color':'#00FFFF'},
+            unlocked() { if (hasUpgrade('1', 51)) return true },
+        },
+        1052: {
+            fullDisplay() { return '<h3>Angelic Capacity</h3><br>multiply mana regen based on your angel coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 5,000 coins'},
+            effect() { return player.angelCoins.add(1).pow(0.5) },
+            canAfford() {
+                if (player.points.gte(5000)) return true;
+                else return false;
+            },
+            pay() {
+                player.points = player.points.sub(5000)
+            },
+            style: {'color':'#00FFFF'},
+            unlocked() { if (hasUpgrade('1', 51)) return true },
+        },
+        // goblin faction
         1061: {
             fullDisplay() { return '<h3>Jackpot</h3><br>increase faction coin find chance based on your coins<br><br>Effect: +' + format(upgradeEffect('1', this.id)) + '%<br><br>Cost: 500 coins'},
             effect() { return player.points.add(1).pow(0.2) },
@@ -638,6 +682,56 @@ addLayer("1", {
             style: {'color':'#888800'},
             unlocked() { if (hasUpgrade('1', 1064)) return true },
         },
+        // undead faction
+        1071: {
+            fullDisplay() { return '<h3>Undending Cycle</h3><br>multiply passive production based on your coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500 coins'},
+            effect() { return player.points.add(1).pow(0.15) },
+            canAfford() {
+                if (player.points.gte(500)) return true;
+                else return false;
+            },
+            pay() {
+                player.points = player.points.sub(500)
+            },
+            style: {'color':'#8800FF'},
+            unlocked() { if (hasUpgrade('1', 71)) return true },
+        },
+        1072: {
+            fullDisplay() { return '<h3>Corpse Piles</h3><br>multiply passive production based on your undead coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 5,000 coins'},
+            effect() { return player.undeadCoins.add(1).pow(0.5) },
+            canAfford() {
+                if (player.points.gte(5000)) return true;
+                else return false;
+            },
+            pay() {
+                player.points = player.points.sub(5000)
+            },
+            style: {'color':'#8800FF'},
+            unlocked() { if (hasUpgrade('1', 71)) return true },
+        },
+        1073: {
+            fullDisplay() { return '<h3>Stay no More</h3><br>multiply passive production based on your click production<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 50,000 coins'},
+            effect() { return player['1'].clickValue.add(1).pow(0.2) },
+            canAfford() {
+                if (player.points.gte(50000)) return true;
+                else return false;
+            },
+            pay() {
+                player.points = player.points.sub(50000)
+            },
+            style: {'color':'#8800FF'},
+            unlocked() { if (hasUpgrade('1', 71)) return true },
+        },
+        // other upgrades
+        2011: {
+            fullDisplay() { return '<h3>Gem Influence</h3><br>increase faction coin find chance based on your gems<br><br>Effect: +' + format(upgradeEffect('1', this.id)) + '%<br><br>Req: 20 1st creations'},
+            effect() { return player['1'].points.add(1).pow(0.5) },
+            canAfford() {
+                if (getBuyableAmount('1', 11).gte(20)) return true;
+                else return false;
+            },
+            unlocked() { if (player['1'].points.gte(1)) return true },
+        },
     },
 });
 
@@ -688,9 +782,11 @@ addLayer("2", {
         // spell boosts
         if (hasUpgrade('1', 1162)) taxeff = taxeff.add(30);
         // mana regen buffs
-        if (hasUpgrade('2', 22)) manaregen = manaregen.add(upgradeEffect('2', 22));
+        if (hasUpgrade('2', 22) && upgradeEffect('2', 22).gt(0)) manaregen = manaregen.add(upgradeEffect('2', 22));
+        if (hasUpgrade('1', 1052)) manaregen = manaregen.mul(upgradeEffect('1', 1052));
         player['2'].manaregen = manaregen;
         // max mana buffs
+        if (hasUpgrade('1', 1051)) maxmana = maxmana.mul(upgradeEffect('1', 1051));
         if (hasUpgrade('2', 21)) maxmana = maxmana.mul(upgradeEffect('2', 21));
         player['2'].maxmana = maxmana;
         // increase mana
@@ -715,18 +811,37 @@ addLayer("2", {
         if (getClickableState('2', 13) == "ON") player['2'].sidespelltime = player['2'].sidespelltime.sub(diff);
         // spell done time
         if (player['2'].calltime.lte(0)) setClickableState('2', 12) == "OFF", player['2'].calltime = new Decimal(0);
+        if (getClickableState('2', 102) == "colorless - ON" && player['2'].calltime.lte(0) && player['2'].mana.gte(160)) callcast();
         if (player['2'].sidespelltime.lte(0)) setClickableState('2', 13) == "OFF", player['2'].sidespelltime = new Decimal(0);
+        if (getClickableState('2', 103) == "colorless - ON" && player['2'].sidespelltime.lte(0) && player['2'].mana.gte(120)) sidespellcast();
     },
     tabFormat: [
         ["display-text",
             function() { return '<h2>Casting'},
             {}],
         "blank",
-        "clickables",
+        ["clickables", [1]],
+        "blank",
+        ["clickables", [10]],
         "blank",
         ["bar", "manabar"],
         "blank",
+        ["display-text",
+            function() { return '<h2>Mana Upgrades'},
+            {}],
+        ["display-text",
+            function() { return 'you have ' + format(player['2'].manatotal) + ' mana generated'},
+            {}],
+        "blank",
         ["upgrades", [2]],
+        ["display-text",
+            function() { return '<h2>Autocasting Upgrades'},
+            {}],
+        ["display-text",
+            function() { return 'you have ' + format(player['2'].manatotalR) + ' total mana generated'},
+            {}],
+        "blank",
+        ["upgrades", [10]],
     ],
     clickables: {
         11: {
@@ -743,7 +858,7 @@ addLayer("2", {
         },
         12: {
             title: '<font color = "#000000">Call to Arms',
-            display() { return '<font color = "#000000">boost all production based on your creations created for 30 seconds<br>Time left: ' + format(player['2'].calltime) + '<br><br>Effect: x' + format(clickableEffect('2', this.id)) + '<br><br>Cost: 160 mana' },
+            display() { return '<font color = "#000000">boost all production based on your creations created for 30 seconds<br>Time left: ' + format(player['2'].calltime) + 's<br><br>Effect: x' + format(clickableEffect('2', this.id)) + '<br><br>Cost: 160 mana' },
             effect() { return player['1'].creations.add(1).pow(0.1).mul(player['2'].calleffboost)},
             canClick() {
                 if (getClickableState('2', this.id) == "ON") return false;
@@ -751,12 +866,7 @@ addLayer("2", {
                 else return false;
             },
             onClick() {
-                player['2'].sidespelltime = new Decimal(30);
-                player['2'].mana = player['2'].mana.sub(160);
-                player['2'].callcasts = player['2'].callcasts.add(1);
-                player['2'].callcastsR = player['2'].callcastsR.add(1);
-                player['2'].callcastsT = player['2'].callcastsT.add(1);
-                setClickableState('2', this.id, "ON");
+                callcast()
             },
         },
         13: {
@@ -766,8 +876,8 @@ addLayer("2", {
                 else return '<h1>LOCKED</h1><br><br>CHOOSE A SIDE TO UNLOCK';
             },
             display() {
-                if (hasUpgrade('1', 11)) return '<font color = "#0000FF">boost click production based on your mana for 15 seconds<br>Time left: ' + format(player['2'].sidespelltime) + '<br><br>Effect: x' + format(clickableEffect('2', this.id)) + '<br><br>Cost: 120 mana';
-                else if (hasUpgrade('1', 21)) return '<font color = "#FF0000">boost passive production based on your mana for 15 seconds<br>Time left: ' + format(player['2'].sidespelltime) + '<br><br>Effect: x' + format(clickableEffect('2', this.id)) + '<br><br>Cost: 120 mana';
+                if (hasUpgrade('1', 11)) return '<font color = "#0000FF">boost click production based on your mana for 15 seconds<br>Time left: ' + format(player['2'].sidespelltime) + 's<br><br>Effect: x' + format(clickableEffect('2', this.id)) + '<br><br>Cost: 120 mana';
+                else if (hasUpgrade('1', 21)) return '<font color = "#FF0000">boost passive production based on your mana for 15 seconds<br>Time left: ' + format(player['2'].sidespelltime) + 's<br><br>Effect: x' + format(clickableEffect('2', this.id)) + '<br><br>Cost: 120 mana';
                 else return "";
             },
             effect() { return player['2'].mana.add(1).pow(0.2).mul(player['2'].sidespellboost)},
@@ -777,18 +887,42 @@ addLayer("2", {
                 else return false;
             },
             onClick() {
-                player['2'].sidespelltime = new Decimal(15);
-                player['2'].mana = player['2'].mana.sub(120);
-                if (hasUpgrade('1', 11))
-                    player['2'].holycasts = player['2'].holycasts.add(1),
-                    player['2'].holycastsR = player['2'].holycastsR.add(1),
-                    player['2'].holycastsT = player['2'].holycastsT.add(1);
-                if (hasUpgrade('1', 21))
-                    player['2'].frenzycasts = player['2'].frenzycasts.add(1),
-                    player['2'].frenzycastsR = player['2'].frenzycastsR.add(1),
-                    player['2'].frenzycastsT = player['2'].frenzycastsT.add(1);
-                setClickableState('2', this.id, "ON");
+                sidespellcast()
             },
+        },
+        101: {
+            title: '<font color = "#000000">Tax Collection Autocasting',
+            display() { return 'LOCKED - need better autocasting' },
+            canClick() { return false },
+            unlocked() { if (hasUpgrade('2', 101)) return true },
+        },
+        102: {
+            title: '<font color = "#000000">Call to Arms Autocasting',
+            display() { return '<font color = "#000000">' + getClickableState('2', this.id) },
+            canClick() { return true },
+            onClick() {
+                if (getClickableState('2', this.id) == "colorless - ON") setClickableState('2', this.id, "colorless - OFF");
+                else setClickableState('2', this.id, "colorless - ON");
+            },
+            unlocked() { if (hasUpgrade('2', 101)) return true },
+        },
+        103: {
+            title() {
+                if (hasUpgrade('1', 11)) return '<font color = "#0000FF">Holy Light Autocasting';
+                else if (hasUpgrade('1', 21)) return '<font color = "#FF0000">Blood Frenzy Autocasting';
+                else return '<h1>LOCKED</h1><br><br>CHOOSE A SIDE TO UNLOCK';
+            },
+            display() {
+                if (hasUpgrade('1', 11)) return '<font color = "#0000FF">' + getClickableState('2', this.id);
+                else if (hasUpgrade('1', 21)) return '<font color = "#FF0000">' + getClickableState('2', this.id);
+                else return "";
+            },
+            canClick() { return true },
+            onClick() {
+                if (getClickableState('2', this.id) == "colorless - ON") setClickableState('2', this.id, "colorless - OFF");
+                else setClickableState('2', this.id, "colorless - ON");
+            },
+            unlocked() { if (hasUpgrade('2', 101)) return true },
         },
     },
     bars: {
@@ -810,28 +944,37 @@ addLayer("2", {
             },
         },
         21: {
-            fullDisplay() { return '<h3>Mana Jar</h3><br>multiply max mana based on your mana<br><br>Effect: x' + format(upgradeEffect('2', this.id)) + '<br><br>Req: 1,000 mana generated<br><br>Cost: 1,000 coins'},
+            fullDisplay() { return '<h3>Mana Jar</h3><br>multiply max mana based on your mana<br><br>Effect: x' + format(upgradeEffect('2', this.id)) + '<br><br>Req: 750 mana generated<br><br>Cost: 1,500 coins'},
             effect() { return player['2'].mana.add(1).pow(0.05) },
             canAfford() {
-                if (player.points.gte(1000)) return true;
+                if (player.points.gte(1000) && player['2'].manatotal.gte(750)) return true;
                 else return false;
             },
             pay() {
-                player.points = player.points.sub(1000)
+                player.points = player.points.sub(1500)
             },
-            unlocked() { if (player['2'].manatotal.gte(1000)) return true },
         },
         22: {
-            fullDisplay() { return '<h3>Mana Jar</h3><br>increase mana regen based on your mana<br><br>Effect: +' + format(upgradeEffect('2', this.id)) + '<br><br>Req: 2,500 mana generated<br><br>Cost: 5,000 coins'},
+            fullDisplay() { return '<h3>Mana Aura</h3><br>increase mana regen based on your mana<br><br>Effect: +' + format(upgradeEffect('2', this.id)) + '<br><br>Req: 2,500 mana generated<br><br>Cost: 5,000 coins'},
             effect() { return player['2'].mana.add(1).pow(0.05).sub(1) },
             canAfford() {
-                if (player.points.gte(5000)) return true;
+                if (player.points.gte(5000) && player['2'].manatotal.gte(2500)) return true;
                 else return false;
             },
             pay() {
                 player.points = player.points.sub(5000)
             },
-            unlocked() { if (player['2'].manatotal.gte(2500)) return true },
+            unlocked() { if (player['2'].manatotal.gte(750)) return true },
+        },
+        101: {
+            fullDisplay() { return '<h3>Colorless Autocasting</h3><br>unlock autocasting<br><br>Req: 20,000 total mana generated<br><br>Cost: 250 mana'},
+            canAfford() {
+                if (player['2'].mana.gte(250) && player['2'].manatotalR.gte(20000)) return true;
+                else return false;
+            },
+            pay() {
+                player['2'].mana = player['2'].mana.sub(250)
+            },
         },
     },
 });

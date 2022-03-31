@@ -9,11 +9,19 @@ let modInfo = {
 }
 
 let VERSION = {
-	num: "0.3",
-	name: "Spells Beta",
+	num: "0.4",
+	name: "Super Beta",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<br><h3>v0.4 - Super Beta</h3><br>
+		- Added 1 gem power upgrade.<br>
+		- Added 1 autocating upgrades.<br>
+		- Added 2 autocasters.<br>
+		- Added 2 angel upgrades.<br>
+		- Added 3 demon upgrades.<br>
+		- Added relevant mana stats to casting menu.<br>
+		- Minor fixes.<br>
 	<br><h3>v0.3 - Spells Beta</h3><br>
 		- Added five new creation tiers.<br>
 		- Added casting, mana, and spells.<br>
@@ -48,6 +56,29 @@ function randint(min, max) {
 	return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
 }
 
+function callcast() {
+	player['2'].calltime = new Decimal(30);
+    player['2'].mana = player['2'].mana.sub(160);
+    player['2'].callcasts = player['2'].callcasts.add(1);
+    player['2'].callcastsR = player['2'].callcastsR.add(1);
+    player['2'].callcastsT = player['2'].callcastsT.add(1);
+    setClickableState('2', 12, "ON");
+}
+
+function sidespellcast() {
+	player['2'].sidespelltime = new Decimal(15);
+    player['2'].mana = player['2'].mana.sub(120);
+        if (hasUpgrade('1', 11))
+            player['2'].holycasts = player['2'].holycasts.add(1),
+            player['2'].holycastsR = player['2'].holycastsR.add(1),
+            player['2'].holycastsT = player['2'].holycastsT.add(1);
+        if (hasUpgrade('1', 21))
+            player['2'].frenzycasts = player['2'].frenzycasts.add(1),
+            player['2'].frenzycastsR = player['2'].frenzycastsR.add(1),
+        player['2'].frenzycastsT = player['2'].frenzycastsT.add(1);
+    setClickableState('2', 13, "ON");
+}
+
 function getStartPoints() {
     return new Decimal(modInfo.initialStartPoints)
 }
@@ -57,7 +88,7 @@ function canGenPoints() {
 }
 
 function getPointGen() {
-	let gain = new Decimal(0)
+	let gain = new Decimal(0);
 	// addtitive
 	if (getBuyableAmount('1', 12).gt(0)) gain = gain.add(getBuyableAmount('1', 12) * buyableEffect('1', 12));
 	if (getBuyableAmount('1', 13).gt(0)) gain = gain.add(getBuyableAmount('1', 13) * buyableEffect('1', 13));
@@ -65,6 +96,9 @@ function getPointGen() {
 	if (hasUpgrade('1', 1062)) gain = gain.mul(upgradeEffect('1', 1062));
 	if (hasUpgrade('1', 1161)) gain = gain.mul(upgradeEffect('1', 1161));
 	if (hasUpgrade('1', 1163)) gain = gain.mul(upgradeEffect('1', 1163));
+	if (hasUpgrade('1', 1071)) gain = gain.mul(upgradeEffect('1', 1071));
+	if (hasUpgrade('1', 1072)) gain = gain.mul(upgradeEffect('1', 1072));
+	if (hasUpgrade('1', 1073)) gain = gain.mul(upgradeEffect('1', 1073));
 	gain = gain.mul(tmp['1'].effect);
 	if (getClickableState('2', 12) == "ON") gain = gain.mul(clickableEffect('2', 12));
 	if (hasUpgrade('1', 21) && getClickableState('2', 13) == "ON") gain = gain.mul(clickableEffect('2', 13));
