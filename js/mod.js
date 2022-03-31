@@ -15,16 +15,17 @@ let VERSION = {
 
 let changelog = `<h1>Changelog:</h1><br>
 	<br><h3>v0.4 - Super Beta</h3><br>
+		- Added 2 new creation tiers.<br>	
 		- Added 2 gem power upgrades.<br>
 		- Added 1 autocating upgrades.<br>
 		- Added 2 autocasters.<br>
 		- Added 6 elf upgrades.<br>
-		- Added 2 angel upgrades.<br>
+		- Added 5 angel upgrades.<br>
 		- Added 3 demon upgrades.<br>
 		- Added relevant mana stats to casting menu.<br>
 		- Minor fixes.<br>
 	<br><h3>v0.3 - Spells Beta</h3><br>
-		- Added five new creation tiers.<br>
+		- Added 5 new creation tiers.<br>
 		- Added casting, mana, and spells.<br>
 		- Added 2 normal spells.<br>
 		- Added 2 side spells.<br>
@@ -34,7 +35,7 @@ let changelog = `<h1>Changelog:</h1><br>
 		- Added more types of stats to the stat menu.<br>
 		- Minor fixes.<br>
 	<br><h3>v0.2 - Factions Beta</h3><br>
-		- Added five new creation tiers.<br>
+		- Added 5 new creation tiers.<br>
 		- Added faction coins.<br>
 		- Added choosing a faction.<br>
 		- Added a new tab for faction stuff.<br>
@@ -42,7 +43,7 @@ let changelog = `<h1>Changelog:</h1><br>
 		- Added faction coin stats to the stat menu.<br>
 	<br><h3>v0.1 - Beta Test</h3><br>
 		- Added the click button.<br>
-		- Added three creations.<br>
+		- Added 3 creations.<br>
 		- Added a stats menu.`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
@@ -59,7 +60,7 @@ function randint(min, max) {
 
 function callcast() {
 	player['2'].calltime = new Decimal(30);
-    player['2'].mana = player['2'].mana.sub(160);
+    player['2'].mana = player['2'].mana.sub(player['2'].callcost);
     player['2'].callcasts = player['2'].callcasts.add(1);
     player['2'].callcastsR = player['2'].callcastsR.add(1);
     player['2'].callcastsT = player['2'].callcastsT.add(1);
@@ -68,7 +69,7 @@ function callcast() {
 
 function sidespellcast() {
 	player['2'].sidespelltime = new Decimal(15);
-    player['2'].mana = player['2'].mana.sub(120);
+    player['2'].mana = player['2'].mana.sub(player['2'].sidespellcost);
         if (hasUpgrade('1', 11))
             player['2'].holycasts = player['2'].holycasts.add(1),
             player['2'].holycastsR = player['2'].holycastsR.add(1),

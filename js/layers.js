@@ -71,12 +71,13 @@ addLayer("1", {
         let FCchance = new Decimal(2.5);
         // click value
         if (getBuyableAmount('1', 11).gt(0)) clickGain = clickGain.add(getBuyableAmount('1', 11).mul(buyableEffect('1', 11)));
-        if (getBuyableAmount('1', 13).gt(0) && hasUpgrade('1', 1143)) gain = gain.add(getBuyableAmount('1', 13) * buyableEffect('1', 13));
+        if (getBuyableAmount('1', 13).gt(0) && hasUpgrade('1', 1143)) clickGain = clickGain.add(getBuyableAmount('1', 13) * buyableEffect('1', 13));
         if (hasUpgrade('1', 1033)) clickGain = clickGain.mul(upgradeEffect('1', 1033));
         if (hasUpgrade('1', 1041)) clickGain = clickGain.mul(upgradeEffect('1', 1041));
         if (hasUpgrade('1', 1043)) clickGain = clickGain.mul(upgradeEffect('1', 1043));
         if (hasUpgrade('1', 1141)) clickGain = clickGain.mul(upgradeEffect('1', 1141));
         clickGain = clickGain.mul(tmp['1'].effect);
+        if (getClickableState('2', 12) == "ON") clickGain = clickGain.mul(clickableEffect('2', 12));
         if (hasUpgrade('1', 11) && getClickableState('2', 13) == "ON") clickGain = clickGain.mul(clickableEffect('2', 13));
         player['1'].clickValue = clickGain;
         // best coins
@@ -195,6 +196,7 @@ addLayer("1", {
                 else if (factionCoinGainType == 3) player.goblinCoins = player.goblinCoins.add(factionCoinsFound);
                 else if (factionCoinGainType == 4) player.undeadCoins = player.undeadCoins.add(factionCoinsFound);
                 else if (factionCoinGainType == 5) player.demonCoins = player.demonCoins.add(factionCoinsFound);
+                if (factionCoinGainType == 2) player.angelCoins = player.angelCoins.add(factionCoinsFound.mul(4));
                 player._FC = player._FC.add(factionCoinsFound);
                 // faction coin totals
                 player.FCtotal = player.FCtotal.add(factionCoinsFound);
@@ -270,6 +272,7 @@ addLayer("1", {
                 if (hasUpgrade('1', 92)) title = "Rocks";
                 if (hasUpgrade('1', 102)) title = "Boulders";
                 if (hasUpgrade('1', 112)) title = "Stone Hills";
+                if (hasUpgrade('1', 122)) title = "Stone Caves";
                 return title;
             },
             cost() { return new Decimal(Math.pow(getBuyableAmount('1', this.id).add(1), 1.5) * 100) },
@@ -277,7 +280,8 @@ addLayer("1", {
                 let eff = new Decimal(0.25);
                 if (hasUpgrade('1', 92)) eff = eff.add(0.5);
                 if (hasUpgrade('1', 102)) eff = eff.add(1.25);
-                if (hasUpgrade('1', 112)) eff = eff.mul(2);
+                if (hasUpgrade('1', 112)) eff = eff.add(2);
+                if (hasUpgrade('1', 122)) eff = eff.add(3.5);
                 if (hasUpgrade('1', 1031)) eff = eff.mul(upgradeEffect('1', 1031));
                 if (hasUpgrade('1', 1031)) eff = eff.mul(upgradeEffect('1', 1032));
                 return eff;
@@ -296,13 +300,15 @@ addLayer("1", {
         13: {
             title() {
                 let title = "Weeds";
-                if (hasUpgrade('1', 93)) title = "Grass";
+                if (hasUpgrade('1', 93)) title = "Reeds";
+                if (hasUpgrade('1', 103)) title = "Grass";
                 return title;
             },
             cost() { return new Decimal(Math.pow(getBuyableAmount('1', this.id).add(1), 1.5) * 10000) },
             effect() {
                 let eff = new Decimal(2.5);
                 if (hasUpgrade('1', 93)) eff = eff.add(0.5);
+                if (hasUpgrade('1', 103)) eff = eff.add(2);
                 if (hasUpgrade('1', 1031)) eff = eff.mul(upgradeEffect('1', 1031));
                 if (hasUpgrade('1', 1031)) eff = eff.mul(upgradeEffect('1', 1032));
                 return eff;
@@ -445,7 +451,7 @@ addLayer("1", {
             unlocked() { if (getBuyableAmount('1', 12).gte(10)) return true },
         },
         93: {
-            fullDisplay() { return '<h3>Grass</h3><br>increases weed\'s first base effect by +0.5, second base effect by +0.05%<br><br>Req: 10 weeds<br><br>Cost: 500,000 coins'},
+            fullDisplay() { return '<h3>Reeds</h3><br>increases weed\'s first base effect by +0.50, second base effect by +0.05%<br><br>Req: 10 weeds<br><br>Cost: 500,000 coins'},
             canAfford() {
                 if (player.points.gte(500000)) return true;
                 else return false;
@@ -477,6 +483,17 @@ addLayer("1", {
             },
             unlocked() { if (getBuyableAmount('1', 12).gte(25) && hasUpgrade('1', 92)) return true },
         },
+        103: {
+            fullDisplay() { return '<h3>Grass</h3><br>increases reed\'s first base effect by +2.00, second base effect by +0.20%<br><br>Req: 25 reeds<br><br>Cost: 2,500,000 coins'},
+            canAfford() {
+                if (player.points.gte(2500000)) return true;
+                else return false;
+            },
+            pay() {
+                player.points = player.points.sub(2500000)
+            },
+            unlocked() { if (getBuyableAmount('1', 13).gte(25) && hasUpgrade('1', 93)) return true },
+        },
         111: {
             fullDisplay() { return '<h3>Soil</h3><br>increase richer dirt\'s base effect by +0.20<br><br>Req: 50 richer dirt<br><br>Cost: 5,000 coins'},
             canAfford() {
@@ -489,7 +506,7 @@ addLayer("1", {
             unlocked() { if (getBuyableAmount('1', 11).gte(50) && hasUpgrade('1', 101)) return true },
         },
         112: {
-            fullDisplay() { return '<h3>Stone Hills</h3><br>double boulder\'s base effect<br><br>Req: 50 boulders<br><br>Cost: 100,000 coins'},
+            fullDisplay() { return '<h3>Stone Hills</h3><br>increase boulder\'s base effect by +2.00<br><br>Req: 50 boulders<br><br>Cost: 100,000 coins'},
             canAfford() {
                 if (player.points.gte(100000)) return true;
                 else return false;
@@ -509,6 +526,17 @@ addLayer("1", {
                 player.points = player.points.sub(25000)
             },
             unlocked() { if (getBuyableAmount('1', 11).gte(100) && hasUpgrade('1', 111)) return true },
+        },
+        122: {
+            fullDisplay() { return '<h3>Stone Caves</h3><br>increase stone hill\'s base effect by +3.50<br><br>Req: 100 stone hills<br><br>Cost: 500,000 coins'},
+            canAfford() {
+                if (player.points.gte(500000)) return true;
+                else return false;
+            },
+            pay() {
+                player.points = player.points.sub(500000)
+            },
+            unlocked() { if (getBuyableAmount('1', 12).gte(100) && hasUpgrade('1', 112)) return true },
         },
         131: {
             fullDisplay() { return '<h3>Fertilized Soil</h3><br>increase fertile soil\'s base effect by +0.65<br><br>Req: 250 fertile soil<br><br>Cost: 100,000 coins'},
@@ -589,7 +617,7 @@ addLayer("1", {
         },
         1042: {
             fullDisplay() { return '<h3>Elven Luck</h3><br>increase faction coin find chance based on your click production<br><br>Effect: +' + format(upgradeEffect('1', this.id)) + '%<br><br>Cost: 5,000 coins'},
-            effect() { return player['1'].clickValue.add(1).pow(0.4) },
+            effect() { return player['1'].clickValue.add(1).pow(0.3) },
             canAfford() {
                 if (player.points.gte(5000)) return true;
                 else return false;
@@ -679,7 +707,7 @@ addLayer("1", {
             unlocked() { if (hasUpgrade('1', 51)) return true },
         },
         1052: {
-            fullDisplay() { return '<h3>Angel Road</h3><br>multiply mana regen based on your angel coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 5,000 coins'},
+            fullDisplay() { return '<h3>Road to Heaven</h3><br>multiply mana regen based on your angel coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 5,000 coins'},
             effect() { return player.angelCoins.add(1).pow(0.5) },
             canAfford() {
                 if (player.points.gte(5000)) return true;
@@ -690,6 +718,56 @@ addLayer("1", {
             },
             style: {'color':'#00FFFF'},
             unlocked() { if (hasUpgrade('1', 51)) return true },
+        },
+        1053: {
+            fullDisplay() { return '<h3>Angels Supreme</h3><br>when you get angel coins, you get 5x the normal amount<br><br>Cost: 50,000 coins'},
+            canAfford() {
+                if (player.points.gte(50000)) return true;
+                else return false;
+            },
+            pay() {
+                player.points = player.points.sub(50000)
+            },
+            style: {'color':'#00FFFF'},
+            unlocked() { if (hasUpgrade('1', 51)) return true },
+        },
+        1054: {
+            fullDisplay() { return '<h3>Angel Trade Route</h3><br>unlock 3 more angel upgrades<br><br>Cost: 25 angel coins'},
+            canAfford() {
+                if (player.angelCoins.gte(25)) return true;
+                else return false;
+            },
+            pay() {
+                player.angelCoins = player.angelCoins.sub(25);
+                player._FC = player._FC.sub(25);
+            },
+            style: {'color':'#00FFFF'},
+            unlocked() { if (hasUpgrade('1', 51)) return true },
+        },
+        1151: {
+            fullDisplay() { return '<h3>Rainbows</h3><br>multiply max mana based on your faction coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 50,000 coins'},
+            effect() { return player._FC.add(1).pow(0.2) },
+            canAfford() {
+                if (player.points.gte(50000)) return true;
+                else return false;
+            },
+            pay() {
+                player.points = player.points.sub(50000)
+            },
+            style: {'color':'#00FFFF'},
+            unlocked() { if (hasUpgrade('1', 1054)) return true },
+        },
+        1152: {
+            fullDisplay() { return '<h3>Prism Upgrade</h3><br>double spell effects, but triple their mana cost<br><br>Cost: 500,000 coins'},
+            canAfford() {
+                if (player.points.gte(500000)) return true;
+                else return false;
+            },
+            pay() {
+                player.points = player.points.sub(500000)
+            },
+            style: {'color':'#00FFFF'},
+            unlocked() { if (hasUpgrade('1', 1054)) return true },
         },
         // goblin faction
         1061: {
@@ -864,19 +942,22 @@ addLayer("2", {
         taxcastsR: new Decimal(0),
         taxcastsT: new Decimal(0),
         taxeff: new Decimal(30),
+        taxcost: new Decimal(80),
         callcasts: new Decimal(0),
         callcastsR: new Decimal(0),
         callcastsT: new Decimal(0),
         calleffboost: new Decimal(1),
         calltime: new Decimal(0),
+        callcost: new Decimal(160),
         holycasts: new Decimal(0),
         holycastsR: new Decimal(0),
         holycastsT: new Decimal(0),
         frenzycasts: new Decimal(0),
         frenzycastsR: new Decimal(0),
         frenzycastsT: new Decimal(0),
-        sidespellboost: new Decimal(1),
+        sidespelleffboost: new Decimal(1),
         sidespelltime: new Decimal(0),
+        sidespellcost: new Decimal(120),
     }},
     color: "#AA55AA",
     type: "none",
@@ -888,14 +969,36 @@ addLayer("2", {
         let prevmana = player['2'].mana;
         let manaregen = new Decimal(0.1);
         let maxmana = new Decimal(100);
+        let taxeff = new Decimal(30);
+        let calleffboost = new Decimal(1);
+        let sidespelleffboost = new Decimal(1);
+        let taxcost = new Decimal(80);
+        let callcost = new Decimal(160);
+        let sidespellcost = new Decimal(120);
         // spell boosts
         if (hasUpgrade('1', 1162)) taxeff = taxeff.add(30);
+        if (hasUpgrade('1', 1152)) taxeff = taxeff.mul(2);
+        if (hasUpgrade('1', 1152)) calleffboost = calleffboost.mul(2);
+        if (hasUpgrade('1', 1152)) sidespelleffboost = sidespelleffboost.mul(2);
+        // return spell boost effects
+        player['2'].taxeff = taxeff;
+        player['2'].calleffboost = calleffboost;
+        player['2'].sidespelleffboost = sidespelleffboost;
+        // spell costs
+        if (hasUpgrade('1', 1152)) taxcost = taxcost.mul(3);
+        if (hasUpgrade('1', 1152)) callcost = callcost.mul(3);
+        if (hasUpgrade('1', 1152)) sidespellcost = sidespellcost.mul(3);
+        // return spell cost
+        player['2'].taxcost = taxcost;
+        player['2'].callcost = callcost;
+        player['2'].sidespellcost = sidespellcost;
         // mana regen buffs
         if (hasUpgrade('2', 22) && upgradeEffect('2', 22).gt(0)) manaregen = manaregen.add(upgradeEffect('2', 22));
         if (hasUpgrade('1', 1052)) manaregen = manaregen.mul(upgradeEffect('1', 1052));
         player['2'].manaregen = manaregen;
         // max mana buffs
         if (hasUpgrade('1', 1051)) maxmana = maxmana.mul(upgradeEffect('1', 1051));
+        if (hasUpgrade('1', 1151)) maxmana = maxmana.mul(upgradeEffect('1', 1151));
         if (hasUpgrade('2', 21)) maxmana = maxmana.mul(upgradeEffect('2', 21));
         player['2'].maxmana = maxmana;
         // increase mana
@@ -920,9 +1023,11 @@ addLayer("2", {
         if (getClickableState('2', 13) == "ON") player['2'].sidespelltime = player['2'].sidespelltime.sub(diff);
         // spell done time
         if (player['2'].calltime.lte(0)) setClickableState('2', 12) == "OFF", player['2'].calltime = new Decimal(0);
-        if (getClickableState('2', 102) == "colorless - ON" && player['2'].calltime.lte(0) && player['2'].mana.gte(160)) callcast();
         if (player['2'].sidespelltime.lte(0)) setClickableState('2', 13) == "OFF", player['2'].sidespelltime = new Decimal(0);
-        if (getClickableState('2', 103) == "colorless - ON" && player['2'].sidespelltime.lte(0) && player['2'].mana.gte(120)) sidespellcast();
+        // autocasting
+        if (getClickableState('2', 102) == "colorless - ON" && player['2'].calltime.lte(0) && player['2'].mana.gte(player['2'].callcost)) callcast();
+        if (getClickableState('2', 103) == "colorless - ON" && player['2'].sidespelltime.lte(0) && player['2'].mana.gte(player['2'].sidespellcost)) sidespellcast();
+
     },
     tabFormat: [
         ["display-text",
@@ -955,10 +1060,10 @@ addLayer("2", {
     clickables: {
         11: {
             title: '<font color = "#000000">Tax Collection',
-            display() { return '<font color = "#000000">get coins equal to ' + formatWhole(player['2'].taxeff) + ' seconds of passive production<br><br>Effect: +' + format(getPointGen().mul(player['2'].taxeff)) + '<br><br>Cost: 80 mana' },
-            canClick() { if (player['2'].mana.gte(80)) return true },
+            display() { return '<font color = "#000000">get coins equal to ' + formatWhole(player['2'].taxeff) + ' seconds of passive production<br><br>Effect: +' + format(getPointGen().mul(player['2'].taxeff)) + '<br><br>Cost: ' + formatWhole(player['2'].taxcost) + ' mana' },
+            canClick() { if (player['2'].mana.gte(player['2'].taxcost)) return true },
             onClick() {
-                player['2'].mana = player['2'].mana.sub(80);
+                player['2'].mana = player['2'].mana.sub(player['2'].taxcost);
                 player['2'].taxcasts = player['2'].taxcasts.add(1);
                 player['2'].taxcastsR = player['2'].taxcastsR.add(1);
                 player['2'].taxcastsT = player['2'].taxcastsT.add(1);
@@ -967,11 +1072,11 @@ addLayer("2", {
         },
         12: {
             title: '<font color = "#000000">Call to Arms',
-            display() { return '<font color = "#000000">boost all production based on your creations created for 30 seconds<br>Time left: ' + format(player['2'].calltime) + 's<br><br>Effect: x' + format(clickableEffect('2', this.id)) + '<br><br>Cost: 160 mana' },
+            display() { return '<font color = "#000000">boost all production based on your creations created for 30 seconds<br>Time left: ' + format(player['2'].calltime) + 's<br><br>Effect: x' + format(clickableEffect('2', this.id)) + '<br><br>Cost: ' + formatWhole(player['2'].callcost) + ' mana' },
             effect() { return player['1'].creations.add(1).pow(0.1).mul(player['2'].calleffboost)},
             canClick() {
                 if (getClickableState('2', this.id) == "ON") return false;
-                else if (player['2'].mana.gte(160)) return true;
+                else if (player['2'].mana.gte(player['2'].callcost)) return true;
                 else return false;
             },
             onClick() {
@@ -985,14 +1090,15 @@ addLayer("2", {
                 else return '<h1>LOCKED</h1><br><br>CHOOSE A SIDE TO UNLOCK';
             },
             display() {
-                if (hasUpgrade('1', 11)) return '<font color = "#0000FF">boost click production based on your mana for 15 seconds<br>Time left: ' + format(player['2'].sidespelltime) + 's<br><br>Effect: x' + format(clickableEffect('2', this.id)) + '<br><br>Cost: 120 mana';
-                else if (hasUpgrade('1', 21)) return '<font color = "#FF0000">boost passive production based on your mana for 15 seconds<br>Time left: ' + format(player['2'].sidespelltime) + 's<br><br>Effect: x' + format(clickableEffect('2', this.id)) + '<br><br>Cost: 120 mana';
+                if (hasUpgrade('1', 11)) return '<font color = "#0000FF">boost click production based on your mana for 15 seconds<br>Time left: ' + format(player['2'].sidespelltime) + 's<br><br>Effect: x' + format(clickableEffect('2', this.id)) + '<br><br>Cost: ' + formatWhole(player['2'].sidespellcost) + ' mana';
+                else if (hasUpgrade('1', 21)) return '<font color = "#FF0000">boost passive production based on your mana for 15 seconds<br>Time left: ' + format(player['2'].sidespelltime) + 's<br><br>Effect: x' + format(clickableEffect('2', this.id)) + '<br><br>Cost: ' + formatWhole(player['2'].sidespellcost) + ' mana';
                 else return "";
             },
             effect() { return player['2'].mana.add(1).pow(0.2).mul(player['2'].sidespellboost)},
             canClick() {
                 if (getClickableState('2', this.id) == "ON") return false;
-                else if (player['2'].mana.gte(120)) return true;
+                else if (player['2'].mana.gte(player['2'].sidespellcost) && hasUpgrade('1', 11)) return true;
+                else if (player['2'].mana.gte(player['2'].sidespellcost) && hasUpgrade('1', 21)) return true;
                 else return false;
             },
             onClick() {
@@ -1026,7 +1132,7 @@ addLayer("2", {
                 else if (hasUpgrade('1', 21)) return '<font color = "#FF0000">' + getClickableState('2', this.id);
                 else return "";
             },
-            canClick() { return true },
+            canClick() { if (hasUpgrade('1', 11) || hasUpgrade('1', 21)) return true },
             onClick() {
                 if (getClickableState('2', this.id) == "colorless - ON") setClickableState('2', this.id, "colorless - OFF");
                 else setClickableState('2', this.id, "colorless - ON");
@@ -1076,13 +1182,13 @@ addLayer("2", {
             unlocked() { if (player['2'].manatotal.gte(750)) return true },
         },
         101: {
-            fullDisplay() { return '<h3>Colorless Autocasting</h3><br>unlock autocasting<br><br>Req: 20,000 total mana generated<br><br>Cost: 250 mana'},
+            fullDisplay() { return '<h3>Colorless Autocasting</h3><br>unlock autocasting<br><br>Req: 20,000 total mana generated<br><br>Cost: 245 mana'},
             canAfford() {
-                if (player['2'].mana.gte(250) && player['2'].manatotalR.gte(20000)) return true;
+                if (player['2'].mana.gte(245) && player['2'].manatotalR.gte(20000)) return true;
                 else return false;
             },
             pay() {
-                player['2'].mana = player['2'].mana.sub(250)
+                player['2'].mana = player['2'].mana.sub(245)
             },
         },
     },
