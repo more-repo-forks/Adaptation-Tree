@@ -17,6 +17,9 @@ let changelog = `<h1>Changelog:</h1><br>
 	<br><h3>v0.3 - Spells Beta</h3><br>
 		- Added five new creation tiers.<br>
 		- Added casting, mana, and spells.<br>
+		- Added 2 normal spells.<br>
+		- Added 2 side spells.<br>
+		- Added 2 mana upgrades.<br>
 		- Added 3 fairy upgrades.<br>
 		- Added 6 goblin upgrades.<br>
 		- Added more types of stats to the stat menu.<br>

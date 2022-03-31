@@ -683,8 +683,16 @@ addLayer("2", {
     update(diff) {
         let manacapped = false;
         let prevmana = player['2'].mana;
+        let manaregen = new Decimal(0.1);
+        let maxmana = new Decimal(100);
         // spell boosts
-        if (hasUpgrade('1', 1064)) taxeff = taxeff.add(30);
+        if (hasUpgrade('1', 1162)) taxeff = taxeff.add(30);
+        // mana regen buffs
+        if (hasUpgrade('2', 22)) manaregen = manaregen.add(upgradeEffect('2', 22));
+        player['2'].manaregen = manaregen;
+        // max mana buffs
+        if (hasUpgrade('2', 21)) maxmana = maxmana.mul(upgradeEffect('2', 21));
+        player['2'].maxmana = maxmana;
         // increase mana
         if (player['2'].mana.add(player['2'].manaregen).gte(player['2'].maxmana))
             player['2'].mana = player['2'].maxmana,
@@ -717,6 +725,8 @@ addLayer("2", {
         "clickables",
         "blank",
         ["bar", "manabar"],
+        "blank",
+        ["upgrades", [2]],
     ],
     clickables: {
         11: {
@@ -798,6 +808,30 @@ addLayer("2", {
                 if (player['2'].mana.eq(player['2'].maxmana)) return true;
                 else return false;
             },
+        },
+        21: {
+            fullDisplay() { return '<h3>Mana Jar</h3><br>multiply max mana based on your mana<br><br>Effect: x' + format(upgradeEffect('2', this.id)) + '<br><br>Req: 1,000 mana generated<br><br>Cost: 1,000 coins'},
+            effect() { return player['2'].mana.add(1).pow(0.05) },
+            canAfford() {
+                if (player.points.gte(1000)) return true;
+                else return false;
+            },
+            pay() {
+                player.points = player.points.sub(1000)
+            },
+            unlocked() { if (player['2'].manatotal.gte(1000)) return true },
+        },
+        22: {
+            fullDisplay() { return '<h3>Mana Jar</h3><br>increase mana regen based on your mana<br><br>Effect: +' + format(upgradeEffect('2', this.id)) + '<br><br>Req: 2,500 mana generated<br><br>Cost: 5,000 coins'},
+            effect() { return player['2'].mana.add(1).pow(0.05).sub(1) },
+            canAfford() {
+                if (player.points.gte(5000)) return true;
+                else return false;
+            },
+            pay() {
+                player.points = player.points.sub(5000)
+            },
+            unlocked() { if (player['2'].manatotal.gte(2500)) return true },
         },
     },
 });
