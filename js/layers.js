@@ -196,7 +196,7 @@ addLayer("1", {
                 else if (factionCoinGainType == 3) player.goblinCoins = player.goblinCoins.add(factionCoinsFound);
                 else if (factionCoinGainType == 4) player.undeadCoins = player.undeadCoins.add(factionCoinsFound);
                 else if (factionCoinGainType == 5) player.demonCoins = player.demonCoins.add(factionCoinsFound);
-                if (factionCoinGainType == 2) player.angelCoins = player.angelCoins.add(factionCoinsFound.mul(4));
+                if (hasUpgrade('1', 1053) && factionCoinGainType == 2) player.angelCoins = player.angelCoins.add(factionCoinsFound.mul(4));
                 player._FC = player._FC.add(factionCoinsFound);
                 // faction coin totals
                 player.FCtotal = player.FCtotal.add(factionCoinsFound);
