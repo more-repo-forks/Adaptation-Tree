@@ -42,30 +42,26 @@ addLayer("1", {
 	resetDescription: "Abdicate for ",
 	row: 0,
 	effect() {return player['1'].points.mul(player['1'].gemMult).mul(0.01).add(1)},
-	effectDescription() {return "which effect is increasing all production by " + player['1'].gemMult + "% each, for a total of " + format(tmp['1'].effect) + 'x'},
+	effectDescription() {return "which are increasing all production by " + player['1'].gemMult + "% each, for a total of " + format(tmp['1'].effect) + 'x'},
 	hotkeys: [
 		{key: "a", description: "A: Abdicate for gems", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
 	],
 	layerShown() {return true},
 	tooltip() {return "Main Tab"},
 	doReset(resettingLayer) {
-		let keep1 = ["creationsT", "clickValueBestT", "clickTotalValueBestT", "clickTotalValueTotalT", "clickTimesBestT", "clickTimesTotalT"];
-		let keep2 = ["manaTotalT", "maxManaBestT", "manaRegenBestT", "taxCastsT", "callCastsT", "holyCastsT", "frenzyCastsT"];
 		player.fairyCoins = new Decimal(0);
 		player.elfCoins = new Decimal(0);
 		player.angelCoins = new Decimal(0);
 		player.goblinCoins = new Decimal(0);
 		player.undeadCoins = new Decimal(0);
 		player.demonCoins = new Decimal(0);
+		player.FCchance = new Decimal(2.5);
 		player.FC = new Decimal(0);
-		player.G.FCbest = new Decimal(0);
-		player.G.FCtotal = new Decimal(0);
-		player.G.best = new Decimal(0);
-		player.G.total = new Decimal(0);
-		if (resettingLayer == '1') keep1.push("points", "creationsR", "clickValueBest", "clickTotalValueBest", "clickTotalValueTotal", "clickTimesBest", "clickTimesTotal");
-		if (resettingLayer == '1') keep2.push("manaTotalR", "maxManaBest", "manaRegenBest", "taxCastsR", "callCastsR", "holyCastsR", "frenzyCastsR");
-		layerDataReset('1', keep1);
-		layerDataReset('2', keep2);
+		player.G = Object.create(playerStartingStats);
+		if (resettingLayer == '1') {
+			layerDataReset('1', ["points", "best", "R", "T"], true);
+			layerDataReset('2', ["R", "T"], true);
+		};
 	},
 	update(diff) {
 		const pointGain = getPointGen().mul(diff);
@@ -179,8 +175,10 @@ addLayer("1", {
 				let factionCoinsFound = new Decimal(0);
 				let clickPower = player["1"].clickValue;
 				// faction coins gained calculation
-				if (player.FCchance.gte(new Decimal(100))) factionCoinsFound = player.FCchance.div(100).floor();
-				else if (player.FCchance.div(100).gte(new Decimal(Math.random()))) factionCoinsFound = new Decimal(1);
+				if (player.FCchance.gte(new Decimal(100))) factionCoinsFound = player.FCchance.div(100);
+				else if (player.FCchance.div(100).gte(Math.random())) factionCoinsFound = new Decimal(1);
+				if (hasUpgrade('1', 1053) && factionCoinGainType == 2) factionCoinsFound = factionCoinsFound.mul(5);
+				factionCoinsFound = factionCoinsFound.floor();
 				// earning the faction coins
 				if (factionCoinGainType == 0) player.fairyCoins = player.fairyCoins.add(factionCoinsFound);
 				else if (factionCoinGainType == 1) player.elfCoins = player.elfCoins.add(factionCoinsFound);
@@ -188,7 +186,6 @@ addLayer("1", {
 				else if (factionCoinGainType == 3) player.goblinCoins = player.goblinCoins.add(factionCoinsFound);
 				else if (factionCoinGainType == 4) player.undeadCoins = player.undeadCoins.add(factionCoinsFound);
 				else if (factionCoinGainType == 5) player.demonCoins = player.demonCoins.add(factionCoinsFound);
-				if (hasUpgrade('1', 1053) && factionCoinGainType == 2) player.angelCoins = player.angelCoins.add(factionCoinsFound.mul(4));
 				// faction coin totals
 				player.G.FCtotal = player.G.FCtotal.add(factionCoinsFound);
 				player.R.FCtotal = player.R.FCtotal.add(factionCoinsFound);
@@ -227,7 +224,7 @@ addLayer("1", {
 				if (hasUpgrade('1', 141)) title = "Perfected Soil";
 				return title;
 			},
-			cost() { return new Decimal(Math.pow(getBuyableAmount('1', this.id).add(1), 1.5)) },
+			cost() { return getBuyableAmount('1', this.id).add(1).pow(1.5) },
 			effect() {
 				let eff = new Decimal(0.1);
 				if (hasUpgrade('1', 91)) eff = eff.add(0.05);
@@ -259,7 +256,7 @@ addLayer("1", {
 				if (hasUpgrade('1', 122)) title = "Stone Caves";
 				return title;
 			},
-			cost() { return new Decimal(Math.pow(getBuyableAmount('1', this.id).add(1), 1.5) * 100) },
+			cost() { return getBuyableAmount('1', this.id).add(1).pow(1.5).mul(100) },
 			effect() {
 				let eff = new Decimal(0.25);
 				if (hasUpgrade('1', 92)) eff = eff.add(0.5);
@@ -287,7 +284,7 @@ addLayer("1", {
 				if (hasUpgrade('1', 103)) title = "Grass";
 				return title;
 			},
-			cost() { return new Decimal(Math.pow(getBuyableAmount('1', this.id).add(1), 1.5) * 10000) },
+			cost() { return getBuyableAmount('1', this.id).add(1).pow(1.5).mul(10000) },
 			effect() {
 				let eff = new Decimal(2.5);
 				if (hasUpgrade('1', 93)) eff = eff.add(0.5);
@@ -324,7 +321,7 @@ addLayer("1", {
 		},
 		// faction picking
 		31: {
-			fullDisplay() { return '<h3>Fairy Alliance</h3><br>ally yourself with the fairies, which focus on basic buildings<br><br>Cost: 5 fairy coins'},
+			fullDisplay() { return '<h3>Fairy Alliance</h3><br>ally yourself with the fairies, which focus on basic creations<br><br>Cost: 5 fairy coins'},
 			canAfford() {
 				if (player.fairyCoins.gte(5)) return true;
 				else return false;
@@ -384,7 +381,7 @@ addLayer("1", {
 			unlocked() { return hasUpgrade('1', 21) && hasUpgrade('1', 31) == false && hasUpgrade('1', 41) == false && hasUpgrade('1', 51) == false && hasUpgrade('1', 61) == false && hasUpgrade('1', 71) == false && hasUpgrade('1', 81) == false },
 		},
 		81: {
-			fullDisplay() { return '<h3>Demon Alliance</h3><br>ally yourself with the demons, which focus on non-basic buildings<br><br>Cost: 5 demon coins'},
+			fullDisplay() { return '<h3>Demon Alliance</h3><br>ally yourself with the demons, which focus on non-basic creations<br><br>Cost: 5 demon coins'},
 			canAfford() {
 				if (player.demonCoins.gte(5)) return true;
 				else return false;
@@ -483,7 +480,7 @@ addLayer("1", {
 		// faction upgrades
 		// fairy faction
 		1031: {
-			fullDisplay() { return '<h3>Magic Dust</h3><br>multiply the effect of basic creations based on your mana regen<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500 coins'},
+			fullDisplay() { return '<h3>Magic Dust</h3><br>increase the effect of basic creations based on your mana regen<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500 coins'},
 			effect() { return player['2'].manaRegen.add(1).mul(2).pow(0.5) },
 			cost: 500,
 			currencyInternalName: "points",
@@ -492,7 +489,7 @@ addLayer("1", {
 			unlocked() { return hasUpgrade('1', 31) },
 		},
 		1032: {
-			fullDisplay() { return '<h3>Fairy Workers</h3><br>multiply the effect of basic creations based on your basic creations<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 5,000 coins'},
+			fullDisplay() { return '<h3>Fairy Workers</h3><br>increase the effect of basic creations based on your creations<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 5,000 coins'},
 			effect() { return player["1"].G.bestCreations.add(1).pow(0.2) },
 			cost: 5000,
 			currencyInternalName: "points",
@@ -501,7 +498,7 @@ addLayer("1", {
 			unlocked() { return hasUpgrade('1', 31) },
 		},
 		1033: {
-			fullDisplay() { return '<h3>Fairy Traders</h3><br>multiply click production and faction coin find chance based on your creations<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br>and +' + format(upgradeEffect('1', this.id).mul(3)) + '%<br><br>Cost: 50,000 coins'},
+			fullDisplay() { return '<h3>Fairy Traders</h3><br>increase click production and faction coin find chance based on your creations<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br>and +' + format(upgradeEffect('1', this.id).mul(3)) + '%<br><br>Cost: 50,000 coins'},
 			effect() { return player["1"].G.bestCreations.add(1).pow(0.1) },
 			cost: 50000,
 			currencyInternalName: "points",
@@ -511,7 +508,7 @@ addLayer("1", {
 		},
 		// elf faction
 		1041: {
-			fullDisplay() { return '<h3>Super Clicks</h3><br>multiply click production based on your creations<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500 coins'},
+			fullDisplay() { return '<h3>Super Clicks</h3><br>increase click production based on your creations<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500 coins'},
 			effect() { return player["1"].G.bestCreations.add(1).pow(0.25) },
 			cost: 500,
 			currencyInternalName: "points",
@@ -529,7 +526,7 @@ addLayer("1", {
 			unlocked() { return hasUpgrade('1', 41) },
 		},
 		1043: {
-			fullDisplay() { return '<h3>Elven Spirit</h3><br>multiply click production based on your elf coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 50,000 coins'},
+			fullDisplay() { return '<h3>Elven Spirit</h3><br>increase click production based on your elf coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 50,000 coins'},
 			effect() { return player.elfCoins.add(1).pow(0.5) },
 			cost: 50000,
 			currencyInternalName: "points",
@@ -550,7 +547,7 @@ addLayer("1", {
 			unlocked() { return hasUpgrade('1', 41) },
 		},
 		1141: {
-			fullDisplay() { return '<h3>Elven Clicks</h3><br>multiply click production based on your coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500,000 coins'},
+			fullDisplay() { return '<h3>Elven Clicks</h3><br>increase click production based on your coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500,000 coins'},
 			effect() { return player.points.add(1).pow(0.01) },
 			cost: 500000,
 			currencyInternalName: "points",
@@ -559,7 +556,7 @@ addLayer("1", {
 			unlocked() { return hasUpgrade('1', 1044) },
 		},
 		1142: {
-			fullDisplay() { return '<h3>Enchanted Clicks</h3><br>multiply click production based on your mana regen<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 5,000,000 coins'},
+			fullDisplay() { return '<h3>Enchanted Clicks</h3><br>increase click production based on your mana regen<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 5,000,000 coins'},
 			effect() { return player['2'].manaRegen.add(1).pow(0.5) },
 			cost: 5000000,
 			currencyInternalName: "points",
@@ -577,7 +574,7 @@ addLayer("1", {
 		},
 		// angel faction
 		1051: {
-			fullDisplay() { return '<h3>Angelic Capacity</h3><br>multiply max mana based on your mana generated<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500 coins'},
+			fullDisplay() { return '<h3>Angelic Capacity</h3><br>increase max mana based on your mana generated<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500 coins'},
 			effect() { return player["2"].G.manaTotal.add(1).pow(0.075) },
 			cost: 500,
 			currencyInternalName: "points",
@@ -586,7 +583,7 @@ addLayer("1", {
 			unlocked() { return hasUpgrade('1', 51) },
 		},
 		1052: {
-			fullDisplay() { return '<h3>Road to Heaven</h3><br>multiply mana regen based on your angel coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 5,000 coins'},
+			fullDisplay() { return '<h3>Road to Heaven</h3><br>increase mana regen based on your angel coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 5,000 coins'},
 			effect() { return player.angelCoins.add(1).pow(0.5) },
 			cost: 5000,
 			currencyInternalName: "points",
@@ -615,7 +612,7 @@ addLayer("1", {
 			unlocked() { return hasUpgrade('1', 51) },
 		},
 		1151: {
-			fullDisplay() { return '<h3>Rainbows</h3><br>multiply max mana based on your faction coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500,000 coins'},
+			fullDisplay() { return '<h3>Rainbows</h3><br>increase max mana based on your faction coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500,000 coins'},
 			effect() { return player.FC.add(1).pow(0.2) },
 			cost: 500000,
 			currencyInternalName: "points",
@@ -632,7 +629,7 @@ addLayer("1", {
 			unlocked() { return hasUpgrade('1', 1054) },
 		},
 		1153: {
-			fullDisplay() { return '<h3>Angelic Clicks</h3><br>multiply click production based on your max mana<br><br>Cost: 50,000,000 coins'},
+			fullDisplay() { return '<h3>Angelic Clicks</h3><br>increase click production based on your max mana<br><br>Cost: 50,000,000 coins'},
 			effect() { return player['2'].maxMana.add(1).pow(0.15) },
 			cost: 50000000,
 			currencyInternalName: "points",
@@ -651,8 +648,8 @@ addLayer("1", {
 			unlocked() { return hasUpgrade('1', 61) },
 		},
 		1062: {
-			fullDisplay() { return '<h3>Goblin\'s Greed</h3><br>multiply passive production based on your faction coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 5,000 coins'},
-			effect() { return player.FC.add(1).pow(0.15) },
+			fullDisplay() { return '<h3>Goblin\'s Greed</h3><br>increase passive production based on your faction coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 5,000 coins'},
+			effect() { return player.FC.add(1).pow(0.25) },
 			cost: 5000,
 			currencyInternalName: "points",
 			currencyLocation() { return player },
@@ -661,7 +658,7 @@ addLayer("1", {
 		},
 		1063: {
 			fullDisplay() { return '<h3>Currency Revolution</h3><br>increase faction coin find chance based on your faction coins<br><br>Effect: +' + format(upgradeEffect('1', this.id)) + '%<br><br>Cost: 50,000 coins'},
-			effect() { return player.FC.add(1).pow(0.5) },
+			effect() { return player.FC.add(1).pow(0.6) },
 			cost: 50000,
 			currencyInternalName: "points",
 			currencyLocation() { return player },
@@ -681,8 +678,8 @@ addLayer("1", {
 			unlocked() { return hasUpgrade('1', 61) },
 		},
 		1161: {
-			fullDisplay() { return '<h3>Moneyload</h3><br>multiply passive production based on your faction coin find chance<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500,000 coins'},
-			effect() { return player.FCchance.add(1).pow(0.4) },
+			fullDisplay() { return '<h3>Moneyload</h3><br>increase passive production based on your faction coin find chance<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500,000 coins'},
+			effect() { return player.FCchance.add(1).pow(0.3) },
 			cost: 500000,
 			currencyInternalName: "points",
 			currencyLocation() { return player },
@@ -698,8 +695,8 @@ addLayer("1", {
 			unlocked() { return hasUpgrade('1', 1064) },
 		},
 		1163: {
-			fullDisplay() { return '<h3>Goblin Pride</h3><br>multiply passive production based on your goblin coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 50,000,000 coins'},
-			effect() { return player.goblinCoins.add(1).pow(0.5) },
+			fullDisplay() { return '<h3>Goblin Pride</h3><br>increase passive production based on your goblin coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 50,000,000 coins'},
+			effect() { return player.goblinCoins.add(1).pow(0.3) },
 			cost: 50000000,
 			currencyInternalName: "points",
 			currencyLocation() { return player },
@@ -708,7 +705,7 @@ addLayer("1", {
 		},
 		// undead faction
 		1071: {
-			fullDisplay() { return '<h3>Undending Cycle</h3><br>multiply passive production based on your coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500 coins'},
+			fullDisplay() { return '<h3>Undending Cycle</h3><br>increase passive production based on your coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500 coins'},
 			effect() { return player.points.add(1).pow(0.15) },
 			cost: 500,
 			currencyInternalName: "points",
@@ -717,7 +714,7 @@ addLayer("1", {
 			unlocked() { return hasUpgrade('1', 71) },
 		},
 		1072: {
-			fullDisplay() { return '<h3>Corpse Piles</h3><br>multiply passive production based on your undead coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 5,000 coins'},
+			fullDisplay() { return '<h3>Corpse Piles</h3><br>increase passive production based on your undead coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 5,000 coins'},
 			effect() { return player.undeadCoins.add(1).pow(0.5) },
 			cost: 5000,
 			currencyInternalName: "points",
@@ -726,7 +723,7 @@ addLayer("1", {
 			unlocked() { return hasUpgrade('1', 71) },
 		},
 		1073: {
-			fullDisplay() { return '<h3>Stay no More</h3><br>multiply passive production based on your click production<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 50,000 coins'},
+			fullDisplay() { return '<h3>Stay no More</h3><br>increase passive production based on your click production<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 50,000 coins'},
 			effect() { return player["1"].clickValue.add(1).pow(0.2) },
 			cost: 50000,
 			currencyInternalName: "points",
@@ -757,7 +754,7 @@ addLayer("1", {
 });
 
 const castingStartingStats = {
-	manaRegenBest: new Decimal(0.1),
+	manaRegenBest: new Decimal(2.5),
 	manaTotal: new Decimal(0),
 	maxManaBest: new Decimal(100),
 	taxCasts: new Decimal(0),
@@ -774,7 +771,7 @@ addLayer("2", {
 		unlocked: true,
 		mana: new Decimal(0),
 		maxMana: new Decimal(100),
-		manaRegen: new Decimal(0.1),
+		manaRegen: new Decimal(2.5),
 		taxEff: new Decimal(30),
 		taxCost: new Decimal(80),
 		callBoost: new Decimal(1),
@@ -792,10 +789,11 @@ addLayer("2", {
 	row: 0,
 	layerShown() {return true },
 	tooltip() {return "Casting"},
+	doReset(resettingLayer) {},
 	update(diff) {
 		let manaCapped = false;
 		let prevMana = player['2'].mana;
-		let manaRegen = new Decimal(0.1);
+		let manaRegen = new Decimal(2.5);
 		let maxMana = new Decimal(100);
 		let taxEff = new Decimal(30);
 		let callBoost = new Decimal(1);
@@ -824,25 +822,27 @@ addLayer("2", {
 		if (hasUpgrade('2', 22) && upgradeEffect('2', 22).gt(0)) manaRegen = manaRegen.add(upgradeEffect('2', 22));
 		if (hasUpgrade('1', 1052)) manaRegen = manaRegen.mul(upgradeEffect('1', 1052));
 		player['2'].manaRegen = manaRegen;
+		const diffMana = player['2'].manaRegen.mul(diff);
 		// max mana buffs
 		if (hasUpgrade('1', 1051)) maxMana = maxMana.mul(upgradeEffect('1', 1051));
 		if (hasUpgrade('1', 1151)) maxMana = maxMana.mul(upgradeEffect('1', 1151));
 		if (hasUpgrade('2', 21)) maxMana = maxMana.mul(upgradeEffect('2', 21));
+		if (hasUpgrade('2', 23)) maxMana = maxMana.mul(upgradeEffect('2', 23));
 		player['2'].maxMana = maxMana;
 		// increase mana
-		if (player['2'].mana.add(player['2'].manaRegen).gte(player['2'].maxMana))
+		if (player['2'].mana.add(diffMana).gte(player['2'].maxMana))
 			player['2'].mana = player['2'].maxMana,
 			manaCapped = true;
-		else player['2'].mana = player['2'].mana.add(player['2'].manaRegen);
+		else player['2'].mana = player['2'].mana.add(diffMana);
 		// total mana
 		if (manaCapped) {
 			player["2"].G.manaTotal = player["2"].G.manaTotal.add(player['2'].maxMana.sub(prevMana));
 			player["2"].R.manaTotal = player["2"].R.manaTotal.add(player['2'].maxMana.sub(prevMana));
 			player["2"].T.manaTotal = player["2"].T.manaTotal.add(player['2'].maxMana.sub(prevMana));
 		} else {
-			player["2"].G.manaTotal = player["2"].G.manaTotal.add(player['2'].manaRegen);
-			player["2"].R.manaTotal = player["2"].R.manaTotal.add(player['2'].manaRegen);
-			player["2"].T.manaTotal = player["2"].T.manaTotal.add(player['2'].manaRegen);
+			player["2"].G.manaTotal = player["2"].G.manaTotal.add(diffMana);
+			player["2"].R.manaTotal = player["2"].R.manaTotal.add(diffMana);
+			player["2"].T.manaTotal = player["2"].T.manaTotal.add(diffMana);
 		};
 		// best mana
 		if (player['2'].maxMana.gt(player["2"].R.maxManaBest)) player["2"].R.maxManaBest = player['2'].maxMana;
@@ -894,7 +894,7 @@ addLayer("2", {
 		12: {
 			title: '<font color = "#000000">Call to Arms',
 			display() { return '<font color = "#000000">boost all production based on your creations for 30 seconds<br>Time left: ' + format(player['2'].callTime) + 's<br><br>Effect: x' + format(clickableEffect('2', this.id)) + '<br><br>Cost: ' + formatWhole(player['2'].callCost) + ' mana' },
-			effect() { return player["1"].G.bestCreations.add(1).pow(0.1).mul(player['2'].callBoost)},
+			effect() { return player["1"].G.bestCreations.add(1).pow(0.15).mul(player['2'].callBoost)},
 			canClick() {
 				if (getClickableState('2', this.id) == "ON") return false;
 				else if (player['2'].mana.gte(player['2'].callCost)) return true;
@@ -915,7 +915,7 @@ addLayer("2", {
 				else if (hasUpgrade('1', 21)) return '<font color = "#FF0000">boost passive production based on your mana for 15 seconds<br>Time left: ' + format(player['2'].sideSpellTime) + 's<br><br>Effect: x' + format(clickableEffect('2', this.id)) + '<br><br>Cost: ' + formatWhole(player['2'].sideSpellCost) + ' mana';
 				else return "";
 			},
-			effect() { return player['2'].mana.add(1).pow(0.2).mul(player['2'].sideSpellBoost) },
+			effect() { return player['2'].mana.add(1).pow(0.25).mul(player['2'].sideSpellBoost) },
 			canClick() {
 				if (getClickableState('2', this.id) == "ON") return false;
 				else if (player['2'].mana.gte(player['2'].sideSpellCost) && (hasUpgrade('1', 11) || hasUpgrade('1', 21))) return true;
@@ -978,33 +978,44 @@ addLayer("2", {
 			},
 		},
 		21: {
-			fullDisplay() { return '<h3>Mana Jar</h3><br>multiply max mana based on your mana<br><br>Effect: x' + format(upgradeEffect('2', this.id)) + '<br><br>Req: 750 mana generated<br><br>Cost: 1,500 coins'},
-			effect() { return player['2'].mana.add(1).pow(0.05) },
+			fullDisplay() { return '<h3>Mana Cup</h3><br>increase max mana based on your mana<br><br>Effect: x' + format(upgradeEffect('2', this.id)) + '<br><br>Req: 500 mana generated<br><br>Cost: 1,500 coins'},
+			effect() { return player['2'].mana.add(1).pow(0.1) },
 			cost: 1500,
 			currencyInternalName: "points",
 			currencyLocation() { return player },
 			canAfford() {
-				return player["2"].G.manaTotal.gte(750);
+				return player["2"].G.manaTotal.gte(500);
 			},
 		},
 		22: {
-			fullDisplay() { return '<h3>Mana Aura</h3><br>increase mana regen based on your mana<br><br>Effect: +' + format(upgradeEffect('2', this.id)) + '<br><br>Req: 2,500 mana generated<br><br>Cost: 5,000 coins'},
-			effect() { return player['2'].mana.add(1).pow(0.05).sub(1) },
+			fullDisplay() { return '<h3>Mana Sense</h3><br>increase mana regen based on your mana<br><br>Effect: +' + format(upgradeEffect('2', this.id)) + '<br><br>Req: 1,500 mana generated<br><br>Cost: 5,000 coins'},
+			effect() { return player['2'].mana.add(1).pow(0.2) },
 			cost: 5000,
 			currencyInternalName: "points",
 			currencyLocation() { return player },
 			canAfford() {
-				return player["2"].G.manaTotal.gte(2500);
+				return player["2"].G.manaTotal.gte(1500);
 			},
-			unlocked() { return player["2"].G.manaTotal.gte(750) },
+			unlocked() { return hasUpgrade("2", 21) },
+		},
+		23: {
+			fullDisplay() { return '<h3>Mana Jar</h3><br>increase max mana based on your creations<br><br>Effect: x' + format(upgradeEffect('2', this.id)) + '<br><br>Req: 4,500 mana generated<br><br>Cost: 25,000 coins'},
+			effect() { return player['1'].G.bestCreations.add(1).pow(0.125) },
+			cost: 25000,
+			currencyInternalName: "points",
+			currencyLocation() { return player },
+			canAfford() {
+				return player["2"].G.manaTotal.gte(4500);
+			},
+			unlocked() { return hasUpgrade("2", 22) },
 		},
 		101: {
-			fullDisplay() { return '<h3>Colorless Autocasting</h3><br>unlock autocasting<br><br>Req: 20,000 total mana generated<br><br>Cost: 245 mana'},
+			fullDisplay() { return '<h3>Colorless Autocasting</h3><br>unlock autocasting<br><br>Req: 10,000 total mana generated<br><br>Cost: 333 mana'},
 			canAfford() {
-				return player['2'].mana.gte(245) && player["2"].R.manaTotal.gte(20000);
+				return player['2'].mana.gte(333) && player["2"].R.manaTotal.gte(10000);
 			},
 			pay() {
-				player['2'].mana = player['2'].mana.sub(245)
+				player['2'].mana = player['2'].mana.sub(333);
 			},
 		},
 	},
