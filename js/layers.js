@@ -44,7 +44,7 @@ addLayer("1", {
     hotkeys: [
         {key: "a", description: "A: Abdicate for gems", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
-    layerShown(){return true},
+    layerShown() {return true},
     tooltip() {return "Main Tab"},
     doReset(resettingLayer) {
         let keep1 = ["creationsT", "clickValueBestT", "clickTotalValueBestT", "clickTotalValueTotalT", "clickTimesBestT", "clickTimesTotalT"];
@@ -176,6 +176,9 @@ addLayer("1", {
             ],
         },
     },
+    componentStyles: {
+        "buyable"() { return {'width':'180px', 'height':'180px'} },
+    },
     clickables: {
         11: {
             title: "Click Button",
@@ -264,7 +267,6 @@ addLayer("1", {
                 player.points = player.points.sub(this.cost());
                 setBuyableAmount('1', this.id, getBuyableAmount('1', this.id).add(1));
             },
-            style: {'width':'180px', 'height':'180px'},
         },
         12: {
             title() {
@@ -295,7 +297,6 @@ addLayer("1", {
                 player.points = player.points.sub(this.cost());
                 setBuyableAmount('1', this.id, getBuyableAmount('1', this.id).add(1));
             },
-            style: {'width':'180px', 'height':'180px'},
         },
         13: {
             title() {
@@ -319,32 +320,19 @@ addLayer("1", {
                 player.points = player.points.sub(this.cost());
                 setBuyableAmount('1', this.id, getBuyableAmount('1', this.id).add(1));
             },
-            style: {'width':'180px', 'height':'180px'},
         },
     },
     upgrades: {
         // side picking
         11: {
             fullDisplay() { return '<h3>Proof of Good Deed</h3><br>ally yourself with the side of good, which focuses on active production<br><br>Cost: 250 coins'},
-            canAfford() {
-                if (player.points.gte(250)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(250)
-            },
+            cost: 250,
             style: {'color':'#0000FF'},
             unlocked() { if (hasUpgrade('1', 11) == false && hasUpgrade('1', 21) == false) return true },
         },
         21: {
             fullDisplay() { return '<h3>Proof of Evil Deed</h3><br>ally yourself with the side of evil, which focuses on passive production<br><br>Cost: 250 coins'},
-            canAfford() {
-                if (player.points.gte(250)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(250)
-            },
+            cost: 250,
             style: {'color':'#FF0000'},
             unlocked() { if (hasUpgrade('1', 11) == false && hasUpgrade('1', 21) == false) return true },
         },
@@ -430,134 +418,62 @@ addLayer("1", {
         // creation tiers
         91: {
             fullDisplay() { return '<h3>Rich Dirt</h3><br>increases dirt\'s base effect by +0.05<br><br>Req: 10 dirt<br><br>Cost: 250 coins'},
-            canAfford() {
-                if (player.points.gte(250)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(250)
-            },
+            cost: 250,
             unlocked() { if (getBuyableAmount('1', 11).gte(10)) return true },
         },
         92: {
             fullDisplay() { return '<h3>Rocks</h3><br>increases pebble\'s base effect by +0.50<br><br>Req: 10 pebbles<br><br>Cost: 5,000 coins'},
-            canAfford() {
-                if (player.points.gte(5000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(5000)
-            },
+            cost: 5000,
             unlocked() { if (getBuyableAmount('1', 12).gte(10)) return true },
         },
         93: {
             fullDisplay() { return '<h3>Reeds</h3><br>increases weed\'s first base effect by +0.50, second base effect by +0.05%<br><br>Req: 10 weeds<br><br>Cost: 500,000 coins'},
-            canAfford() {
-                if (player.points.gte(500000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(500000)
-            },
+            cost: 500000,
             unlocked() { if (getBuyableAmount('1', 13).gte(10)) return true },
         },
         101: {
             fullDisplay() { return '<h3>Richer Dirt</h3><br>increases rich dirt\'s base effect by +0.10<br><br>Req: 25 rich dirt<br><br>Cost: 1,000 coins'},
-            canAfford() {
-                if (player.points.gte(1000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(1000)
-            },
+            cost: 1000,
             unlocked() { if (getBuyableAmount('1', 11).gte(25) && hasUpgrade('1', 91)) return true },
         },
         102: {
             fullDisplay() { return '<h3>Boulders</h3><br>increases stone\'s base effect by +1.25<br><br>Req: 25 stones<br><br>Cost: 25,000 coins'},
-            canAfford() {
-                if (player.points.gte(25000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(25000)
-            },
+            cost: 25000,
             unlocked() { if (getBuyableAmount('1', 12).gte(25) && hasUpgrade('1', 92)) return true },
         },
         103: {
             fullDisplay() { return '<h3>Grass</h3><br>increases reed\'s first base effect by +2.00, second base effect by +0.20%<br><br>Req: 25 reeds<br><br>Cost: 2,500,000 coins'},
-            canAfford() {
-                if (player.points.gte(2500000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(2500000)
-            },
+            cost: 2500000,
             unlocked() { if (getBuyableAmount('1', 13).gte(25) && hasUpgrade('1', 93)) return true },
         },
         111: {
             fullDisplay() { return '<h3>Soil</h3><br>increase richer dirt\'s base effect by +0.20<br><br>Req: 50 richer dirt<br><br>Cost: 5,000 coins'},
-            canAfford() {
-                if (player.points.gte(5000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(5000)
-            },
+            cost: 5000,
             unlocked() { if (getBuyableAmount('1', 11).gte(50) && hasUpgrade('1', 101)) return true },
         },
         112: {
             fullDisplay() { return '<h3>Stone Hills</h3><br>increase boulder\'s base effect by +2.00<br><br>Req: 50 boulders<br><br>Cost: 100,000 coins'},
-            canAfford() {
-                if (player.points.gte(100000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(100000)
-            },
+            cost: 100000,
             unlocked() { if (getBuyableAmount('1', 12).gte(50) && hasUpgrade('1', 102)) return true },
         },
         121: {
             fullDisplay() { return '<h3>Fertile Soil</h3><br>increase soil\'s base effect by +0.40<br><br>Req: 100 soil<br><br>Cost: 25,000 coins'},
-            canAfford() {
-                if (player.points.gte(25000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(25000)
-            },
+            cost: 25000,
             unlocked() { if (getBuyableAmount('1', 11).gte(100) && hasUpgrade('1', 111)) return true },
         },
         122: {
             fullDisplay() { return '<h3>Stone Caves</h3><br>increase stone hill\'s base effect by +3.50<br><br>Req: 100 stone hills<br><br>Cost: 500,000 coins'},
-            canAfford() {
-                if (player.points.gte(500000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(500000)
-            },
+            cost: 500000,
             unlocked() { if (getBuyableAmount('1', 12).gte(100) && hasUpgrade('1', 112)) return true },
         },
         131: {
             fullDisplay() { return '<h3>Fertilized Soil</h3><br>increase fertile soil\'s base effect by +0.65<br><br>Req: 250 fertile soil<br><br>Cost: 100,000 coins'},
-            canAfford() {
-                if (player.points.gte(100000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(100000)
-            },
+            cost: 100000,
             unlocked() { if (getBuyableAmount('1', 11).gte(250) && hasUpgrade('1', 121)) return true },
         },
         141: {
             fullDisplay() { return '<h3>Perfected Soil</h3><br>increase fertilized soil\'s base effect by +1.00<br><br>Req: 500 fertilized soil<br><br>Cost: 500,000 coins'},
-            canAfford() {
-                if (player.points.gte(500000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(500000)
-            },
+            cost: 500000,
             unlocked() { if (getBuyableAmount('1', 11).gte(500) && hasUpgrade('1', 131)) return true },
         },
         // faction upgrades
@@ -565,39 +481,21 @@ addLayer("1", {
         1031: {
             fullDisplay() { return '<h3>Magic Dust</h3><br>multiply the effect of basic creations based on your mana regen<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500 coins'},
             effect() { return player['2'].manaregen.add(1).mul(2).pow(0.5) },
-            canAfford() {
-                if (player.points.gte(500)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(500)
-            },
+            cost: 500,
             style: {'color':'#FF00FF'},
             unlocked() { if (hasUpgrade('1', 31)) return true },
         },
         1032: {
             fullDisplay() { return '<h3>Fairy Workers</h3><br>multiply the effect of basic creations based on your basic creations<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 5,000 coins'},
             effect() { return player['1'].creations.add(1).pow(0.2) },
-            canAfford() {
-                if (player.points.gte(5000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(5000)
-            },
+            cost: 5000,
             style: {'color':'#FF00FF'},
             unlocked() { if (hasUpgrade('1', 31)) return true },
         },
         1033: {
             fullDisplay() { return '<h3>Fairy Traders</h3><br>multiply click production and faction coin find chance based on your creations<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br>and +' + format(upgradeEffect('1', this.id).mul(3)) + '%<br><br>Cost: 50,000 coins'},
             effect() { return player['1'].creations.add(1).pow(0.1) },
-            canAfford() {
-                if (player.points.gte(50000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(50000)
-            },
+            cost: 50000,
             style: {'color':'#FF00FF', 'height':'120px'},
             unlocked() { if (hasUpgrade('1', 31)) return true },
         },
@@ -605,39 +503,21 @@ addLayer("1", {
         1041: {
             fullDisplay() { return '<h3>Super Clicks</h3><br>multiply click production based on your creations<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500 coins'},
             effect() { return player['1'].creations.add(1).pow(0.25) },
-            canAfford() {
-                if (player.points.gte(500)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(500)
-            },
+            cost: 500,
             style: {'color':'#00FF00'},
             unlocked() { if (hasUpgrade('1', 41)) return true },
         },
         1042: {
             fullDisplay() { return '<h3>Elven Luck</h3><br>increase faction coin find chance based on your click production<br><br>Effect: +' + format(upgradeEffect('1', this.id)) + '%<br><br>Cost: 5,000 coins'},
             effect() { return player['1'].clickValue.add(1).pow(0.3) },
-            canAfford() {
-                if (player.points.gte(5000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(5000)
-            },
+            cost: 5000,
             style: {'color':'#00FF00'},
             unlocked() { if (hasUpgrade('1', 41)) return true },
         },
         1043: {
             fullDisplay() { return '<h3>Elven Spirit</h3><br>multiply click production based on your elf coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 50,000 coins'},
             effect() { return player.elfCoins.add(1).pow(0.5) },
-            canAfford() {
-                if (player.points.gte(50000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(50000)
-            },
+            cost: 50000,
             style: {'color':'#00FF00'},
             unlocked() { if (hasUpgrade('1', 41)) return true },
         },
@@ -657,38 +537,20 @@ addLayer("1", {
         1141: {
             fullDisplay() { return '<h3>Elven Clicks</h3><br>multiply click production based on your coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500,000 coins'},
             effect() { return player.points.add(1).pow(0.01) },
-            canAfford() {
-                if (player.points.gte(500000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(500000)
-            },
+            cost: 500000,
             style: {'color':'#00FF00'},
             unlocked() { if (hasUpgrade('1', 1044)) return true },
         },
         1142: {
             fullDisplay() { return '<h3>Enchanted Clicks</h3><br>multiply click production based on your mana regen<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 5,000,000 coins'},
             effect() { return player['2'].manaregen.add(1).pow(0.5) },
-            canAfford() {
-                if (player.points.gte(5000000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(5000000)
-            },
+            cost: 5000000,
             style: {'color':'#00FF00'},
             unlocked() { if (hasUpgrade('1', 1044)) return true },
         },
         1143: {
             fullDisplay() { return '<h3>All on One</h3><br>the 3rd creation\'s first effect now applies to click production instead of passive production<br><br>Cost: 50,000,000 coins'},
-            canAfford() {
-                if (player.points.gte(50000000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(50000000)
-            },
+            cost: 50000000,
             style: {'color':'#00FF00'},
             unlocked() { if (hasUpgrade('1', 1044)) return true },
         },
@@ -696,38 +558,20 @@ addLayer("1", {
         1051: {
             fullDisplay() { return '<h3>Angelic Capacity</h3><br>multiply max mana based on your mana generated<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500 coins'},
             effect() { return player['2'].manatotal.add(1).pow(0.075) },
-            canAfford() {
-                if (player.points.gte(500)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(500)
-            },
+            cost: 500,
             style: {'color':'#00FFFF'},
             unlocked() { if (hasUpgrade('1', 51)) return true },
         },
         1052: {
             fullDisplay() { return '<h3>Road to Heaven</h3><br>multiply mana regen based on your angel coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 5,000 coins'},
             effect() { return player.angelCoins.add(1).pow(0.5) },
-            canAfford() {
-                if (player.points.gte(5000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(5000)
-            },
+            cost: 5000,
             style: {'color':'#00FFFF'},
             unlocked() { if (hasUpgrade('1', 51)) return true },
         },
         1053: {
-            fullDisplay() { return '<h3>Angels Supreme</h3><br>when you get angel coins, you get 5x the normal amount<br><br>Cost: 50,000 coins'},
-            canAfford() {
-                if (player.points.gte(50000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(50000)
-            },
+            fullDisplay() { return '<h3>Angels Supreme</h3><br>gain 5x angel coins<br><br>Cost: 50,000 coins'},
+            cost: 50000,
             style: {'color':'#00FFFF'},
             unlocked() { if (hasUpgrade('1', 51)) return true },
         },
@@ -747,38 +591,20 @@ addLayer("1", {
         1151: {
             fullDisplay() { return '<h3>Rainbows</h3><br>multiply max mana based on your faction coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500,000 coins'},
             effect() { return player._FC.add(1).pow(0.2) },
-            canAfford() {
-                if (player.points.gte(500000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(500000)
-            },
+            cost: 500000,
             style: {'color':'#00FFFF'},
             unlocked() { if (hasUpgrade('1', 1054)) return true },
         },
         1152: {
             fullDisplay() { return '<h3>Prism Upgrade</h3><br>double spell effects, but triple their mana cost<br><br>Cost: 5,000,000 coins'},
-            canAfford() {
-                if (player.points.gte(5000000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(5000000)
-            },
+            cost: 5000000,
             style: {'color':'#00FFFF'},
             unlocked() { if (hasUpgrade('1', 1054)) return true },
         },
         1153: {
             fullDisplay() { return '<h3>Angelic Clicks</h3><br>multiply click production based on your max mana<br><br>Cost: 50,000,000 coins'},
             effect() { return player['2'].maxmana.add(1).pow(0.15) },
-            canAfford() {
-                if (player.points.gte(50000000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(50000000)
-            },
+            cost: 50000000,
             style: {'color':'#00FFFF'},
             unlocked() { if (hasUpgrade('1', 1054)) return true },
         },
@@ -786,39 +612,21 @@ addLayer("1", {
         1061: {
             fullDisplay() { return '<h3>Jackpot</h3><br>increase faction coin find chance based on your coins<br><br>Effect: +' + format(upgradeEffect('1', this.id)) + '%<br><br>Cost: 500 coins'},
             effect() { return player.points.add(1).pow(0.2) },
-            canAfford() {
-                if (player.points.gte(500)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(500)
-            },
+            cost: 500,
             style: {'color':'#888800'},
             unlocked() { if (hasUpgrade('1', 61)) return true },
         },
         1062: {
             fullDisplay() { return '<h3>Goblin\'s Greed</h3><br>multiply passive production based on your faction coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 5,000 coins'},
             effect() { return player._FC.add(1).pow(0.15) },
-            canAfford() {
-                if (player.points.gte(5000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(5000)
-            },
+            cost: 5000,
             style: {'color':'#888800'},
             unlocked() { if (hasUpgrade('1', 61)) return true },
         },
         1063: {
             fullDisplay() { return '<h3>Currency Revolution</h3><br>increase faction coin find chance based on your faction coins<br><br>Effect: +' + format(upgradeEffect('1', this.id)) + '%<br><br>Cost: 50,000 coins'},
             effect() { return player._FC.add(1).pow(0.5) },
-            canAfford() {
-                if (player.points.gte(50000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(50000)
-            },
+            cost: 50000,
             style: {'color':'#888800'},
             unlocked() { if (hasUpgrade('1', 61)) return true },
         },
@@ -838,38 +646,20 @@ addLayer("1", {
         1161: {
             fullDisplay() { return '<h3>Moneyload</h3><br>multiply passive production based on your faction coin find chance<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500,000 coins'},
             effect() { return player.FCchance.add(1).pow(0.4) },
-            canAfford() {
-                if (player.points.gte(500000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(500000)
-            },
+            cost: 500000,
             style: {'color':'#888800'},
             unlocked() { if (hasUpgrade('1', 1064)) return true },
         },
         1162: {
             fullDisplay() { return '<h3>Absurd Taxes</h3><br>increase the base effect of Tax Collection by +30 seconds<br><br>Cost: 5,000,000 coins'},
-            canAfford() {
-                if (player.points.gte(5000000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(5000000)
-            },
+            cost: 5000000,
             style: {'color':'#888800'},
             unlocked() { if (hasUpgrade('1', 1064)) return true },
         },
         1163: {
             fullDisplay() { return '<h3>Goblin Pride</h3><br>multiply passive production based on your goblin coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 50,000,000 coins'},
             effect() { return player.goblinCoins.add(1).pow(0.5) },
-            canAfford() {
-                if (player.points.gte(50000000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(50000000)
-            },
+            cost: 50000000,
             style: {'color':'#888800'},
             unlocked() { if (hasUpgrade('1', 1064)) return true },
         },
@@ -877,39 +667,21 @@ addLayer("1", {
         1071: {
             fullDisplay() { return '<h3>Undending Cycle</h3><br>multiply passive production based on your coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 500 coins'},
             effect() { return player.points.add(1).pow(0.15) },
-            canAfford() {
-                if (player.points.gte(500)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(500)
-            },
+            cost: 500,
             style: {'color':'#8800FF'},
             unlocked() { if (hasUpgrade('1', 71)) return true },
         },
         1072: {
             fullDisplay() { return '<h3>Corpse Piles</h3><br>multiply passive production based on your undead coins<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 5,000 coins'},
             effect() { return player.undeadCoins.add(1).pow(0.5) },
-            canAfford() {
-                if (player.points.gte(5000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(5000)
-            },
+            cost: 5000,
             style: {'color':'#8800FF'},
             unlocked() { if (hasUpgrade('1', 71)) return true },
         },
         1073: {
             fullDisplay() { return '<h3>Stay no More</h3><br>multiply passive production based on your click production<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 50,000 coins'},
             effect() { return player['1'].clickValue.add(1).pow(0.2) },
-            canAfford() {
-                if (player.points.gte(50000)) return true;
-                else return false;
-            },
-            pay() {
-                player.points = player.points.sub(50000)
-            },
+            cost: 50000,
             style: {'color':'#8800FF'},
             unlocked() { if (hasUpgrade('1', 71)) return true },
         },
@@ -1043,9 +815,7 @@ addLayer("2", {
 
     },
     tabFormat: [
-        ["display-text",
-            function() { return '<h2>Casting'},
-            {}],
+        ["display-text", function() { return '<h2>Casting' }],
         "blank",
         ["clickables", [1]],
         "blank",
@@ -1053,20 +823,12 @@ addLayer("2", {
         "blank",
         ["bar", "manabar"],
         "blank",
-        ["display-text",
-            function() { return '<h2>Mana Upgrades'},
-            {}],
-        ["display-text",
-            function() { return 'you have ' + format(player['2'].manatotal) + ' mana generated'},
-            {}],
+        ["display-text", function() { return '<h2>Mana Upgrades' }],
+        ["display-text", function() { return 'you have ' + format(player['2'].manatotal) + ' mana generated' }],
         "blank",
         ["upgrades", [2]],
-        ["display-text",
-            function() { return '<h2>Autocasting Upgrades'},
-            {}],
-        ["display-text",
-            function() { return 'you have ' + format(player['2'].manatotalR) + ' total mana generated'},
-            {}],
+        ["display-text", function() { return '<h2>Autocasting Upgrades'}],
+        ["display-text", function() { return 'you have ' + format(player['2'].manatotalR) + ' total mana generated' }],
         "blank",
         ["upgrades", [10]],
     ],
@@ -1107,7 +869,7 @@ addLayer("2", {
                 else if (hasUpgrade('1', 21)) return '<font color = "#FF0000">boost passive production based on your mana for 15 seconds<br>Time left: ' + format(player['2'].sidespelltime) + 's<br><br>Effect: x' + format(clickableEffect('2', this.id)) + '<br><br>Cost: ' + formatWhole(player['2'].sidespellcost) + ' mana';
                 else return "";
             },
-            effect() { return player['2'].mana.add(1).pow(0.2).mul(player['2'].sidespellboost)},
+            effect() { return player['2'].mana.add(1).pow(0.2).mul(player['2'].sidespelleffboost)},
             canClick() {
                 if (getClickableState('2', this.id) == "ON") return false;
                 else if (player['2'].mana.gte(player['2'].sidespellcost) && hasUpgrade('1', 11)) return true;
@@ -1167,38 +929,34 @@ addLayer("2", {
     upgrades: {
         11: {
             canAfford() {
-                if (player['2'].mana.eq(player['2'].maxmana)) return true;
-                else return false;
+                return player['2'].mana.gte(player['2'].maxmana);
             },
         },
         21: {
             fullDisplay() { return '<h3>Mana Jar</h3><br>multiply max mana based on your mana<br><br>Effect: x' + format(upgradeEffect('2', this.id)) + '<br><br>Req: 750 mana generated<br><br>Cost: 1,500 coins'},
             effect() { return player['2'].mana.add(1).pow(0.05) },
             canAfford() {
-                if (player.points.gte(1000) && player['2'].manatotal.gte(750)) return true;
-                else return false;
+                return player.points.gte(1500) && player['2'].manatotal.gte(750);
             },
             pay() {
-                player.points = player.points.sub(1500)
+                player.points = player.points.sub(1500);
             },
         },
         22: {
             fullDisplay() { return '<h3>Mana Aura</h3><br>increase mana regen based on your mana<br><br>Effect: +' + format(upgradeEffect('2', this.id)) + '<br><br>Req: 2,500 mana generated<br><br>Cost: 5,000 coins'},
             effect() { return player['2'].mana.add(1).pow(0.05).sub(1) },
             canAfford() {
-                if (player.points.gte(5000) && player['2'].manatotal.gte(2500)) return true;
-                else return false;
+                return player.points.gte(5000) && player['2'].manatotal.gte(2500);
             },
             pay() {
-                player.points = player.points.sub(5000)
+                player.points = player.points.sub(5000);
             },
             unlocked() { if (player['2'].manatotal.gte(750)) return true },
         },
         101: {
             fullDisplay() { return '<h3>Colorless Autocasting</h3><br>unlock autocasting<br><br>Req: 20,000 total mana generated<br><br>Cost: 245 mana'},
             canAfford() {
-                if (player['2'].mana.gte(245) && player['2'].manatotalR.gte(20000)) return true;
-                else return false;
+                return player['2'].mana.gte(245) && player['2'].manatotalR.gte(20000);
             },
             pay() {
                 player['2'].mana = player['2'].mana.sub(245)
@@ -1207,7 +965,7 @@ addLayer("2", {
     },
 });
 
-addLayer("9", {
+addLayer("S", {
     name: "Stats",
     symbol: "S",
     position: 0,
@@ -1217,288 +975,124 @@ addLayer("9", {
     color: "#66DD66",
     type: "none",
     row: 1,
-    layerShown(){return true},
+    layerShown() {return true},
     tooltip() {return "Stats"},
     tabFormat: [
-        ["display-text",
-            function() { return '<h1>STATS' },
-            {}],
+        ["display-text", function() { return '<h1>STATS' }],
         "blank",
         "h-line",
         "blank",
-        ["display-text",
-            function() { return '<h2>THIS GAME' },
-            {}],
+        ["display-text", function() { return '<h2>THIS GAME' }],
         "blank",
         "h-line",
         "blank",
-        ["display-text",
-            function() { return '<h3>CURRENCY' },
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + format(player.best) + '</b> best coins' },
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + format(player.total) + '</b> total coins' },
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + formatWhole(player['1'].points) + '</b> gems' },
-            {}],
+        ["display-text", function() { return '<h3>CURRENCY' }],
+        ["display-text", function() { return 'You have <b>' + format(player.best) + '</b> best coins' }],
+        ["display-text", function() { return 'You have <b>' + format(player.total) + '</b> total coins' }],
+        ["display-text", function() { return 'You have <b>' + formatWhole(player['1'].points) + '</b> gems' }],
         "blank",
-        ["display-text",
-            function() { return '<h3>CLICKS' },
-            {}],
-        ["display-text",
-            function() { return 'Your click production is <b>' + format(player['1'].clickValue)},
-            {}],
-        ["display-text",
-            function() { return 'You have earned <b>' + format(player['1'].clickTotalValue) + '</b> coins from clicking' },
-            {}],
-        ["display-text",
-            function() { return 'You have clicked <b>' + formatWhole(player['1'].clickTimes) + '</b> times' },
-            {}],
+        ["display-text", function() { return '<h3>CLICKS' }],
+        ["display-text", function() { return 'Your click production is <b>' + format(player['1'].clickValue)}],
+        ["display-text", function() { return 'You have earned <b>' + format(player['1'].clickTotalValue) + '</b> coins from clicking' }],
+        ["display-text", function() { return 'You have clicked <b>' + formatWhole(player['1'].clickTimes) + '</b> times' }],
         "blank",
-        ["display-text",
-            function() { return '<h3>FACTION COINS' },
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + formatWhole(player._FC) + '</b> faction coins'},
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + formatWhole(player.FCbest) + '</b> best faction coins'},
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + formatWhole(player.FCtotal) + '</b> total faction coins'},
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + format(player.FCchance) + '%</b> faction coin chance' },
-            {}],
+        ["display-text", function() { return '<h3>FACTION COINS' }],
+        ["display-text", function() { return 'You have <b>' + formatWhole(player._FC) + '</b> faction coins'}],
+        ["display-text", function() { return 'You have <b>' + formatWhole(player.FCbest) + '</b> best faction coins'}],
+        ["display-text", function() { return 'You have <b>' + formatWhole(player.FCtotal) + '</b> total faction coins'}],
+        ["display-text", function() { return 'You have <b>' + format(player.FCchance) + '%</b> faction coin chance' }],
         "blank",
-        ["display-text",
-            function() { return '<h3>CREATIONS' },
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + getBuyableAmount('1', 11) + '</b> 1st creations'},
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + getBuyableAmount('1', 12) + '</b> 2nd creations'},
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + getBuyableAmount('1', 13) + '</b> 3rd creations'},
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + formatWhole(player['1'].creations) + '</b> creations total'},
-            {}],
+        ["display-text", function() { return '<h3>CREATIONS' }],
+        ["display-text", function() { return 'You have <b>' + getBuyableAmount('1', 11) + '</b> 1st creations'}],
+        ["display-text", function() { return 'You have <b>' + getBuyableAmount('1', 12) + '</b> 2nd creations'}],
+        ["display-text", function() { return 'You have <b>' + getBuyableAmount('1', 13) + '</b> 3rd creations'}],
+        ["display-text", function() { return 'You have <b>' + formatWhole(player['1'].creations) + '</b> creations total'}],
         "blank",
-        ["display-text",
-            function() { return '<h3>MANA' },
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + format(player['2'].mana) + '</b> mana'},
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + format(player['2'].maxmana) + '</b> max mana'},
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + format(player['2'].manaregen) + '</b> mana regen'},
-            {}],
-        ["display-text",
-            function() { return 'You have generated a total of <b>' + format(player['2'].manatotal) + '</b> mana' },
-            {}],
+        ["display-text", function() { return '<h3>MANA' }],
+        ["display-text", function() { return 'You have <b>' + format(player['2'].mana) + '</b> mana'}],
+        ["display-text", function() { return 'You have <b>' + format(player['2'].maxmana) + '</b> max mana'}],
+        ["display-text", function() { return 'You have <b>' + format(player['2'].manaregen) + '</b> mana regen'}],
+        ["display-text", function() { return 'You have generated a total of <b>' + format(player['2'].manatotal) + '</b> mana' }],
         "blank",
-        ["display-text",
-            function() { return '<h3>CASTS' },
-            {}],
-        ["display-text",
-            function() { return 'You have cast \'tax collection\' <b>' + formatWhole(player['2'].taxcasts) + '</b> times'},
-            {}],
-        ["display-text",
-            function() { return 'You have cast \'call to arms\' <b>' + formatWhole(player['2'].callcasts) + '</b> times'},
-            {}],
-        ["display-text",
-            function() { return 'You have cast \'holy light\' <b>' + formatWhole(player['2'].holycasts) + '</b> times'},
-            {}],
-        ["display-text",
-            function() { return 'You have cast \'blood frenzy\' <b>' + formatWhole(player['2'].frenzycasts) + '</b> times'},
-            {}],
+        ["display-text", function() { return '<h3>CASTS' }],
+        ["display-text", function() { return 'You have cast \'tax collection\' <b>' + formatWhole(player['2'].taxcasts) + '</b> times'}],
+        ["display-text", function() { return 'You have cast \'call to arms\' <b>' + formatWhole(player['2'].callcasts) + '</b> times'}],
+        ["display-text", function() { return 'You have cast \'holy light\' <b>' + formatWhole(player['2'].holycasts) + '</b> times'}],
+        ["display-text", function() { return 'You have cast \'blood frenzy\' <b>' + formatWhole(player['2'].frenzycasts) + '</b> times'}],
         "blank",
         "h-line",
         "blank",
-        ["display-text",
-            function() { return '<h2>THIS REINCARNATION' },
-            {}],
+        ["display-text", function() { return '<h2>THIS REINCARNATION' }],
         "blank",
         "h-line",
         "blank",
-        ["display-text",
-            function() { return '<h3>CURRENCY' },
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + format(player.bestR) + '</b> best coins' },
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + format(player.totalR) + '</b> total coins' },
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + formatWhole(player['1'].best) + '</b> best gems' },
-            {}],
+        ["display-text", function() { return '<h3>CURRENCY' }],
+        ["display-text", function() { return 'You have <b>' + format(player.bestR) + '</b> best coins' }],
+        ["display-text", function() { return 'You have <b>' + format(player.totalR) + '</b> total coins' }],
+        ["display-text", function() { return 'You have <b>' + formatWhole(player['1'].best) + '</b> best gems' }],
         "blank",
-        ["display-text",
-            function() { return '<h3>CLICKS' },
-            {}],
-        ["display-text",
-            function() { return 'Your best click production is <b>' + format(player['1'].clickValue)},
-            {}],
-        ["display-text",
-            function() { return 'Your best earnings from clicking is <b>' + format(player['1'].clickTotalValueBest) + '</b> coins' },
-            {}],
-        ["display-text",
-            function() { return 'You have earned <b>' + format(player['1'].clickTotalValueTotal) + '</b> total coins from clicking' },
-            {}],
-        ["display-text",
-            function() { return 'Your best times clicked is <b>' + formatWhole(player['1'].clickTimesBest) + '</b> times' },
-            {}],
-        ["display-text",
-            function() { return 'You have clicked <b>' + formatWhole(player['1'].clickTimesTotal) + '</b> times total' },
-            {}],
+        ["display-text", function() { return '<h3>CLICKS' }],
+        ["display-text", function() { return 'Your best click production is <b>' + format(player['1'].clickValue)}],
+        ["display-text", function() { return 'Your best earnings from clicking is <b>' + format(player['1'].clickTotalValueBest) + '</b> coins' }],
+        ["display-text", function() { return 'You have earned <b>' + format(player['1'].clickTotalValueTotal) + '</b> total coins from clicking' }],
+        ["display-text", function() { return 'Your best times clicked is <b>' + formatWhole(player['1'].clickTimesBest) + '</b> times' }],
+        ["display-text", function() { return 'You have clicked <b>' + formatWhole(player['1'].clickTimesTotal) + '</b> times total' }],
         "blank",
-        ["display-text",
-            function() { return '<h3>FACTION COINS' },
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + formatWhole(player.FCbestR) + '</b> best faction coins'},
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + formatWhole(player.FCtotalR) + '</b> total faction coins'},
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + format(player.FCchancebest) + '%</b> best faction coin chance' },
-            {}],
+        ["display-text", function() { return '<h3>FACTION COINS' }],
+        ["display-text", function() { return 'You have <b>' + formatWhole(player.FCbestR) + '</b> best faction coins'}],
+        ["display-text", function() { return 'You have <b>' + formatWhole(player.FCtotalR) + '</b> total faction coins'}],
+        ["display-text", function() { return 'You have <b>' + format(player.FCchancebest) + '%</b> best faction coin chance' }],
         "blank",
-        ["display-text",
-            function() { return '<h3>CREATIONS' },
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + formatWhole(player['1'].creationsR) + '</b> best creations'},
-            {}],
+        ["display-text", function() { return '<h3>CREATIONS' }],
+        ["display-text", function() { return 'You have <b>' + formatWhole(player['1'].creationsR) + '</b> best creations'}],
         "blank",
-        ["display-text",
-            function() { return '<h3>MANA' },
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + format(player['2'].maxmanabest) + '</b> best max mana'},
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + format(player['2'].manaregenbest) + '</b> best mana regen'},
-            {}],
-        ["display-text",
-            function() { return 'You have generated a total of <b>' + format(player['2'].manatotalR) + '</b> mana' },
-            {}],
+        ["display-text", function() { return '<h3>MANA' }],
+        ["display-text", function() { return 'You have <b>' + format(player['2'].maxmanabest) + '</b> best max mana'}],
+        ["display-text", function() { return 'You have <b>' + format(player['2'].manaregenbest) + '</b> best mana regen'}],
+        ["display-text", function() { return 'You have generated a total of <b>' + format(player['2'].manatotalR) + '</b> mana' }],
         "blank",
-        ["display-text",
-            function() { return '<h3>CASTS' },
-            {}],
-        ["display-text",
-            function() { return 'You have cast \'tax collection\' <b>' + formatWhole(player['2'].taxcastsR) + '</b> times total'},
-            {}],
-        ["display-text",
-            function() { return 'You have cast \'call to arms\' <b>' + formatWhole(player['2'].callcastsR) + '</b> times total'},
-            {}],
-        ["display-text",
-            function() { return 'You have cast \'holy light\' <b>' + formatWhole(player['2'].holycastsR) + '</b> times total'},
-            {}],
-        ["display-text",
-            function() { return 'You have cast \'blood frenzy\' <b>' + formatWhole(player['2'].frenzycastsR) + '</b> times total'},
-            {}],
+        ["display-text", function() { return '<h3>CASTS' }],
+        ["display-text", function() { return 'You have cast \'tax collection\' <b>' + formatWhole(player['2'].taxcastsR) + '</b> times total'}],
+        ["display-text", function() { return 'You have cast \'call to arms\' <b>' + formatWhole(player['2'].callcastsR) + '</b> times total'}],
+        ["display-text", function() { return 'You have cast \'holy light\' <b>' + formatWhole(player['2'].holycastsR) + '</b> times total'}],
+        ["display-text", function() { return 'You have cast \'blood frenzy\' <b>' + formatWhole(player['2'].frenzycastsR) + '</b> times total'}],
         "blank",
         "h-line",
         "blank",
-        ["display-text",
-            function() { return '<h2>ALL TIME' },
-            {}],
+        ["display-text", function() { return '<h2>ALL TIME' }],
         "blank",
         "h-line",
         "blank",
-        ["display-text",
-            function() { return '<h3>CURRENCY' },
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + format(player.bestT) + '</b> best coins' },
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + format(player.totalT) + '</b> total coins' },
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + formatWhole(player['1'].best) + '</b> best gems' },
-            {}],
+        ["display-text", function() { return '<h3>CURRENCY' }],
+        ["display-text", function() { return 'You have <b>' + format(player.bestT) + '</b> best coins' }],
+        ["display-text", function() { return 'You have <b>' + format(player.totalT) + '</b> total coins' }],
+        ["display-text", function() { return 'You have <b>' + formatWhole(player['1'].best) + '</b> best gems' }],
         "blank",
-        ["display-text",
-            function() { return '<h3>CLICKS' },
-            {}],
-        ["display-text",
-            function() { return 'Your best click production is <b>' + format(player['1'].clickValueBestT)},
-            {}],
-        ["display-text",
-            function() { return 'Your best earnings from clicking is <b>' + format(player['1'].clickTotalValueBestT) + '</b> coins' },
-            {}],
-        ["display-text",
-            function() { return 'You have earned <b>' + format(player['1'].clickTotalValueTotalT) + '</b> total coins from clicking' },
-            {}],
-        ["display-text",
-            function() { return 'Your best times clicked is <b>' + formatWhole(player['1'].clickTimesBestT) + '</b> times' },
-            {}],
-        ["display-text",
-            function() { return 'You have clicked <b>' + formatWhole(player['1'].clickTimesTotalT) + '</b> times total' },
-            {}],
+        ["display-text", function() { return '<h3>CLICKS' }],
+        ["display-text", function() { return 'Your best click production is <b>' + format(player['1'].clickValueBestT)}],
+        ["display-text", function() { return 'Your best earnings from clicking is <b>' + format(player['1'].clickTotalValueBestT) + '</b> coins' }],
+        ["display-text", function() { return 'You have earned <b>' + format(player['1'].clickTotalValueTotalT) + '</b> total coins from clicking' }],
+        ["display-text", function() { return 'Your best times clicked is <b>' + formatWhole(player['1'].clickTimesBestT) + '</b> times' }],
+        ["display-text", function() { return 'You have clicked <b>' + formatWhole(player['1'].clickTimesTotalT) + '</b> times total' }],
         "blank",
-        ["display-text",
-            function() { return '<h3>FACTION COINS' },
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + formatWhole(player.FCbestT) + '</b> best faction coins'},
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + formatWhole(player.FCtotalT) + '</b> total faction coins'},
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + format(player.FCchancebestT) + '%</b> best faction coin chance' },
-            {}],
+        ["display-text", function() { return '<h3>FACTION COINS' }],
+        ["display-text", function() { return 'You have <b>' + formatWhole(player.FCbestT) + '</b> best faction coins'}],
+        ["display-text", function() { return 'You have <b>' + formatWhole(player.FCtotalT) + '</b> total faction coins'}],
+        ["display-text", function() { return 'You have <b>' + format(player.FCchancebestT) + '%</b> best faction coin chance' }],
         "blank",
-        ["display-text",
-            function() { return '<h3>CREATIONS' },
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + formatWhole(player['1'].creationsT) + '</b> best creations'},
-            {}],
+        ["display-text", function() { return '<h3>CREATIONS' }],
+        ["display-text", function() { return 'You have <b>' + formatWhole(player['1'].creationsT) + '</b> best creations'}],
         "blank",
-        ["display-text",
-            function() { return '<h3>MANA' },
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + format(player['2'].maxmanabestT) + '</b> best max mana'},
-            {}],
-        ["display-text",
-            function() { return 'You have <b>' + format(player['2'].manaregenbestT) + '</b> best mana regen'},
-            {}],
-        ["display-text",
-            function() { return 'You have generated a total of <b>' + format(player['2'].manatotalT) + '</b> mana' },
-            {}],
+        ["display-text", function() { return '<h3>MANA' }],
+        ["display-text", function() { return 'You have <b>' + format(player['2'].maxmanabestT) + '</b> best max mana'}],
+        ["display-text", function() { return 'You have <b>' + format(player['2'].manaregenbestT) + '</b> best mana regen'}],
+        ["display-text", function() { return 'You have generated a total of <b>' + format(player['2'].manatotalT) + '</b> mana' }],
         "blank",
-        ["display-text",
-            function() { return '<h3>CASTS' },
-            {}],
-        ["display-text",
-            function() { return 'You have cast \'tax collection\' <b>' + formatWhole(player['2'].taxcastsT) + '</b> times total'},
-            {}],
-        ["display-text",
-            function() { return 'You have cast \'call to arms\' <b>' + formatWhole(player['2'].callcastsT) + '</b> times total'},
-            {}],
-        ["display-text",
-            function() { return 'You have cast \'holy light\' <b>' + formatWhole(player['2'].holycastsT) + '</b> times total'},
-            {}],
-        ["display-text",
-            function() { return 'You have cast \'blood frenzy\' <b>' + formatWhole(player['2'].frenzycastsT) + '</b> times total'},
-            {}],
+        ["display-text", function() { return '<h3>CASTS' }],
+        ["display-text", function() { return 'You have cast \'tax collection\' <b>' + formatWhole(player['2'].taxcastsT) + '</b> times total'}],
+        ["display-text", function() { return 'You have cast \'call to arms\' <b>' + formatWhole(player['2'].callcastsT) + '</b> times total'}],
+        ["display-text", function() { return 'You have cast \'holy light\' <b>' + formatWhole(player['2'].holycastsT) + '</b> times total'}],
+        ["display-text", function() { return 'You have cast \'blood frenzy\' <b>' + formatWhole(player['2'].frenzycastsT) + '</b> times total'}],
         "blank",
     ],
 });
