@@ -112,8 +112,6 @@ toggle: `<button class="smallUpg can" v-bind:style="{'background-color': tmp[dat
 
 prestige_button: `<button v-if="(tmp[layer].type !== 'none')" v-bind:class="{[layer]: true, reset: true, locked: !tmp[layer].canReset, can: tmp[layer].canReset}" v-bind:style="[tmp[layer].canReset ? {'background-color': tmp[layer].color} : {}, tmp[layer].componentStyles['prestige-button']]" v-html="prestigeButtonText(layer)" v-on:click="doReset(layer)"></button>`,
 
-assimilate_button: `<button v-if="(canAssimilate(layer) && player.mo.assimilating === layer)" v-bind:class="{mo: true, reset: true, locked: player[layer].points.lt(assimilationReq[layer]), can: player[layer].points.gte(assimilationReq[layer])}" v-bind:style="[player[layer].points.gte(assimilationReq[layer]) ? {'margin-left': '16px', 'background-color': tmp.mo.color} : {'margin-left': '16px'}, tmp[layer].componentStyles['prestige-button']]" v-html="(player[layer].points.gte(assimilationReq[layer]) ? 'Assimilate this layer!' : 'Reach ' + format(assimilationReq[layer]) + ' ' + tmp[layer].resource + ' to fully Assimilate this layer.')" v-on:click="completeAssimilation(layer)"></button>`,
-
 main_display: `<div><span v-if="player[layer].points.lt('1e1000')">You have </span><h2 v-bind:style="{'color': tmp[layer].color, 'text-shadow': '0px 0px 10px' + tmp[layer].color}">{{data ? format(player[layer].points, data) : formatWhole(player[layer].points)}}</h2> <span v-if="typeof extraMainDisplay === 'function' && extraMainDisplay(layer)" v-html="extraMainDisplay(layer)"></span>{{tmp[layer].resource}}<span v-if="layers[layer].effectDescription">, <span v-html="run(layers[layer].effectDescription, layers[layer])"></span></span><br><br></div>`,
 
 resource_display: `<div style="margin-top: -13px">
@@ -484,28 +482,24 @@ options_tab: `<table>
 		<td><button class="opt" onclick="save()">Save</td>
 		<td><button class="opt" onclick="toggleOpt('autosave')">Autosave: {{options.autosave ? "ON" : "OFF"}}</td>
 		<td><button class="opt" onclick="hardReset()">HARD RESET</td>
-		<td><button class="opt" onclick="display_mode(); fullcolordisplay()">Color Text Mode: {{DISPLAY_MODES[options.colorDisplayMode]}}</td>
 	</tr>
 	<tr>
 		<td><button class="opt" onclick="exportSave()">Export to clipboard</td>
 		<td><button class="opt" onclick="importSave()">Import</td>
 		<td><button class="opt" onclick="toggleOpt('offlineProd')">Offline Progress: {{options.offlineProd ? "ON" : "OFF"}}</td>
-		<td><button class="opt" onclick="color_display(); fullcolordisplay()">Colored Text: {{COLOR_DISPLAYS[options.colorDisplay]}}</td>
 	</tr>
 	<tr>
 		<td><button class="opt" onclick="switchTheme()">Theme: {{getThemeName()}}</td>
 		<td><button class="opt" onclick="adjustMSDisp()">Show Milestones: {{MS_DISPLAYS[MS_SETTINGS.indexOf(options.msDisplay)]}}</td>
 		<td><button class="opt" onclick="toggleOpt('hqTree')">High-Quality Tree: {{options.hqTree ? "ON" : "OFF"}}</td>
-		<td><button class="opt" onclick="player.nerdMode = !player.nerdMode">Nerd mode is {{player.nerdMode ? "ON" : "OFF"}} (you can also use the control key to toggle)</td>
 	</tr>
 	<tr>
 		<td><button class="opt" onclick="toggleOpt('hideChallenges')">Completed Challenges: {{options.hideChallenges ? "HIDDEN" : "SHOWN"}}</td>
 		<td><button class="opt" onclick="toggleOpt('forceOneTab'); needsCanvasUpdate = true">Single-Tab Mode: {{options.forceOneTab ? "ALWAYS" : "AUTO"}}</td>
 		<td><button class="opt" onclick="toggleOpt('forceTooltips'); needsCanvasUpdate = true">Shift-Click to Toggle Tooltips: {{options.forceTooltips ? "ON" : "OFF"}}</td>
-		<td><button class="opt" onclick="toggleOpt('extendplaces')">Extended Decimal Places: {{options.extendplaces ? "ON" : "OFF"}}</td>
 	</tr>
 	<tr>
-		<td><button class="opt" onclick="shiftCSS()">CSS gradient support: {{CSS_DISPLAYS[CSS_SETTINGS.indexOf(options.css)]}}</td>
+		<td><button class="opt" onclick="toggleOpt('extendplaces')">Extended Decimal Places: {{options.extendplaces ? "ON" : "OFF"}}</td>
 	</tr>
 </table>`,
 
