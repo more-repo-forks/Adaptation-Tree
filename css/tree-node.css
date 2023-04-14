@@ -54,8 +54,6 @@
 	box-shadow: var(--hqProperty2a), 0 0 20px #ff0000;
 }
 
-
-
 .mark {
 	position: relative;
 	display: inline-block;
@@ -69,7 +67,7 @@
 	border-bottom: 0.7em solid transparent;
 	border-left: 0.3em solid transparent;
 	font-size: 10px;
-	overflow:auto;
+	overflow: auto;
 	pointer-events: none;
 }
 
@@ -87,7 +85,6 @@
 	border-left: 0.3em solid transparent;
 	font-size: 10px;
 	pointer-events: none;
-
 }
 
 .star:before, .star:after {

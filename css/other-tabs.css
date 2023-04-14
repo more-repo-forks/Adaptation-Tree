@@ -1,4 +1,3 @@
-
 #optionWheel {
 	position: absolute;
 	top: 0;
@@ -28,7 +27,7 @@
 #info:hover {
 	transform: scale(1.2, 1.2);
 	text-shadow: 5px 0 10px #02f2f2,
-              -3px 0 12px #02f2f2;
+				-3px 0 12px #02f2f2;
 }
 
 #discord {
@@ -74,8 +73,10 @@
 
 a {
 	color: #007fff;
+	-webkit-text-decoration-line: none;
+	-moz-text-decoration-line: none;
 	text-decoration-line: none;
-	cursor: pointer
+	cursor: pointer;
 }
 
 .link {
@@ -92,7 +93,7 @@ a {
 .link:hover {
 	transform: scale(1.2, 1.2);
 	text-shadow: 5px 0 10px #02f2f2,
-              -3px 0 12px #02f2f2;
+				-3px 0 12px #02f2f2;
 }
 
 .opt {

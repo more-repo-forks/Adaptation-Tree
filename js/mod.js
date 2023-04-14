@@ -3,7 +3,7 @@ let modInfo = {
 	id: "realm-creator-yrahcaz7",
 	author: "Yrahcaz7",
 	pointsName: "coins",
-	modFiles: ["layers.js", "tree.js"],
+	modFiles: ["layers.js", "technical/tree.js"],
 	initialStartPoints: new Decimal (0),
 	offlineLimit: 1,  // In hours
 }
@@ -12,39 +12,6 @@ let VERSION = {
 	num: "0.4",
 	name: "Super Beta",
 }
-
-let changelog = `<h1>Changelog:</h1><br>
-	<br><h3>v0.4 - Super Beta</h3><br>
-		- Added 2 new creation tiers.<br>	
-		- Added 2 gem power upgrades.<br>
-		- Added 1 autocating upgrades.<br>
-		- Added 2 autocasters.<br>
-		- Added 6 elf upgrades.<br>
-		- Added 6 angel upgrades.<br>
-		- Added 3 demon upgrades.<br>
-		- Added relevant mana stats to casting menu.<br>
-		- Minor fixes.<br>
-	<br><h3>v0.3 - Spells Beta</h3><br>
-		- Added 5 new creation tiers.<br>
-		- Added casting, mana, and spells.<br>
-		- Added 2 normal spells.<br>
-		- Added 2 side spells.<br>
-		- Added 2 mana upgrades.<br>
-		- Added 3 fairy upgrades.<br>
-		- Added 6 goblin upgrades.<br>
-		- Added more types of stats to the stat menu.<br>
-		- Minor fixes.<br>
-	<br><h3>v0.2 - Factions Beta</h3><br>
-		- Added 5 new creation tiers.<br>
-		- Added faction coins.<br>
-		- Added choosing a faction.<br>
-		- Added a new tab for faction stuff.<br>
-		- Fixed various issues with the stats menu.<br>
-		- Added faction coin stats to the stat menu.<br>
-	<br><h3>v0.1 - Beta Test</h3><br>
-		- Added the click button.<br>
-		- Added 3 creations.<br>
-		- Added a stats menu.`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
 

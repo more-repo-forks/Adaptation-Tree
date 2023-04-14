@@ -5,5 +5,4 @@ for (file in modInfo.modFiles) {
     script.setAttribute("src", "js/" + modInfo.modFiles[file]);
     script.setAttribute("async", "false");
     document.head.insertBefore(script, document.getElementById("temp"));
-}
-
+};
