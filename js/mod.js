@@ -26,26 +26,26 @@ function randint(min, max) {
 }
 
 function callcast() {
-	player['2'].calltime = new Decimal(30);
-	player['2'].mana = player['2'].mana.sub(player['2'].callcost);
-	player['2'].callcasts = player['2'].callcasts.add(1);
-	player['2'].callcastsR = player['2'].callcastsR.add(1);
-	player['2'].callcastsT = player['2'].callcastsT.add(1);
+	player['2'].callTime = new Decimal(30);
+	player['2'].mana = player['2'].mana.sub(player['2'].callCost);
+	player["2"].G.callCasts = player["2"].G.callCasts.add(1);
+	player["2"].R.callCasts = player["2"].R.callCasts.add(1);
+	player["2"].T.callCasts = player["2"].T.callCasts.add(1);
 	setClickableState('2', 12, "ON");
 }
 
 function sidespellcast() {
-	player['2'].sidespelltime = new Decimal(15);
-	player['2'].mana = player['2'].mana.sub(player['2'].sidespellcost);
+	player['2'].sideSpellTime = new Decimal(15);
+	player['2'].mana = player['2'].mana.sub(player['2'].sideSpellCost);
 		if (hasUpgrade('1', 11)) {
-			player['2'].holycasts = player['2'].holycasts.add(1);
-			player['2'].holycastsR = player['2'].holycastsR.add(1);
-			player['2'].holycastsT = player['2'].holycastsT.add(1);
+			player["2"].G.holyCasts = player["2"].G.holyCasts.add(1);
+			player["2"].R.holyCasts = player["2"].R.holyCasts.add(1);
+			player["2"].T.holyCasts = player["2"].T.holyCasts.add(1);
 		};
 		if (hasUpgrade('1', 21)) {
-			player['2'].frenzycasts = player['2'].frenzycasts.add(1);
-			player['2'].frenzycastsR = player['2'].frenzycastsR.add(1);
-			player['2'].frenzycastsT = player['2'].frenzycastsT.add(1);
+			player["2"].G.frenzyCasts = player["2"].G.frenzyCasts.add(1);
+			player["2"].R.frenzyCasts = player["2"].R.frenzyCasts.add(1);
+			player["2"].T.frenzyCasts = player["2"].T.frenzyCasts.add(1);
 		};
 	setClickableState('2', 13, "ON");
 };
@@ -72,14 +72,16 @@ function getPointGen() {
 	return gain;
 };
 
-// You can add non-layer related variables that should to into "player" and be saved here, along with default values
-function addedPlayerData() { return {
+const playerStartingStats = {
 	best: new Decimal(0),
 	total: new Decimal(0),
-	bestR: new Decimal(0),
-	totalR: new Decimal(0),
-	bestT: new Decimal(0),
-	totalT: new Decimal(0),
+	FCchancebest: new Decimal(2.5),
+	FCbest: new Decimal(0),
+	FCtotal: new Decimal(0),
+};
+
+// You can add non-layer related variables that should to into "player" and be saved here, along with default values
+function addedPlayerData() { return {
 	fairyCoins: new Decimal(0),
 	elfCoins: new Decimal(0),
 	angelCoins: new Decimal(0),
@@ -87,15 +89,11 @@ function addedPlayerData() { return {
 	undeadCoins: new Decimal(0),
 	demonCoins: new Decimal(0),
 	FCchance: new Decimal(2.5),
-	FCchancebest: new Decimal(2.5),
-	FCchancebestT: new Decimal(2.5),
-	_FC: new Decimal(0),
-	FCbest: new Decimal(0),
-	FCbestR: new Decimal(0),
-	FCbestT: new Decimal(0),
-	FCtotal: new Decimal(0),
-	FCtotalR: new Decimal(0),
-	FCtotalT: new Decimal(0),
+	FC: new Decimal(0),
+	bestGems: new Decimal(0),
+	G: Object.create(playerStartingStats),
+	R: Object.create(playerStartingStats),
+	T: Object.create(playerStartingStats),
 }};
 
 // Display extra things at the top of the page
@@ -104,7 +102,7 @@ var displayThings = [
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.points.gte(new Decimal("e280000000"))
+	return player.points.gte(new Decimal("e1000000"))
 };
 
 // Style for the background, can be a function
@@ -113,7 +111,7 @@ var backgroundStyle = {
 
 // You can change this if you have things that can be messed up by long tick lengths
 function maxTickLength() {
-	return(1)
+	return 1;
 };
 
 // Use this if you need to undo inflation from an older version. If the version is older than the version that fixed the issue,
