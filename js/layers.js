@@ -6,6 +6,33 @@ const mainTabStartingStats = {
 	bestCreations: new Decimal(0),
 };
 
+const creationNames = [
+	["Dirt", "Rich Dirt", "Richer Dirt", "Dry Soil", "Soil", "Fertile Soil", "Perfected Soil"],
+	["Pebbles", "Rocks", "Boulders", "Stone Hills", "Stone Caves"],
+	["Weeds", "Reeds", "Grass"],
+];
+
+const creationTierReq = [10, 25, 50, 100, 250, 500, 1000];
+
+function getCreationName(id, lowercase = false) {
+	let num = 0;
+	while (hasUpgrade('1', (+id) + (num * 10) + 90)) {
+		num++;
+	};
+	if (lowercase) return creationNames[id - 1][num].toLowerCase();
+	else return creationNames[id - 1][num];
+};
+
+function getCreationTierUpgradeDesc(id, cost, eff, eff2 = 0) {
+	const names = creationNames[id % 10 - 1];
+	const index = Math.floor(id / 10) - 9;
+	if (id % 10 == 3) {
+		return "<h3>" + names[index + 1] + "</h3><br>increases " + names[index].toLowerCase() + "'" + (names[index].endsWith("s") ? "" : "s") + " first base effect by +" + format(eff, 2, false) + ", second base effect by +" + format(eff2, 2, false) + "%<br><br>Req: " + creationTierReq[index] + " " + names[index].toLowerCase() + "<br><br>Cost: " + format(cost) + " coins";
+	} else {
+		return "<h3>" + names[index + 1] + "</h3><br>increases " + names[index].toLowerCase() + "'" + (names[index].endsWith("s") ? "" : "s") + " base effect by +" + format(eff, 2, false) + "<br><br>Req: " + creationTierReq[index] + " " + names[index].toLowerCase() + "<br><br>Cost: " + format(cost) + " coins";
+	};
+};
+
 addLayer("1", {
 	name: "Main Tab",
 	symbol: "M",
@@ -214,16 +241,7 @@ addLayer("1", {
 	},
 	buyables: {
 		11: {
-			title() {
-				let title = "Dirt";
-				if (hasUpgrade('1', 91)) title = "Rich Dirt";
-				if (hasUpgrade('1', 101)) title = "Richer Dirt";
-				if (hasUpgrade('1', 111)) title = "Soil";
-				if (hasUpgrade('1', 121)) title = "Fertile Soil";
-				if (hasUpgrade('1', 131)) title = "Fertilized Soil";
-				if (hasUpgrade('1', 141)) title = "Perfected Soil";
-				return title;
-			},
+			title() { return getCreationName(this.id - 10) },
 			cost() { return getBuyableAmount('1', this.id).add(1).pow(getBuyableAmount('1', this.id).add(1).pow(0.1)) },
 			effect() {
 				let eff = new Decimal(0.1);
@@ -248,14 +266,7 @@ addLayer("1", {
 			},
 		},
 		12: {
-			title() {
-				let title = "Pebbles";
-				if (hasUpgrade('1', 92)) title = "Rocks";
-				if (hasUpgrade('1', 102)) title = "Boulders";
-				if (hasUpgrade('1', 112)) title = "Stone Hills";
-				if (hasUpgrade('1', 122)) title = "Stone Caves";
-				return title;
-			},
+			title() { return getCreationName(this.id - 10) },
 			cost() { return getBuyableAmount('1', this.id).add(1).pow(getBuyableAmount('1', this.id).add(1).pow(0.1)).mul(100) },
 			effect() {
 				let eff = new Decimal(0.25);
@@ -278,12 +289,7 @@ addLayer("1", {
 			},
 		},
 		13: {
-			title() {
-				let title = "Weeds";
-				if (hasUpgrade('1', 93)) title = "Reeds";
-				if (hasUpgrade('1', 103)) title = "Grass";
-				return title;
-			},
+			title() { return getCreationName(this.id - 10) },
 			cost() { return getBuyableAmount('1', this.id).add(1).pow(getBuyableAmount('1', this.id).add(1).pow(0.1)).mul(10000) },
 			effect() {
 				let eff = new Decimal(2.5);
@@ -394,88 +400,88 @@ addLayer("1", {
 		},
 		// creation tiers
 		91: {
-			fullDisplay() { return '<h3>Rich Dirt</h3><br>increases dirt\'s base effect by +0.05<br><br>Req: 10 dirt<br><br>Cost: 250 coins'},
+			fullDisplay() { return getCreationTierUpgradeDesc(this.id, this.cost, 0.05) },
 			cost: 250,
 			currencyInternalName: "points",
 			currencyLocation() { return player },
-			unlocked() { return getBuyableAmount('1', 11).gte(10) },
+			unlocked() { return getBuyableAmount("1", this.id % 10 + 10).gte(creationTierReq[Math.floor(this.id / 10) - 9]) },
 		},
 		92: {
-			fullDisplay() { return '<h3>Rocks</h3><br>increases pebble\'s base effect by +0.50<br><br>Req: 10 pebbles<br><br>Cost: 5,000 coins'},
+			fullDisplay() { return getCreationTierUpgradeDesc(this.id, this.cost, 0.5) },
 			cost: 5000,
 			currencyInternalName: "points",
 			currencyLocation() { return player },
-			unlocked() { return getBuyableAmount('1', 12).gte(10) },
+			unlocked() { return getBuyableAmount("1", this.id % 10 + 10).gte(creationTierReq[Math.floor(this.id / 10) - 9]) },
 		},
 		93: {
-			fullDisplay() { return '<h3>Reeds</h3><br>increases weed\'s first base effect by +0.50, second base effect by +0.05%<br><br>Req: 10 weeds<br><br>Cost: 500,000 coins'},
+			fullDisplay() { return getCreationTierUpgradeDesc(this.id, this.cost, 0.5, 0.05) },
 			cost: 500000,
 			currencyInternalName: "points",
 			currencyLocation() { return player },
-			unlocked() { return getBuyableAmount('1', 13).gte(10) },
+			unlocked() { return getBuyableAmount("1", this.id % 10 + 10).gte(creationTierReq[Math.floor(this.id / 10) - 9]) },
 		},
 		101: {
-			fullDisplay() { return '<h3>Richer Dirt</h3><br>increases rich dirt\'s base effect by +0.10<br><br>Req: 25 rich dirt<br><br>Cost: 1,000 coins'},
+			fullDisplay() { return getCreationTierUpgradeDesc(this.id, this.cost, 0.1) },
 			cost: 1000,
 			currencyInternalName: "points",
 			currencyLocation() { return player },
-			unlocked() { return getBuyableAmount('1', 11).gte(25) && hasUpgrade('1', 91) },
+			unlocked() { return getBuyableAmount("1", this.id % 10 + 10).gte(creationTierReq[Math.floor(this.id / 10) - 9]) && hasUpgrade("1", this.id - 10) },
 		},
 		102: {
-			fullDisplay() { return '<h3>Boulders</h3><br>increases stone\'s base effect by +1.25<br><br>Req: 25 stones<br><br>Cost: 25,000 coins'},
+			fullDisplay() { return getCreationTierUpgradeDesc(this.id, this.cost, 1.25) },
 			cost: 25000,
 			currencyInternalName: "points",
 			currencyLocation() { return player },
-			unlocked() { return getBuyableAmount('1', 12).gte(25) && hasUpgrade('1', 92) },
+			unlocked() { return getBuyableAmount("1", this.id % 10 + 10).gte(creationTierReq[Math.floor(this.id / 10) - 9]) && hasUpgrade("1", this.id - 10) },
 		},
 		103: {
-			fullDisplay() { return '<h3>Grass</h3><br>increases reed\'s first base effect by +2.00, second base effect by +0.20%<br><br>Req: 25 reeds<br><br>Cost: 2,500,000 coins'},
+			fullDisplay() { return getCreationTierUpgradeDesc(this.id, this.cost, 2, 0.2) },
 			cost: 2500000,
 			currencyInternalName: "points",
 			currencyLocation() { return player },
-			unlocked() { return getBuyableAmount('1', 13).gte(25) && hasUpgrade('1', 93) },
+			unlocked() { return getBuyableAmount("1", this.id % 10 + 10).gte(creationTierReq[Math.floor(this.id / 10) - 9]) && hasUpgrade("1", this.id - 10) },
 		},
 		111: {
-			fullDisplay() { return '<h3>Soil</h3><br>increase richer dirt\'s base effect by +0.20<br><br>Req: 50 richer dirt<br><br>Cost: 5,000 coins'},
+			fullDisplay() { return getCreationTierUpgradeDesc(this.id, this.cost, 0.2) },
 			cost: 5000,
 			currencyInternalName: "points",
 			currencyLocation() { return player },
-			unlocked() { return getBuyableAmount('1', 11).gte(50) && hasUpgrade('1', 101) },
+			unlocked() { return getBuyableAmount("1", this.id % 10 + 10).gte(creationTierReq[Math.floor(this.id / 10) - 9]) && hasUpgrade("1", this.id - 10) },
 		},
 		112: {
-			fullDisplay() { return '<h3>Stone Hills</h3><br>increase boulder\'s base effect by +2.00<br><br>Req: 50 boulders<br><br>Cost: 100,000 coins'},
+			fullDisplay() { return getCreationTierUpgradeDesc(this.id, this.cost, 2) },
 			cost: 100000,
 			currencyInternalName: "points",
 			currencyLocation() { return player },
-			unlocked() { return getBuyableAmount('1', 12).gte(50) && hasUpgrade('1', 102) },
+			unlocked() { return getBuyableAmount("1", this.id % 10 + 10).gte(creationTierReq[Math.floor(this.id / 10) - 9]) && hasUpgrade("1", this.id - 10) },
 		},
 		121: {
-			fullDisplay() { return '<h3>Fertile Soil</h3><br>increase soil\'s base effect by +0.40<br><br>Req: 100 soil<br><br>Cost: 25,000 coins'},
+			fullDisplay() { return getCreationTierUpgradeDesc(this.id, this.cost, 0.4) },
 			cost: 25000,
 			currencyInternalName: "points",
 			currencyLocation() { return player },
-			unlocked() { return getBuyableAmount('1', 11).gte(100) && hasUpgrade('1', 111) },
+			unlocked() { return getBuyableAmount("1", this.id % 10 + 10).gte(creationTierReq[Math.floor(this.id / 10) - 9]) && hasUpgrade("1", this.id - 10) },
 		},
 		122: {
-			fullDisplay() { return '<h3>Stone Caves</h3><br>increase stone hill\'s base effect by +3.50<br><br>Req: 100 stone hills<br><br>Cost: 500,000 coins'},
+			fullDisplay() { return getCreationTierUpgradeDesc(this.id, this.cost, 3.5) },
 			cost: 500000,
 			currencyInternalName: "points",
 			currencyLocation() { return player },
-			unlocked() { return getBuyableAmount('1', 12).gte(100) && hasUpgrade('1', 112) },
+			unlocked() { return getBuyableAmount("1", this.id % 10 + 10).gte(creationTierReq[Math.floor(this.id / 10) - 9]) && hasUpgrade("1", this.id - 10) },
 		},
 		131: {
-			fullDisplay() { return '<h3>Fertilized Soil</h3><br>increase fertile soil\'s base effect by +0.65<br><br>Req: 250 fertile soil<br><br>Cost: 100,000 coins'},
+			fullDisplay() { return getCreationTierUpgradeDesc(this.id, this.cost, 0.65) },
 			cost: 100000,
 			currencyInternalName: "points",
 			currencyLocation() { return player },
-			unlocked() { return getBuyableAmount('1', 11).gte(250) && hasUpgrade('1', 121) },
+			unlocked() { return getBuyableAmount("1", this.id % 10 + 10).gte(creationTierReq[Math.floor(this.id / 10) - 9]) && hasUpgrade("1", this.id - 10) },
 		},
 		141: {
-			fullDisplay() { return '<h3>Perfected Soil</h3><br>increase fertilized soil\'s base effect by +1.00<br><br>Req: 500 fertilized soil<br><br>Cost: 500,000 coins'},
+			fullDisplay() { return getCreationTierUpgradeDesc(this.id, this.cost, 1) },
 			cost: 500000,
 			currencyInternalName: "points",
 			currencyLocation() { return player },
-			unlocked() { return getBuyableAmount('1', 11).gte(500) && hasUpgrade('1', 131) },
+			unlocked() { return getBuyableAmount("1", this.id % 10 + 10).gte(creationTierReq[Math.floor(this.id / 10) - 9]) && hasUpgrade("1", this.id - 10) },
 		},
 		// faction upgrades
 		// fairy faction
@@ -845,8 +851,10 @@ addLayer("2", {
 			player["2"].T.manaTotal = player["2"].T.manaTotal.add(diffMana);
 		};
 		// best mana
+		if (player['2'].maxMana.gt(player["2"].G.maxManaBest)) player["2"].G.maxManaBest = player['2'].maxMana;
 		if (player['2'].maxMana.gt(player["2"].R.maxManaBest)) player["2"].R.maxManaBest = player['2'].maxMana;
 		if (player['2'].maxMana.gt(player["2"].T.maxManaBest)) player["2"].T.maxManaBest = player['2'].maxMana;
+		if (player['2'].manaRegen.gt(player["2"].G.manaRegenBest)) player["2"].G.manaRegenBest = player['2'].manaRegen;
 		if (player['2'].manaRegen.gt(player["2"].R.manaRegenBest)) player["2"].R.manaRegenBest = player['2'].manaRegen;
 		if (player['2'].manaRegen.gt(player["2"].T.manaRegenBest)) player["2"].T.manaRegenBest = player['2'].manaRegen;
 		// spell time

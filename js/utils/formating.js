@@ -20,10 +20,10 @@ function commaFormat(num, precision) {
     return portions[0] + "." + portions[1];
 };
 
-function regularFormat(num, precision) {
+function regularFormat(num, precision, small) {
     if (num === null || num === undefined) return "NaN";
     if (num.mag < 0.0001) return (0).toFixed(precision);
-    if (num.mag < 0.1 && precision !==0) precision = Math.max(precision, 4);
+    if (num.mag < 0.1 && precision !== 0 && small) precision = Math.max(precision, 4);
     return num.toStringWithDecimalPlaces(precision);
 };
 
@@ -37,10 +37,9 @@ function sumValues(x) {
     return x.reduce((a, b) => Decimal.add(a, b));
 };
 
-function format(decimal, precision = 2, small) {
-    small = small || modInfo.allowSmall;
+function format(decimal, precision = 2, small = true) {
     if (options.extendplaces && precision == 2) precision = 3;
-    decimal = new Decimal(decimal)
+    decimal = new Decimal(decimal);
     if (isNaN(decimal.sign) || isNaN(decimal.layer) || isNaN(decimal.mag)) {
         player.hasNaN = true;
         return "NaN";
@@ -56,7 +55,7 @@ function format(decimal, precision = 2, small) {
     if (decimal.gte("1e10000")) return exponentialFormat(decimal, 0);
     if (decimal.gte(1e9)) return exponentialFormat(decimal, precision);
     if (decimal.gte(1e3)) return commaFormat(decimal, 0);
-    if (decimal.gte(0.0001) || !small) return regularFormat(decimal, precision);
+    if (decimal.gte(0.0001) || !small) return regularFormat(decimal, precision, small);
     if (decimal.eq(0)) return (0).toFixed(precision);
     decimal = invertOOM(decimal);
     let val = "";
