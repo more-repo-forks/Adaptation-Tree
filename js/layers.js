@@ -224,7 +224,7 @@ addLayer("1", {
 				if (hasUpgrade('1', 141)) title = "Perfected Soil";
 				return title;
 			},
-			cost() { return getBuyableAmount('1', this.id).add(1).pow(1.5) },
+			cost() { return getBuyableAmount('1', this.id).add(1).pow(getBuyableAmount('1', this.id).add(1).pow(0.1)) },
 			effect() {
 				let eff = new Decimal(0.1);
 				if (hasUpgrade('1', 91)) eff = eff.add(0.05);
@@ -256,7 +256,7 @@ addLayer("1", {
 				if (hasUpgrade('1', 122)) title = "Stone Caves";
 				return title;
 			},
-			cost() { return getBuyableAmount('1', this.id).add(1).pow(1.5).mul(100) },
+			cost() { return getBuyableAmount('1', this.id).add(1).pow(getBuyableAmount('1', this.id).add(1).pow(0.1)).mul(100) },
 			effect() {
 				let eff = new Decimal(0.25);
 				if (hasUpgrade('1', 92)) eff = eff.add(0.5);
@@ -284,7 +284,7 @@ addLayer("1", {
 				if (hasUpgrade('1', 103)) title = "Grass";
 				return title;
 			},
-			cost() { return getBuyableAmount('1', this.id).add(1).pow(1.5).mul(10000) },
+			cost() { return getBuyableAmount('1', this.id).add(1).pow(getBuyableAmount('1', this.id).add(1).pow(0.1)).mul(10000) },
 			effect() {
 				let eff = new Decimal(2.5);
 				if (hasUpgrade('1', 93)) eff = eff.add(0.5);
@@ -629,8 +629,8 @@ addLayer("1", {
 			unlocked() { return hasUpgrade('1', 1054) },
 		},
 		1153: {
-			fullDisplay() { return '<h3>Angelic Clicks</h3><br>increase click production based on your max mana<br><br>Cost: 50,000,000 coins'},
-			effect() { return player['2'].maxMana.add(1).pow(0.15) },
+			fullDisplay() { return '<h3>Angelic Clicks</h3><br>increase click production based on your max mana<br><br>Effect: x' + format(upgradeEffect('1', this.id)) + '<br><br>Cost: 50,000,000 coins'},
+			effect() { return player['2'].maxMana.add(1).pow(0.05) },
 			cost: 50000000,
 			currencyInternalName: "points",
 			currencyLocation() { return player },
