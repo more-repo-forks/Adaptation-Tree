@@ -33,6 +33,18 @@ function getCreationTierUpgradeDesc(id, cost, eff, eff2 = 0) {
 	};
 };
 
+function getCreationCost(amount, mult = 1) {
+	return amount.add(1).pow(amount.add(1).pow(0.1).add(amount.div(25000))).mul(mult);
+};
+
+function getCreationBulkCost(amount, mult = 1) {
+	let total = new Decimal(0);
+	for (let index = 0; index < getClickableState("1", 21); index++) {
+		total = total.add(getCreationCost(amount.add(index), mult));
+	};
+	return total;
+};
+
 addLayer("1", {
 	name: "Main Tab",
 	symbol: "M",
@@ -137,6 +149,12 @@ addLayer("1", {
 		if (player["1"].G.bestCreations.gt(player["1"].T.bestCreations)) player["1"].T.bestCreations = player["1"].G.bestCreations;
 		// gems
 		if (player['1'].best.gt(player.bestGems)) player.bestGems = player['1'].best;
+		// fix bulk buy
+		if (getClickableState("1", 21) < 1 || typeof getClickableState("1", 21) != "number") {
+			setClickableState("1", 21, 1);
+		} else if (getClickableState("1", 21) > 10) {
+			setClickableState("1", 21, 10);
+		};
 	},
 	tabFormat: {
 		"Creation Tab": {
@@ -149,12 +167,14 @@ addLayer("1", {
 				["row", [
 					["display-text", function() { return '<font color = "#FF00FF">You have ' + formatWhole(player.fairyCoins) + ' fairy coins<br><font color = "#00FF00">You have ' + formatWhole(player.elfCoins) + ' elf coins<br><font color = "#00FFFF">You have ' + formatWhole(player.angelCoins) + ' angel coins' }],
 					["blank", ["17px"]],
-					"clickables",
+					["clickables", [1]],
 					["blank", ["17px"]],
 					["display-text", function() { return '<font color = "#888800">You have ' + formatWhole(player.goblinCoins) + ' goblin coins<br><font color = "#8800FF">You have ' + formatWhole(player.undeadCoins) + ' undead coins<br><font color = "#880000">You have ' + formatWhole(player.demonCoins) + ' demon coins' }],
 				]],
 				"blank",
-				["display-text", function() { return '<h2>Creations' }],
+				["display-text", "<h2>Creations"],
+				"blank",
+				["clickables", [2]],
 				"blank",
 				"buyables",
 				"blank",
@@ -176,7 +196,7 @@ addLayer("1", {
 				["row", [
 					["display-text", function() { return '<font color = "#FF00FF">You have ' + formatWhole(player.fairyCoins) + ' fairy coins<br><font color = "#00FF00">You have ' + formatWhole(player.elfCoins) + ' elf coins<br><font color = "#00FFFF">You have ' + formatWhole(player.angelCoins) + ' angel coins' }],
 					["blank", ["17px"]],
-					"clickables",
+					["clickables", [1]],
 					["blank", ["17px"]],
 					["display-text", function() { return '<font color = "#888800">You have ' + formatWhole(player.goblinCoins) + ' goblin coins<br><font color = "#8800FF">You have ' + formatWhole(player.undeadCoins) + ' undead coins<br><font color = "#880000">You have ' + formatWhole(player.demonCoins) + ' demon coins' }],
 				]],
@@ -238,11 +258,23 @@ addLayer("1", {
 				if (player["1"].G.bestTotalClickValue.gt(player["1"].T.bestTotalClickValue)) player["1"].T.bestTotalClickValue = player["1"].G.bestTotalClickValue;
 			},
 		},
+		21: {
+			title() {return "You are bulk buying " + formatWhole(getClickableState("1", 21)) + "x creations"},
+			canClick() {return true},
+			onClick() {
+				if (getClickableState("1", 21) == 1) {
+					setClickableState("1", 21, 10);
+				} else {
+					setClickableState("1", 21, 1);
+				};
+			},
+			style: {"width":"350px", "min-height":"30px", "border-radius":"15px"},
+		},
 	},
 	buyables: {
 		11: {
 			title() { return getCreationName(this.id - 10) },
-			cost() { return getBuyableAmount('1', this.id).add(1).pow(getBuyableAmount('1', this.id).add(1).pow(0.1)) },
+			cost() { return getCreationBulkCost(getBuyableAmount("1", this.id)) },
 			effect() {
 				let eff = new Decimal(0.1);
 				if (hasUpgrade('1', 91)) eff = eff.add(0.05);
@@ -262,12 +294,12 @@ addLayer("1", {
 			canAfford() { return player.points.gte(this.cost()) },
 			buy() {
 				player.points = player.points.sub(this.cost());
-				setBuyableAmount('1', this.id, getBuyableAmount('1', this.id).add(1));
+				setBuyableAmount("1", this.id, getBuyableAmount("1", this.id).add(getClickableState("1", 21)));
 			},
 		},
 		12: {
 			title() { return getCreationName(this.id - 10) },
-			cost() { return getBuyableAmount('1', this.id).add(1).pow(getBuyableAmount('1', this.id).add(1).pow(0.1)).mul(100) },
+			cost() { return getCreationBulkCost(getBuyableAmount("1", this.id), 100) },
 			effect() {
 				let eff = new Decimal(0.25);
 				if (hasUpgrade('1', 92)) eff = eff.add(0.5);
@@ -285,12 +317,12 @@ addLayer("1", {
 			canAfford() { return player.points.gte(this.cost()) },
 			buy() {
 				player.points = player.points.sub(this.cost());
-				setBuyableAmount('1', this.id, getBuyableAmount('1', this.id).add(1));
+				setBuyableAmount("1", this.id, getBuyableAmount("1", this.id).add(getClickableState("1", 21)));
 			},
 		},
 		13: {
 			title() { return getCreationName(this.id - 10) },
-			cost() { return getBuyableAmount('1', this.id).add(1).pow(getBuyableAmount('1', this.id).add(1).pow(0.1)).mul(10000) },
+			cost() { return getCreationBulkCost(getBuyableAmount("1", this.id), 10000) },
 			effect() {
 				let eff = new Decimal(2.5);
 				if (hasUpgrade('1', 93)) eff = eff.add(0.5);
@@ -303,7 +335,7 @@ addLayer("1", {
 			canAfford() { return player.points.gte(this.cost()) },
 			buy() {
 				player.points = player.points.sub(this.cost());
-				setBuyableAmount('1', this.id, getBuyableAmount('1', this.id).add(1));
+				setBuyableAmount("1", this.id, getBuyableAmount("1", this.id).add(getClickableState("1", 21)));
 			},
 		},
 	},
