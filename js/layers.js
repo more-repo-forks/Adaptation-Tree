@@ -12,7 +12,6 @@ addLayer("g", {
 		points: new Decimal(0),
 	}},
 	color: "#A3D9A5",
-	requires: new Decimal(100000),
 	resource: "generator power",
 	row: 0,
 	effect() {return player.g.points.add(1).pow(0.5)},
