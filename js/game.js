@@ -116,21 +116,10 @@ function rowReset(row, layer) {
 	};
 };
 
-function layerDataReset(layer, keep = [], copyObjectsInKeep = false) {
+function layerDataReset(layer, keep = []) {
 	let storedData = {unlocked: player[layer].unlocked, forceTooltip: player[layer].forceTooltip, noRespecConfirm: player[layer].noRespecConfirm, prevTab: player[layer].prevTab} // Always keep these
 	for (thing in keep) {
-		if (typeof player[layer][keep[thing]] == "object" && !(player[layer][keep[thing]] instanceof Decimal) && copyObjectsInKeep) {
-			storedData[keep[thing]] = {};
-			for (const key in player[layer][keep[thing]]) {
-				if (typeof player[layer][keep[thing]] == "object") {
-					storedData[keep[thing]][key] = Object.create(player[layer][keep[thing]][key]);
-				} else if (player[layer][keep[thing]][key] !== undefined) {
-					storedData[keep[thing]][key] = player[layer][keep[thing]][key];
-				};
-			};
-		} else if (player[layer][keep[thing]] !== undefined) {
-			storedData[keep[thing]] = player[layer][keep[thing]];
-		};
+		if (player[layer][keep[thing]] !== undefined) storedData[keep[thing]] = player[layer][keep[thing]];
 	};
 	Vue.set(player[layer], "buyables", getStartBuyables(layer));
 	Vue.set(player[layer], "clickables", getStartClickables(layer));
