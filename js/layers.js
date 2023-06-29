@@ -3,7 +3,7 @@
 // generator color: #A3D9A5
 // super generator color: #248239
 
-const generatorCostBase = {
+const generatorCostScale = {
 	101() {
 		if (hasUpgrade("g", 24)) return 3;
 		if (hasUpgrade("g", 23)) return 4;
@@ -18,17 +18,32 @@ const generatorCostBase = {
 		if (hasUpgrade("g", 14)) return 30;
 		return 500;
 	},
+	301() {return 1000},
+	302() {return 5000},
+	303() {return 50},
+};
+
+const generatorExtraCost = {
+	301: 5e13,
+	302: 1e14,
+	303: 1e17,
 };
 
 const generatorName = {
 	101: "Basic Generator",
 	201: "Generator Generator 1",
 	202: "Generator Generator 2",
+	301: "Left Generator",
+	302: "Center Generator",
+	303: "Right Generator",
 };
 
 function generatorCost(id) {
 	let bought = player.g.grid[id].bought;
-	return new Decimal(generatorCostBase[id]()).pow(bought ** 1.25 + 1);
+	let scale = generatorCostScale[id]();
+	let extra = generatorExtraCost[id];
+	if (extra) return new Decimal(scale).pow(bought ** 1.25 + 1).mul(generatorExtraCost[id]);
+	return new Decimal(scale).pow(bought ** 1.25 + 1);
 };
 
 addLayer("g", {
@@ -73,11 +88,13 @@ addLayer("g", {
 				let extra = new Decimal(0);
 				let checkId = Number(id) + 100;
 				if (gridEffect("g", checkId).gt(0)) {
+					if (gen.eq(0)) gen = new Decimal(1);
 					gen = gen.mul(gridEffect("g", checkId));
 					extra = extra.add(gridEffect("g", checkId));
 				};
 				checkId = Number(id) + 101;
 				if (gridEffect("g", checkId).gt(0)) {
+					if (gen.eq(0)) gen = new Decimal(1);
 					gen = gen.mul(gridEffect("g", checkId));
 					extra = extra.add(gridEffect("g", checkId));
 				};
@@ -91,11 +108,17 @@ addLayer("g", {
 		};
 	},
 	componentStyles: {
-		"gridable"() {return {"width": "100px", "height": "100px"}},
+		"gridable"() {return {"width": "105px", "height": "105px"}},
+		"upgrade"() {return {"width": "125px", "height": "125px"}},
 	},
 	grid: {
-		rows: 2,
-		cols: 2,
+		rows() {
+			let rows = 2;
+			if (hasMilestone("b", 1)) rows++;
+			return rows;
+		},
+		cols: 3,
+		maxRows: 3,
 		getStartData(id) {
 			return {
 				bought: 0,
@@ -161,7 +184,7 @@ addLayer("g", {
 		14: {
 			title: "Cheaper 2",
 			description: "Reduce Generator Generator 2 cost scaling.<br><br>Effect: 500 -> 30",
-			cost: new Decimal(5000000),
+			cost: new Decimal(10000000),
 			currencyDisplayName: "points",
 			currencyInternalName: "points",
 			currencyLocation() {return player},
@@ -172,7 +195,7 @@ addLayer("g", {
 			description: "[2 ^ upgrades] multiply point gain.",
 			effect() {return 2 ** player.g.upgrades.length},
 			effectDisplay() {return format(this.effect()) + "x"},
-			cost: new Decimal(45000000),
+			cost: new Decimal(100000000),
 			currencyDisplayName: "points",
 			currencyInternalName: "points",
 			currencyLocation() {return player},
@@ -183,7 +206,7 @@ addLayer("g", {
 			description: "[Points ^ 0.1] multiply generator power gain.",
 			effect() {return player.points.pow(0.1)},
 			effectDisplay() {return format(this.effect()) + "x"},
-			cost: new Decimal(5e10),
+			cost: new Decimal(1e11),
 			currencyDisplayName: "points",
 			currencyInternalName: "points",
 			currencyLocation() {return player},
@@ -192,7 +215,7 @@ addLayer("g", {
 		22: {
 			title: "Cheaper 1",
 			description: "Reduce Generator Generator 1 cost scaling.<br><br>Effect: 100 -> 50",
-			cost: new Decimal(5e11),
+			cost: new Decimal(1e12),
 			currencyDisplayName: "points",
 			currencyInternalName: "points",
 			currencyLocation() {return player},
@@ -201,7 +224,7 @@ addLayer("g", {
 		23: {
 			title: "Cheaper Basic",
 			description: "Reduce Basic Generator cost scaling.<br><br>Effect: 5 -> 4",
-			cost: new Decimal(5e12),
+			cost: new Decimal(2e13),
 			currencyDisplayName: "points",
 			currencyInternalName: "points",
 			currencyLocation() {return player},
@@ -209,8 +232,8 @@ addLayer("g", {
 		},
 		24: {
 			title: "Even Cheaper Basic",
-			description: "Reduce Basic Generator cost scaling.<br><br>Effect: 4 -> 3",
-			cost: new Decimal(5e13),
+			description: "Reduce Basic Generator cost scaling again.<br><br>Effect: 4 -> 3",
+			cost: new Decimal(2e14),
 			currencyDisplayName: "points",
 			currencyInternalName: "points",
 			currencyLocation() {return player},
@@ -218,8 +241,8 @@ addLayer("g", {
 		},
 		25: {
 			title: "Even Cheaper 1",
-			description: "Reduce Generator Generator 1 cost scaling.<br><br>Effect: 50 -> 15",
-			cost: new Decimal(5e14),
+			description: "Reduce Generator Generator 1 cost scaling again.<br><br>Effect: 50 -> 15",
+			cost: new Decimal(5e15),
 			currencyDisplayName: "points",
 			currencyInternalName: "points",
 			currencyLocation() {return player},
@@ -242,7 +265,7 @@ addLayer("b", {
 	row: 1,
 	baseResource: "points",
 	baseAmount() {return player.points},
-	requires: new Decimal(2e10),
+	requires: new Decimal(1e11),
 	type: "static",
 	exponent: 1.25,
 	base: 5,
@@ -264,6 +287,11 @@ addLayer("b", {
 			requirementDescription: "2 boosters",
 			effectDescription: "unlocks more generator upgrades",
 			done() {return player.b.points.gte(2)},
+		},
+		1: {
+			requirementDescription: "6 boosters",
+			effectDescription: "unlocks a new row of generators",
+			done() {return player.b.points.gte(6)},
 		},
 	},
 });
