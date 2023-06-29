@@ -9,8 +9,8 @@ const modInfo = {
 }
 
 const VERSION = {
-	num: "0.1",
-	name: "Beta Test",
+	num: "1.0",
+	name: "Generators",
 };
 
 const winText = `Congratulations! You have reached the end and beaten this game, but for now...`;
@@ -25,6 +25,7 @@ function canGenPoints() {
 
 function getPointGen() {
 	let gain = new Decimal(1);
+	if (player.g.unlocked) gain = gain.mul(tmp.g.effect);
 	return gain;
 };
 
