@@ -19,6 +19,10 @@ const generatorCostScale = {
 	},
 	302() {return 5000},
 	303() {return 50},
+	401() {return 100000},
+	402() {return 1e15},
+	403() {return 20000},
+	404() {return 1000000},
 };
 
 const generatorExtraCost = {
@@ -28,6 +32,10 @@ const generatorExtraCost = {
 		if (hasUpgrade("g", 32)) return 1000000;
 		return 1e17;
 	},
+	401() {return 1e80},
+	402() {return 1e75},
+	403() {return 1e84},
+	404() {return 1e90},
 };
 
 const generatorName = {
@@ -37,6 +45,10 @@ const generatorName = {
 	301: "Left Generator",
 	302: "Center Generator",
 	303: "Right Generator",
+	401: "Beginning Generator",
+	402: "Backward Generator",
+	403: "Forward Generator",
+	404: "Ending Generator",
 };
 
 function generatorCost(id) {
@@ -56,6 +68,8 @@ addLayer("g", {
 		points: new Decimal(0),
 		passive: new Decimal(0),
 		autoBasic: false,
+		auto1and2: false,
+		autoLCR: false,
 	}},
 	color: "#A3D9A5",
 	resource: "generator power",
@@ -72,7 +86,7 @@ addLayer("g", {
 	],
 	layerShown() {return true},
 	doReset(resettingLayer) {
-		let keep = ["autoBasic"];
+		let keep = ["autoBasic", "auto1and2", "autoLCR"];
 		if (hasMilestone("b", 3)) keep.push("upgrades");
 		if (layers[resettingLayer].row > this.row) layerDataReset("g", keep);
 	},
@@ -115,11 +129,29 @@ addLayer("g", {
 		};
 	},
 	automate() {
-		if (hasMilestone("sb", 0) && player.g.autoBasic) {
-			if (player.points.gte(generatorCost(101))) {
-				player.points = player.points.sub(generatorCost(101));
-				player.g.grid[101].bought++;
-				player.g.grid[101].amount = player.g.grid[101].amount.add(1);
+		for (let id in player.g.grid) {
+			if (generatorCostScale[id]) {
+				if (id > 400) {
+					// placeholder
+				} else if (id > 300) {
+					if (player.points.gte(generatorCost(id)) && hasMilestone("sb", 2) && player.g.autoLCR) {
+						player.points = player.points.sub(generatorCost(id));
+						player.g.grid[id].bought++;
+						player.g.grid[id].amount = player.g.grid[id].amount.add(1);
+					};
+				} else if (id > 200) {
+					if (player.points.gte(generatorCost(id)) && hasMilestone("sb", 1) && player.g.auto1and2) {
+						player.points = player.points.sub(generatorCost(id));
+						player.g.grid[id].bought++;
+						player.g.grid[id].amount = player.g.grid[id].amount.add(1);
+					};
+				} else {
+					if (player.points.gte(generatorCost(id)) && hasMilestone("sb", 0) && player.g.autoBasic) {
+						player.points = player.points.sub(generatorCost(id));
+						player.g.grid[id].bought++;
+						player.g.grid[id].amount = player.g.grid[id].amount.add(1);
+					};
+				};
 			};
 		};
 	},
@@ -131,10 +163,11 @@ addLayer("g", {
 		rows() {
 			let rows = 2;
 			if (hasMilestone("b", 1)) rows++;
+			if (hasMilestone("b", 4)) rows++;
 			return rows;
 		},
-		cols: 3,
-		maxRows: 3,
+		cols: 4,
+		maxRows: 4,
 		getStartData(id) {
 			return {
 				bought: 0,
@@ -400,6 +433,11 @@ addLayer("b", {
 			effectDescription: "unlocks booster upgrades<br>keeps generator upgrades on reset",
 			done() {return player.b.points.gte(28)},
 		},
+		4: {
+			requirementDescription: "49 boosters",
+			effectDescription: "unlocks a new row of generators",
+			done() {return player.b.points.gte(49)},
+		},
 	},
 	upgrades: {
 		11: {
@@ -444,8 +482,8 @@ addLayer("b", {
 		},
 		15: {
 			title: "Point Boosters",
-			description: "[Points ^ 0.048] divides booster cost.",
-			effect() {return player.points.pow(0.048).max(1)},
+			description: "[Points ^ 0.048] divides booster cost. Maxes at 555,555.",
+			effect() {return player.points.pow(0.048).max(1).min(555555)},
 			effectDisplay() {return "/" + format(this.effect())},
 			cost: new Decimal(1e74),
 			currencyDisplayName: "points",
@@ -498,10 +536,22 @@ addLayer("sb", {
 	},
 	milestones: {
 		0: {
-			requirementDescription: "5 super boosters",
+			requirementDescription: "4 super boosters",
 			effectDescription: "unlocks autobuy for Basic Generator",
 			toggles: [["g", "autoBasic"]],
+			done() {return player.sb.points.gte(4)},
+		},
+		1: {
+			requirementDescription: "5 super boosters",
+			effectDescription: "unlocks autobuy for Generator Generators 1 and 2",
+			toggles: [["g", "auto1and2"]],
 			done() {return player.sb.points.gte(5)},
+		},
+		2: {
+			requirementDescription: "6 super boosters",
+			effectDescription: "unlocks autobuy for Left, Center, and Right Generators",
+			toggles: [["g", "autoLCR"]],
+			done() {return player.sb.points.gte(6)},
 		},
 	},
 });
