@@ -1,8 +1,3 @@
-// booster color: #6E64C4
-// super booster color: #504899
-// generator color: #A3D9A5
-// super generator color: #248239
-
 const generatorCostScale = {
 	101() {
 		if (hasUpgrade("g", 24)) return 3;
@@ -60,6 +55,7 @@ addLayer("g", {
 		unlocked: true,
 		points: new Decimal(0),
 		passive: new Decimal(0),
+		autoBasic: false,
 	}},
 	color: "#A3D9A5",
 	resource: "generator power",
@@ -76,7 +72,8 @@ addLayer("g", {
 	],
 	layerShown() {return true},
 	doReset(resettingLayer) {
-		let keep = [];
+		let keep = ["autoBasic"];
+		if (hasMilestone("b", 3)) keep.push("upgrades");
 		if (layers[resettingLayer].row > this.row) layerDataReset("g", keep);
 	},
 	update(diff) {
@@ -85,6 +82,7 @@ addLayer("g", {
 		if (hasUpgrade("g", 33)) gain = gain.mul(upgradeEffect("g", 33));
 		if (hasUpgrade("g", 34)) gain = gain.mul(upgradeEffect("g", 34));
 		if (hasUpgrade("g", 35)) gain = gain.mul(upgradeEffect("g", 35));
+		if (hasUpgrade("b", 14)) gain = gain.mul(upgradeEffect("b", 14));
 		player.g.passive = gain;
 		if (productionCap && player.g.points.add(gain.mul(diff)).gte(gain.mul(productionCap))) {
 			player.g.points = gain.mul(productionCap);
@@ -113,6 +111,15 @@ addLayer("g", {
 				} else {
 					player.g.grid[id].amount = player.g.grid[id].amount.add(gen.mul(diff)).max(0);
 				};
+			};
+		};
+	},
+	automate() {
+		if (hasMilestone("sb", 0) && player.g.autoBasic) {
+			if (player.points.gte(generatorCost(101))) {
+				player.points = player.points.sub(generatorCost(101));
+				player.g.grid[101].bought++;
+				player.g.grid[101].amount = player.g.grid[101].amount.add(1);
 			};
 		};
 	},
@@ -189,7 +196,7 @@ addLayer("g", {
 		13: {
 			title: "Point Points",
 			description: "[Points ^ 0.08] multiply point gain.",
-			effect() {return player.points.pow(0.08)},
+			effect() {return player.points.pow(0.08).max(1)},
 			effectDisplay() {return format(this.effect()) + "x"},
 			cost: new Decimal(1000000),
 			currencyDisplayName: "points",
@@ -335,7 +342,16 @@ addLayer("b", {
 	requires: new Decimal(1e11),
 	type: "static",
 	exponent: 1.25,
-	base: 5,
+	base() {
+		if (hasUpgrade("b", 12)) return 4.5;
+		return 5;
+	},
+	gainMult() {
+		let mult = new Decimal(1);
+		if (hasUpgrade("b", 13)) mult = mult.div(upgradeEffect("b", 13));
+		if (hasUpgrade("b", 15)) mult = mult.div(upgradeEffect("b", 15));
+		return mult;
+	},
 	canBuyMax() {return false},
 	effect() {
 		let base = new Decimal(2);
@@ -343,6 +359,13 @@ addLayer("b", {
 		return base.pow(player.b.points);
 	},
 	effectDescription() {return "which are multiplying point gain by " + format(tmp.b.effect) + "x"},
+	tabFormat: [
+		"main-display",
+		"prestige-button",
+		"blank",
+		"milestones",
+		"upgrades",
+	],
 	layerShown() {return hasUpgrade("g", 15) || player.b.unlocked},
 	hotkeys: [{
 		key: "b",
@@ -352,6 +375,9 @@ addLayer("b", {
 	doReset(resettingLayer) {
 		let keep = [];
 		if (layers[resettingLayer].row > this.row) layerDataReset("b", keep);
+	},
+	componentStyles: {
+		"upgrade"() {return {"width": "125px", "height": "125px"}},
 	},
 	milestones: {
 		0: {
@@ -371,8 +397,61 @@ addLayer("b", {
 		},
 		3: {
 			requirementDescription: "28 boosters",
-			effectDescription: "reduces super booster scaling<br>(10,000 -> 2,500)",
+			effectDescription: "unlocks booster upgrades<br>keeps generator upgrades on reset",
 			done() {return player.b.points.gte(28)},
+		},
+	},
+	upgrades: {
+		11: {
+			title: "Cheaper Super",
+			description: "Reduces super booster scaling.<br><br>Effect: 10,000 -> 2,500",
+			cost: new Decimal(1e55),
+			currencyDisplayName: "points",
+			currencyInternalName: "points",
+			currencyLocation() {return player},
+			unlocked() {return hasMilestone("b", 3)},
+		},
+		12: {
+			title: "Cheaper Boosters",
+			description: "Reduces booster scaling.<br><br>Effect: 5 -> 4.5",
+			cost: new Decimal(1e61),
+			currencyDisplayName: "points",
+			currencyInternalName: "points",
+			currencyLocation() {return player},
+			unlocked() {return hasUpgrade("b", 11) && hasMilestone("b", 3)},
+		},
+		13: {
+			title: "Power Boosters",
+			description: "[Generator Power ^ 0.1] divides booster cost.",
+			effect() {return player.g.points.pow(0.1).max(1)},
+			effectDisplay() {return "/" + format(this.effect())},
+			cost: new Decimal(1e64),
+			currencyDisplayName: "points",
+			currencyInternalName: "points",
+			currencyLocation() {return player},
+			unlocked() {return hasUpgrade("b", 12) && hasMilestone("b", 3)},
+		},
+		14: {
+			title: "Boost Power",
+			description: "[1.16 ^ Boosters] multiplies generator power gain.",
+			effect() {return new Decimal(1.16).pow(player.b.points)},
+			effectDisplay() {return format(this.effect()) + "x"},
+			cost: new Decimal(1e68),
+			currencyDisplayName: "points",
+			currencyInternalName: "points",
+			currencyLocation() {return player},
+			unlocked() {return hasUpgrade("b", 13) && hasMilestone("b", 3)},
+		},
+		15: {
+			title: "Point Boosters",
+			description: "[Points ^ 0.048] divides booster cost.",
+			effect() {return player.points.pow(0.048).max(1)},
+			effectDisplay() {return "/" + format(this.effect())},
+			cost: new Decimal(1e74),
+			currencyDisplayName: "points",
+			currencyInternalName: "points",
+			currencyLocation() {return player},
+			unlocked() {return hasUpgrade("b", 14) && hasMilestone("b", 3)},
 		},
 	},
 });
@@ -395,12 +474,18 @@ addLayer("sb", {
 	type: "static",
 	exponent: 2,
 	base() {
-		if (hasMilestone("b", 3)) return 2500;
+		if (hasUpgrade("b", 11)) return 2500;
 		return 10000;
 	},
 	canBuyMax() {return false},
 	effect() {return player.sb.points},
 	effectDescription() {return "which are increasing the booster effect base by +" + format(tmp.sb.effect)},
+	tabFormat: [
+		"main-display",
+		"prestige-button",
+		"blank",
+		"milestones",
+	],
 	layerShown() {return player.b.points.gte(11) || player.sb.unlocked},
 	hotkeys: [{
 		key: "s",
@@ -410,5 +495,13 @@ addLayer("sb", {
 	doReset(resettingLayer) {
 		let keep = [];
 		if (layers[resettingLayer].row > this.row) layerDataReset("sb", keep);
+	},
+	milestones: {
+		0: {
+			requirementDescription: "5 super boosters",
+			effectDescription: "unlocks autobuy for Basic Generator",
+			toggles: [["g", "autoBasic"]],
+			done() {return player.sb.points.gte(5)},
+		},
 	},
 });

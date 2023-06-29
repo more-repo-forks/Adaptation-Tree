@@ -9,8 +9,8 @@ const modInfo = {
 }
 
 const VERSION = {
-	num: "1.2",
-	name: "Super Boosters",
+	num: "1.3",
+	name: "Booster Upgrades",
 };
 
 const winText = `Congratulations! You have reached the end and beaten this game, but for now...`;
@@ -35,7 +35,7 @@ function getPointGen() {
 
 const productionCap = 100; // in seconds
 
-const endgameBoosters = new Decimal(31);
+const endgameBoosters = new Decimal(49);
 
 // You can add non-layer related variables that should to into "player" and be saved here, along with default values
 function addedPlayerData() { return {
