@@ -84,6 +84,7 @@ addLayer("g", {
 		if (hasUpgrade("g", 21)) gain = gain.mul(upgradeEffect("g", 21));
 		if (hasUpgrade("g", 33)) gain = gain.mul(upgradeEffect("g", 33));
 		if (hasUpgrade("g", 34)) gain = gain.mul(upgradeEffect("g", 34));
+		if (hasUpgrade("g", 35)) gain = gain.mul(upgradeEffect("g", 35));
 		player.g.passive = gain;
 		if (productionCap && player.g.points.add(gain.mul(diff)).gte(gain.mul(productionCap))) {
 			player.g.points = gain.mul(productionCap);
@@ -303,6 +304,17 @@ addLayer("g", {
 			currencyLocation() {return player},
 			unlocked() {return hasUpgrade("g", 33) && hasMilestone("b", 2)},
 		},
+		35: {
+			title: "1 and 2 Power",
+			description: "[1.1 ^ Bought Generator Generators 1 and 2] multiply generator power gain.",
+			effect() {return new Decimal(1.1).pow(player.g.grid[201].bought + player.g.grid[202].bought)},
+			effectDisplay() {return format(this.effect()) + "x"},
+			cost: new Decimal(1e50),
+			currencyDisplayName: "points",
+			currencyInternalName: "points",
+			currencyLocation() {return player},
+			unlocked() {return hasUpgrade("g", 34) && hasMilestone("b", 2)},
+		},
 	},
 });
 
@@ -357,6 +369,11 @@ addLayer("b", {
 			effectDescription: "unlocks more generator upgrades",
 			done() {return player.b.points.gte(18)},
 		},
+		3: {
+			requirementDescription: "28 boosters",
+			effectDescription: "reduces super booster scaling<br>(10,000 -> 2,500)",
+			done() {return player.b.points.gte(28)},
+		},
 	},
 });
 
@@ -377,7 +394,10 @@ addLayer("sb", {
 	requires: new Decimal(1e24),
 	type: "static",
 	exponent: 2,
-	base: 10000,
+	base() {
+		if (hasMilestone("b", 3)) return 2500;
+		return 10000;
+	},
 	canBuyMax() {return false},
 	effect() {return player.sb.points},
 	effectDescription() {return "which are increasing the booster effect base by +" + format(tmp.sb.effect)},
