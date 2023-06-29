@@ -9,15 +9,14 @@ const modInfo = {
 }
 
 const VERSION = {
-	num: "1.0",
-	name: "Generators",
+	num: "1.1",
+	name: "Boosters",
 };
 
 const winText = `Congratulations! You have reached the end and beaten this game, but for now...`;
 
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
-// (The ones here are examples, all official functions are already taken care of)
-var doNotCallTheseFunctionsEveryTick = ["blowUpEverything"]
+var doNotCallTheseFunctionsEveryTick = [];
 
 function canGenPoints() {
 	return true;
@@ -25,13 +24,16 @@ function canGenPoints() {
 
 function getPointGen() {
 	let gain = new Decimal(1);
-	if (player.g.unlocked) gain = gain.mul(tmp.g.effect);
 	if (hasUpgrade("g", 11)) gain = gain.mul(upgradeEffect("g", 11));
 	if (hasUpgrade("g", 12)) gain = gain.mul(upgradeEffect("g", 12));
 	if (hasUpgrade("g", 13)) gain = gain.mul(upgradeEffect("g", 13));
 	if (hasUpgrade("g", 15)) gain = gain.mul(upgradeEffect("g", 15));
+	if (player.g.unlocked) gain = gain.mul(tmp.g.effect);
+	if (player.b.unlocked) gain = gain.mul(tmp.b.effect);
 	return gain;
 };
+
+const productionCap = 100; // in seconds
 
 // You can add non-layer related variables that should to into "player" and be saved here, along with default values
 function addedPlayerData() { return {
@@ -43,8 +45,7 @@ var displayThings = [
 
 // Determines when the game "ends"
 function isEndgame() {
-	return false;
-	// return player.points.gte(new Decimal("e1000000"));
+	return player.points.gte(new Decimal(2.36e11));
 };
 
 // Style for the background, can be a function

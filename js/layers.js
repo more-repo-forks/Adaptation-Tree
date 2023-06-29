@@ -38,7 +38,7 @@ addLayer("g", {
 	effectDescription() {return "which is multiplying point gain by " + format(tmp.g.effect) + "x"},
 	tabFormat: [
 		"main-display",
-		["display-text", () => {return "You are gaining " + format(gridEffect("g", 101)) + " generator power per second"}],
+		["display-text", () => {return "You are gaining " + format(gridEffect("g", 101)) + " generator power per second<br><br>Note: most forms of passive production cap out at 100 seconds worth of production"}],
 		"blank",
 		"grid",
 		"blank",
@@ -47,10 +47,14 @@ addLayer("g", {
 	layerShown() {return true},
 	doReset(resettingLayer) {
 		let keep = [];
-		layerDataReset("g", keep);
+		if (layers[resettingLayer].row > this.row) layerDataReset("g", keep);
 	},
 	update(diff) {
-		player.g.points = player.g.points.add(gridEffect("g", 101).mul(diff));
+		if (productionCap && player.g.points.add(gridEffect("g", 101).mul(diff)).gte(gridEffect("g", 101).mul(productionCap))) {
+			player.g.points = gridEffect("g", 101).mul(productionCap);
+		} else {
+			player.g.points = player.g.points.add(gridEffect("g", 101).mul(diff)).max(0);
+		};
 		for (let id in player.g.grid) {
 			if (gridEffect("g", id).gt(0)) {
 				let gen = new Decimal(0);
@@ -66,7 +70,11 @@ addLayer("g", {
 					extra = extra.add(gridEffect("g", checkId));
 				};
 				gen = gen.max(extra);
-				player.g.grid[id].amount = player.g.grid[id].amount.add(gen.mul(diff));
+				if (productionCap && gen.gt(0) && player.g.grid[id].amount.add(gen.mul(diff)).gte(gen.mul(productionCap))) {
+					player.g.grid[id].amount = gen.mul(productionCap);
+				} else {
+					player.g.grid[id].amount = player.g.grid[id].amount.add(gen.mul(diff)).max(0);
+				};
 			};
 		};
 	},
@@ -152,11 +160,44 @@ addLayer("g", {
 			description: "[2 ^ upgrades] multiply point gain.",
 			effect() {return 2 ** player.g.upgrades.length},
 			effectDisplay() {return format(this.effect()) + "x"},
-			cost: new Decimal(50000000),
+			cost: new Decimal(45000000),
 			currencyDisplayName: "points",
 			currencyInternalName: "points",
 			currencyLocation() {return player},
 			unlocked() {return hasUpgrade("g", 14)},
 		},
+	},
+});
+
+addLayer("b", {
+	name: "Boosters",
+	symbol: "B",
+	position: 0,
+	branches: ["g"],
+	startData() { return {
+		unlocked: false,
+		points: new Decimal(0),
+	}},
+	color: "#6E64C4",
+	resource: "boosters",
+	row: 1,
+	baseResource: "points",
+	baseAmount() {return player.points},
+	requires: new Decimal(2e10),
+	type: "static",
+	exponent: 1.25,
+	base: 5,
+	canBuyMax() {return false},
+	effect() {return new Decimal(2).pow(player.b.points)},
+	effectDescription() {return "which are multiplying point gain by " + format(tmp.b.effect) + "x"},
+	layerShown() {return hasUpgrade("g", 15) || player.b.unlocked},
+	hotkeys: [{
+		key: "b",
+		description: "B: reset for boosters",
+		onPress() {if (player.b.unlocked) doReset("b")},
+	}],
+	doReset(resettingLayer) {
+		let keep = [];
+		if (layers[resettingLayer].row > this.row) layerDataReset("b", keep);
 	},
 });

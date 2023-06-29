@@ -287,7 +287,11 @@ function gameLoop(diff) {
 		if (diff > limit) diff = limit;
 	};
 	addTime(diff);
-	player.points = player.points.add(tmp.pointGen.times(diff)).max(0);
+	if (productionCap && player.points.add(tmp.pointGen.mul(diff)).gte(tmp.pointGen.mul(productionCap))) {
+		player.points = tmp.pointGen.mul(productionCap);
+	} else {
+		player.points = player.points.add(tmp.pointGen.mul(diff)).max(0);
+	};
 	for (let x = 0; x <= maxRow; x++) {
 		for (item in TREE_LAYERS[x]) {
 			let layer = TREE_LAYERS[x][item];
