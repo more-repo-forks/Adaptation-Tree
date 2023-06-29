@@ -28,6 +28,7 @@ function getPointGen() {
 	if (hasUpgrade("g", 12)) gain = gain.mul(upgradeEffect("g", 12));
 	if (hasUpgrade("g", 13)) gain = gain.mul(upgradeEffect("g", 13));
 	if (hasUpgrade("g", 15)) gain = gain.mul(upgradeEffect("g", 15));
+	if (hasUpgrade("b", 22)) gain = gain.mul(upgradeEffect("b", 22));
 	if (player.g.unlocked) gain = gain.mul(tmp.g.effect);
 	if (player.b.unlocked) gain = gain.mul(tmp.b.effect);
 	return gain;
@@ -35,7 +36,11 @@ function getPointGen() {
 
 const productionCap = 100; // in seconds
 
-const endgameBoosters = new Decimal(69);
+const endgameBoosters = new Decimal(90);
+
+function maxPoints() {
+	return hasMilestone("sb", 3);
+};
 
 // You can add non-layer related variables that should to into "player" and be saved here, along with default values
 function addedPlayerData() { return {

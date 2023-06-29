@@ -287,7 +287,7 @@ function gameLoop(diff) {
 		if (diff > limit) diff = limit;
 	};
 	addTime(diff);
-	if (productionCap && player.points.add(tmp.pointGen.mul(diff)).gte(tmp.pointGen.mul(productionCap))) {
+	if (productionCap && (player.points.add(tmp.pointGen.mul(diff)).gte(tmp.pointGen.mul(productionCap)) || (typeof maxPoints == "boolean" && maxPoints === true) || (typeof maxPoints == "function" && maxPoints()))) {
 		player.points = tmp.pointGen.mul(productionCap);
 	} else {
 		player.points = player.points.add(tmp.pointGen.mul(diff)).max(0);

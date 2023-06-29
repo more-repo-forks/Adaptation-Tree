@@ -97,8 +97,9 @@ addLayer("g", {
 		if (hasUpgrade("g", 34)) gain = gain.mul(upgradeEffect("g", 34));
 		if (hasUpgrade("g", 35)) gain = gain.mul(upgradeEffect("g", 35));
 		if (hasUpgrade("b", 14)) gain = gain.mul(upgradeEffect("b", 14));
+		if (hasUpgrade("b", 23)) gain = gain.mul(upgradeEffect("b", 23));
 		player.g.passive = gain;
-		if (productionCap && player.g.points.add(gain.mul(diff)).gte(gain.mul(productionCap))) {
+		if (productionCap && (player.g.points.add(gain.mul(diff)).gte(gain.mul(productionCap))) || hasMilestone("sb", 4)) {
 			player.g.points = gain.mul(productionCap);
 		} else {
 			player.g.points = player.g.points.add(gain.mul(diff)).max(0);
@@ -422,21 +423,31 @@ addLayer("b", {
 			requirementDescription: "6 boosters",
 			effectDescription: "unlocks a new row of generators",
 			done() {return player.b.points.gte(6)},
+			unlocked() {return hasMilestone("b", 0)},
 		},
 		2: {
 			requirementDescription: "18 boosters",
 			effectDescription: "unlocks more generator upgrades",
 			done() {return player.b.points.gte(18)},
+			unlocked() {return hasMilestone("b", 1)},
 		},
 		3: {
 			requirementDescription: "28 boosters",
 			effectDescription: "unlocks booster upgrades<br>keeps generator upgrades on reset",
 			done() {return player.b.points.gte(28)},
+			unlocked() {return hasMilestone("b", 2)},
 		},
 		4: {
 			requirementDescription: "49 boosters",
 			effectDescription: "unlocks a new row of generators",
 			done() {return player.b.points.gte(49)},
+			unlocked() {return hasMilestone("b", 3)},
+		},
+		5: {
+			requirementDescription: "69 boosters",
+			effectDescription: "unlocks more booster upgrades",
+			done() {return player.b.points.gte(69)},
+			unlocked() {return hasMilestone("b", 4)},
 		},
 	},
 	upgrades: {
@@ -491,6 +502,39 @@ addLayer("b", {
 			currencyLocation() {return player},
 			unlocked() {return hasUpgrade("b", 14) && hasMilestone("b", 3)},
 		},
+		21: {
+			title: "Upgrade Super",
+			description: "[100,000 ^ Upgrades] divides super booster cost.",
+			effect() {return new Decimal(100000).pow(player.b.upgrades.length)},
+			effectDisplay() {return "/" + format(this.effect())},
+			cost: new Decimal(1e127),
+			currencyDisplayName: "points",
+			currencyInternalName: "points",
+			currencyLocation() {return player},
+			unlocked() {return hasUpgrade("b", 15) && hasMilestone("b", 5)},
+		},
+		22: {
+			title: "Boost Points",
+			description: "[1.16 ^ Boosters] multiplies point gain.",
+			effect() {return new Decimal(1.16).pow(player.b.points)},
+			effectDisplay() {return format(this.effect()) + "x"},
+			cost: new Decimal(1e139),
+			currencyDisplayName: "points",
+			currencyInternalName: "points",
+			currencyLocation() {return player},
+			unlocked() {return hasUpgrade("b", 21) && hasMilestone("b", 5)},
+		},
+		23: {
+			title: "More Super Power",
+			description: "[2 ^ Super Boosters] multiplies generator power gain.",
+			effect() {return new Decimal(2).pow(player.sb.points)},
+			effectDisplay() {return format(this.effect()) + "x"},
+			cost: new Decimal(1e168),
+			currencyDisplayName: "points",
+			currencyInternalName: "points",
+			currencyLocation() {return player},
+			unlocked() {return hasUpgrade("b", 22) && hasMilestone("b", 5)},
+		},
 	},
 });
 
@@ -514,6 +558,11 @@ addLayer("sb", {
 	base() {
 		if (hasUpgrade("b", 11)) return 2500;
 		return 10000;
+	},
+	gainMult() {
+		let mult = new Decimal(1);
+		if (hasUpgrade("b", 21)) mult = mult.div(upgradeEffect("b", 21));
+		return mult;
 	},
 	canBuyMax() {return false},
 	effect() {return player.sb.points},
@@ -552,6 +601,16 @@ addLayer("sb", {
 			effectDescription: "unlocks autobuy for Left, Center, and Right Generators",
 			toggles: [["g", "autoLCR"]],
 			done() {return player.sb.points.gte(6)},
+		},
+		3: {
+			requirementDescription: "7 super boosters",
+			effectDescription: "makes points always equal to 100% of potential",
+			done() {return player.sb.points.gte(7)},
+		},
+		4: {
+			requirementDescription: "8 super boosters",
+			effectDescription: "makes generator power always equal to 100% of potential",
+			done() {return player.sb.points.gte(8)},
 		},
 	},
 });
