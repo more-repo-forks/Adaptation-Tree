@@ -70,6 +70,7 @@ addLayer("g", {
 		autoBasic: false,
 		auto1and2: false,
 		autoLCR: false,
+		autoBBFE: false,
 	}},
 	color: "#A3D9A5",
 	resource: "generator power",
@@ -86,7 +87,7 @@ addLayer("g", {
 	],
 	layerShown() {return true},
 	doReset(resettingLayer) {
-		let keep = ["autoBasic", "auto1and2", "autoLCR"];
+		let keep = ["autoBasic", "auto1and2", "autoLCR", "autoBBFE"];
 		if (hasMilestone("b", 3)) keep.push("upgrades");
 		if (layers[resettingLayer].row > this.row) layerDataReset("g", keep);
 	},
@@ -132,8 +133,14 @@ addLayer("g", {
 	automate() {
 		for (let id in player.g.grid) {
 			if (generatorCostScale[id]) {
-				if (id > 400) {
+				if (id > 500) {
 					// placeholder
+				} else if (id > 400) {
+					if (player.points.gte(generatorCost(id)) && hasMilestone("sb", 5) && player.g.autoBBFE) {
+						player.points = player.points.sub(generatorCost(id));
+						player.g.grid[id].bought++;
+						player.g.grid[id].amount = player.g.grid[id].amount.add(1);
+					};
 				} else if (id > 300) {
 					if (player.points.gte(generatorCost(id)) && hasMilestone("sb", 2) && player.g.autoLCR) {
 						player.points = player.points.sub(generatorCost(id));
@@ -249,7 +256,7 @@ addLayer("g", {
 		},
 		15: {
 			title: "Upgrade Points",
-			description: "[2 ^ upgrades] multiply point gain.",
+			description: "[2 ^ Upgrades] multiply point gain.",
 			effect() {return 2 ** player.g.upgrades.length},
 			effectDisplay() {return format(this.effect()) + "x"},
 			cost: new Decimal(100000000),
@@ -384,12 +391,14 @@ addLayer("b", {
 		let mult = new Decimal(1);
 		if (hasUpgrade("b", 13)) mult = mult.div(upgradeEffect("b", 13));
 		if (hasUpgrade("b", 15)) mult = mult.div(upgradeEffect("b", 15));
+		if (hasUpgrade("b", 24)) mult = mult.div(upgradeEffect("b", 24));
 		return mult;
 	},
 	canBuyMax() {return false},
 	effect() {
 		let base = new Decimal(2);
 		if (player.sb.unlocked) base = base.add(tmp.sb.effect);
+		if (hasUpgrade("b", 25)) base = base.add(upgradeEffect("b", 25));
 		return base.pow(player.b.points);
 	},
 	effectDescription() {return "which are multiplying point gain by " + format(tmp.b.effect) + "x"},
@@ -535,6 +544,28 @@ addLayer("b", {
 			currencyLocation() {return player},
 			unlocked() {return hasUpgrade("b", 22) && hasMilestone("b", 5)},
 		},
+		24: {
+			title: "Basic Boosters",
+			description: "[1.2 ^ Bought Basic Generators / 1,000] divides booster cost.",
+			effect() {return new Decimal(1.2).pow(player.g.grid[101].bought).div(1000).max(1)},
+			effectDisplay() {return "/" + format(this.effect())},
+			cost: new Decimal(1e177),
+			currencyDisplayName: "points",
+			currencyInternalName: "points",
+			currencyLocation() {return player},
+			unlocked() {return hasUpgrade("b", 23) && hasMilestone("b", 5)},
+		},
+		25: {
+			title: "Upgrade Booster",
+			description: "[Upgrades / 20] increases the booster effect base.",
+			effect() {return player.b.upgrades.length / 20},
+			effectDisplay() {return "+" + format(this.effect())},
+			cost: new Decimal(1e186),
+			currencyDisplayName: "points",
+			currencyInternalName: "points",
+			currencyLocation() {return player},
+			unlocked() {return hasUpgrade("b", 24) && hasMilestone("b", 5)},
+		},
 	},
 });
 
@@ -611,6 +642,12 @@ addLayer("sb", {
 			requirementDescription: "8 super boosters",
 			effectDescription: "makes generator power always equal to 100% of potential",
 			done() {return player.sb.points.gte(8)},
+		},
+		5: {
+			requirementDescription: "9 super boosters",
+			effectDescription: "unlocks autobuy for Beginning, Backward, Forward, and Ending Generators",
+			toggles: [["g", "autoBBFE"]],
+			done() {return player.sb.points.gte(9)},
 		},
 	},
 });
