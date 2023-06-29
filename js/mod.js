@@ -35,7 +35,7 @@ function getPointGen() {
 
 const productionCap = 100; // in seconds
 
-const endgameBoosters = new Decimal(16);
+const endgameBoosters = new Decimal(26);
 
 // You can add non-layer related variables that should to into "player" and be saved here, along with default values
 function addedPlayerData() { return {
@@ -45,8 +45,7 @@ function addedPlayerData() { return {
 var displayThings = [
 	() => {
 		if (tmp.gameEnded) return "<br>you have beaten the game!";
-		if (player.b.unlocked) return "<br>you need " + formatWhole(endgameBoosters) + " boosters to beat the game";
-		return "<br>you need " + formatWhole(endgameBoosters) + " ???s to beat the game";
+		return "<br>you need " + formatWhole(endgameBoosters) + " boosters to beat the game";
 	},
 ];
 
