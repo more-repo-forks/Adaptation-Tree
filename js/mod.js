@@ -29,6 +29,7 @@ function getPointGen() {
 	if (hasUpgrade("g", 11)) gain = gain.mul(upgradeEffect("g", 11));
 	if (hasUpgrade("g", 12)) gain = gain.mul(upgradeEffect("g", 12));
 	if (hasUpgrade("g", 13)) gain = gain.mul(upgradeEffect("g", 13));
+	if (hasUpgrade("g", 15)) gain = gain.mul(upgradeEffect("g", 15));
 	return gain;
 };
 
