@@ -270,7 +270,11 @@ addLayer("b", {
 	exponent: 1.25,
 	base: 5,
 	canBuyMax() {return false},
-	effect() {return new Decimal(2).pow(player.b.points)},
+	effect() {
+		let base = new Decimal(2);
+		if (player.sb.unlocked) base = base.add(tmp.sb.effect);
+		return base.pow(player.b.points);
+	},
 	effectDescription() {return "which are multiplying point gain by " + format(tmp.b.effect) + "x"},
 	layerShown() {return hasUpgrade("g", 15) || player.b.unlocked},
 	hotkeys: [{
@@ -293,5 +297,38 @@ addLayer("b", {
 			effectDescription: "unlocks a new row of generators",
 			done() {return player.b.points.gte(6)},
 		},
+	},
+});
+
+addLayer("sb", {
+	name: "Super Boosters",
+	symbol: "SB",
+	position: 1,
+	branches: ["b"],
+	startData() { return {
+		unlocked: false,
+		points: new Decimal(0),
+	}},
+	color: "#504899",
+	resource: "super boosters",
+	row: 1,
+	baseResource: "points",
+	baseAmount() {return player.points},
+	requires: new Decimal(1e24),
+	type: "static",
+	exponent: 1.6,
+	base: 10000,
+	canBuyMax() {return false},
+	effect() {return player.sb.points},
+	effectDescription() {return "which are increasing the booster effect base by +" + format(tmp.sb.effect)},
+	layerShown() {return player.b.points.gte(11) || player.sb.unlocked},
+	hotkeys: [{
+		key: "s",
+		description: "S: reset for super boosters",
+		onPress() {if (player.sb.unlocked) doReset("sb")},
+	}],
+	doReset(resettingLayer) {
+		let keep = [];
+		if (layers[resettingLayer].row > this.row) layerDataReset("sb", keep);
 	},
 });
