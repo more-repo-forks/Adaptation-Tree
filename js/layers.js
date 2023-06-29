@@ -5,10 +5,14 @@
 
 const generatorCostBase = {
 	101: 5,
+	201: 100,
+	202: 500,
 };
 
 const generatorName = {
 	101: "Basic Generator",
+	201: "Generator Generator 1",
+	202: "Generator Generator 2",
 };
 
 function generatorCost(id) {
@@ -27,7 +31,7 @@ addLayer("g", {
 	color: "#A3D9A5",
 	resource: "generator power",
 	row: 0,
-	effect() {return player.g.points.add(1).pow(0.5)},
+	effect() {return player.g.points.add(1).pow(0.75)},
 	effectDescription() {return "which is multiplying point gain by " + format(tmp.g.effect) + "x"},
 	tabFormat: [
 		"main-display",
@@ -40,17 +44,21 @@ addLayer("g", {
 	},
 	update(diff) {
 		player.g.points = player.g.points.add(gridEffect("g", 101).mul(diff));
-		for (const id in player.g.grid) {
-			if (Object.hasOwnProperty.call(player.g.grid, id)) {
+		for (let id in player.g.grid) {
+			if (gridEffect("g", id).gt(0)) {
 				let gen = new Decimal(0);
-				if (gridEffect("g", id + 100).gt(0)) {
-					if (gen.eq(0)) gen = new Decimal(1);
-					gen = gen.mul(gridEffect("g", id + 100));
+				let extra = new Decimal(0);
+				let checkId = Number(id) + 100;
+				if (gridEffect("g", checkId).gt(0)) {
+					gen = gen.mul(gridEffect("g", checkId));
+					extra = extra.add(gridEffect("g", checkId));
 				};
-				if (gridEffect("g", id + 101).gt(0)) {
-					if (gen.eq(0)) gen = new Decimal(1);
-					gen = gen.mul(gridEffect("g", id + 101));
+				checkId = Number(id) + 101;
+				if (gridEffect("g", checkId).gt(0)) {
+					gen = gen.mul(gridEffect("g", checkId));
+					extra = extra.add(gridEffect("g", checkId));
 				};
+				gen = gen.max(extra);
 				player.g.grid[id].amount = player.g.grid[id].amount.add(gen.mul(diff));
 			};
 		};
@@ -59,8 +67,8 @@ addLayer("g", {
 		"gridable"() {return {"width": "100px", "height": "100px"}},
 	},
 	grid: {
-		rows: 1,
-		cols: 1,
+		rows: 2,
+		cols: 2,
 		getStartData(id) {
 			return {
 				bought: 0,
@@ -68,7 +76,7 @@ addLayer("g", {
 			};
 		},
 		getUnlocked(id) {
-			return true;
+			return id % 100 < id / 100;
 		},
 		getCanClick(data, id) {
 			return player.points.gte(generatorCost(id));
