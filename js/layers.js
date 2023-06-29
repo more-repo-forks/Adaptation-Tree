@@ -4,9 +4,12 @@
 // super generator color: #248239
 
 const generatorCostBase = {
-	101: 5,
-	201: 100,
-	202: 500,
+	101() {return 5},
+	201() {return 100},
+	202() {
+		if (hasUpgrade("g", 14)) return 30;
+		return 500;
+	},
 };
 
 const generatorName = {
@@ -17,7 +20,7 @@ const generatorName = {
 
 function generatorCost(id) {
 	let bought = player.g.grid[id].bought;
-	return new Decimal(generatorCostBase[id]).pow(bought ** 1.25 + 1);
+	return new Decimal(generatorCostBase[id]()).pow(bought ** 1.25 + 1);
 };
 
 addLayer("g", {
@@ -36,6 +39,8 @@ addLayer("g", {
 	tabFormat: [
 		"main-display",
 		"grid",
+		"blank",
+		"upgrades",
 	],
 	layerShown() {return true},
 	doReset(resettingLayer) {
@@ -90,11 +95,51 @@ addLayer("g", {
 			return generatorName[id];
 		},
 		getDisplay(data, id) {
-			return "<br>Amount: " + format(data.amount) + " (" + formatWhole(data.bought) + ")<br><br>Cost: " + format(generatorCost(id)) + " points";
+			return "<br>Amount: " + format(data.amount) + "(" + formatWhole(data.bought) + ")<br><br>Cost: " + format(generatorCost(id)) + " points";
 		},
 		getEffect(data, id) {
 			if (!data) return new Decimal(0);
 			return data.amount.mul(data.bought);
+		},
+	},
+	upgrades: {
+		11: {
+			title: "Basic Points",
+			description: "Bought Basic Generators multiply point gain.",
+			effect() {return player.g.grid[101].bought},
+			effectDisplay() {return format(this.effect()) + "x"},
+			cost: new Decimal(20000),
+			currencyDisplayName: "points",
+			currencyInternalName: "points",
+			currencyLocation() {return player},
+		},
+		12: {
+			title: "Triple Points",
+			description: "Triple point gain.",
+			effect() {return new Decimal(3)},
+			effectDisplay() {return format(this.effect()) + "x"},
+			cost: new Decimal(100000),
+			currencyDisplayName: "points",
+			currencyInternalName: "points",
+			currencyLocation() {return player},
+		},
+		13: {
+			title: "Pointy Points",
+			description: "Points^0.08 multiply point gain.",
+			effect() {return player.points.pow(0.08)},
+			effectDisplay() {return format(this.effect()) + "x"},
+			cost: new Decimal(1000000),
+			currencyDisplayName: "points",
+			currencyInternalName: "points",
+			currencyLocation() {return player},
+		},
+		14: {
+			title: "Cheaper 2",
+			description: "Reduce Generator Generator 2 cost scaling.<br><br>Effect: 500 -> 30",
+			cost: new Decimal(5000000),
+			currencyDisplayName: "points",
+			currencyInternalName: "points",
+			currencyLocation() {return player},
 		},
 	},
 });

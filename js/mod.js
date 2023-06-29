@@ -26,6 +26,9 @@ function canGenPoints() {
 function getPointGen() {
 	let gain = new Decimal(1);
 	if (player.g.unlocked) gain = gain.mul(tmp.g.effect);
+	if (hasUpgrade("g", 11)) gain = gain.mul(upgradeEffect("g", 11));
+	if (hasUpgrade("g", 12)) gain = gain.mul(upgradeEffect("g", 12));
+	if (hasUpgrade("g", 13)) gain = gain.mul(upgradeEffect("g", 13));
 	return gain;
 };
 
