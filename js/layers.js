@@ -4,8 +4,16 @@
 // super generator color: #248239
 
 const generatorCostBase = {
-	101() {return 5},
-	201() {return 100},
+	101() {
+		if (hasUpgrade("g", 24)) return 3;
+		if (hasUpgrade("g", 23)) return 4;
+		return 5;
+	},
+	201() {
+		if (hasUpgrade("g", 25)) return 15;
+		if (hasUpgrade("g", 22)) return 50;
+		return 100;
+	},
 	202() {
 		if (hasUpgrade("g", 14)) return 30;
 		return 500;
@@ -30,6 +38,7 @@ addLayer("g", {
 	startData() { return {
 		unlocked: true,
 		points: new Decimal(0),
+		passive: new Decimal(0),
 	}},
 	color: "#A3D9A5",
 	resource: "generator power",
@@ -38,7 +47,7 @@ addLayer("g", {
 	effectDescription() {return "which is multiplying point gain by " + format(tmp.g.effect) + "x"},
 	tabFormat: [
 		"main-display",
-		["display-text", () => {return "You are gaining " + format(gridEffect("g", 101)) + " generator power per second<br><br>Note: most forms of passive production cap out at 100 seconds worth of production"}],
+		["display-text", () => {return "You are gaining " + format(player.g.passive) + " generator power per second<br><br>Note: most forms of passive production cap out at 100 seconds worth of production"}],
 		"blank",
 		"grid",
 		"blank",
@@ -50,10 +59,13 @@ addLayer("g", {
 		if (layers[resettingLayer].row > this.row) layerDataReset("g", keep);
 	},
 	update(diff) {
-		if (productionCap && player.g.points.add(gridEffect("g", 101).mul(diff)).gte(gridEffect("g", 101).mul(productionCap))) {
-			player.g.points = gridEffect("g", 101).mul(productionCap);
+		let gain = gridEffect("g", 101);
+		if (hasUpgrade("g", 21)) gain = gain.mul(upgradeEffect("g", 21));
+		player.g.passive = gain;
+		if (productionCap && player.g.points.add(gain.mul(diff)).gte(gain.mul(productionCap))) {
+			player.g.points = gain.mul(productionCap);
 		} else {
-			player.g.points = player.g.points.add(gridEffect("g", 101).mul(diff)).max(0);
+			player.g.points = player.g.points.add(gain.mul(diff)).max(0);
 		};
 		for (let id in player.g.grid) {
 			if (gridEffect("g", id).gt(0)) {
@@ -136,7 +148,7 @@ addLayer("g", {
 			unlocked() {return hasUpgrade("g", 11)},
 		},
 		13: {
-			title: "Pointy Points",
+			title: "Point Points",
 			description: "[Points ^ 0.08] multiply point gain.",
 			effect() {return player.points.pow(0.08)},
 			effectDisplay() {return format(this.effect()) + "x"},
@@ -165,6 +177,53 @@ addLayer("g", {
 			currencyInternalName: "points",
 			currencyLocation() {return player},
 			unlocked() {return hasUpgrade("g", 14)},
+		},
+		21: {
+			title: "Point Power",
+			description: "[Points ^ 0.1] multiply generator power gain.",
+			effect() {return player.points.pow(0.1)},
+			effectDisplay() {return format(this.effect()) + "x"},
+			cost: new Decimal(5e10),
+			currencyDisplayName: "points",
+			currencyInternalName: "points",
+			currencyLocation() {return player},
+			unlocked() {return hasUpgrade("g", 15) && hasMilestone("b", 0)},
+		},
+		22: {
+			title: "Cheaper 1",
+			description: "Reduce Generator Generator 1 cost scaling.<br><br>Effect: 100 -> 50",
+			cost: new Decimal(5e11),
+			currencyDisplayName: "points",
+			currencyInternalName: "points",
+			currencyLocation() {return player},
+			unlocked() {return hasUpgrade("g", 21) && hasMilestone("b", 0)},
+		},
+		23: {
+			title: "Cheaper Basic",
+			description: "Reduce Basic Generator cost scaling.<br><br>Effect: 5 -> 4",
+			cost: new Decimal(5e12),
+			currencyDisplayName: "points",
+			currencyInternalName: "points",
+			currencyLocation() {return player},
+			unlocked() {return hasUpgrade("g", 22) && hasMilestone("b", 0)},
+		},
+		24: {
+			title: "Even Cheaper Basic",
+			description: "Reduce Basic Generator cost scaling.<br><br>Effect: 4 -> 3",
+			cost: new Decimal(5e13),
+			currencyDisplayName: "points",
+			currencyInternalName: "points",
+			currencyLocation() {return player},
+			unlocked() {return hasUpgrade("g", 23) && hasMilestone("b", 0)},
+		},
+		25: {
+			title: "Even Cheaper 1",
+			description: "Reduce Generator Generator 1 cost scaling.<br><br>Effect: 50 -> 15",
+			cost: new Decimal(5e14),
+			currencyDisplayName: "points",
+			currencyInternalName: "points",
+			currencyLocation() {return player},
+			unlocked() {return hasUpgrade("g", 24) && hasMilestone("b", 0)},
 		},
 	},
 });
@@ -199,5 +258,12 @@ addLayer("b", {
 	doReset(resettingLayer) {
 		let keep = [];
 		if (layers[resettingLayer].row > this.row) layerDataReset("b", keep);
+	},
+	milestones: {
+		0: {
+			requirementDescription: "2 boosters",
+			effectDescription: "unlocks more generator upgrades",
+			done() {return player.b.points.gte(2)},
+		},
 	},
 });

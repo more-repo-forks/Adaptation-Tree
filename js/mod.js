@@ -35,17 +35,23 @@ function getPointGen() {
 
 const productionCap = 100; // in seconds
 
+const endgamePoints = new Decimal(3.566e16);
+
 // You can add non-layer related variables that should to into "player" and be saved here, along with default values
 function addedPlayerData() { return {
 }};
 
 // Display extra things at the top of the page
 var displayThings = [
+	() => {
+		if (tmp.gameEnded) return "<br>you have beaten the game!";
+		return "<br>you need " + format(endgamePoints) + " points to beat the game";
+	},
 ];
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.points.gte(new Decimal(2.36e11));
+	return player.points.gte(endgamePoints);
 };
 
 // Style for the background, can be a function
