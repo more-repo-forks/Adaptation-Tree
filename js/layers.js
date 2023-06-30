@@ -19,10 +19,23 @@ const generatorCostScale = {
 	},
 	302() {return 5000},
 	303() {return 50},
-	401() {return 100000},
-	402() {return 1e15},
-	403() {return 20000},
-	404() {return 1000000},
+	401() {
+		if (hasUpgrade("g", 42)) return 25;
+		return 100000;
+	},
+	402() {
+		if (hasUpgrade("g", 43)) return 50;
+		if (hasUpgrade("g", 41)) return 10000;
+		return 1e15;
+	},
+	403() {
+		if (hasUpgrade("g", 43)) return 20;
+		return 20000;
+	},
+	404() {
+		if (hasUpgrade("g", 42)) return 100;
+		return 1000000;
+	},
 };
 
 const generatorExtraCost = {
@@ -55,7 +68,9 @@ function generatorCost(id) {
 	let bought = player.g.grid[id].bought;
 	let scale = generatorCostScale[id]();
 	let extra = generatorExtraCost[id];
-	if (typeof extra == "function") return new Decimal(scale).pow(bought ** 1.25 + 1).mul(extra());
+	if (typeof extra == "function" && !hasUpgrade("g", 44)) {
+		return new Decimal(scale).pow(bought ** 1.25 + 1).mul(extra());
+	};
 	return new Decimal(scale).pow(bought ** 1.25 + 1);
 };
 
@@ -97,6 +112,7 @@ addLayer("g", {
 		if (hasUpgrade("g", 33)) gain = gain.mul(upgradeEffect("g", 33));
 		if (hasUpgrade("g", 34)) gain = gain.mul(upgradeEffect("g", 34));
 		if (hasUpgrade("g", 35)) gain = gain.mul(upgradeEffect("g", 35));
+		if (hasUpgrade("g", 45)) gain = gain.mul(upgradeEffect("g", 45));
 		if (hasUpgrade("b", 14)) gain = gain.mul(upgradeEffect("b", 14));
 		if (hasUpgrade("b", 23)) gain = gain.mul(upgradeEffect("b", 23));
 		player.g.passive = gain;
@@ -363,6 +379,61 @@ addLayer("g", {
 			currencyLocation() {return player},
 			unlocked() {return hasUpgrade("g", 34) && hasMilestone("b", 2)},
 		},
+		41: {
+			title: "Cheaper Backward",
+			description: "Reduce Backward Generator cost scaling.<br><br>Effect: 1e15 -> 10,000",
+			cost: new Decimal(1e207),
+			currencyDisplayName: "points",
+			currencyInternalName: "points",
+			currencyLocation() {return player},
+			unlocked() {return hasUpgrade("g", 35) && hasMilestone("b", 6)},
+		},
+		42: {
+			title: "Cheaper B/E",
+			description: "Reduce Beginning and Ending Generator cost scaling.<br><br>Effect: 10,0000 -> 25 and 1,000,000 -> 100",
+			cost: new Decimal(1e215),
+			currencyDisplayName: "points",
+			currencyInternalName: "points",
+			currencyLocation() {return player},
+			unlocked() {return hasUpgrade("g", 41) && hasMilestone("b", 6)},
+		},
+		43: {
+			title: "Cheaper B/F",
+			description: "Reduce Backward and Forward Generator cost scaling.<br><br>Effect: 10,000 -> 50 and 20,000 -> 20",
+			cost: new Decimal(1e220),
+			currencyDisplayName: "points",
+			currencyInternalName: "points",
+			currencyLocation() {return player},
+			unlocked() {return hasUpgrade("g", 42) && hasMilestone("b", 6)},
+		},
+		44: {
+			title: "Cheaper Generators",
+			description: "Removes the base costs of all generators.",
+			cost: new Decimal(1e232),
+			currencyDisplayName: "points",
+			currencyInternalName: "points",
+			currencyLocation() {return player},
+			unlocked() {return hasUpgrade("g", 43) && hasMilestone("b", 6)},
+		},
+		45: {
+			title: "Generator Power",
+			description: "[1.025 ^ Bought Generators] multiply generator power gain.",
+			effect() {
+				let bought = 0;
+				for (let id in player.g.grid) {
+					if (typeof player.g.grid[id] == "object") {
+						bought += player.g.grid[id].bought;
+					};
+				};
+				return new Decimal(1.025).pow(bought);
+			},
+			effectDisplay() {return format(this.effect()) + "x"},
+			cost: new Decimal(1e239),
+			currencyDisplayName: "points",
+			currencyInternalName: "points",
+			currencyLocation() {return player},
+			unlocked() {return hasUpgrade("g", 44) && hasMilestone("b", 6)},
+		},
 	},
 });
 
@@ -457,6 +528,12 @@ addLayer("b", {
 			effectDescription: "unlocks more booster upgrades",
 			done() {return player.b.points.gte(69)},
 			unlocked() {return hasMilestone("b", 4)},
+		},
+		6: {
+			requirementDescription: "105 boosters",
+			effectDescription: "unlocks more generator upgrades",
+			done() {return player.b.points.gte(105)},
+			unlocked() {return hasMilestone("b", 5)},
 		},
 	},
 	upgrades: {
@@ -585,7 +662,10 @@ addLayer("sb", {
 	baseAmount() {return player.points},
 	requires: new Decimal(1e24),
 	type: "static",
-	exponent: 2,
+	exponent() {
+		if (player.sb.points.add(tmp.sb.resetGain).gte(10)) return 2.0125;
+		return 2;
+	},
 	base() {
 		if (hasUpgrade("b", 11)) return 2500;
 		return 10000;

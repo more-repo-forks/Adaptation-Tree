@@ -9,8 +9,8 @@ const modInfo = {
 }
 
 const VERSION = {
-	num: "1.3",
-	name: "Booster Upgrades",
+	num: "1.4",
+	name: "???",
 };
 
 const winText = `Congratulations! You have reached the end and beaten this game, but for now...`;
@@ -36,7 +36,7 @@ function getPointGen() {
 
 const productionCap = 100; // in seconds
 
-const endgameBoosters = new Decimal(105);
+const endgameBoosters = new Decimal(131);
 
 function maxPoints() {
 	return hasMilestone("sb", 3);
