@@ -566,6 +566,12 @@ addLayer("b", {
 			done() {return player.b.points.gte(198)},
 			unlocked() {return hasMilestone("b", 7)},
 		},
+		9: {
+			requirementDescription: "274 boosters",
+			effectDescription: "unlocks super generator upgrades",
+			done() {return player.b.points.gte(274)},
+			unlocked() {return hasMilestone("b", 8)},
+		},
 	},
 	upgrades: {
 		11: {
@@ -854,6 +860,7 @@ addLayer("sg", {
 		"blank",
 		"buyables",
 		"blank",
+		"upgrades",
 	],
 	layerShown() {return hasMilestone("b", 8)},
 	doReset(resettingLayer) {
@@ -862,7 +869,8 @@ addLayer("sg", {
 	},
 	update(diff) {
 		let gain = buyableEffect("sg", 11);
-		if (hasBuyable("sg", 12)) gain = gain.mul(buyableEffect("sg", 12));
+		if (tmp.sg.buyables[12].unlocked) gain = gain.mul(buyableEffect("sg", 12));
+		if (hasUpgrade("sg", 12)) gain = gain.mul(upgradeEffect("sg", 12));
 		player.sg.passive = gain;
 		if (productionCap && player.sg.points.add(gain.mul(diff)).gte(gain.mul(productionCap))) {
 			player.sg.points = gain.mul(productionCap);
@@ -891,8 +899,8 @@ addLayer("sg", {
 		11: {
 			title: "1st Super Generator",
 			display() {
-				let extra = this.extra();
-				return "Increase super generator power generation by " + format(this.effectBase()) + ".<br><br>Effect: +" + format(buyableEffect("sg", this.id)) + "<br><br>Cost: " + format(this.cost()) + " generator power<br><br>Bought: " + formatWhole(getBuyableAmount("sg", this.id)) + (extra.gt(0) ? " + " + format(extra) : "");
+				const extra = this.extra();
+				return "Increase super generator power gain by " + format(this.effectBase()) + ".<br><br>Effect: +" + format(buyableEffect("sg", this.id)) + "<br><br>Cost: " + format(this.cost()) + " generator power<br><br>Bought: " + formatWhole(getBuyableAmount("sg", this.id)) + (extra.gt(0) ? " + " + format(extra) : "");
 			},
 			cost() {return new Decimal(1e160).mul(new Decimal(100).pow(getBuyableAmount("sg", this.id).pow(1.25).add(1)))},
 			canAfford() {return player.g.points.gte(this.cost()) && player.sg.capacity.gte(getBoughtSuperGenerators().add(1))},
@@ -902,7 +910,7 @@ addLayer("sg", {
 			},
 			effectBase() {
 				let base = new Decimal(1);
-				if (hasBuyable("sg", 14)) base = base.add(buyableEffect("sg", 14));
+				if (tmp.sg.buyables[14].unlocked) base = base.add(buyableEffect("sg", 14));
 				return base;
 			},
 			extra() {return buyableEffect("sg", 15)},
@@ -911,8 +919,8 @@ addLayer("sg", {
 		12: {
 			title: "2nd Super Generator",
 			display() {
-				let extra = this.extra();
-				return "Multiply super generator power generation by " + format(this.effectBase()) + ".<br><br>Effect: " + format(buyableEffect("sg", this.id)) + "x<br><br>Cost: " + format(this.cost()) + " generator power<br><br>Bought: " + formatWhole(getBuyableAmount("sg", this.id)) + (extra.gt(0) ? " + " + format(extra) : "");
+				const extra = this.extra();
+				return "Multiply super generator power gain by " + format(this.effectBase()) + ".<br><br>Effect: " + format(buyableEffect("sg", this.id)) + "x<br><br>Cost: " + format(this.cost()) + " generator power<br><br>Bought: " + formatWhole(getBuyableAmount("sg", this.id)) + (extra.gt(0) ? " + " + format(extra) : "");
 			},
 			cost() {return new Decimal(1e168).mul(new Decimal(1e8).pow(getBuyableAmount("sg", this.id).pow(1.25).add(1)))},
 			canAfford() {return player.g.points.gte(this.cost()) && player.sg.capacity.gte(getBoughtSuperGenerators().add(1))},
@@ -922,7 +930,7 @@ addLayer("sg", {
 			},
 			effectBase() {
 				let base = new Decimal(2);
-				if (hasBuyable("sg", 13)) base = base.add(buyableEffect("sg", 13));
+				if (tmp.sg.buyables[13].unlocked) base = base.add(buyableEffect("sg", 13));
 				return base;
 			},
 			extra() {return buyableEffect("sg", 15)},
@@ -931,7 +939,7 @@ addLayer("sg", {
 		13: {
 			title: "3rd Super Generator",
 			display() {
-				let extra = this.extra();
+				const extra = this.extra();
 				return "Increase 2nd Super Generator effect base by 2.<br><br>Effect: +" + format(buyableEffect("sg", this.id)) + "<br><br>Cost: " + format(this.cost()) + " generator power<br><br>Bought: " + formatWhole(getBuyableAmount("sg", this.id)) + (extra.gt(0) ? " + " + format(extra) : "");
 			},
 			cost() {return new Decimal(1e180).mul(new Decimal(1e6).pow(getBuyableAmount("sg", this.id).pow(1.25).add(1)))},
@@ -946,8 +954,9 @@ addLayer("sg", {
 		14: {
 			title: "4th Super Generator",
 			display() {
-				let extra = this.extra();
-				return "[1st Super Generators ^ 0.5] increases the 1st Super Generator effect base.<br><br>Effect: +" + format(buyableEffect("sg", this.id)) + "<br><br>Cost: " + format(this.cost()) + " generator power<br><br>Bought: " + formatWhole(getBuyableAmount("sg", this.id)) + (extra.gt(0) ? " + " + format(extra) : "");
+				const extra = this.extra();
+				if (hasUpgrade("sg", 11)) return "[1st Super Generators ^ 1.55] increases the 1st Super Generator effect base.<br><br>Effect: +" + format(buyableEffect("sg", this.id)) + "<br><br>Cost: " + format(this.cost()) + " generator power<br><br>Bought: " + formatWhole(getBuyableAmount("sg", this.id)) + (extra.gt(0) ? " + " + format(extra) : "");
+				return "[Bought 1st Super Generators ^ 0.5] increases the 1st Super Generator effect base.<br><br>Effect: +" + format(buyableEffect("sg", this.id)) + "<br><br>Cost: " + format(this.cost()) + " generator power<br><br>Bought: " + formatWhole(getBuyableAmount("sg", this.id)) + (extra.gt(0) ? " + " + format(extra) : "");
 			},
 			cost() {return new Decimal(1e181).mul(new Decimal(1e10).pow(getBuyableAmount("sg", this.id).pow(1.25).add(1)))},
 			canAfford() {return player.g.points.gte(this.cost()) && player.sg.capacity.gte(getBoughtSuperGenerators().add(1))},
@@ -956,12 +965,15 @@ addLayer("sg", {
 				setBuyableAmount("sg", this.id, getBuyableAmount("sg", this.id).add(1));
 			},
 			extra() {return buyableEffect("sg", 15)},
-			effect() {return getBuyableAmount("sg", this.id).add(this.extra()).mul(getBuyableAmount("sg", 11).pow(0.5))},
+			effect() {
+				if (hasUpgrade("sg", 11)) return getBuyableAmount("sg", this.id).add(this.extra()).mul(getBuyableAmount("sg", 11).add(tmp.sg.buyables[11].extra).pow(1.55));
+				return getBuyableAmount("sg", this.id).add(this.extra()).mul(getBuyableAmount("sg", 11).pow(0.5));
+			},
 		},
 		15: {
 			title: "5th Super Generator",
 			display() {
-				let extra = this.extra();
+				const extra = this.extra();
 				return "Get " + format(1) + " extra super generators of all the previous types.<br><br>Effect: +" + format(buyableEffect("sg", this.id)) + "<br><br>Cost: " + format(this.cost()) + " generator power<br><br>Bought: " + formatWhole(getBuyableAmount("sg", this.id)) + (extra.gt(0) ? " + " + format(extra) : "");
 			},
 			cost() {return new Decimal(1e187).mul(new Decimal(1e30).pow(getBuyableAmount("sg", this.id).pow(1.25).add(1)))},
@@ -972,6 +984,22 @@ addLayer("sg", {
 			},
 			extra() {return new Decimal(0)},
 			effect() {return getBuyableAmount("sg", this.id)},
+		},
+	},
+	upgrades: {
+		11: {
+			title: "Enhance 4th",
+			description: "Improve the 4th Super Generator formula.",
+			cost: new Decimal(6e13),
+			unlocked() {return hasMilestone("b", 9)},
+		},
+		12: {
+			title: "Upgrade Super Power",
+			description: "[2.1 ^ Upgrades] multiplies super generator power gain",
+			effect() {return new Decimal(2.1).pow(player.sg.upgrades.length)},
+			effectDisplay() {return format(this.effect()) + "x"},
+			cost: new Decimal(1e15),
+			unlocked() {return hasUpgrade("sg", 11) && hasMilestone("b", 9)},
 		},
 	},
 });
