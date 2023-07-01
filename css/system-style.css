@@ -106,16 +106,6 @@ td {
 	left: 0;
 }
 
-.remove {
-	height: 24px;
-	width: 24px;
-	cursor: pointer;
-}
-
-.remove:hover {
-	transform: scale(1.1, 1.1);
-}
-
 .col {
 	min-width: 49.5%;
 	max-width: 49.5%;

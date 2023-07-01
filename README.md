@@ -2,4 +2,4 @@
 
 An incremental game made using the game engine The Modding Tree.
 
-Inspired by The Prestige Tree's Booster and Generator layers.
+Inspired by various layers of The Prestige Tree, such as Boosters, Super Boosters, Generators, and Space Energy.
