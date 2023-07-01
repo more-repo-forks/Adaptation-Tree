@@ -856,7 +856,7 @@ addLayer("sg", {
 	effectDescription() {return "which is multiplying all generator amounts gain and generator power gain by " + format(tmp.sg.effect) + "x"},
 	tabFormat: [
 		"main-display",
-		["display-text", () => {return "You are gaining " + format(player.sg.passive) + " super generator power per second<br><br>Your best super generator power is " + format(player.sg.best) + "<br><br>You have " + formatWhole(player.sg.capacity) + " total capacity, with " + formatWhole(player.sg.capacity.sub(getBoughtSuperGenerators())) + " capacity remaining"}],
+		["display-text", () => {return "You are gaining " + format(player.sg.passive) + " super generator power per second<br><br>Your best super generator power is " + format(player.sg.best) + "<br><br>You have " + format(player.sg.capacity) + " total capacity, with " + format(player.sg.capacity.sub(getBoughtSuperGenerators())) + " capacity remaining"}],
 		"blank",
 		"buyables",
 		"blank",
@@ -871,6 +871,7 @@ addLayer("sg", {
 		let gain = buyableEffect("sg", 11);
 		if (tmp.sg.buyables[12].unlocked) gain = gain.mul(buyableEffect("sg", 12));
 		if (hasUpgrade("sg", 12)) gain = gain.mul(upgradeEffect("sg", 12));
+		if (hasUpgrade("sg", 14)) gain = gain.mul(upgradeEffect("sg", 14));
 		player.sg.passive = gain;
 		if (productionCap && player.sg.points.add(gain.mul(diff)).gte(gain.mul(productionCap))) {
 			player.sg.points = gain.mul(productionCap);
@@ -879,10 +880,12 @@ addLayer("sg", {
 		};
 		if (player.sg.points.gt(player.sg.best)) player.sg.best = player.sg.points;
 		let cap = player.sb.points;
+		if (hasUpgrade("sg", 15)) cap = cap.add(upgradeEffect("sg", 15));
 		player.sg.capacity = cap;
 	},
 	componentStyles: {
 		"buyable"() {return {"width": "200px", "height": "125px"}},
+		"upgrade"() {return {"width": "125px", "height": "125px"}},
 	},
 	buyables: {
 		respec() {
@@ -913,7 +916,11 @@ addLayer("sg", {
 				if (tmp.sg.buyables[14].unlocked) base = base.add(buyableEffect("sg", 14));
 				return base;
 			},
-			extra() {return buyableEffect("sg", 15)},
+			extra() {
+				let extra = buyableEffect("sg", 15);
+				if (hasUpgrade("sg", 13)) extra = extra.add(upgradeEffect("sg", 13));
+				return extra;
+			},
 			effect() {return getBuyableAmount("sg", this.id).add(this.extra()).mul(this.effectBase())},
 		},
 		12: {
@@ -964,7 +971,11 @@ addLayer("sg", {
 				player.g.points = player.g.points.sub(this.cost());
 				setBuyableAmount("sg", this.id, getBuyableAmount("sg", this.id).add(1));
 			},
-			extra() {return buyableEffect("sg", 15)},
+			extra() {
+				let extra = buyableEffect("sg", 15);
+				if (hasUpgrade("sg", 13)) extra = extra.add(upgradeEffect("sg", 13));
+				return extra;
+			},
 			effect() {
 				if (hasUpgrade("sg", 11)) return getBuyableAmount("sg", this.id).add(this.extra()).mul(getBuyableAmount("sg", 11).add(tmp.sg.buyables[11].extra).pow(1.55));
 				return getBuyableAmount("sg", this.id).add(this.extra()).mul(getBuyableAmount("sg", 11).pow(0.5));
@@ -983,7 +994,7 @@ addLayer("sg", {
 				setBuyableAmount("sg", this.id, getBuyableAmount("sg", this.id).add(1));
 			},
 			extra() {return new Decimal(0)},
-			effect() {return getBuyableAmount("sg", this.id)},
+			effect() {return getBuyableAmount("sg", this.id).add(this.extra())},
 		},
 	},
 	upgrades: {
@@ -995,11 +1006,35 @@ addLayer("sg", {
 		},
 		12: {
 			title: "Upgrade Super Power",
-			description: "[2.1 ^ Upgrades] multiplies super generator power gain",
+			description: "[2.1 ^ Upgrades] multiplies super generator power gain.",
 			effect() {return new Decimal(2.1).pow(player.sg.upgrades.length)},
 			effectDisplay() {return format(this.effect()) + "x"},
 			cost: new Decimal(1e15),
 			unlocked() {return hasUpgrade("sg", 11) && hasMilestone("b", 9)},
+		},
+		13: {
+			title: "Extra 1 and 4",
+			description: "Get 14 extra 1st and 4th Super Generators.",
+			effect() {return new Decimal(14)},
+			effectDisplay() {return "+" + format(this.effect())},
+			cost: new Decimal(1e19),
+			unlocked() {return hasUpgrade("sg", 12) && hasMilestone("b", 9)},
+		},
+		14: {
+			title: "Super Power Recursion",
+			description: "[Super Generator Power ^ 0.396 / 1e9] multiplies super generator power gain.",
+			effect() {return player.sg.points.pow(0.396).div(1e9).max(1)},
+			effectDisplay() {return format(this.effect()) + "x"},
+			cost: new Decimal(2e22),
+			unlocked() {return hasUpgrade("sg", 13) && hasMilestone("b", 9)},
+		},
+		15: {
+			title: "Capacity + 1",
+			description: "Increase total capacity by 1.",
+			effect() {return new Decimal(1)},
+			effectDisplay() {return "+" + format(this.effect())},
+			cost: new Decimal(3e26),
+			unlocked() {return hasUpgrade("sg", 14) && hasMilestone("b", 9)},
 		},
 	},
 });
