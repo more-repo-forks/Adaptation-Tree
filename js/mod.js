@@ -5,12 +5,12 @@ const modInfo = {
 	pointsName: "points",
 	modFiles: ["layers.js", "technical/tree.js"],
 	initialStartPoints: new Decimal(0),
-	offlineLimit: 1, // In hours
+	offlineLimit: 24, // in hours
 }
 
 const VERSION = {
-	num: "1.4",
-	name: "Going Ever Higher",
+	num: "1.5",
+	name: "Super-Power Time",
 };
 
 const winText = `Congratulations! You have reached the end and beaten this game, but for now...`;
@@ -36,7 +36,7 @@ function getPointGen() {
 
 const productionCap = 100; // in seconds
 
-const endgameBoosters = new Decimal(198);
+const endgameBoosters = new Decimal(240);
 
 function maxPoints() {
 	return hasMilestone("sb", 3);

@@ -167,10 +167,10 @@ ul {
 	transition-duration: 0s;
 }
 
-.tooltipBox { 
+.tooltipBox {
 	position: relative;
 }
-  
+
 .tooltipBox:hover .tooltip {
 	opacity: 1;
 }
@@ -179,9 +179,10 @@ ul {
 	opacity: 1;
 	z-index: 999;
 }
-  
+
 .respecCheckbox {
 	display: inline-block;
+	margin-left: 5px;
 }
 
 .treeOverlay {
@@ -216,7 +217,7 @@ button > * {
 }
 
 .treeTab td button {
-    margin: 0 10px;
+	margin: 0 10px;
 }
 
 .bg {
