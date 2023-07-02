@@ -10,7 +10,7 @@ const modInfo = {
 
 const VERSION = {
 	num: "1.5",
-	name: "Super-Power Time",
+	name: "Super Power Time",
 };
 
 const winText = `Congratulations! You have reached the end and beaten this game, but for now...`;
@@ -36,7 +36,7 @@ function getPointGen() {
 
 const productionCap = 100; // in seconds
 
-const endgameBoosters = new Decimal(410);
+const endgameBoosters = new Decimal(459);
 
 function maxPoints() {
 	return hasMilestone("sb", 3);

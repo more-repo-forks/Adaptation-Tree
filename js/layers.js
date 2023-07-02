@@ -136,6 +136,7 @@ addLayer("g", {
 		if (hasUpgrade("b", 14)) gain = gain.mul(upgradeEffect("b", 14));
 		if (hasUpgrade("b", 23)) gain = gain.mul(upgradeEffect("b", 23));
 		if (hasUpgrade("b", 34)) gain = gain.mul(upgradeEffect("b", 34));
+		if (hasUpgrade("sg", 24)) gain = gain.mul(upgradeEffect("sg", 24));
 		if (player.sg.unlocked) gain = gain.mul(tmp.sg.effect);
 		player.g.passive = gain;
 		if (productionCap && (player.g.points.add(gain.mul(diff)).gte(gain.mul(productionCap))) || hasMilestone("sb", 4)) {
@@ -890,6 +891,7 @@ addLayer("sg", {
 		if (hasUpgrade("sg", 15)) cap = cap.add(upgradeEffect("sg", 15));
 		if (hasUpgrade("sg", 22)) cap = cap.add(upgradeEffect("sg", 22));
 		if (hasUpgrade("sg", 23)) cap = cap.add(upgradeEffect("sg", 23));
+		if (hasUpgrade("sg", 25)) cap = cap.add(upgradeEffect("sg", 25));
 		player.sg.capacity = cap;
 	},
 	componentStyles: {
@@ -1068,6 +1070,22 @@ addLayer("sg", {
 			effectDisplay() {return "+" + format(this.effect())},
 			cost: new Decimal(5e35),
 			unlocked() {return hasUpgrade("sg", 22) && hasMilestone("b", 10)},
+		},
+		24: {
+			title: "Upgrade Power",
+			description: "[Upgrades ^ 16.6] multiplies generator power gain.",
+			effect() {return player.sg.upgrades.length ** 16.6},
+			effectDisplay() {return format(this.effect()) + "x"},
+			cost: new Decimal(1e42),
+			unlocked() {return hasUpgrade("sg", 23) && hasMilestone("b", 10)},
+		},
+		25: {
+			title: "Capacity + 2",
+			description: "Increase total capacity by 2.",
+			effect() {return new Decimal(2)},
+			effectDisplay() {return "+" + format(this.effect())},
+			cost: new Decimal(6e46),
+			unlocked() {return hasUpgrade("sg", 24) && hasMilestone("b", 10)},
 		},
 	},
 });
