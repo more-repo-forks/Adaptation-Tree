@@ -375,7 +375,7 @@ addLayer("g", {
 		33: {
 			title: "Super Power",
 			description: "[Super Boosters * 2] multiply generator power gain.",
-			effect() {return player.sb.points.mul(2)},
+			effect() {return player.sb.points.mul(2).max(1)},
 			effectDisplay() {return format(this.effect()) + "x"},
 			cost: new Decimal(1e39),
 			currencyDisplayName: "points",
@@ -579,6 +579,12 @@ addLayer("b", {
 			done() {return player.b.points.gte(348)},
 			unlocked() {return hasMilestone("b", 9)},
 		},
+		11: {
+			requirementDescription: "459 boosters",
+			effectDescription: "unlocks more super generators",
+			done() {return player.b.points.gte(459)},
+			unlocked() {return hasMilestone("b", 10)},
+		},
 	},
 	upgrades: {
 		11: {
@@ -760,6 +766,7 @@ addLayer("sb", {
 	requires: new Decimal(1e24),
 	type: "static",
 	exponent() {
+		if (player.sb.points.add(tmp.sb.resetGain).gte(23)) return 2.01675;
 		if (player.sb.points.add(tmp.sb.resetGain).gte(10)) return 2.0125;
 		return 2;
 	},
@@ -878,6 +885,8 @@ addLayer("sg", {
 	update(diff) {
 		let gain = buyableEffect("sg", 11);
 		if (tmp.sg.buyables[12].unlocked) gain = gain.mul(buyableEffect("sg", 12));
+		if (tmp.sg.buyables[17].unlocked) gain = gain.mul(buyableEffect("sg", 17));
+		if (tmp.sg.buyables[18].unlocked) gain = gain.mul(buyableEffect("sg", 18));
 		if (hasUpgrade("sg", 12)) gain = gain.mul(upgradeEffect("sg", 12));
 		if (hasUpgrade("sg", 14)) gain = gain.mul(upgradeEffect("sg", 14));
 		player.sg.passive = gain;
@@ -938,7 +947,7 @@ addLayer("sg", {
 			title: "2nd Super Generator",
 			display() {
 				const extra = this.extra();
-				return "Multiply super generator power gain by " + formatWhole(this.effectBase()) + ".<br><br>Effect: " + format(buyableEffect("sg", this.id)) + "x<br><br>Cost: " + format(this.cost()) + " generator power<br><br>Bought: " + formatWhole(getBuyableAmount("sg", this.id)) + (extra.gt(0) ? " + " + format(extra) : "");
+				return "Multiply super generator power gain by " + format(this.effectBase()) + ".<br><br>Effect: " + format(buyableEffect("sg", this.id)) + "x<br><br>Cost: " + format(this.cost()) + " generator power<br><br>Bought: " + formatWhole(getBuyableAmount("sg", this.id)) + (extra.gt(0) ? " + " + format(extra) : "");
 			},
 			cost() {return new Decimal(1e168).mul(new Decimal(1e8).pow(getBuyableAmount("sg", this.id).pow(1.25).add(1)))},
 			canAfford() {return player.g.points.gte(this.cost()) && player.sg.capacity.gte(getBoughtSuperGenerators().add(1))},
@@ -958,7 +967,7 @@ addLayer("sg", {
 			title: "3rd Super Generator",
 			display() {
 				const extra = this.extra();
-				return "Increase 2nd Super Generator effect base by 2.<br><br>Effect: +" + format(buyableEffect("sg", this.id)) + "<br><br>Cost: " + format(this.cost()) + " generator power<br><br>Bought: " + formatWhole(getBuyableAmount("sg", this.id)) + (extra.gt(0) ? " + " + format(extra) : "");
+				return "Increase 2nd Super Generator effect base by " + format(2) + ".<br><br>Effect: +" + format(buyableEffect("sg", this.id)) + "<br><br>Cost: " + format(this.cost()) + " generator power<br><br>Bought: " + formatWhole(getBuyableAmount("sg", this.id)) + (extra.gt(0) ? " + " + format(extra) : "");
 			},
 			cost() {return new Decimal(1e180).mul(new Decimal(1e6).pow(getBuyableAmount("sg", this.id).pow(1.25).add(1)))},
 			canAfford() {return player.g.points.gte(this.cost()) && player.sg.capacity.gte(getBoughtSuperGenerators().add(1))},
@@ -996,16 +1005,75 @@ addLayer("sg", {
 			title: "5th Super Generator",
 			display() {
 				const extra = this.extra();
-				return "Get " + format(1) + " extra super generators of all the previous types.<br><br>Effect: +" + format(buyableEffect("sg", this.id)) + "<br><br>Cost: " + format(this.cost()) + " generator power<br><br>Bought: " + formatWhole(getBuyableAmount("sg", this.id)) + (extra.gt(0) ? " + " + format(extra) : "");
+				return "Get " + format(this.effectBase()) + " extra super generators of all the previous types.<br><br>Effect: +" + format(buyableEffect("sg", this.id)) + "<br><br>Cost: " + format(this.cost()) + " generator power<br><br>Bought: " + formatWhole(getBuyableAmount("sg", this.id)) + (extra.gt(0) ? " + " + format(extra) : "");
 			},
-			cost() {return new Decimal(1e187).mul(new Decimal(1e30).pow(getBuyableAmount("sg", this.id).pow(1.25).add(1)))},
+			exponent() {
+				if (getBuyableAmount("sg", this.id).gte(9)) return 1.311;
+				if (getBuyableAmount("sg", this.id).gte(8)) return 1.294;
+				if (getBuyableAmount("sg", this.id).gte(7)) return 1.263;
+				return 1.25;
+			},
+			cost() {return new Decimal(1e187).mul(new Decimal(1e30).pow(getBuyableAmount("sg", this.id).pow(this.exponent()).add(1)))},
+			canAfford() {return player.g.points.gte(this.cost()) && player.sg.capacity.gte(getBoughtSuperGenerators().add(1))},
+			buy() {
+				player.g.points = player.g.points.sub(this.cost());
+				setBuyableAmount("sg", this.id, getBuyableAmount("sg", this.id).add(1));
+			},
+			effectBase() {
+				let base = new Decimal(1);
+				if (tmp.sg.buyables[16].unlocked) base = base.add(buyableEffect("sg", 16));
+				return base;
+			},
+			extra() {return new Decimal(0)},
+			effect() {return getBuyableAmount("sg", this.id).add(this.extra()).mul(this.effectBase())},
+		},
+		16: {
+			title: "6th Super Generator",
+			display() {
+				const extra = this.extra();
+				return "Increase 5th Super Generator effect base by " + format(0.1) + ".<br><br>Effect: +" + format(buyableEffect("sg", this.id)) + "<br><br>Cost: " + format(this.cost()) + " generator power<br><br>Bought: " + formatWhole(getBuyableAmount("sg", this.id)) + (extra.gt(0) ? " + " + format(extra) : "");
+			},
+			cost() {return new Decimal("1e500").mul(new Decimal(1e43).pow(getBuyableAmount("sg", this.id).pow(1.25).add(1)))},
 			canAfford() {return player.g.points.gte(this.cost()) && player.sg.capacity.gte(getBoughtSuperGenerators().add(1))},
 			buy() {
 				player.g.points = player.g.points.sub(this.cost());
 				setBuyableAmount("sg", this.id, getBuyableAmount("sg", this.id).add(1));
 			},
 			extra() {return new Decimal(0)},
-			effect() {return getBuyableAmount("sg", this.id).add(this.extra())},
+			effect() {return getBuyableAmount("sg", this.id).add(this.extra()).mul(0.1)},
+			unlocked() {return hasMilestone("b", 11)},
+		},
+		17: {
+			title: "7th Super Generator",
+			display() {
+				const extra = this.extra();
+				return "[Generator Power ^ 0.0077] multiplies super generator power gain.<br><br>Effect: " + format(buyableEffect("sg", this.id)) + "x<br><br>Cost: " + format(this.cost()) + " generator power<br><br>Bought: " + formatWhole(getBuyableAmount("sg", this.id)) + (extra.gt(0) ? " + " + format(extra) : "");
+			},
+			cost() {return new Decimal("1e420").mul(new Decimal(1e141).pow(getBuyableAmount("sg", this.id).pow(1.25).add(1)))},
+			canAfford() {return player.g.points.gte(this.cost()) && player.sg.capacity.gte(getBoughtSuperGenerators().add(1))},
+			buy() {
+				player.g.points = player.g.points.sub(this.cost());
+				setBuyableAmount("sg", this.id, getBuyableAmount("sg", this.id).add(1));
+			},
+			extra() {return new Decimal(0)},
+			effect() {return player.g.points.pow(0.0077).pow(getBuyableAmount("sg", this.id).add(this.extra()))},
+			unlocked() {return hasMilestone("b", 11)},
+		},
+		18: {
+			title: "8th Super Generator",
+			display() {
+				const extra = this.extra();
+				return "[Boosters * 1.12] multiplies super generator power gain.<br><br>Effect: " + format(buyableEffect("sg", this.id)) + "x<br><br>Cost: " + format(this.cost()) + " generator power<br><br>Bought: " + formatWhole(getBuyableAmount("sg", this.id)) + (extra.gt(0) ? " + " + format(extra) : "");
+			},
+			cost() {return new Decimal("1e460").mul(new Decimal(1e145).pow(getBuyableAmount("sg", this.id).pow(1.25).add(1)))},
+			canAfford() {return player.g.points.gte(this.cost()) && player.sg.capacity.gte(getBoughtSuperGenerators().add(1))},
+			buy() {
+				player.g.points = player.g.points.sub(this.cost());
+				setBuyableAmount("sg", this.id, getBuyableAmount("sg", this.id).add(1));
+			},
+			extra() {return new Decimal(0)},
+			effect() {return player.b.points.mul(1.12).pow(getBuyableAmount("sg", this.id).add(this.extra()))},
+			unlocked() {return hasMilestone("b", 11)},
 		},
 	},
 	upgrades: {
