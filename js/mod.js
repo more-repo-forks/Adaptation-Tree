@@ -9,7 +9,7 @@ const modInfo = {
 }
 
 const VERSION = {
-	num: "1.5",
+	num: "2.0",
 	name: "Super Power Time",
 };
 
@@ -36,7 +36,7 @@ function getPointGen() {
 
 const productionCap = 100; // in seconds
 
-const endgameBoosters = new Decimal(585);
+const endgameBoosters = new Decimal(747);
 
 function maxPoints() {
 	return hasMilestone("sb", 3);

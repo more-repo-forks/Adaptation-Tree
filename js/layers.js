@@ -137,6 +137,7 @@ addLayer("g", {
 		if (hasUpgrade("b", 23)) gain = gain.mul(upgradeEffect("b", 23));
 		if (hasUpgrade("b", 34)) gain = gain.mul(upgradeEffect("b", 34));
 		if (hasUpgrade("sg", 24)) gain = gain.mul(upgradeEffect("sg", 24));
+		if (hasUpgrade("sg", 31)) gain = gain.mul(upgradeEffect("sg", 31));
 		if (player.sg.unlocked) gain = gain.mul(tmp.sg.effect);
 		player.g.passive = gain;
 		if (productionCap && (player.g.points.add(gain.mul(diff)).gte(gain.mul(productionCap))) || hasMilestone("sb", 4)) {
@@ -585,6 +586,12 @@ addLayer("b", {
 			done() {return player.b.points.gte(459)},
 			unlocked() {return hasMilestone("b", 10)},
 		},
+		12: {
+			requirementDescription: "585 boosters",
+			effectDescription: "unlocks more super generator upgrades",
+			done() {return player.b.points.gte(585)},
+			unlocked() {return hasMilestone("b", 11)},
+		},
 	},
 	upgrades: {
 		11: {
@@ -766,6 +773,7 @@ addLayer("sb", {
 	requires: new Decimal(1e24),
 	type: "static",
 	exponent() {
+		if (player.sb.points.add(tmp.sb.resetGain).gte(26)) return 2.03125;
 		if (player.sb.points.add(tmp.sb.resetGain).gte(23)) return 2.01675;
 		if (player.sb.points.add(tmp.sb.resetGain).gte(10)) return 2.0125;
 		return 2;
@@ -1154,6 +1162,20 @@ addLayer("sg", {
 			effectDisplay() {return "+" + format(this.effect())},
 			cost: new Decimal(6e46),
 			unlocked() {return hasUpgrade("sg", 24) && hasMilestone("b", 10)},
+		},
+		31: {
+			title: "Power Recursion",
+			description: "[Generator Power ^ 0.025 / 1e15] multiplies generator power gain.",
+			effect() {return player.g.points.pow(0.025).div(1e15).max(1)},
+			effectDisplay() {return format(this.effect()) + "x"},
+			cost: new Decimal(3e86),
+			unlocked() {return hasUpgrade("sg", 25) && hasMilestone("b", 12)},
+		},
+		32: {
+			title: "Just an Upgrade",
+			description: "Increase upgrade count by 1, just like all the others.",
+			cost: new Decimal(6e99),
+			unlocked() {return hasUpgrade("sg", 31) && hasMilestone("b", 12)},
 		},
 	},
 });
