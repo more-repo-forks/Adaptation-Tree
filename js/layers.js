@@ -773,9 +773,12 @@ addLayer("sb", {
 	requires: new Decimal(1e24),
 	type: "static",
 	exponent() {
-		if (player.sb.points.add(tmp.sb.resetGain).gte(26)) return 2.03125;
-		if (player.sb.points.add(tmp.sb.resetGain).gte(23)) return 2.01675;
-		if (player.sb.points.add(tmp.sb.resetGain).gte(10)) return 2.0125;
+		if (player.sb.points.gte(28)) return 2.10395;
+		if (player.sb.points.gte(27)) return 2.0945;
+		if (player.sb.points.gte(26)) return 2.067;
+		if (player.sb.points.gte(25)) return 2.0313;
+		if (player.sb.points.gte(22)) return 2.01675;
+		if (player.sb.points.gte(9)) return 2.0125;
 		return 2;
 	},
 	base() {
@@ -892,9 +895,9 @@ addLayer("sg", {
 	},
 	update(diff) {
 		let gain = buyableEffect("sg", 11);
-		if (tmp.sg.buyables[12].unlocked) gain = gain.mul(buyableEffect("sg", 12));
-		if (tmp.sg.buyables[17].unlocked) gain = gain.mul(buyableEffect("sg", 17));
-		if (tmp.sg.buyables[18].unlocked) gain = gain.mul(buyableEffect("sg", 18));
+		gain = gain.mul(buyableEffect("sg", 12));
+		gain = gain.mul(buyableEffect("sg", 17));
+		gain = gain.mul(buyableEffect("sg", 18));
 		if (hasUpgrade("sg", 12)) gain = gain.mul(upgradeEffect("sg", 12));
 		if (hasUpgrade("sg", 14)) gain = gain.mul(upgradeEffect("sg", 14));
 		player.sg.passive = gain;
@@ -909,6 +912,7 @@ addLayer("sg", {
 		if (hasUpgrade("sg", 22)) cap = cap.add(upgradeEffect("sg", 22));
 		if (hasUpgrade("sg", 23)) cap = cap.add(upgradeEffect("sg", 23));
 		if (hasUpgrade("sg", 25)) cap = cap.add(upgradeEffect("sg", 25));
+		if (hasUpgrade("sg", 35)) cap = cap.add(upgradeEffect("sg", 35));
 		player.sg.capacity = cap;
 	},
 	componentStyles: {
@@ -941,7 +945,7 @@ addLayer("sg", {
 			},
 			effectBase() {
 				let base = new Decimal(1);
-				if (tmp.sg.buyables[14].unlocked) base = base.add(buyableEffect("sg", 14));
+				base = base.add(buyableEffect("sg", 14));
 				return base;
 			},
 			extra() {
@@ -965,7 +969,7 @@ addLayer("sg", {
 			},
 			effectBase() {
 				let base = new Decimal(2);
-				if (tmp.sg.buyables[13].unlocked) base = base.add(buyableEffect("sg", 13));
+				base = base.add(buyableEffect("sg", 13));
 				return base;
 			},
 			extra() {return buyableEffect("sg", 15)},
@@ -990,6 +994,7 @@ addLayer("sg", {
 			title: "4th Super Generator",
 			display() {
 				const extra = this.extra();
+				if (hasUpgrade("sg", 34)) return "[1st Super Generators ^ 1.77] increases the 1st Super Generator effect base.<br><br>Effect: +" + format(buyableEffect("sg", this.id)) + "<br><br>Cost: " + format(this.cost()) + " generator power<br><br>Bought: " + formatWhole(getBuyableAmount("sg", this.id)) + (extra.gt(0) ? " + " + format(extra) : "");
 				if (hasUpgrade("sg", 11)) return "[1st Super Generators ^ 1.55] increases the 1st Super Generator effect base.<br><br>Effect: +" + format(buyableEffect("sg", this.id)) + "<br><br>Cost: " + format(this.cost()) + " generator power<br><br>Bought: " + formatWhole(getBuyableAmount("sg", this.id)) + (extra.gt(0) ? " + " + format(extra) : "");
 				return "[Bought 1st Super Generators ^ 0.5] increases the 1st Super Generator effect base.<br><br>Effect: +" + format(buyableEffect("sg", this.id)) + "<br><br>Cost: " + format(this.cost()) + " generator power<br><br>Bought: " + formatWhole(getBuyableAmount("sg", this.id)) + (extra.gt(0) ? " + " + format(extra) : "");
 			},
@@ -1005,6 +1010,7 @@ addLayer("sg", {
 				return extra;
 			},
 			effect() {
+				if (hasUpgrade("sg", 34)) return getBuyableAmount("sg", this.id).add(this.extra()).mul(getBuyableAmount("sg", 11).add(tmp.sg.buyables[11].extra).pow(1.77));
 				if (hasUpgrade("sg", 11)) return getBuyableAmount("sg", this.id).add(this.extra()).mul(getBuyableAmount("sg", 11).add(tmp.sg.buyables[11].extra).pow(1.55));
 				return getBuyableAmount("sg", this.id).add(this.extra()).mul(getBuyableAmount("sg", 11).pow(0.5));
 			},
@@ -1029,7 +1035,7 @@ addLayer("sg", {
 			},
 			effectBase() {
 				let base = new Decimal(1);
-				if (tmp.sg.buyables[16].unlocked) base = base.add(buyableEffect("sg", 16));
+				base = base.add(buyableEffect("sg", 16));
 				return base;
 			},
 			extra() {return new Decimal(0)},
@@ -1176,6 +1182,28 @@ addLayer("sg", {
 			description: "Increase upgrade count by 1, just like all the others.",
 			cost: new Decimal(6e99),
 			unlocked() {return hasUpgrade("sg", 31) && hasMilestone("b", 12)},
+		},
+		33: {
+			title: "Upgrade Points",
+			description: "[4.9 ^ Upgrades] multiplies point gain.",
+			effect() {return new Decimal(4.9).pow(player.sg.upgrades.length)},
+			effectDisplay() {return format(this.effect()) + "x"},
+			cost: new Decimal(2e137),
+			unlocked() {return hasUpgrade("sg", 32) && hasMilestone("b", 12)},
+		},
+		34: {
+			title: "Enhance 4th Again",
+			description: "Improve the 4th Super Generator formula again.",
+			cost: new Decimal(2e181),
+			unlocked() {return hasUpgrade("sg", 33) && hasMilestone("b", 12)},
+		},
+		35: {
+			title: "Yet Another Capacity + 1",
+			description: "Increase total capacity by 1 again.",
+			effect() {return new Decimal(1)},
+			effectDisplay() {return "+" + format(this.effect())},
+			cost: new Decimal(1e207),
+			unlocked() {return hasUpgrade("sg", 34) && hasMilestone("b", 12)},
 		},
 	},
 });
