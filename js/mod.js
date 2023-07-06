@@ -37,7 +37,7 @@ function getPointGen() {
 
 const productionCap = 100; // in seconds
 
-const endgameBoosters = new Decimal(2073);
+const endgameBoosters = new Decimal(2229);
 
 function maxPoints() {
 	return hasMilestone("sb", 3);

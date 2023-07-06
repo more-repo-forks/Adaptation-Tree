@@ -247,7 +247,7 @@ addLayer("g", {
 			return generatorName[id];
 		},
 		getDisplay(data, id) {
-			return "<br>Amount: " + format(data.amount) + "(" + formatWhole(data.bought) + ")<br><br>Cost: " + format(generatorCost(id)) + " points";
+			return "<br>Amount: " + format(data.amount) + " (" + formatWhole(data.bought) + ")<br><br>Cost: " + format(generatorCost(id)) + " points";
 		},
 		getEffect(data, id) {
 			if (!data) return new Decimal(0);
@@ -598,6 +598,12 @@ addLayer("b", {
 			done() {return player.b.points.gte(1077)},
 			unlocked() {return hasMilestone("b", 12)},
 		},
+		14: {
+			requirementDescription: "2,073 boosters",
+			effectDescription: "unlocks hyper generators<br>keeps super generator upgrades on reset",
+			done() {return player.b.points.gte(2073)},
+			unlocked() {return hasMilestone("b", 13)},
+		},
 	},
 	upgrades: {
 		11: {
@@ -779,6 +785,7 @@ addLayer("sb", {
 	requires: new Decimal(1e24),
 	type: "static",
 	exponent() {
+		if (player.sb.points.gte(32)) return 2.28;
 		if (player.sb.points.gte(31)) return 2.2764;
 		if (player.sb.points.gte(30)) return 2.133;
 		if (player.sb.points.gte(29)) return 2.10475;
@@ -900,6 +907,7 @@ addLayer("sg", {
 	layerShown() {return hasMilestone("b", 8)},
 	doReset(resettingLayer) {
 		let keep = ["buyables", "best"];
+		if (hasMilestone("b", 14)) keep.push("upgrades");
 		if (layers[resettingLayer].row > this.row) layerDataReset("sg", keep);
 	},
 	update(diff) {
@@ -922,6 +930,7 @@ addLayer("sg", {
 		if (hasUpgrade("sg", 23)) cap = cap.add(upgradeEffect("sg", 23));
 		if (hasUpgrade("sg", 25)) cap = cap.add(upgradeEffect("sg", 25));
 		if (hasUpgrade("sg", 35)) cap = cap.add(upgradeEffect("sg", 35));
+		if (hasMilestone("b", 14)) cap = cap.add(clickableEffect("hg", 11));
 		player.sg.capacity = cap;
 	},
 	componentStyles: {
@@ -1242,6 +1251,109 @@ addLayer("sg", {
 			effectDisplay() {return "+" + format(this.effect())},
 			cost: new Decimal(1e207),
 			unlocked() {return hasUpgrade("sg", 34) && hasMilestone("b", 12)},
+		},
+	},
+});
+
+addLayer("hg", {
+	name: "Hyper Generators",
+	symbol: "HG",
+	position: 2,
+	branches: ["sg"],
+	startData() { return {
+		unlocked: true,
+		points: new Decimal(0),
+		passive: new Decimal(0),
+	}},
+	color: "#164E21",
+	resource: "hyper generator power",
+	row: 0,
+	tabFormat: [
+		"main-display",
+		["display-text", () => {return "You are gaining " + format(player.hg.passive) + " hyper generator power per second"}],
+		"blank",
+		"buyables",
+		"blank",
+		"h-line",
+		"blank",
+		"clickables",
+		"blank",
+	],
+	layerShown() {return hasMilestone("b", 14)},
+	doReset(resettingLayer) {
+		let keep = ["clickables"];
+		if (layers[resettingLayer].row > this.row) layerDataReset("hg", keep);
+	},
+	update(diff) {
+		let gain = buyableEffect("hg", 11);
+		gain = gain.mul(buyableEffect("hg", 12));
+		gain = gain.mul(clickableEffect("hg", 12));
+		player.hg.passive = gain;
+		if (productionCap && player.hg.points.add(gain.mul(diff)).gte(gain.mul(productionCap))) {
+			player.hg.points = gain.mul(productionCap);
+		} else {
+			player.hg.points = player.hg.points.add(gain.mul(diff)).max(0);
+		};
+		if (player.hg.points.gt(player.hg.best)) player.hg.best = player.hg.points;
+	},
+	componentStyles: {
+		"buyable"() {return {"width": "200px", "height": "125px"}},
+		"clickable"() {return {"width": "200px", "height": "125px"}},
+	},
+	buyables: {
+		11: {
+			title: "1st Hyper Generator",
+			display() {
+				return "Increase hyper generator power gain by " + format(this.effectBase()) + ".<br><br>Effect: +" + format(buyableEffect("hg", this.id)) + "<br><br>Cost: " + format(this.cost()) + " super generator power<br><br>Bought: " + formatWhole(getBuyableAmount("hg", this.id));
+			},
+			cost() {return new Decimal("1e750").mul(new Decimal(1e50).pow(getBuyableAmount("hg", this.id).pow(1.1).add(1)))},
+			canAfford() {return player.sg.points.gte(this.cost())},
+			buy() {
+				player.sg.points = player.sg.points.sub(this.cost());
+				setBuyableAmount("hg", this.id, getBuyableAmount("hg", this.id).add(1));
+			},
+			effectBase() {return new Decimal(1)},
+			effect() {return getBuyableAmount("hg", this.id).mul(this.effectBase())},
+		},
+		12: {
+			title: "2nd Hyper Generator",
+			display() {
+				return "Multiply hyper generator power gain by " + format(this.effectBase()) + ".<br><br>Effect: " + format(buyableEffect("hg", this.id)) + "x<br><br>Cost: " + format(this.cost()) + " hyper generator power<br><br>Bought: " + formatWhole(getBuyableAmount("hg", this.id));
+			},
+			cost() {return new Decimal(1).mul(new Decimal(5).pow(getBuyableAmount("hg", this.id).pow(1.1).add(1)))},
+			canAfford() {return player.hg.points.gte(this.cost())},
+			buy() {
+				player.hg.points = player.hg.points.sub(this.cost());
+				setBuyableAmount("hg", this.id, getBuyableAmount("hg", this.id).add(1));
+			},
+			effectBase() {return new Decimal(2)},
+			effect() {return this.effectBase().pow(getBuyableAmount("hg", this.id))},
+		},
+	},
+	clickables: {
+		11: {
+			title: "1st Hyper Ability",
+			display() {return "<h3>[Hyperspace Expansion]</h3><br><br>Sacrifice your hyper generator power for +" + format(this.formula(player.hg.points.add(getClickableState("hg", this.id))).sub(this.effect())) + " capacity.<br><br>Effect: +" + format(this.effect())},
+			canClick() {return player.hg.points.gt(0)},
+			onClick() {
+				if (!getClickableState("hg", this.id)) setClickableState("hg", this.id, new Decimal(0));
+				setClickableState("hg", this.id, new Decimal(getClickableState("hg", this.id)).add(player.hg.points));
+				player.hg.points = new Decimal(0);
+			},
+			formula(number) {return new Decimal(number).add(1).log10().div(2)},
+			effect() {return this.formula(getClickableState("hg", this.id))},
+		},
+		12: {
+			title: "2nd Hyper Ability",
+			display() {return "<h3>[Hyperpower Enhancement]</h3><br><br>Sacrifice your hyper generator power for " + format(this.formula(player.hg.points.add(getClickableState("hg", this.id))).div(this.effect())) + "x hyper generator power gain.<br><br>Effect: " + format(this.effect()) + "x"},
+			canClick() {return player.hg.points.gt(0)},
+			onClick() {
+				if (!getClickableState("hg", this.id)) setClickableState("hg", this.id, new Decimal(0));
+				setClickableState("hg", this.id, new Decimal(getClickableState("hg", this.id)).add(player.hg.points));
+				player.hg.points = new Decimal(0);
+			},
+			formula(number) {return new Decimal(number).add(1).pow(0.1)},
+			effect() {return this.formula(getClickableState("hg", this.id))},
 		},
 	},
 });
