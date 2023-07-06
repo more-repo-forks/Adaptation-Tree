@@ -484,6 +484,7 @@ addLayer("b", {
 		if (hasUpgrade("b", 15)) mult = mult.div(upgradeEffect("b", 15));
 		if (hasUpgrade("b", 24)) mult = mult.div(upgradeEffect("b", 24));
 		if (hasUpgrade("b", 33)) mult = mult.div(upgradeEffect("b", 33));
+		if (hasMilestone("b", 14)) mult = mult.div(clickableEffect("hg", 13));
 		return mult;
 	},
 	canBuyMax() {return hasMilestone("sb", 6)},
@@ -785,7 +786,8 @@ addLayer("sb", {
 	requires: new Decimal(1e24),
 	type: "static",
 	exponent() {
-		if (player.sb.points.gte(34)) return 2.3;
+		if (player.sb.points.gte(35)) return 2.33;
+		if (player.sb.points.gte(34)) return 2.287;
 		if (player.sb.points.gte(33)) return 2.286;
 		if (player.sb.points.gte(32)) return 2.28;
 		if (player.sb.points.gte(31)) return 2.2764;
@@ -808,6 +810,7 @@ addLayer("sb", {
 		if (hasUpgrade("b", 21)) mult = mult.div(upgradeEffect("b", 21));
 		if (hasUpgrade("b", 35)) mult = mult.div(upgradeEffect("b", 35));
 		if (hasUpgrade("sg", 21)) mult = mult.div(upgradeEffect("sg", 21));
+		if (hasMilestone("b", 14)) mult = mult.div(clickableEffect("hg", 13));
 		return mult;
 	},
 	canBuyMax() {return false},
@@ -1361,7 +1364,11 @@ addLayer("hg", {
 		},
 		12: {
 			title: "2nd Hyper Ability",
-			display() {return "<h3>[Hyperpower Enhancement]</h3><br><br>Sacrifice your hyper generator power for " + format(this.formula(player.hg.points.add(getClickableState("hg", this.id))).div(this.effect())) + "x hyper generator power gain.<br><br>Effect: " + format(this.effect()) + "x"},
+			display() {
+				if (this.canClick()) return "<h3>[Hyperpower Enhancement]</h3><br><br>Sacrifice your hyper generator power for " + format(this.formula(player.hg.points.add(getClickableState("hg", this.id))).div(this.effect())) + "x hyper generator power gain.<br><br>Effect: " + format(this.effect()) + "x";
+				return "<h3>[Hyperpower Enhancement]</h3><br><br>You need " + format(this.req) + " hyper generator power to unlock.<br><br>Effect: /" + format(this.effect());
+			},
+			req: new Decimal(1000),
 			canClick() {return player.hg.points.gt(0)},
 			onClick() {
 				if (!getClickableState("hg", this.id)) setClickableState("hg", this.id, new Decimal(0));
@@ -1369,6 +1376,22 @@ addLayer("hg", {
 				player.hg.points = new Decimal(0);
 			},
 			formula(number) {return new Decimal(number).add(1).pow(0.1)},
+			effect() {return this.formula(getClickableState("hg", this.id))},
+		},
+		13: {
+			title: "3rd Hyper Ability",
+			display() {
+				if (this.canClick()) return "<h3>[Hyperboost Discounting]</h3><br><br>Sacrifice your hyper generator power for /" + format(this.formula(player.hg.points.add(getClickableState("hg", this.id))).div(this.effect())) + " booster and super booster cost.<br><br>Effect: /" + format(this.effect());
+				return "<h3>[Hyperboost Discounting]</h3><br><br>You need " + format(this.req) + " hyper generator power to unlock.<br><br>Effect: /" + format(this.effect());
+			},
+			req: new Decimal(1e10),
+			canClick() {return player.hg.points.gt(this.req)},
+			onClick() {
+				if (!getClickableState("hg", this.id)) setClickableState("hg", this.id, new Decimal(0));
+				setClickableState("hg", this.id, new Decimal(getClickableState("hg", this.id)).add(player.hg.points));
+				player.hg.points = new Decimal(0);
+			},
+			formula(number) {return new Decimal(number).add(1).pow(2)},
 			effect() {return this.formula(getClickableState("hg", this.id))},
 		},
 	},
