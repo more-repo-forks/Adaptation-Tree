@@ -785,6 +785,8 @@ addLayer("sb", {
 	requires: new Decimal(1e24),
 	type: "static",
 	exponent() {
+		if (player.sb.points.gte(34)) return 2.3;
+		if (player.sb.points.gte(33)) return 2.286;
 		if (player.sb.points.gte(32)) return 2.28;
 		if (player.sb.points.gte(31)) return 2.2764;
 		if (player.sb.points.gte(30)) return 2.133;
@@ -1287,6 +1289,7 @@ addLayer("hg", {
 	update(diff) {
 		let gain = buyableEffect("hg", 11);
 		gain = gain.mul(buyableEffect("hg", 12));
+		gain = gain.mul(buyableEffect("hg", 13));
 		gain = gain.mul(clickableEffect("hg", 12));
 		player.hg.passive = gain;
 		if (productionCap && player.hg.points.add(gain.mul(diff)).gte(gain.mul(productionCap))) {
@@ -1328,6 +1331,19 @@ addLayer("hg", {
 			},
 			effectBase() {return new Decimal(2)},
 			effect() {return this.effectBase().pow(getBuyableAmount("hg", this.id))},
+		},
+		13: {
+			title: "3rd Hyper Generator",
+			display() {
+				return "[1.001 ^ Boosters] multiplies hyper generator power gain.<br><br>Effect: " + format(buyableEffect("hg", this.id)) + "x<br><br>Cost: " + format(this.cost()) + " hyper generator power<br><br>Bought: " + formatWhole(getBuyableAmount("hg", this.id));
+			},
+			cost() {return new Decimal(100).mul(new Decimal(100).pow(getBuyableAmount("hg", this.id).pow(1.1).add(1)))},
+			canAfford() {return player.hg.points.gte(this.cost())},
+			buy() {
+				player.hg.points = player.hg.points.sub(this.cost());
+				setBuyableAmount("hg", this.id, getBuyableAmount("hg", this.id).add(1));
+			},
+			effect() {return new Decimal(1.001).pow(player.b.points).pow(getBuyableAmount("hg", this.id))},
 		},
 	},
 	clickables: {
