@@ -273,7 +273,7 @@ function autobuyUpgrades(layer) {
 };
 
 function gameLoop(diff) {
-	if ((typeof endPoints != 'undefined' ? player.points.gte(endPoints) : (typeof isEndgame == "function" ? isEndgame() : isEndgame)) || tmp.gameEnded) {
+	if ((typeof endPoints != "undefined" ? player.points.gte(endPoints) : (typeof isEndgame == "function" ? isEndgame() : isEndgame)) || tmp.gameEnded) {
 		tmp.gameEnded = true;
 		clearParticles();
 	};
@@ -287,10 +287,9 @@ function gameLoop(diff) {
 		if (diff > limit) diff = limit;
 	};
 	addTime(diff);
-	if (productionCap && (player.points.add(tmp.pointGen.mul(diff)).gte(tmp.pointGen.mul(productionCap)) || (typeof maxPoints == "boolean" && maxPoints === true) || (typeof maxPoints == "function" && maxPoints()))) {
-		player.points = tmp.pointGen.mul(productionCap);
-	} else {
-		player.points = player.points.add(tmp.pointGen.mul(diff)).max(0);
+	player.points = getPoints();
+	if (typeof player.adaptationTime != "undefined" && typeof diff == "number" && diff === diff) {
+		player.adaptationTime = player.adaptationTime + diff;
 	};
 	for (let x = 0; x <= maxRow; x++) {
 		for (item in TREE_LAYERS[x]) {
@@ -365,7 +364,6 @@ var interval = setInterval(function() {
 	};
 	tmp.scrolled = document.getElementById('treeTab') && document.getElementById('treeTab').scrollTop > 30;
 	updateTemp();
-	updateOomps(diff);
 	updateWidth();
 	updateTabFormats();
 	gameLoop(diff);

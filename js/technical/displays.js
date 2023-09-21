@@ -56,29 +56,6 @@ function updateWidth() {
 	tmp.other.screenWidth = screenWidth;
 	tmp.other.screenHeight = window.innerHeight;
 	tmp.other.splitScreen = splitScreen;
-	tmp.other.lastPoints = player.points;
-};
-
-function updateOomps(diff) {
-	tmp.other.oompsMag = 0;
-	if (player.points.lte(new Decimal(1e100)) || diff == 0) return;
-	var pp = new Decimal(player.points);
-	var lp = tmp.other.lastPoints || new Decimal(0);
-	if (pp.gt(lp)) {
-		if (pp.gte("10^^8")) {
-			pp = pp.slog(1e10);
-			lp = lp.slog(1e10);
-			tmp.other.oomps = pp.sub(lp).div(diff);
-			tmp.other.oompsMag = -1;
-		} else {
-			while (pp.div(lp).log(10).div(diff).gte("100") && tmp.other.oompsMag <= 5 && lp.gt(0)) {
-				pp = pp.log(10);
-				lp = lp.log(10);
-				tmp.other.oomps = pp.sub(lp).div(diff);
-				tmp.other.oompsMag++;
-			};
-		};
-	};
 };
 
 function constructBarStyle(layer, id) {

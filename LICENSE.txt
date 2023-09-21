@@ -1,6 +1,6 @@
 MIT License
 
-Booster-Generator Tree Copyright (c) 2023 Yrahcaz7
+Adaptation Tree Copyright (c) 2023 Yrahcaz7
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -19,7 +19,6 @@ var traversableClasses = [];
 
 function setupTemp() {
 	tmp = {};
-	tmp.pointGen = {};
 	tmp.backgroundStyle = {};
 	tmp.displayThings = [];
 	tmp.scrolled = 0;
@@ -40,8 +39,6 @@ function setupTemp() {
 	};
 
 	tmp.other = {
-		lastPoints: player.points || decimalZero,
-		oomps: decimalZero,
 		screenWidth: 0,
 		screenHeight: 0,
     };
@@ -80,7 +77,6 @@ function setupTempData(layerData, tmpData, funcsData) {
 	};
 };
 
-
 function updateTemp() {
 	if (tmp === undefined) setupTemp();
 
@@ -97,7 +93,6 @@ function updateTemp() {
 		if (tmp[layer].passiveGeneration === true) tmp[layer].passiveGeneration = 1; // new Decimal(true) = decimalZero
 	};
 
-	tmp.pointGen = getPointGen();
 	tmp.backgroundStyle = readData(backgroundStyle);
 
 	tmp.displayThings = [];

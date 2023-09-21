@@ -1,16 +1,16 @@
 const modInfo = {
-	name: "Booster-Generator Tree",
-	id: "booster-generator-tree-yrahcaz7",
+	name: "Adaptation Tree",
+	id: "adaptation-tree-yrahcaz7",
 	author: "Yrahcaz7",
-	pointsName: "points",
+	pointsName: "power",
 	modFiles: ["layers.js", "technical/tree.js"],
 	initialStartPoints: new Decimal(0),
-	offlineLimit: 24, // in hours
+	offlineLimit: 1, // in hours
 }
 
 const VERSION = {
-	num: "2.0",
-	name: "Super Power Time",
+	num: "1.0",
+	name: "Stimulation",
 };
 
 const winText = `Congratulations! You have reached the end and beaten this game, but for now...`;
@@ -22,42 +22,22 @@ function canGenPoints() {
 	return true;
 };
 
-function getPointGen() {
-	let gain = new Decimal(1);
-	if (hasUpgrade("g", 11)) gain = gain.mul(upgradeEffect("g", 11));
-	if (hasUpgrade("g", 12)) gain = gain.mul(upgradeEffect("g", 12));
-	if (hasUpgrade("g", 13)) gain = gain.mul(upgradeEffect("g", 13));
-	if (hasUpgrade("g", 15)) gain = gain.mul(upgradeEffect("g", 15));
-	if (hasUpgrade("b", 22)) gain = gain.mul(upgradeEffect("b", 22));
-	if (hasUpgrade("sg", 33)) gain = gain.mul(upgradeEffect("sg", 33));
-	if (player.g.unlocked) gain = gain.mul(tmp.g.effect);
-	if (player.b.unlocked) gain = gain.mul(tmp.b.effect);
+function getPoints() {
+	let gain = new Decimal(0);
 	return gain;
-};
-
-const productionCap = 100; // in seconds
-
-const endgameBoosters = new Decimal(2900);
-
-function maxPoints() {
-	return hasMilestone("sb", 3);
 };
 
 // You can add non-layer related variables that should to into "player" and be saved here, along with default values
 function addedPlayerData() { return {
+	adaptationTime: 0, // note: has coded-in logic in game.js to make it work
 }};
 
 // Display extra things at the top of the page
-var displayThings = [
-	() => {
-		if (tmp.gameEnded) return "<br>you have beaten the game!";
-		return "<br>you need " + formatWhole(endgameBoosters) + " boosters to beat the game";
-	},
-];
+var displayThings = [];
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.b.points.gte(endgameBoosters);
+	return false;
 };
 
 // Style for the background, can be a function
