@@ -151,7 +151,7 @@ function doReset(layer, force = false) {
 		if (tmp[layer].canReset === false) return;
 		if (tmp[layer].baseAmount.lt(tmp[layer].requires)) return;
 		let gain = tmp[layer].resetGain;
-		if (tmp[layer].type=="static") {
+		if (tmp[layer].type == "static") {
 			if (tmp[layer].baseAmount.lt(tmp[layer].nextAt)) return;
 			gain = (tmp[layer].canBuyMax ? gain : 1);
 		};
@@ -176,6 +176,9 @@ function doReset(layer, force = false) {
 		if (row >= layers[layerResetting].row && (!force || layerResetting != layer)) completeChallenge(layerResetting);
 	};
 	player.points = (row == 0 ? decimalZero : modInfo.initialStartPoints);
+	if (typeof player.adaptationTime != "undefined") {
+		player.adaptationTime = 0;
+	};
 	for (let x = row; x >= 0; x--) rowReset(x, layer);
 	for (r in OTHER_LAYERS) {
 		rowReset(r, layer);

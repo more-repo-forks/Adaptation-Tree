@@ -22,9 +22,20 @@ function canGenPoints() {
 	return true;
 };
 
-function getPoints() {
-	let gain = new Decimal(0);
+function getPointPotential() {
+	let base = new Decimal(1);
+	if (hasUpgrade("s", 11)) base = base.add(upgradeEffect("s", 11));
+	if (hasUpgrade("s", 12)) base = base.add(upgradeEffect("s", 12));
+	if (hasUpgrade("s", 13)) base = base.add(upgradeEffect("s", 13));
+	if (hasUpgrade("s", 14)) base = base.add(upgradeEffect("s", 14));
+	if (hasUpgrade("s", 15)) base = base.add(upgradeEffect("s", 15));
+	let gain = new Decimal(base);
+	if (player.s.unlocked) gain = gain.mul(tmp.s.effect);
 	return gain;
+};
+
+function getPoints() {
+	return getPointPotential().mul(1 - 1 / ((10 / 9) ** player.adaptationTime));
 };
 
 // You can add non-layer related variables that should to into "player" and be saved here, along with default values
@@ -33,7 +44,9 @@ function addedPlayerData() { return {
 }};
 
 // Display extra things at the top of the page
-var displayThings = [];
+var displayThings = [
+	() => {return "(" + format(getPointPotential()) + " max power)"},
+];
 
 // Determines when the game "ends"
 function isEndgame() {
