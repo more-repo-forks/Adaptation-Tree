@@ -189,22 +189,6 @@ function doReset(layer, force = false) {
 	updateTemp();
 };
 
-function resetRow(row) {
-	if (prompt('Are you sure you want to reset this row? It is highly recommended that you wait until the end of your current run before doing this! Type "I WANT TO RESET THIS" to confirm') != "I WANT TO RESET THIS") return;
-	let pre_layers = ROW_LAYERS[row - 1];
-	let layers = ROW_LAYERS[row];
-	let post_layers = ROW_LAYERS[row + 1];
-	rowReset(row + 1, post_layers[0]);
-	doReset(pre_layers[0], true);
-	for (let layer in layers) {
-		player[layer].unlocked = false;
-		if (player[layer].unlockOrder) player[layer].unlockOrder = 0;
-	};
-	player.points = modInfo.initialStartPoints;
-	updateTemp();
-	resizeCanvas();
-};
-
 function startChallenge(layer, x) {
 	let enter = false;
 	if (!player[layer].unlocked || !tmp[layer].challenges[x].unlocked) return;

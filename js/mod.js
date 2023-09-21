@@ -9,8 +9,8 @@ const modInfo = {
 }
 
 const VERSION = {
-	num: "1.0",
-	name: "Stimulation",
+	num: "1.1",
+	name: "Growth",
 };
 
 const winText = `Congratulations! You have reached the end and beaten this game, but for now...`;
@@ -38,6 +38,7 @@ function getPointPotential() {
 	if (hasUpgrade("s", 33)) gain = gain.mul(upgradeEffect("s", 33));
 	if (hasUpgrade("s", 34)) gain = gain.mul(upgradeEffect("s", 34));
 	if (hasUpgrade("s", 35)) gain = gain.mul(upgradeEffect("s", 35));
+	if (hasBuyable("g", 11)) gain = gain.mul(buyableEffect("g", 11));
 	// end
 	return gain;
 };
