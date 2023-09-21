@@ -74,8 +74,10 @@ function buyUpg(layer, id) {
 		};
 	};
 	player[layer].upgrades.push(id);
-	if (upg.onPurchase != undefined)
-		run(upg.onPurchase, upg);
+	if (upg.onPurchase != undefined) run(upg.onPurchase, upg);
+	if (typeof player.adaptationTime != "undefined") {
+		player.adaptationTime = 0;
+	};
 	needCanvasUpdate = true;
 };
 

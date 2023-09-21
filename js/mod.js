@@ -23,14 +23,22 @@ function canGenPoints() {
 };
 
 function getPointPotential() {
-	let base = new Decimal(1);
-	if (hasUpgrade("s", 11)) base = base.add(upgradeEffect("s", 11));
-	if (hasUpgrade("s", 12)) base = base.add(upgradeEffect("s", 12));
-	if (hasUpgrade("s", 13)) base = base.add(upgradeEffect("s", 13));
-	if (hasUpgrade("s", 14)) base = base.add(upgradeEffect("s", 14));
-	if (hasUpgrade("s", 15)) base = base.add(upgradeEffect("s", 15));
-	let gain = new Decimal(base);
+	// start
+	let gain = new Decimal(1);
+	// increase base power gain
+	if (hasUpgrade("s", 11)) gain = gain.add(upgradeEffect("s", 11));
+	if (hasUpgrade("s", 12)) gain = gain.add(upgradeEffect("s", 12));
+	if (hasUpgrade("s", 13)) gain = gain.add(upgradeEffect("s", 13));
+	if (hasUpgrade("s", 14)) gain = gain.add(upgradeEffect("s", 14));
+	if (hasUpgrade("s", 15)) gain = gain.add(upgradeEffect("s", 15));
+	// multiply power gain
 	if (player.s.unlocked) gain = gain.mul(tmp.s.effect);
+	if (hasUpgrade("s", 31)) gain = gain.mul(upgradeEffect("s", 31));
+	if (hasUpgrade("s", 32)) gain = gain.mul(upgradeEffect("s", 32));
+	if (hasUpgrade("s", 33)) gain = gain.mul(upgradeEffect("s", 33));
+	if (hasUpgrade("s", 34)) gain = gain.mul(upgradeEffect("s", 34));
+	if (hasUpgrade("s", 35)) gain = gain.mul(upgradeEffect("s", 35));
+	// end
 	return gain;
 };
 
