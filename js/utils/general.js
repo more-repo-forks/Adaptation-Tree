@@ -243,7 +243,8 @@ function updateMilestones(layer) {
 			if (layers[layer].milestones[id].onComplete) layers[layer].milestones[id].onComplete();
 			if (layers[layer].milestones[id].color) color = layers[layer].milestones[id].color;
 			else color = tmp[layer].color;
-			if (tmp[layer].milestonePopups || tmp[layer].milestonePopups === undefined) doPopup('milestone', tmp[layer].milestones[id].requirementDescription, 'Milestone Gotten!', 3, color);
+			let popupTitle = (typeof tmp[layer].milestones[id].popupTitle != "undefined" ? tmp[layer].milestones[id].popupTitle : 'Milestone Gotten!');
+			if (tmp[layer].milestonePopups || tmp[layer].milestonePopups === undefined) doPopup('milestone', tmp[layer].milestones[id].requirementDescription, popupTitle, 3, color);
 			player[layer].lastMilestone = id;
 		};
 	};
@@ -257,7 +258,8 @@ function updateAchievements(layer) {
 			if (layers[layer].achievements[id].onComplete) layers[layer].achievements[id].onComplete();
 			if (layers[layer].achievements[id].color) color = layers[layer].achievements[id].color;
 			else color = tmp[layer].color;
-			if (tmp[layer].achievementPopups || tmp[layer].achievementPopups === undefined) doPopup('achievement',tmp[layer].achievements[id].name,'Achievement Gotten!',3,color);
+			let popupTitle = (typeof tmp[layer].achievements[id].popupTitle != "undefined" ? tmp[layer].achievements[id].popupTitle : 'Achievement Gotten!');
+			if (tmp[layer].achievementPopups || tmp[layer].achievementPopups === undefined) doPopup('achievement', tmp[layer].achievements[id].name, popupTitle, 3, color);
 		};
 	};
 };
