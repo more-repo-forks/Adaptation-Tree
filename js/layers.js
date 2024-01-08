@@ -65,7 +65,7 @@ addLayer("s", {
 				if (hasBuyable("g", 14) && !hasMilestone("g", 3)) cost = cost.div(buyableEffect("g", 14));
 				return cost.floor();
 			},
-			unlocked() {return hasUpgrade("s", 11)},
+			unlocked() {return hasUpgrade("s", 11) || player.g.unlocked},
 		},
 		13: {
 			title: "Memorization",
@@ -76,7 +76,7 @@ addLayer("s", {
 				if (hasBuyable("g", 14) && !hasMilestone("g", 3)) cost = cost.div(buyableEffect("g", 14));
 				return cost.floor();
 			},
-			unlocked() {return hasUpgrade("s", 12)},
+			unlocked() {return hasUpgrade("s", 12) || player.g.unlocked},
 		},
 		14: {
 			title: "Calculation",
@@ -88,7 +88,7 @@ addLayer("s", {
 				if (hasBuyable("g", 14) && !hasMilestone("g", 3)) cost = cost.div(buyableEffect("g", 14));
 				return cost.floor();
 			},
-			unlocked() {return hasUpgrade("s", 13)},
+			unlocked() {return hasUpgrade("s", 13) || player.g.unlocked},
 		},
 		15: {
 			title: "Intelligence",
@@ -100,7 +100,7 @@ addLayer("s", {
 				if (hasBuyable("g", 14) && !hasMilestone("g", 3)) cost = cost.div(buyableEffect("g", 14));
 				return cost.floor();
 			},
-			unlocked() {return hasUpgrade("s", 14)},
+			unlocked() {return hasUpgrade("s", 14) || player.g.unlocked},
 		},
 		21: {
 			title: "Seeking",
@@ -113,7 +113,7 @@ addLayer("s", {
 				if (hasBuyable("g", 14) && !hasMilestone("g", 3)) cost = cost.div(buyableEffect("g", 14));
 				return cost.floor();
 			},
-			unlocked() {return hasUpgrade("s", 15)},
+			unlocked() {return hasUpgrade("s", 15) || player.g.unlocked},
 		},
 		22: {
 			title: "Taunting",
@@ -126,7 +126,7 @@ addLayer("s", {
 				if (hasBuyable("g", 14) && !hasMilestone("g", 3)) cost = cost.div(buyableEffect("g", 14));
 				return cost.floor();
 			},
-			unlocked() {return hasUpgrade("s", 21)},
+			unlocked() {return hasUpgrade("s", 21) || player.g.unlocked},
 		},
 		23: {
 			title: "Tracking",
@@ -139,7 +139,7 @@ addLayer("s", {
 				if (hasBuyable("g", 14) && !hasMilestone("g", 3)) cost = cost.div(buyableEffect("g", 14));
 				return cost.floor();
 			},
-			unlocked() {return hasUpgrade("s", 22)},
+			unlocked() {return hasUpgrade("s", 22) || player.g.unlocked},
 		},
 		24: {
 			title: "Luring",
@@ -152,12 +152,12 @@ addLayer("s", {
 				if (hasBuyable("g", 14) && !hasMilestone("g", 3)) cost = cost.div(buyableEffect("g", 14));
 				return cost.floor();
 			},
-			unlocked() {return hasUpgrade("s", 23)},
+			unlocked() {return hasUpgrade("s", 23) || player.g.unlocked},
 		},
 		25: {
 			title: "Hunting",
 			description: "multiply stimulation gain based on the number of upgrades",
-			effect() {return player.s.upgrades.length ** 0.5},
+			effect() {return Math.max(player.s.upgrades.length ** 0.5, 1) },
 			effectDisplay() {return format(this.effect()) + "x"},
 			currencyDisplayName: modInfo.pointsName,
 			currencyInternalName: "points",
@@ -166,7 +166,7 @@ addLayer("s", {
 				if (hasBuyable("g", 14) && !hasMilestone("g", 3)) cost = cost.div(buyableEffect("g", 14));
 				return cost.floor();
 			},
-			unlocked() {return hasUpgrade("s", 24)},
+			unlocked() {return hasUpgrade("s", 24) || player.g.unlocked},
 		},
 		31: {
 			title: "Recuperation",
@@ -177,7 +177,7 @@ addLayer("s", {
 				if (hasBuyable("g", 14) && !hasMilestone("g", 3)) cost = cost.div(buyableEffect("g", 14));
 				return cost.floor();
 			},
-			unlocked() {return hasUpgrade("s", 25)},
+			unlocked() {return hasUpgrade("s", 25) || player.g.unlocked},
 		},
 		32: {
 			title: "Repetition",
@@ -188,7 +188,7 @@ addLayer("s", {
 				if (hasBuyable("g", 14) && !hasMilestone("g", 3)) cost = cost.div(buyableEffect("g", 14));
 				return cost.floor();
 			},
-			unlocked() {return hasUpgrade("s", 31)},
+			unlocked() {return hasUpgrade("s", 31) || player.g.unlocked},
 		},
 		33: {
 			title: "Restoration",
@@ -199,7 +199,7 @@ addLayer("s", {
 				if (hasBuyable("g", 14) && !hasMilestone("g", 3)) cost = cost.div(buyableEffect("g", 14));
 				return cost.floor();
 			},
-			unlocked() {return hasUpgrade("s", 32)},
+			unlocked() {return hasUpgrade("s", 32) || player.g.unlocked},
 		},
 		34: {
 			title: "Training",
@@ -210,7 +210,7 @@ addLayer("s", {
 				if (hasBuyable("g", 14) && !hasMilestone("g", 3)) cost = cost.div(buyableEffect("g", 14));
 				return cost.floor();
 			},
-			unlocked() {return hasUpgrade("s", 33)},
+			unlocked() {return hasUpgrade("s", 33) || player.g.unlocked},
 		},
 		35: {
 			title: "Growth",
@@ -221,7 +221,7 @@ addLayer("s", {
 				if (hasBuyable("g", 14) && !hasMilestone("g", 3)) cost = cost.div(buyableEffect("g", 14));
 				return cost.floor();
 			},
-			unlocked() {return hasUpgrade("s", 34)},
+			unlocked() {return hasUpgrade("s", 34) || player.g.unlocked},
 		},
 		41: {
 			title: "Calmness",
@@ -231,7 +231,7 @@ addLayer("s", {
 			currencyDisplayName: modInfo.pointsName,
 			currencyInternalName: "points",
 			cost: new Decimal(1e15),
-			unlocked() {return hasUpgrade("s", 35) && hasMilestone("g", 3) && buyableEffect("g", 14).gte(1)},
+			unlocked() {return hasMilestone("g", 3) && buyableEffect("g", 14).gte(1)},
 		},
 		42: {
 			title: "Consumption",
@@ -241,7 +241,7 @@ addLayer("s", {
 			currencyDisplayName: modInfo.pointsName,
 			currencyInternalName: "points",
 			cost: new Decimal(2.5e16),
-			unlocked() {return hasUpgrade("s", 41) && hasMilestone("g", 3) && buyableEffect("g", 14).gte(2)},
+			unlocked() {return hasMilestone("g", 3) && buyableEffect("g", 14).gte(2)},
 		},
 		43: {
 			title: "Meditation",
@@ -251,7 +251,7 @@ addLayer("s", {
 			currencyDisplayName: modInfo.pointsName,
 			currencyInternalName: "points",
 			cost: new Decimal(1e18),
-			unlocked() {return hasUpgrade("s", 42) && hasMilestone("g", 3) && buyableEffect("g", 14).gte(3)},
+			unlocked() {return hasMilestone("g", 3) && buyableEffect("g", 14).gte(3)},
 		},
 		44: {
 			title: "Absorbtion",
@@ -261,7 +261,7 @@ addLayer("s", {
 			currencyDisplayName: modInfo.pointsName,
 			currencyInternalName: "points",
 			cost: new Decimal(5e19),
-			unlocked() {return hasUpgrade("s", 43) && hasMilestone("g", 3) && buyableEffect("g", 14).gte(4)},
+			unlocked() {return hasMilestone("g", 3) && buyableEffect("g", 14).gte(4)},
 		},
 		45: {
 			title: "Assimilation",
@@ -270,7 +270,7 @@ addLayer("s", {
 			currencyDisplayName: modInfo.pointsName,
 			currencyInternalName: "points",
 			cost: new Decimal(1e22),
-			unlocked() {return hasUpgrade("s", 44) && hasMilestone("g", 3) && buyableEffect("g", 14).gte(5)},
+			unlocked() {return hasMilestone("g", 3) && buyableEffect("g", 14).gte(5)},
 		},
 	},
 });
@@ -305,13 +305,31 @@ addLayer("g", {
 		"prestige-button",
 		"blank",
 		["row", [
-			["column", [["buyable", 11], "blank", ["buyable", 12]]],
-			"blank",
-			["display-text", () => {return "<div id='growthStats'>STR: " + formatWhole(getBuyableAmount("g", 11)) + "<br>WIS: " + formatWhole(getBuyableAmount("g", 12)) + "<br>AGI: " + formatWhole(getBuyableAmount("g", 13)) + "<br>INT: " + formatWhole(getBuyableAmount("g", 14)) + "</div>"}],
-			"blank",
-			["column", [["buyable", 13], "blank", ["buyable", 14]]],
+			["column", [["buyable", 11], ["blank", "75px"], ["buyable", 12]]],
+			["display-text", () => {
+				let max = getBuyableAmount("g", 11).max(getBuyableAmount("g", 12)).max(getBuyableAmount("g", 13)).max(getBuyableAmount("g", 14)).toNumber() + 1;
+				if (max < 2) max = 2;
+				let text = "<svg viewBox='0 0 100 100' style='width: 200px; height: 200px'>";
+				text += "<line x1='6' y1='6' x2='94' y2='94' fill='none' stroke='#80808080'/>";
+				text += "<line x1='6' y1='94' x2='94' y2='6' fill='none' stroke='#80808080'/>";
+				text += "<circle cx='50' cy='50' r='0.5' fill='none' stroke='#808080'/>";
+				let rectMax = max;
+				if (rectMax >= 8) {
+					rectMax = max / (2 ** Math.floor(Math.log2(max) - 2));
+				};
+				for (let index = 0; index < rectMax; index++) {
+					let low = (index / rectMax * 45) + 5.5;
+					let high = ((rectMax - index) / rectMax * 90) - 1;
+					text += "<rect x='" + low + "' y='" + low + "' width=" + high + " height='" + high + "' rx='1' ry='1' fill='none' stroke='#808080'/>";
+				};
+				let stats = [getBuyableAmount("g", 11).toNumber() + 1, getBuyableAmount("g", 13).toNumber() + 1, getBuyableAmount("g", 14).toNumber() + 1, getBuyableAmount("g", 12).toNumber() + 1];
+				let statPoint0 = 50 - (stats[0] / max * 45 - 0.5);
+				let statPoint2 = 50 + (stats[2] / max * 45 - 0.5);
+				text += "<polyline points='" + statPoint0 + "," + statPoint0 + " " + (50 + (stats[1] / max * 45 - 0.5)) + "," + (50 - (stats[1] / max * 45 - 0.5)) + " " + statPoint2 + "," + statPoint2 + " " + (50 - (stats[3] / max * 45 - 0.5)) + "," + (50 + (stats[3] / max * 45 - 0.5)) + " " + statPoint0 + "," + statPoint0 + "' fill='#ffffff80' stroke='#ffffff' stroke-linejoin='round' stroke-linecap='round'/>";
+				return text + "</svg>";
+			}],
+			["column", [["buyable", 13], ["blank", "75px"], ["buyable", 14]]],
 		]],
-		"blank",
 		"respec-button",
 		"blank",
 		"milestones",
@@ -368,6 +386,7 @@ addLayer("g", {
 			effectBase() {
 				let base = new Decimal(4);
 				if (hasMilestone("g", 4)) base = base.add(milestoneEffect("g", 4));
+				if (hasMilestone("g", 5)) base = base.add(milestoneEffect("g", 5));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id))},
@@ -444,6 +463,15 @@ addLayer("g", {
 		4: {
 			requirement: 40,
 			requirementDescription: "AGI enhancement 1",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 2},
+			effectDescription() {return "increase the base effect of AGI by 2<br>Req: " + formatWhole(this.requirement) + " growth points"},
+			done() {return player.g.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("g", this.id - 1)},
+		},
+		5: {
+			requirement: 48,
+			requirementDescription: "AGI enhancement 2",
 			popupTitle: "Enhancement Acquired!",
 			effect() {return 2},
 			effectDescription() {return "increase the base effect of AGI by 2<br>Req: " + formatWhole(this.requirement) + " growth points"},
