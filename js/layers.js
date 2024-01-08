@@ -27,7 +27,13 @@ addLayer("s", {
 		if (hasBuyable("g", 12)) mult = mult.mul(buyableEffect("g", 12));
 		return mult;
 	},
-	effect() {return player.s.points.add(1).pow(0.5)},
+	effect() {
+		let exp = new Decimal(0.5);
+		if (hasUpgrade("s", 52)) exp = exp.add(upgradeEffect("s", 52));
+		if (hasUpgrade("s", 54)) exp = exp.add(upgradeEffect("s", 54));
+		if (hasUpgrade("s", 55)) exp = exp.add(upgradeEffect("s", 55));
+		return player.s.points.add(1).pow(exp);
+	},
 	effectDescription() {return "which are multiplying power gain by " + format(tmp.s.effect) + "x"},
 	tabFormat: [
 		"main-display",
@@ -272,6 +278,43 @@ addLayer("s", {
 			cost: new Decimal(1e22),
 			unlocked() {return hasMilestone("g", 3) && buyableEffect("g", 14).gte(5)},
 		},
+		51: {
+			title: "Swiftness",
+			description: "divide growth point requirement by 16",
+			effect() {return 16},
+			cost: new Decimal(2.5e20),
+			unlocked() {return hasMilestone("g", 3) && buyableEffect("g", 14).gte(6)},
+		},
+		52: {
+			title: "Deregulation",
+			description: "increase stimulation effect exponent by 0.1",
+			effect() {return 0.1},
+			cost: new Decimal(5e21),
+			unlocked() {return hasMilestone("g", 3) && buyableEffect("g", 14).gte(7)},
+		},
+		53: {
+			title: "Acceleration",
+			description: "divide growth point requirement based on your power",
+			effect() {return player.points.add(1).log10().mul(0.5).add(1)},
+			effectDisplay() {return "/" + format(this.effect())},
+			cost: new Decimal(2.5e23),
+			unlocked() {return hasMilestone("g", 3) && buyableEffect("g", 14).gte(8)},
+		},
+		54: {
+			title: "Freedom",
+			description: "increase stimulation effect exponent by 0.1",
+			effect() {return 0.1},
+			cost: new Decimal(2.5e25),
+			unlocked() {return hasMilestone("g", 3) && buyableEffect("g", 14).gte(9)},
+		},
+		55: {
+			title: "Boundlessness",
+			description: "increase stimulation effect exponent based on your growth points",
+			effect() {return player.g.points.add(1).log10().mul(0.036)},
+			effectDisplay() {return "+" + format(this.effect())},
+			cost: new Decimal(2.5e28),
+			unlocked() {return hasMilestone("g", 3) && buyableEffect("g", 14).gte(10)},
+		},
 	},
 });
 
@@ -294,8 +337,11 @@ addLayer("g", {
 	type: "static",
 	base: 2,
 	exponent: 1,
+	canBuyMax() {return hasMilestone("g", 8)},
 	gainMult() {
 		let mult = new Decimal(1);
+		if (hasUpgrade("s", 51)) mult = mult.div(upgradeEffect("s", 51));
+		if (hasUpgrade("s", 53)) mult = mult.div(upgradeEffect("s", 53));
 		if (hasBuyable("g", 13)) mult = mult.div(buyableEffect("g", 13));
 		return mult;
 	},
@@ -314,8 +360,8 @@ addLayer("g", {
 				text += "<line x1='6' y1='94' x2='94' y2='6' fill='none' stroke='#80808080'/>";
 				text += "<circle cx='50' cy='50' r='0.5' fill='none' stroke='#808080'/>";
 				let rectMax = max;
-				if (rectMax >= 8) {
-					rectMax = max / (2 ** Math.floor(Math.log2(max) - 2));
+				if (rectMax >= 16) {
+					rectMax = max / (2 ** Math.floor(Math.log2(max) - 3));
 				};
 				for (let index = 0; index < rectMax; index++) {
 					let low = (index / rectMax * 45) + 5.5;
@@ -345,7 +391,7 @@ addLayer("g", {
 		if (layers[resettingLayer].row > this.row) layerDataReset("g", keep);
 	},
 	componentStyles: {
-		"buyable"() {return {'height': '90px'}},
+		"buyable"() {return {'width': '210px', 'height': '90px'}},
 	},
 	buyables: {
 		11: {
@@ -353,6 +399,7 @@ addLayer("g", {
 			effectBase() {
 				let base = new Decimal(2.5);
 				if (hasMilestone("g", 1)) base = base.mul(milestoneEffect("g", 1));
+				if (hasMilestone("g", 6)) base = base.mul(milestoneEffect("g", 6));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id))},
@@ -387,6 +434,7 @@ addLayer("g", {
 				let base = new Decimal(4);
 				if (hasMilestone("g", 4)) base = base.add(milestoneEffect("g", 4));
 				if (hasMilestone("g", 5)) base = base.add(milestoneEffect("g", 5));
+				if (hasMilestone("g", 9)) base = base.add(milestoneEffect("g", 9));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id))},
@@ -400,14 +448,26 @@ addLayer("g", {
 		},
 		14: {
 			cost() {return getBuyableAmount(this.layer, this.id).add(1)},
+			effectBase() {
+				if (hasMilestone("g", 3)) {
+					let base = new Decimal(1);
+					if (hasMilestone("g", 7)) base = base.add(milestoneEffect("g", 7));
+					return base;
+				};
+				return new Decimal(5);
+			},
 			effect() {
-				if (hasMilestone("g", 3)) return getBuyableAmount(this.layer, this.id).min(5);
+				if (hasMilestone("g", 3)) return getBuyableAmount(this.layer, this.id).mul(this.effectBase()).min(10);
 				else return new Decimal(5).pow(getBuyableAmount(this.layer, this.id));
 			},
 			title: "(INT)ELLECT",
 			display() {
-				if (hasMilestone("g", 3)) return "unlock a new stimulation upgrade<br>(maxes at 5 new upgrades)<br><br>Effect: +" + format(this.effect()) + "<br><br>Cost: " + format(this.cost()) + " growth points";
-				else return "divide previous upgrade costs by 5<br>(upgrade costs are rounded down)<br><br>Effect: /" + format(this.effect()) + "<br><br>Cost: " + format(this.cost()) + " growth points";
+				if (hasMilestone("g", 3)) {
+					let base = this.effectBase();
+					if (base.eq(1)) return "unlock a new stimulation upgrade<br>(maxes at 10 new upgrades)<br><br>Effect: +" + format(this.effect()) + "<br><br>Cost: " + format(this.cost()) + " growth points";
+					else return "unlock " + format(base) + " new stimulation upgrades<br>(maxes at 10 new upgrades)<br><br>Effect: +" + format(this.effect()) + "<br><br>Cost: " + format(this.cost()) + " growth points";
+				};
+				return "divide previous upgrade costs by 5<br>(upgrade costs are rounded down)<br><br>Effect: /" + format(this.effect()) + "<br><br>Cost: " + format(this.cost()) + " growth points";
 			},
 			canAfford() {return player.g.points.sub(player.g.spent).gte(this.cost())},
 			buy() {
@@ -428,7 +488,7 @@ addLayer("g", {
 	milestones: {
 		0: {
 			requirement: 6,
-			requirementDescription: "WIS enhancement 1",
+			requirementDescription: "WIS enhancement I",
 			popupTitle: "Enhancement Acquired!",
 			effect() {return player.g.points.add(1).log10().mul(0.25).add(1)},
 			effectDescription() {return "multiply the base effect of WIS based on growth points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " growth points"},
@@ -436,7 +496,7 @@ addLayer("g", {
 		},
 		1: {
 			requirement: 9,
-			requirementDescription: "STR enhancement 1",
+			requirementDescription: "STR enhancement I",
 			popupTitle: "Enhancement Acquired!",
 			effect() {return player.g.points.add(1).log10().mul(0.75).add(1)},
 			effectDescription() {return "multiply the base effect of STR based on growth points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " growth points"},
@@ -445,7 +505,7 @@ addLayer("g", {
 		},
 		2: {
 			requirement: 12,
-			requirementDescription: "WIS enhancement 2",
+			requirementDescription: "WIS enhancement II",
 			popupTitle: "Enhancement Acquired!",
 			effect() {return player.g.points.add(1).log10().mul(0.45).add(1)},
 			effectDescription() {return "multiply the base effect of WIS based on growth points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " growth points"},
@@ -454,7 +514,7 @@ addLayer("g", {
 		},
 		3: {
 			requirement: 21,
-			requirementDescription: "INT enhancement 1",
+			requirementDescription: "INT enhancement I",
 			popupTitle: "Enhancement Acquired!",
 			effectDescription() {return "change the base effect of INT<br>Req: " + formatWhole(this.requirement) + " growth points"},
 			done() {return player.g.points.gte(this.requirement)},
@@ -462,7 +522,7 @@ addLayer("g", {
 		},
 		4: {
 			requirement: 40,
-			requirementDescription: "AGI enhancement 1",
+			requirementDescription: "AGI enhancement I",
 			popupTitle: "Enhancement Acquired!",
 			effect() {return 2},
 			effectDescription() {return "increase the base effect of AGI by 2<br>Req: " + formatWhole(this.requirement) + " growth points"},
@@ -471,10 +531,45 @@ addLayer("g", {
 		},
 		5: {
 			requirement: 48,
-			requirementDescription: "AGI enhancement 2",
+			requirementDescription: "AGI enhancement II",
 			popupTitle: "Enhancement Acquired!",
 			effect() {return 2},
 			effectDescription() {return "increase the base effect of AGI by 2<br>Req: " + formatWhole(this.requirement) + " growth points"},
+			done() {return player.g.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("g", this.id - 1)},
+		},
+		6: {
+			requirement: 66,
+			requirementDescription: "STR enhancement II",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.g.points.add(1).log10().mul(0.1).add(1)},
+			effectDescription() {return "multiply the base effect of STR based on growth points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " growth points"},
+			done() {return player.g.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("g", this.id - 1)},
+		},
+		7: {
+			requirement: 70,
+			requirementDescription: "INT enhancement II",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.25},
+			effectDescription() {return "increase the base effect of INT by 0.25<br>Req: " + formatWhole(this.requirement) + " growth points"},
+			done() {return player.g.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("g", this.id - 1)},
+		},
+		8: {
+			requirement: 90,
+			requirementDescription: "Growth enhancement I",
+			popupTitle: "Enhancement Acquired!",
+			effectDescription() {return "unlock bulk growth<br>Req: " + formatWhole(this.requirement) + " growth points"},
+			done() {return player.g.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("g", this.id - 1)},
+		},
+		9: {
+			requirement: 101,
+			requirementDescription: "AGI enhancement III",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 8},
+			effectDescription() {return "increase the base effect of AGI by 8<br>Req: " + formatWhole(this.requirement) + " growth points"},
 			done() {return player.g.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("g", this.id - 1)},
 		},
