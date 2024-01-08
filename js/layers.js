@@ -24,6 +24,7 @@ addLayer("s", {
 		if (hasUpgrade("s", 41)) mult = mult.mul(upgradeEffect("s", 41));
 		if (hasUpgrade("s", 43)) mult = mult.mul(upgradeEffect("s", 43));
 		if (hasUpgrade("s", 45)) mult = mult.mul(upgradeEffect("s", 45));
+		if (hasUpgrade("s", 65)) mult = mult.mul(upgradeEffect("s", 65));
 		if (hasBuyable("g", 12)) mult = mult.mul(buyableEffect("g", 12));
 		return mult;
 	},
@@ -252,7 +253,10 @@ addLayer("s", {
 		43: {
 			title: "Meditation",
 			description: "multiply stimulation gain based on power",
-			effect() {return player.points.add(1).log10().mul(0.45).add(1)},
+			effect() {
+				if (hasUpgrade("s", 63)) return player.points.add(1).pow(0.05);
+				else return player.points.add(1).log10().mul(0.45).add(1);
+			},
 			effectDisplay() {return format(this.effect()) + "x"},
 			currencyDisplayName: modInfo.pointsName,
 			currencyInternalName: "points",
@@ -262,7 +266,10 @@ addLayer("s", {
 		44: {
 			title: "Absorbtion",
 			description: "multiply power gain based on stimulations",
-			effect() {return player.s.points.add(1).log10().mul(1.5).add(1)},
+			effect() {
+				if (hasUpgrade("s", 64)) return player.s.points.add(1).pow(0.088);
+				else return player.s.points.add(1).log10().mul(1.5).add(1);
+			},
 			effectDisplay() {return format(this.effect()) + "x"},
 			currencyDisplayName: modInfo.pointsName,
 			currencyInternalName: "points",
@@ -295,7 +302,10 @@ addLayer("s", {
 		53: {
 			title: "Acceleration",
 			description: "divide growth point requirement based on your power",
-			effect() {return player.points.add(1).log10().mul(0.5).add(1)},
+			effect() {
+				if (hasUpgrade("s", 62)) return player.points.mul(1e10).add(1).pow(0.05);
+				else return player.points.add(1).log10().mul(0.5).add(1);
+			},
 			effectDisplay() {return "/" + format(this.effect())},
 			cost: new Decimal(2.5e23),
 			unlocked() {return hasMilestone("g", 3) && buyableEffect("g", 14).gte(8)},
@@ -310,10 +320,54 @@ addLayer("s", {
 		55: {
 			title: "Boundlessness",
 			description: "increase stimulation effect exponent based on your growth points",
-			effect() {return player.g.points.add(1).log10().mul(0.036)},
+			effect() {
+				if (hasUpgrade("s", 61)) return player.g.points.add(1).pow(0.1).div(10);
+				else return player.g.points.add(1).log10().mul(0.036);
+			},
 			effectDisplay() {return "+" + format(this.effect())},
 			cost: new Decimal(2.5e28),
 			unlocked() {return hasMilestone("g", 3) && buyableEffect("g", 14).gte(10)},
+		},
+		61: {
+			title: "Limitlessness",
+			description: "improve the effect formula of <b>Boundlessness</b>",
+			currencyDisplayName: modInfo.pointsName,
+			currencyInternalName: "points",
+			cost: new Decimal(1e50),
+			unlocked() {return hasMilestone("g", 3) && buyableEffect("g", 14).gte(11)},
+		},
+		62: {
+			title: "Windlessness",
+			description: "improve the effect formula of <b>Acceleration</b>",
+			currencyDisplayName: modInfo.pointsName,
+			currencyInternalName: "points",
+			cost: new Decimal(1e60),
+			unlocked() {return hasMilestone("g", 3) && buyableEffect("g", 14).gte(12)},
+		},
+		63: {
+			title: "Enlightenment",
+			description: "improve the effect formula of <b>Meditation</b>",
+			currencyDisplayName: modInfo.pointsName,
+			currencyInternalName: "points",
+			cost: new Decimal(1e71),
+			unlocked() {return hasMilestone("g", 3) && buyableEffect("g", 14).gte(13)},
+		},
+		64: {
+			title: "Gorging",
+			description: "improve the effect formula of <b>Absorbtion</b>",
+			currencyDisplayName: modInfo.pointsName,
+			currencyInternalName: "points",
+			cost: new Decimal(1e84),
+			unlocked() {return hasMilestone("g", 3) && buyableEffect("g", 14).gte(14)},
+		},
+		65: {
+			title: "Integration",
+			description: "apply the effects of <b>Assimilation</b> two more times",
+			effect() {return upgradeEffect("s", 45) ** 2},
+			currencyDisplayName: modInfo.pointsName,
+			currencyInternalName: "points",
+			cost: new Decimal(1e100),
+			unlocked() {return hasMilestone("g", 3) && buyableEffect("g", 14).gte(15)},
 		},
 	},
 });
@@ -400,6 +454,8 @@ addLayer("g", {
 				let base = new Decimal(2.5);
 				if (hasMilestone("g", 1)) base = base.mul(milestoneEffect("g", 1));
 				if (hasMilestone("g", 6)) base = base.mul(milestoneEffect("g", 6));
+				if (hasMilestone("g", 11)) base = base.mul(milestoneEffect("g", 11));
+				if (hasMilestone("g", 14)) base = base.mul(milestoneEffect("g", 14));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id))},
@@ -417,6 +473,7 @@ addLayer("g", {
 				let base = new Decimal(2);
 				if (hasMilestone("g", 0)) base = base.mul(milestoneEffect("g", 0));
 				if (hasMilestone("g", 2)) base = base.mul(milestoneEffect("g", 2));
+				if (hasMilestone("g", 10)) base = base.mul(milestoneEffect("g", 10));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id))},
@@ -448,24 +505,32 @@ addLayer("g", {
 		},
 		14: {
 			cost() {return getBuyableAmount(this.layer, this.id).add(1)},
+			maxEffect() {
+				if (hasMilestone("g", 3)) {
+					let max = new Decimal(10);
+					if (hasMilestone("g", 13)) max = max.add(milestoneEffect("g", 13));
+					return max;
+				};
+			},
 			effectBase() {
 				if (hasMilestone("g", 3)) {
 					let base = new Decimal(1);
 					if (hasMilestone("g", 7)) base = base.add(milestoneEffect("g", 7));
+					if (hasMilestone("g", 12)) base = base.add(milestoneEffect("g", 12));
 					return base;
 				};
 				return new Decimal(5);
 			},
 			effect() {
-				if (hasMilestone("g", 3)) return getBuyableAmount(this.layer, this.id).mul(this.effectBase()).min(10);
+				if (hasMilestone("g", 3)) return getBuyableAmount(this.layer, this.id).mul(this.effectBase()).min(this.maxEffect());
 				else return new Decimal(5).pow(getBuyableAmount(this.layer, this.id));
 			},
 			title: "(INT)ELLECT",
 			display() {
 				if (hasMilestone("g", 3)) {
 					let base = this.effectBase();
-					if (base.eq(1)) return "unlock a new stimulation upgrade<br>(maxes at 10 new upgrades)<br><br>Effect: +" + format(this.effect()) + "<br><br>Cost: " + format(this.cost()) + " growth points";
-					else return "unlock " + format(base) + " new stimulation upgrades<br>(maxes at 10 new upgrades)<br><br>Effect: +" + format(this.effect()) + "<br><br>Cost: " + format(this.cost()) + " growth points";
+					if (base.eq(1)) return "unlock a new stimulation upgrade<br>(maxes at " + formatWhole(this.maxEffect()) + " new upgrades)<br><br>Effect: +" + format(this.effect()) + "<br><br>Cost: " + format(this.cost()) + " growth points";
+					else return "unlock " + format(base) + " new stimulation upgrades<br>(maxes at " + formatWhole(this.maxEffect()) + " new upgrades)<br><br>Effect: +" + format(this.effect()) + "<br><br>Cost: " + format(this.cost()) + " growth points";
 				};
 				return "divide previous upgrade costs by 5<br>(upgrade costs are rounded down)<br><br>Effect: /" + format(this.effect()) + "<br><br>Cost: " + format(this.cost()) + " growth points";
 			},
@@ -570,6 +635,51 @@ addLayer("g", {
 			popupTitle: "Enhancement Acquired!",
 			effect() {return 8},
 			effectDescription() {return "increase the base effect of AGI by 8<br>Req: " + formatWhole(this.requirement) + " growth points"},
+			done() {return player.g.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("g", this.id - 1)},
+		},
+		10: {
+			requirement: 121,
+			requirementDescription: "WIS enhancement III",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.g.points.add(1).log10().mul(0.25).add(1)},
+			effectDescription() {return "multiply the base effect of WIS based on growth points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " growth points"},
+			done() {return player.g.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("g", this.id - 1)},
+		},
+		11: {
+			requirement: 140,
+			requirementDescription: "STR enhancement III",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.g.points.add(1).log10().mul(0.5).add(1)},
+			effectDescription() {return "multiply the base effect of STR based on growth points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " growth points"},
+			done() {return player.g.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("g", this.id - 1)},
+		},
+		12: {
+			requirement: 150,
+			requirementDescription: "INT enhancement III",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.75},
+			effectDescription() {return "increase the base effect of INT by 0.75<br>Req: " + formatWhole(this.requirement) + " growth points"},
+			done() {return player.g.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("g", this.id - 1)},
+		},
+		13: {
+			requirement: 166,
+			requirementDescription: "INT enhancement IV",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 5},
+			effectDescription() {return "increase the max effect of INT by 5<br>Req: " + formatWhole(this.requirement) + " growth points"},
+			done() {return player.g.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("g", this.id - 1)},
+		},
+		14: {
+			requirement: 196,
+			requirementDescription: "STR enhancement IV",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.g.points.add(1).pow(0.1)},
+			effectDescription() {return "multiply the base effect of STR based on growth points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " growth points"},
 			done() {return player.g.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("g", this.id - 1)},
 		},

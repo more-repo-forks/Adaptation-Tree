@@ -41,6 +41,7 @@ function getPointPotential() {
 	if (hasUpgrade("s", 42)) gain = gain.mul(upgradeEffect("s", 42));
 	if (hasUpgrade("s", 44)) gain = gain.mul(upgradeEffect("s", 44));
 	if (hasUpgrade("s", 45)) gain = gain.mul(upgradeEffect("s", 45));
+	if (hasUpgrade("s", 65)) gain = gain.mul(upgradeEffect("s", 65));
 	if (hasBuyable("g", 11)) gain = gain.mul(buyableEffect("g", 11));
 	// end
 	return gain;
