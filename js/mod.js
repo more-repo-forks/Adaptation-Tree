@@ -19,7 +19,7 @@ const winText = `Congratulations! You have reached the end and beaten this game,
 var doNotCallTheseFunctionsEveryTick = [];
 
 function canGenPoints() {
-	return true;
+	return false;
 };
 
 function getPointPotential() {
