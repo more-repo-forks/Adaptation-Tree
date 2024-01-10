@@ -23,7 +23,8 @@ function canGenPoints() {
 };
 
 function getPointPotential() {
-	// in 4th retrogression
+	// retrogression overrides
+	if (inChallenge("e", 15)) return new Decimal(1e10).pow(player.g.milestones.length - 16).max(1);
 	if (inChallenge("e", 14)) return new Decimal(1);
 	// start
 	let gain = new Decimal(1);

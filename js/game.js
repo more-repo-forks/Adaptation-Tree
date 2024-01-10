@@ -144,7 +144,7 @@ function generatePoints(layer, diff) {
 	addPoints(layer, tmp[layer].resetGain.times(diff));
 };
 
-function doReset(layer, force = false) {
+function doReset(layer, force = false, overrideResetsNothing = false) {
 	if (tmp[layer].type == "none") return;
 	let row = tmp[layer].row, challenge = player[layer].activeChallenge;
 	if (!force) {
@@ -170,7 +170,7 @@ function doReset(layer, force = false) {
 			};
 		};
 	};
-	if (run(layers[layer].resetsNothing, layers[layer])) return;
+	if (!overrideResetsNothing && run(layers[layer].resetsNothing, layers[layer])) return;
 	tmp[layer].baseAmount = decimalZero; // quick fix
 	for (layerResetting in layers) {
 		if (row >= layers[layerResetting].row && (!force || layerResetting != layer)) completeChallenge(layerResetting);
