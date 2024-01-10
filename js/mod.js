@@ -23,6 +23,8 @@ function canGenPoints() {
 };
 
 function getPointPotential() {
+	// in 4th retrogression
+	if (inChallenge("e", 14)) return new Decimal(1);
 	// start
 	let gain = new Decimal(1);
 	// increase base power gain
@@ -42,6 +44,7 @@ function getPointPotential() {
 	if (hasUpgrade("s", 44)) gain = gain.mul(upgradeEffect("s", 44));
 	if (hasUpgrade("s", 45)) gain = gain.mul(upgradeEffect("s", 45));
 	if (hasUpgrade("s", 65)) gain = gain.mul(upgradeEffect("s", 65));
+	if (hasUpgrade("s", 81)) gain = gain.mul(upgradeEffect("s", 81));
 	gain = gain.mul(buyableEffect("g", 11));
 	// end
 	return gain;
