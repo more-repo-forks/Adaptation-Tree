@@ -523,8 +523,28 @@ addLayer("g", {
 		"resource-display",
 		["row", [
 			["column", [["buyable", 11], ["blank", "75px"], ["buyable", 12]]],
-			["display-text", () => {
-				let max = getBuyableAmount("g", 11).add(tmp.g.buyables[11].extra).max(getBuyableAmount("g", 12).add(tmp.g.buyables[12].extra)).max(getBuyableAmount("g", 13).add(tmp.g.buyables[13].extra)).max(getBuyableAmount("g", 14).add(tmp.g.buyables[14].extra)).toNumber() + 1;
+			["column", [["display-text", () => {
+				let text = "<div style='height: 25px; padding-top: 5px'>";
+				if (getClickableState("g", 14)) {
+					text += "Only extra levels";
+				} else if (getClickableState("g", 11)) {
+					if (getClickableState("g", 13)) text += "Only base levels " + formatWhole((+getClickableState("g", 11)) * 50) + "+";
+					else text += "Only levels " + formatWhole((+getClickableState("g", 11)) * 50) + "+";
+				} else {
+					if (getClickableState("g", 13)) text += "Only base levels";
+					else text += "All levels";
+				};
+				return text + "</div>";
+			}], ["display-text", () => {
+				const reduction = (+getClickableState("g", 11)) * 50;
+				let max = 1;
+				if (getClickableState("g", 13)) {
+					max += getBuyableAmount("g", 11).max(getBuyableAmount("g", 12)).max(getBuyableAmount("g", 13)).max(getBuyableAmount("g", 14)).toNumber() - reduction;
+				} else if (getClickableState("g", 14)) {
+					max += tmp.g.buyables[11].extra.max(tmp.g.buyables[12].extra).max(tmp.g.buyables[13].extra).max(tmp.g.buyables[14].extra).toNumber();
+				} else {
+					max += getBuyableAmount("g", 11).add(tmp.g.buyables[11].extra).max(getBuyableAmount("g", 12).add(tmp.g.buyables[12].extra)).max(getBuyableAmount("g", 13).add(tmp.g.buyables[13].extra)).max(getBuyableAmount("g", 14).add(tmp.g.buyables[14].extra)).toNumber() - reduction;
+				};
 				if (max < 2) max = 2;
 				let text = "<svg viewBox='0 0 100 100' style='width: 200px; height: 200px'>";
 				text += "<line x1='6' y1='6' x2='94' y2='94' fill='none' stroke='#404040'/>";
@@ -539,28 +559,34 @@ addLayer("g", {
 					text += "<rect x='" + low + "' y='" + low + "' width=" + high + " height='" + high + "' rx='1' ry='1' fill='none' stroke='#808080'/>";
 				};
 				// normal stats
-				let stats = [
-					getBuyableAmount("g", 11).toNumber() + 1,
-					getBuyableAmount("g", 13).toNumber() + 1,
-					getBuyableAmount("g", 14).toNumber() + 1,
-					getBuyableAmount("g", 12).toNumber() + 1,
-				];
+				let stats = (getClickableState("g", 14) ? [1, 1, 1, 1] : [
+					getBuyableAmount("g", 11).toNumber() - reduction + 1,
+					getBuyableAmount("g", 13).toNumber() - reduction + 1,
+					getBuyableAmount("g", 14).toNumber() - reduction + 1,
+					getBuyableAmount("g", 12).toNumber() - reduction + 1,
+				]);
 				let statPoint0 = 50 - (stats[0] / max * 45 - 0.5);
 				let statPoint2 = 50 + (stats[2] / max * 45 - 0.5);
-				text += "<polyline points='" + statPoint0 + "," + statPoint0 + " " + (50 + (stats[1] / max * 45 - 0.5)) + "," + (50 - (stats[1] / max * 45 - 0.5)) + " " + statPoint2 + "," + statPoint2 + " " + (50 - (stats[3] / max * 45 - 0.5)) + "," + (50 + (stats[3] / max * 45 - 0.5)) + " " + statPoint0 + "," + statPoint0 + "' fill='#ffffff40' stroke='#ffffff' stroke-linejoin='round' stroke-linecap='round'/>";
+				if (!getClickableState("g", 14)) text += "<polyline points='" + statPoint0 + "," + statPoint0 + " " + (50 + (stats[1] / max * 45 - 0.5)) + "," + (50 - (stats[1] / max * 45 - 0.5)) + " " + statPoint2 + "," + statPoint2 + " " + (50 - (stats[3] / max * 45 - 0.5)) + "," + (50 + (stats[3] / max * 45 - 0.5)) + " " + statPoint0 + "," + statPoint0 + "' fill='#ffffff40' stroke='#ffffff' stroke-linejoin='round' stroke-linecap='round'/>";
 				// extra stats
-				stats = [
-					getBuyableAmount("g", 11).add(tmp.g.buyables[11].extra).toNumber() + 1,
-					getBuyableAmount("g", 13).add(tmp.g.buyables[13].extra).toNumber() + 1,
-					getBuyableAmount("g", 14).add(tmp.g.buyables[14].extra).toNumber() + 1,
-					getBuyableAmount("g", 12).add(tmp.g.buyables[12].extra).toNumber() + 1,
-				];
-				statPoint0 = 50 - (stats[0] / max * 45 - 0.5);
-				statPoint2 = 50 + (stats[2] / max * 45 - 0.5);
+				if (!getClickableState("g", 13)) {
+					stats[0] += tmp.g.buyables[11].extra.toNumber();
+					stats[1] += tmp.g.buyables[13].extra.toNumber();
+					stats[2] += tmp.g.buyables[14].extra.toNumber();
+					stats[3] += tmp.g.buyables[12].extra.toNumber();
+					statPoint0 = 50 - (stats[0] / max * 45 - 0.5);
+					statPoint2 = 50 + (stats[2] / max * 45 - 0.5);
+				};
 				text += "<polyline points='" + statPoint0 + "," + statPoint0 + " " + (50 + (stats[1] / max * 45 - 0.5)) + "," + (50 - (stats[1] / max * 45 - 0.5)) + " " + statPoint2 + "," + statPoint2 + " " + (50 - (stats[3] / max * 45 - 0.5)) + "," + (50 + (stats[3] / max * 45 - 0.5)) + " " + statPoint0 + "," + statPoint0 + "' fill='#ffffff40' stroke='#ffffff' stroke-linejoin='round' stroke-linecap='round'/>";
 				// return
 				return text + "</svg>";
-			}],
+			}], ["row", [
+				["clickable", 11],
+				["clickable", 12],
+				["blank", ["10px", "30px"]],
+				["clickable", 13],
+				["clickable", 14],
+			]]]],
 			["column", [["buyable", 13], ["blank", "75px"], ["buyable", 14]]],
 		]],
 		"respec-button",
@@ -590,6 +616,7 @@ addLayer("g", {
 	},
 	componentStyles: {
 		"buyable"() {return {'width': '210px', 'height': '110px'}},
+		"clickable"() {return {'min-height': '30px', 'transform': 'none'}},
 	},
 	buyables: {
 		11: {
@@ -613,7 +640,7 @@ addLayer("g", {
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
 			title: "(STR)ENGTH",
 			display() {return "multiply power gain by " + format(this.effectBase()) + "<br><br>Effect: " + format(this.effect()) + "x<br><br>Cost: " + formatWhole(this.cost()) + " growth points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id)) + "/" + formatWhole(this.purchaseLimit()) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
-			purchaseLimit() {return (hasChallenge("e", 14) && getBuyableAmount("g", 11).gte(100) && getBuyableAmount("g", 12).gte(100) && getBuyableAmount("g", 13).gte(100) && getBuyableAmount("g", 14).gte(100) ? 150 : 100)},
+			purchaseLimit() {return (hasChallenge("e", 14) && getBuyableAmount("g", 11).gte(100) && getBuyableAmount("g", 12).gte(100) && getBuyableAmount("g", 13).gte(100) && getBuyableAmount("g", 14).gte(100) ? 200 : 100)},
 			canAfford() {return player.g.points.sub(player.g.spent).gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit()) && !inChallenge("e", 12)},
 			buy() {
 				player.g.spent = player.g.spent.add(this.cost());
@@ -642,7 +669,7 @@ addLayer("g", {
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
 			title: "(WIS)DOM",
 			display() {return "multiply stimulation gain by " + format(this.effectBase()) + "<br><br>Effect: " + format(this.effect()) + "x<br><br>Cost: " + formatWhole(this.cost()) + " growth points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id)) + "/" + formatWhole(this.purchaseLimit()) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
-			purchaseLimit() {return (hasChallenge("e", 14) && getBuyableAmount("g", 11).gte(100) && getBuyableAmount("g", 12).gte(100) && getBuyableAmount("g", 13).gte(100) && getBuyableAmount("g", 14).gte(100) ? 150 : 100)},
+			purchaseLimit() {return (hasChallenge("e", 14) && getBuyableAmount("g", 11).gte(100) && getBuyableAmount("g", 12).gte(100) && getBuyableAmount("g", 13).gte(100) && getBuyableAmount("g", 14).gte(100) ? 200 : 100)},
 			canAfford() {return player.g.points.sub(player.g.spent).gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit()) && !inChallenge("e", 12)},
 			buy() {
 				player.g.spent = player.g.spent.add(this.cost());
@@ -670,7 +697,7 @@ addLayer("g", {
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
 			title: "(AGI)LITY",
 			display() {return "divide growth point requirement by " + formatWhole(this.effectBase()) + "<br>(min requirement: 100,000,000)<br><br>Effect: /" + format(this.effect()) + "<br><br>Cost: " + formatWhole(this.cost()) + " growth points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id)) + "/" + formatWhole(this.purchaseLimit()) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
-			purchaseLimit() {return (hasChallenge("e", 14) && getBuyableAmount("g", 11).gte(100) && getBuyableAmount("g", 12).gte(100) && getBuyableAmount("g", 13).gte(100) && getBuyableAmount("g", 14).gte(100) ? 150 : 100)},
+			purchaseLimit() {return (hasChallenge("e", 14) && getBuyableAmount("g", 11).gte(100) && getBuyableAmount("g", 12).gte(100) && getBuyableAmount("g", 13).gte(100) && getBuyableAmount("g", 14).gte(100) ? 200 : 100)},
 			canAfford() {return player.g.points.sub(player.g.spent).gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit()) && !inChallenge("e", 12)},
 			buy() {
 				player.g.spent = player.g.spent.add(this.cost());
@@ -733,7 +760,7 @@ addLayer("g", {
 				};
 				return "divide previous upgrade costs by 5<br>(upgrade costs are rounded down)<br><br>Effect: /" + format(this.effect()) + "<br><br>Cost: " + formatWhole(this.cost()) + " growth points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id)) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()));
 			},
-			purchaseLimit() {return (hasChallenge("e", 14) && getBuyableAmount("g", 11).gte(100) && getBuyableAmount("g", 12).gte(100) && getBuyableAmount("g", 13).gte(100) && getBuyableAmount("g", 14).gte(100) ? 150 : 100)},
+			purchaseLimit() {return (hasChallenge("e", 14) && getBuyableAmount("g", 11).gte(100) && getBuyableAmount("g", 12).gte(100) && getBuyableAmount("g", 13).gte(100) && getBuyableAmount("g", 14).gte(100) ? 200 : 100)},
 			canAfford() {return player.g.points.sub(player.g.spent).gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit()) && !inChallenge("e", 11)},
 			buy() {
 				player.g.spent = player.g.spent.add(this.cost());
@@ -754,16 +781,53 @@ addLayer("g", {
 				setBuyableAmount("g", 14, new Decimal(100));
 				if (hasChallenge("e", 12)) player.g.spent = new Decimal(19800);
 				else player.g.spent = new Decimal(20200);
+				if (getClickableState("g", 11) > 2) setClickableState("g", 11, 2);
 			} else {
 				setBuyableAmount("g", 11, new Decimal(0));
 				setBuyableAmount("g", 12, new Decimal(0));
 				setBuyableAmount("g", 13, new Decimal(0));
 				setBuyableAmount("g", 14, new Decimal(0));
 				player.g.spent = new Decimal(0);
+				setClickableState("g", 11, 0);
 			};
 			doReset("g", true, true);
 		},
 		respecText: "respec growth points",
+	},
+	clickables: {
+		11: {
+			display() {return "<h2>-50</h2>"},
+			canClick() {return getClickableState("g", 11) > 0 && !getClickableState("g", 14)},
+			onClick() {setClickableState("g", 11, (+getClickableState("g", 11)) - 1)},
+			style: {"width": "45px", "border-radius": "10px 0 0 10px"},
+		},
+		12: {
+			display() {return "<h2>+50</h2>"},
+			canClick() {
+				let amt = new Decimal(((+getClickableState("g", 11)) + 1) * 50);
+				return getBuyableAmount("g", 11).gte(amt) && getBuyableAmount("g", 12).gte(amt) && getBuyableAmount("g", 13).gte(amt) && getBuyableAmount("g", 14).gte(amt) && !getClickableState("g", 14);
+			},
+			onClick() {setClickableState("g", 11, (+getClickableState("g", 11)) + 1)},
+			style: {"width": "45px", "border-radius": "0 10px 10px 0"},
+		},
+		13: {
+			display() {return (getClickableState("g", 13) ? "Both" : "Only Base")},
+			canClick() {return player.e.unlocked},
+			onClick() {
+				setClickableState("g", 13, !getClickableState("g", 13));
+				if (getClickableState("g", 13)) setClickableState("g", 14, false);
+			},
+			style: {"width": "40px", "border-radius": "10px 0 0 10px"},
+		},
+		14: {
+			display() {return (getClickableState("g", 14) ? "Both" : "Only Extra")},
+			canClick() {return player.e.unlocked},
+			onClick() {
+				setClickableState("g", 14, !getClickableState("g", 14));
+				if (getClickableState("g", 14)) setClickableState("g", 13, false);
+			},
+			style: {"width": "40px", "border-radius": "0 10px 10px 0"},
+		},
 	},
 	milestones: {
 		0: {
@@ -1270,7 +1334,7 @@ addLayer("e", {
 		14: {
 			name: "4th Retrogression",
 			fullDisplay() {
-				if (player.e.points.gte(this.unlockReq)) return "Entering this retrogression does an evolution reset.<br>While in this retrogression, your power gain will not increase.<br><br>Goal: " + formatWhole(this.goal) + " growth points<br><br>Rewards: The extra WIS from evolutions is multiplied by 1.6 and if STR, WIS, AGI, and INT are all level 100 not counting extra levels, the maximum levels of STR, WIS, AGI, and INT will increase by 50 but their costs will increase much faster";
+				if (player.e.points.gte(this.unlockReq)) return "Entering this retrogression does an evolution reset.<br>While in this retrogression, your power gain will not increase.<br><br>Goal: " + formatWhole(this.goal) + " growth points<br><br>Rewards: The extra WIS from evolutions is multiplied by 1.6 and if STR, WIS, AGI, and INT are all level 100 not counting extra levels, the maximum levels of STR, WIS, AGI, and INT will increase by 100 but their costs will increase much faster";
 				return "You need " + formatWhole(this.unlockReq) + " evolutions to unlock this retrogression.";
 			},
 			goal: 650,
