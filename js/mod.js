@@ -9,8 +9,8 @@ const modInfo = {
 }
 
 const VERSION = {
-	num: "1.2",
-	name: "Evolution",
+	num: "1.3",
+	name: "Acclimation",
 };
 
 const winText = `Congratulations! You have reached the end and beaten this game, but for now...`;
