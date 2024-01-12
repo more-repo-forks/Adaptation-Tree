@@ -63,7 +63,7 @@ function addedPlayerData() { return {
 // Display extra things at the top of the page
 var displayThings = [
 	() => {return "(" + format(getPointPotential()) + " max power)"},
-	() => {return "<br>current endgame is 38 " + (player.e.unlocked ? "evolutions" : "???")},
+	() => {return "<br>current endgame is 43 " + (player.e.unlocked ? "evolutions" : "???")},
 ];
 
 // Determines when the game "ends"

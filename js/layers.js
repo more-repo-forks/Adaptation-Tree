@@ -43,11 +43,14 @@ addLayer("s", {
 		if (hasUpgrade("s", 75)) exp = exp.add(upgradeEffect("s", 75));
 		if (hasUpgrade("s", 83)) exp = exp.add(upgradeEffect("s", 83));
 		if (hasChallenge("e", 11)) exp = exp.add(buyableEffect("g", 14));
-		return player.s.points.add(1).pow(exp);
+		let eff = player.s.points.add(1).pow(exp);
+		if (eff.gt("e875000")) eff = eff.div("e875000").pow(0.9).mul("e875000");
+		return eff;
 	},
 	effectDescription() {
 		let text = "which are multiplying power gain by " + format(tmp.s.effect) + "x";
 		if (tmp.s.resetGain.gte(tmp.s.softcap)) text += "<br>(stimulation gain softcapped at " + formatWhole(tmp.s.softcap) + ")";
+		if (tmp.s.effect.gt("e875000")) text += "<br>(stimulation effect softcapped at 1e875,000)";
 		return text;
 	},
 	tabFormat: [
@@ -354,10 +357,13 @@ addLayer("s", {
 			title: "Boundlessness",
 			description: "increase stimulation effect exponent based on your growth points",
 			effect() {
-				if (hasUpgrade("s", 61)) return player.g.points.add(1).pow(0.1).div(10);
-				else return player.g.points.add(1).log10().mul(0.036);
+				let eff = new Decimal(0);
+				if (hasUpgrade("s", 61)) eff = player.g.points.add(1).pow(0.1).div(10);
+				else eff = player.g.points.add(1).log10().mul(0.036);
+				if (eff.gte(0.5)) return new Decimal(0.5);
+				else return eff;
 			},
-			effectDisplay() {return "+" + format(this.effect())},
+			effectDisplay() {return "+" + format(this.effect()) + (this.effect().eq(0.5) ? " (max)" : "")},
 			cost: new Decimal(2.5e28),
 			unlocked() {return ((hasMilestone("g", 3) && buyableEffect("g", 14).gte(10)) || hasChallenge("e", 11)) && !inChallenge("e", 13)},
 		},
@@ -517,6 +523,7 @@ addLayer("g", {
 		if (hasMilestone("g", 44)) base -= milestoneEffect("g", 44);
 		if (hasMilestone("g", 49)) base -= milestoneEffect("g", 49);
 		if (hasMilestone("g", 53)) base -= milestoneEffect("g", 53);
+		if (hasMilestone("g", 59)) base -= milestoneEffect("g", 59);
 		return base;
 	},
 	exponent: 1,
@@ -637,7 +644,7 @@ addLayer("g", {
 		if (layers[resettingLayer].row > this.row) {
 			let keepMileNum = 0; keepMile = [];
 			if (resettingLayer == "e" && hasChallenge("e", 12)) keepMileNum = 16;
-			if (resettingLayer == "e" && player.e.points.gte(36)) keepMileNum = 41;
+			if (layers[resettingLayer].row == 2 && player.e.points.gte(36)) keepMileNum = 41;
 			if (keepMileNum > 0) {
 				for (let index = 0; index < player.g.milestones.length; index++) {
 					if (player.g.milestones[index] < keepMileNum) keepMile.push(player.g.milestones[index]);
@@ -755,6 +762,7 @@ addLayer("g", {
 				if (hasMilestone("g", 46)) {
 					let base = new Decimal(milestoneEffect("g", 46));
 					if (hasMilestone("g", 51)) base = base.mul(milestoneEffect("g", 51));
+					if (hasMilestone("g", 58)) base = base.mul(milestoneEffect("g", 58));
 					return base;
 				};
 				let base = new Decimal(4);
@@ -841,7 +849,12 @@ addLayer("g", {
 				};
 				return "divide previous upgrade costs by 5<br>(upgrade costs are rounded down)<br><br>Effect: /" + format(this.effect()) + "<br><br>Cost: " + formatWhole(this.cost()) + " growth points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id)) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()));
 			},
-			purchaseLimit() {return (hasChallenge("e", 14) && getBuyableAmount("g", 11).gte(100) && getBuyableAmount("g", 12).gte(100) && getBuyableAmount("g", 13).gte(100) && getBuyableAmount("g", 14).gte(100) ? 160 : 100)},
+			purchaseLimit() {
+				let max = 100;
+				if (hasChallenge("e", 14) && getBuyableAmount("g", 11).gte(100) && getBuyableAmount("g", 12).gte(100) && getBuyableAmount("g", 13).gte(100) && getBuyableAmount("g", 14).gte(100)) max += 60;
+				if (hasMilestone("g", 57)) max += 40;
+				return max;
+			},
 			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit()) && !inChallenge("e", 11)},
 			buy() {
 				player[this.layer].spent = player[this.layer].spent.add(this.cost());
@@ -1443,6 +1456,32 @@ addLayer("g", {
 			done() {return player.g.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("g", this.id - 1)},
 		},
+		57: {
+			requirement: 1957700,
+			requirementDescription: "INT enhancement IX",
+			popupTitle: "Enhancement Acquired!",
+			effectDescription() {return "increase the maximum of INT by 40<br>Req: " + formatWhole(this.requirement) + " growth points"},
+			done() {return player.g.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("g", this.id - 1)},
+		},
+		58: {
+			requirement: 2459000,
+			requirementDescription: "AGI enhancement X",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 1e25},
+			effectDescription() {return "multiply the base effect of AGI by 1e25<br>Req: " + formatWhole(this.requirement) + " growth points"},
+			done() {return player.g.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("g", this.id - 1)},
+		},
+		59: {
+			requirement: 2769360,
+			requirementDescription: "Growth enhancement X",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.12},
+			effectDescription() {return "decrease base growth requirement by 0.12<br>Req: " + formatWhole(this.requirement) + " growth points"},
+			done() {return player.g.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("g", this.id - 1)},
+		},
 	},
 });
 
@@ -1538,8 +1577,8 @@ addLayer("e", {
 				},
 				30: "More automation for growth is unlocked.",
 				36() {
-					if (player.e.points.gte(36)) return "The base of the last evolution effect is multiplied by 1e1545.<br>You keep the first fourty-one growth enhancements on evolve resets.";
-					else return "The base of the last evolution effect is multiplied by 1e1541.<br>You keep the first fourty-one growth enhancements on evolve resets.";
+					if (player.e.points.gte(36)) return "The base of the last evolution effect is multiplied by 1e1545.<br>You keep the first fourty-one growth enhancements on row 3 resets.";
+					else return "The base of the last evolution effect is multiplied by 1e1541.<br>You keep the first fourty-one growth enhancements on row 3 resets.";
 				},
 			};
 			let text = "";
@@ -1757,7 +1796,7 @@ addLayer("a", {
 		max = max.mul(buyableEffect("a", 11));
 		player.a.populationMax = max;
 		// calculate rate
-		let rate = new Decimal(player.a.populationTime).div(max.pow(0.5));
+		let rate = new Decimal(player.a.populationTime).mul(2).div(max.pow(0.5));
 		rate = rate.mul(buyableEffect("a", 12));
 		// calculate population
 		player.a.population = max.div(max.sub(1).mul(new Decimal(Math.E).pow(rate.neg())).add(1)).round();
@@ -1797,7 +1836,11 @@ addLayer("a", {
 				player[this.layer].spent = player[this.layer].spent.add(this.cost());
 				addBuyables(this.layer, this.id, 1);
 			},
-			extra() {return new Decimal(0)},
+			extra() {
+				let extra = new Decimal(0);
+				if (hasMilestone("a", 4)) extra = extra.add(milestoneEffect("a", 4));
+				return extra.floor();
+			},
 		},
 		13: {
 			cost() {return getBuyableAmount(this.layer, this.id).add(1)},
@@ -1874,6 +1917,14 @@ addLayer("a", {
 			popupTitle: "Enhancement Acquired!",
 			effect() {return 6},
 			effectDescription() {return "multiply the last population effect by 6<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+		},
+		4: {
+			requirement: 9,
+			requirementDescription: "FER enhancement I",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 1},
+			effectDescription() {return "increase extra FER levels by 1<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
 		},
 	},
