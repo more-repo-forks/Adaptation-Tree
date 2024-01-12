@@ -2,18 +2,14 @@ let options = {};
 
 function getStartOptions() { return {
 	autosave: true,
-	msDisplay: 'always',
+	msDisplay: 'automation',
 	theme: 'default',
 	hqTree: false,
 	offlineProd: true,
 	hideChallenges: false,
-	showStory: true,
 	forceOneTab: false,
 	tooltipForcing: true,
-	colorDisplayMode: 0,
-	colorDisplay: 0,
 	extendplaces: false,
-	css: '',
 }};
 
 function toggleOpt(name) {
@@ -38,7 +34,7 @@ function toggleAuto(toggle) {
 	needCanvasUpdate = true;
 };
 
-const MS_DISPLAYS = ['ALL', 'LAST, AUTO, INCOMPLETE', 'AUTOMATION, INCOMPLETE (recommended)', 'INCOMPLETE', 'NONE'];
+const MS_DISPLAYS = ['ALL', 'LAST, AUTO, INCOMPLETE (recommended)', 'AUTOMATION, INCOMPLETE (recommended)', 'INCOMPLETE', 'NONE'];
 
 const MS_SETTINGS = ['always', 'last', 'automation', 'incomplete', 'never'];
 
