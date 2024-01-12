@@ -494,6 +494,10 @@ addLayer("g", {
 		unlocked: false,
 		points: new Decimal(0),
 		spent: new Decimal(0),
+		autoSTR: false,
+		autoWIS: false,
+		autoAGI: false,
+		autoINT: false,
 	}},
 	color: "#E6B45A",
 	resource: "growth points",
@@ -512,6 +516,7 @@ addLayer("g", {
 		if (hasMilestone("g", 38)) base -= milestoneEffect("g", 38);
 		if (hasMilestone("g", 44)) base -= milestoneEffect("g", 44);
 		if (hasMilestone("g", 49)) base -= milestoneEffect("g", 49);
+		if (hasMilestone("g", 53)) base -= milestoneEffect("g", 53);
 		return base;
 	},
 	exponent: 1,
@@ -527,82 +532,100 @@ addLayer("g", {
 	},
 	resetsNothing() {return hasMilestone("g", 36)},
 	effectDescription() {return "of which " + formatWhole(player[this.layer].points.sub(player[this.layer].spent)) + " are unspent"},
-	tabFormat: [
-		"main-display",
-		"prestige-button",
-		"resource-display",
-		["row", [
-			["column", [["buyable", 11], ["blank", "75px"], ["buyable", 12]]],
-			["column", [["display-text", () => {
-				let text = "<div style='height: 25px; padding-top: 5px'>";
-				if (getClickableState("g", 14)) {
-					text += "Only extra levels";
-				} else if (getClickableState("g", 11)) {
-					if (getClickableState("g", 13)) text += "Only base levels " + formatWhole((+getClickableState("g", 11)) * 50) + "+";
-					else text += "Only levels " + formatWhole((+getClickableState("g", 11)) * 50) + "+";
-				} else {
-					if (getClickableState("g", 13)) text += "Only base levels";
-					else text += "All levels";
-				};
-				return text + "</div>";
-			}], ["display-text", () => {
-				const reduction = (+getClickableState("g", 11)) * 50;
-				let max = 1;
-				if (getClickableState("g", 13)) {
-					max += getBuyableAmount("g", 11).max(getBuyableAmount("g", 12)).max(getBuyableAmount("g", 13)).max(getBuyableAmount("g", 14)).toNumber() - reduction;
-				} else if (getClickableState("g", 14)) {
-					max += tmp.g.buyables[11].extra.max(tmp.g.buyables[12].extra).max(tmp.g.buyables[13].extra).max(tmp.g.buyables[14].extra).toNumber();
-				} else {
-					max += getBuyableAmount("g", 11).add(tmp.g.buyables[11].extra).max(getBuyableAmount("g", 12).add(tmp.g.buyables[12].extra)).max(getBuyableAmount("g", 13).add(tmp.g.buyables[13].extra)).max(getBuyableAmount("g", 14).add(tmp.g.buyables[14].extra)).toNumber() - reduction;
-				};
-				if (max < 2) max = 2;
-				let text = "<svg viewBox='0 0 100 100' style='width: 200px; height: 200px'>";
-				text += "<line x1='6' y1='6' x2='94' y2='94' fill='none' stroke='#404040'/>";
-				text += "<line x1='6' y1='94' x2='94' y2='6' fill='none' stroke='#404040'/>";
-				let rectMax = max;
-				if (rectMax >= 16) {
-					rectMax = max / (2 ** Math.floor(Math.log2(max) - 3));
-				};
-				for (let index = 0; index < rectMax; index++) {
-					let low = Math.min((index / rectMax * 45) + 5.5, 50);
-					let high = Math.max(((rectMax - index) / rectMax * 90) - 1, 0);
-					text += "<rect x='" + low + "' y='" + low + "' width=" + high + " height='" + high + "' rx='1' ry='1' fill='none' stroke='#808080'/>";
-				};
-				// normal stats
-				let stats = (getClickableState("g", 14) ? [1, 1, 1, 1] : [
-					getBuyableAmount("g", 11).toNumber() - reduction + 1,
-					getBuyableAmount("g", 13).toNumber() - reduction + 1,
-					getBuyableAmount("g", 14).toNumber() - reduction + 1,
-					getBuyableAmount("g", 12).toNumber() - reduction + 1,
-				]);
-				let statPoint0 = 50 - (stats[0] / max * 45 - 0.5);
-				let statPoint2 = 50 + (stats[2] / max * 45 - 0.5);
-				if (!getClickableState("g", 14)) text += "<polyline points='" + statPoint0 + "," + statPoint0 + " " + (50 + (stats[1] / max * 45 - 0.5)) + "," + (50 - (stats[1] / max * 45 - 0.5)) + " " + statPoint2 + "," + statPoint2 + " " + (50 - (stats[3] / max * 45 - 0.5)) + "," + (50 + (stats[3] / max * 45 - 0.5)) + " " + statPoint0 + "," + statPoint0 + "' fill='#ffffff40' stroke='#ffffff' stroke-linejoin='round' stroke-linecap='round'/>";
-				// extra stats
-				if (!getClickableState("g", 13)) {
-					stats[0] += tmp.g.buyables[11].extra.toNumber();
-					stats[1] += tmp.g.buyables[13].extra.toNumber();
-					stats[2] += tmp.g.buyables[14].extra.toNumber();
-					stats[3] += tmp.g.buyables[12].extra.toNumber();
-					statPoint0 = 50 - (stats[0] / max * 45 - 0.5);
-					statPoint2 = 50 + (stats[2] / max * 45 - 0.5);
-				};
-				text += "<polyline points='" + statPoint0 + "," + statPoint0 + " " + (50 + (stats[1] / max * 45 - 0.5)) + "," + (50 - (stats[1] / max * 45 - 0.5)) + " " + statPoint2 + "," + statPoint2 + " " + (50 - (stats[3] / max * 45 - 0.5)) + "," + (50 + (stats[3] / max * 45 - 0.5)) + " " + statPoint0 + "," + statPoint0 + "' fill='#ffffff40' stroke='#ffffff' stroke-linejoin='round' stroke-linecap='round'/>";
-				// return
-				return text + "</svg>";
-			}], ["row", [
+	tabFormat() {
+		// top text
+		let topText = "<div style='height: 25px; padding-top: ";
+		if (player.e.points.gte(30)) {
+			topText += "20px'>";
+		} else {
+			topText += "5px'>";
+		};
+		if (getClickableState("g", 14)) {
+			topText += "Only extra levels";
+		} else if (getClickableState("g", 11)) {
+			if (getClickableState("g", 13)) topText += "Only base levels " + formatWhole((+getClickableState("g", 11)) * 50) + "+";
+			else topText += "Only levels " + formatWhole((+getClickableState("g", 11)) * 50) + "+";
+		} else {
+			if (getClickableState("g", 13)) topText += "Only base levels";
+			else topText += "All levels";
+		};
+		// stat svg display
+		const reduction = (+getClickableState("g", 11)) * 50;
+		let max = 1;
+		if (getClickableState("g", 13)) {
+			max += getBuyableAmount("g", 11).max(getBuyableAmount("g", 12)).max(getBuyableAmount("g", 13)).max(getBuyableAmount("g", 14)).toNumber() - reduction;
+		} else if (getClickableState("g", 14)) {
+			max += tmp.g.buyables[11].extra.max(tmp.g.buyables[12].extra).max(tmp.g.buyables[13].extra).max(tmp.g.buyables[14].extra).toNumber();
+		} else {
+			max += getBuyableAmount("g", 11).add(tmp.g.buyables[11].extra).max(getBuyableAmount("g", 12).add(tmp.g.buyables[12].extra)).max(getBuyableAmount("g", 13).add(tmp.g.buyables[13].extra)).max(getBuyableAmount("g", 14).add(tmp.g.buyables[14].extra)).toNumber() - reduction;
+		};
+		if (max < 2) max = 2;
+		let statText = "<svg viewBox='0 0 100 100' style='width: 200px; height: 200px'>";
+		statText += "<line x1='6' y1='6' x2='94' y2='94' fill='none' stroke='#404040'/>";
+		statText += "<line x1='6' y1='94' x2='94' y2='6' fill='none' stroke='#404040'/>";
+		let rectMax = max;
+		if (rectMax >= 16) {
+			rectMax = max / (2 ** Math.floor(Math.log2(max) - 3));
+		};
+		for (let index = 0; index < rectMax; index++) {
+			let low = Math.min((index / rectMax * 45) + 5.5, 50);
+			let high = Math.max(((rectMax - index) / rectMax * 90) - 1, 0);
+			statText += "<rect x='" + low + "' y='" + low + "' width=" + high + " height='" + high + "' rx='1' ry='1' fill='none' stroke='#808080'/>";
+		};
+		// normal stats
+		let stats = (getClickableState("g", 14) ? [1, 1, 1, 1] : [
+			getBuyableAmount("g", 11).toNumber() - reduction + 1,
+			getBuyableAmount("g", 13).toNumber() - reduction + 1,
+			getBuyableAmount("g", 14).toNumber() - reduction + 1,
+			getBuyableAmount("g", 12).toNumber() - reduction + 1,
+		]);
+		let statPoint0 = 50 - (stats[0] / max * 45 - 0.5);
+		let statPoint2 = 50 + (stats[2] / max * 45 - 0.5);
+		if (!getClickableState("g", 14)) statText += "<polyline points='" + statPoint0 + "," + statPoint0 + " " + (50 + (stats[1] / max * 45 - 0.5)) + "," + (50 - (stats[1] / max * 45 - 0.5)) + " " + statPoint2 + "," + statPoint2 + " " + (50 - (stats[3] / max * 45 - 0.5)) + "," + (50 + (stats[3] / max * 45 - 0.5)) + " " + statPoint0 + "," + statPoint0 + "' fill='#ffffff40' stroke='#ffffff' stroke-linejoin='round' stroke-linecap='round'/>";
+		// extra stats
+		if (!getClickableState("g", 13)) {
+			stats[0] += tmp.g.buyables[11].extra.toNumber();
+			stats[1] += tmp.g.buyables[13].extra.toNumber();
+			stats[2] += tmp.g.buyables[14].extra.toNumber();
+			stats[3] += tmp.g.buyables[12].extra.toNumber();
+			statPoint0 = 50 - (stats[0] / max * 45 - 0.5);
+			statPoint2 = 50 + (stats[2] / max * 45 - 0.5);
+		};
+		statText += "<polyline points='" + statPoint0 + "," + statPoint0 + " " + (50 + (stats[1] / max * 45 - 0.5)) + "," + (50 - (stats[1] / max * 45 - 0.5)) + " " + statPoint2 + "," + statPoint2 + " " + (50 - (stats[3] / max * 45 - 0.5)) + "," + (50 + (stats[3] / max * 45 - 0.5)) + " " + statPoint0 + "," + statPoint0 + "' fill='#ffffff40' stroke='#ffffff' stroke-linejoin='round' stroke-linecap='round'/>";
+		// buyable columns
+		let cols = [];
+		cols[1] = [
+			["display-text", topText + "</div>"],
+			["display-text", statText + "</svg>"],
+			["row", [
 				["clickable", 11],
 				["clickable", 12],
 				["blank", ["10px", "30px"]],
 				["clickable", 13],
 				["clickable", 14],
-			]]]],
-			["column", [["buyable", 13], ["blank", "75px"], ["buyable", 14]]],
-		]],
-		"respec-button",
-		"blank",
-		"milestones",
-	],
+			]],
+		];
+		if (player.e.points.gte(30)) {
+			cols[0] = [["buyable", 11], ["blank", "10px"], ["toggle", ["g", "autoSTR"]], ["blank", "25px"], ["buyable", 12], ["blank", "10px"], ["toggle", ["g", "autoWIS"]]];
+			cols[2] = [["buyable", 13], ["blank", "10px"], ["toggle", ["g", "autoAGI"]], ["blank", "25px"], ["buyable", 14], ["blank", "10px"], ["toggle", ["g", "autoINT"]]];
+			cols[1].push(["blank", "15px"], "respec-button");
+		} else {
+			cols[0] = [["buyable", 11], ["blank", "75px"], ["buyable", 12]];
+			cols[2] = [["buyable", 13], ["blank", "75px"], ["buyable", 14]];
+		};
+		// return
+		return [
+			"main-display",
+			"prestige-button",
+			"resource-display",
+			["row", [
+				["column", cols[0]], ["column", cols[1]], ["column", cols[2]],
+			]],
+			(player.e.points.gte(30) ? undefined : "respec-button"),
+			"blank",
+			"milestones",
+		];
+	},
 	layerShown() {return hasUpgrade("s", 35) || player.g.unlocked},
 	hotkeys: [{
 		key: "g",
@@ -610,7 +633,7 @@ addLayer("g", {
 		onPress() {if (player.g.unlocked) doReset("g")},
 	}],
 	doReset(resettingLayer) {
-		let keep = [];
+		let keep = ["autoSTR", "autoWIS", "autoAGI", "autoINT"];
 		if (layers[resettingLayer].row > this.row) {
 			let keepMile = [];
 			if (resettingLayer == "e" && hasChallenge("e", 12)) {
@@ -622,6 +645,14 @@ addLayer("g", {
 			if (!keep.includes("milestones")) {
 				player.g.milestones = keepMile;
 			};
+		};
+	},
+	automate() {
+		if (player.e.points.gte(30)) {
+			if (player.g.autoSTR && layers.g.buyables[11].canAfford()) layers.g.buyables[11].buy();
+			if (player.g.autoWIS && layers.g.buyables[12].canAfford()) layers.g.buyables[12].buy();
+			if (player.g.autoAGI && layers.g.buyables[13].canAfford()) layers.g.buyables[13].buy();
+			if (player.g.autoINT && layers.g.buyables[14].canAfford()) layers.g.buyables[14].buy();
 		};
 	},
 	componentStyles: {
@@ -646,12 +677,18 @@ addLayer("g", {
 				if (hasMilestone("g", 27)) base = base.mul(milestoneEffect("g", 27));
 				if (hasMilestone("g", 34)) base = base.mul(milestoneEffect("g", 34));
 				if (hasMilestone("g", 43)) base = base.mul(milestoneEffect("g", 43));
+				if (hasMilestone("g", 54)) base = base.mul(milestoneEffect("g", 54));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
 			title: "(STR)ENGTH",
 			display() {return "multiply power gain by " + format(this.effectBase()) + "<br><br>Effect: " + format(this.effect()) + "x<br><br>Cost: " + formatWhole(this.cost()) + " growth points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id)) + "/" + formatWhole(this.purchaseLimit()) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
-			purchaseLimit() {return (hasChallenge("e", 14) && getBuyableAmount("g", 11).gte(100) && getBuyableAmount("g", 12).gte(100) && getBuyableAmount("g", 13).gte(100) && getBuyableAmount("g", 14).gte(100) ? 160 : 100)},
+			purchaseLimit() {
+				let max = 100;
+				if (hasChallenge("e", 14) && getBuyableAmount("g", 11).gte(100) && getBuyableAmount("g", 12).gte(100) && getBuyableAmount("g", 13).gte(100) && getBuyableAmount("g", 14).gte(100)) max += 60;
+				if (hasMilestone("g", 54)) max += 90;
+				return max;
+			},
 			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit()) && !inChallenge("e", 12)},
 			buy() {
 				player[this.layer].spent = player[this.layer].spent.add(this.cost());
@@ -707,7 +744,11 @@ addLayer("g", {
 				return amt.add(1).max(0);
 			},
 			effectBase() {
-				if (hasMilestone("g", 46)) return milestoneEffect("g", 46);
+				if (hasMilestone("g", 46)) {
+					let base = new Decimal(milestoneEffect("g", 46));
+					if (hasMilestone("g", 51)) base = base.mul(milestoneEffect("g", 51));
+					return base;
+				};
 				let base = new Decimal(4);
 				if (hasMilestone("g", 4)) base = base.add(milestoneEffect("g", 4));
 				if (hasMilestone("g", 5)) base = base.add(milestoneEffect("g", 5));
@@ -782,8 +823,8 @@ addLayer("g", {
 			title: "(INT)ELLECT",
 			display() {
 				if (hasChallenge("e", 11)) {
-					if (this.effect().gt(0.375)) return "increase the stimulation<br>effect exponent by " + format(this.effectBase()) + "<br>(effect is softcapped at 0.375)<br><br>Effect: +" + format(this.effect()) + "<br><br>Cost: " + formatWhole(this.cost()) + " growth points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id)) + "/" + formatWhole(this.purchaseLimit()) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()));
-					else return "increase the stimulation<br>effect exponent by " + format(this.effectBase()) + "<br>(effective INT is powered to 0.75)<br><br>Effect: +" + format(this.effect()) + "<br><br>Cost: " + formatWhole(this.cost()) + " growth points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id)) + "/" + formatWhole(this.purchaseLimit()) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()));
+					if (this.effect().gt(0.375)) return "increase the stimulation<br>effect exponent by " + format(this.effectBase()) + "<br>(effect is softcapped at 0.375)<br>Effect: +" + format(this.effect()) + "<br><br>Cost: " + formatWhole(this.cost()) + " growth points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id)) + "/" + formatWhole(this.purchaseLimit()) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()));
+					else return "increase the stimulation<br>effect exponent by " + format(this.effectBase()) + "<br>(effective INT is powered to 0.75)<br>Effect: +" + format(this.effect()) + "<br><br>Cost: " + formatWhole(this.cost()) + " growth points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id)) + "/" + formatWhole(this.purchaseLimit()) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()));
 				};
 				if (hasMilestone("g", 3)) {
 					let base = this.effectBase();
@@ -1331,7 +1372,51 @@ addLayer("g", {
 			done() {return player.g.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("g", this.id - 1)},
 		},
-		// next at 346,464 growth points
+		50: {
+			requirement: 349333,
+			requirementDescription: "Evolution enhancement VIII",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.05732},
+			effectDescription() {return "decrease base evolution requirement by 0.05732<br>Req: " + formatWhole(this.requirement) + " growth points"},
+			done() {return player.g.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("g", this.id - 1)},
+		},
+		51: {
+			requirement: 352750,
+			requirementDescription: "AGI enhancement IX",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 1e15},
+			effectDescription() {return "multiply the base effect of AGI by 1e15<br>Req: " + formatWhole(this.requirement) + " growth points"},
+			done() {return player.g.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("g", this.id - 1)},
+		},
+		52: {
+			requirement: 400450,
+			requirementDescription: "Acclimation enhancement III",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 1.75},
+			effectDescription() {return "divide acclimation requirement by 1.75<br>Req: " + formatWhole(this.requirement) + " growth points"},
+			done() {return player.g.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("g", this.id - 1)},
+		},
+		53: {
+			requirement: 419625,
+			requirementDescription: "Growth enhancement IX",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.05},
+			effectDescription() {return "decrease base growth requirement by 0.05<br>Req: " + formatWhole(this.requirement) + " growth points"},
+			done() {return player.g.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("g", this.id - 1)},
+		},
+		54: {
+			requirement: 467850,
+			requirementDescription: "STR enhancement IX",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.g.points.mul(1e20).add(1).pow(0.555)},
+			effectDescription() {return "multiply the base effect of STR based on growth points<br>and increase its maximum by 90<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " growth points"},
+			done() {return player.g.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("g", this.id - 1)},
+		},
 	},
 });
 
@@ -1352,7 +1437,11 @@ addLayer("e", {
 	baseAmount() {return player.g.points},
 	requires: new Decimal(300),
 	type: "static",
-	base: 1.5,
+	base() {
+		let base = 1.5;
+		if (hasMilestone("g", 50)) base -= milestoneEffect("g", 50);
+		return base;
+	},
 	exponent: 1,
 	gainMult() {
 		let mult = new Decimal(1);
@@ -1409,6 +1498,7 @@ addLayer("e", {
 			};
 			if (player.e.points.gte(19)) text += "<br><br>After you evolve twenty times, you keep all stimulation upgrades on row 3 resets.";
 			if (player.e.points.gte(25) && hasChallenge("e", 13)) text += "<br><br>After you evolve twenty-six times, the acclimation requirement is divided by 1.0915<br>and the base of the last evolution effect is multiplied by 10,000.";
+			if (player.e.points.gte(29)) text += "<br><br>After you evolve thirty times, more automation for growth will be unlocked.";
 			return text;
 		}],
 		"blank",
@@ -1521,6 +1611,7 @@ addLayer("a", {
 	gainMult() {
 		let mult = new Decimal(1);
 		if (hasMilestone("g", 48)) mult = mult.div(milestoneEffect("g", 48));
+		if (hasMilestone("g", 52)) mult = mult.div(milestoneEffect("g", 52));
 		if (player.e.points.gte(26)) mult = mult.div(1.0915);
 		mult = mult.div(buyableEffect("a", 13));
 		return mult;
@@ -1583,6 +1674,7 @@ addLayer("a", {
 		]],
 		"respec-button",
 		"blank",
+		"milestones",
 	],
 	layerShown() {return hasMilestone("g", 40) || player.a.unlocked},
 	hotkeys: [{
@@ -1606,8 +1698,7 @@ addLayer("a", {
 		let rate = new Decimal(player.a.populationTime).div(max.pow(0.5));
 		rate = rate.mul(buyableEffect("a", 12));
 		// calculate population
-		let pop = max.div(max.sub(1).mul(new Decimal(Math.E).pow(rate.neg())).add(1));
-		player.a.population = pop.add(0.1).floor();
+		player.a.population = max.div(max.sub(1).mul(new Decimal(Math.E).pow(rate.neg())).add(1)).round();
 	},
 	componentStyles: {
 		"buyable"() {return {'width': '210px', 'height': '110px'}},
@@ -1617,6 +1708,7 @@ addLayer("a", {
 			cost() {return getBuyableAmount(this.layer, this.id).add(1)},
 			effectBase() {
 				let base = new Decimal(10);
+				if (hasMilestone("a", 0)) base = base.mul(milestoneEffect("a", 0));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
@@ -1636,7 +1728,7 @@ addLayer("a", {
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
-			title: "(FIR)TILITY",
+			title: "(FER)TILITY",
 			display() {return "multiply population gain by " + format(this.effectBase()) + "<br><br>Effect: " + format(this.effect()) + "x<br><br>Cost: " + formatWhole(this.cost()) + " acclimation points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id)) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
 			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost())},
 			buy() {
@@ -1686,5 +1778,15 @@ addLayer("a", {
 			doReset("a", true, true);
 		},
 		respecText: "respec acclimation points",
+	},
+	milestones: {
+		0: {
+			requirement: 5,
+			requirementDescription: "CRA enhancement I",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.a.points.add(1).pow(0.25)},
+			effectDescription() {return "multiply the base effect of CRA based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " growth points"},
+			done() {return player.a.points.gte(this.requirement)},
+		},
 	},
 });
