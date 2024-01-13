@@ -13,7 +13,7 @@ const VERSION = {
 	name: "Acclimation",
 };
 
-const winText = `Congratulations! You have reached the end and beaten this game, but for now...`;
+const winText = "Congratulations!<br>You have reached the end and beaten this game (for now),<br>but there is more content coming soon...";
 
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
 var doNotCallTheseFunctionsEveryTick = [];
@@ -63,12 +63,12 @@ function addedPlayerData() { return {
 // Display extra things at the top of the page
 var displayThings = [
 	() => {return "(" + format(getPointPotential()) + " max power)"},
-	() => {return "<br>current endgame is 43 " + (player.e.unlocked ? "evolutions" : "???")},
+	() => {return "<br>current endgame is 60 " + (player.e.unlocked ? "evolutions" : "???")},
 ];
 
 // Determines when the game "ends"
 function isEndgame() {
-	return false;
+	return player.e.points.gte(60);
 };
 
 // Style for the background, can be a function
