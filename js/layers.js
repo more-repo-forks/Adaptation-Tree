@@ -517,7 +517,7 @@ addLayer("g", {
 	requires: new Decimal(100000000),
 	type: "static",
 	base() {
-		let base = 2;
+		let base = (inChallenge("e", 17) ? 10 : 2);
 		if (hasUpgrade("s", 84)) base -= upgradeEffect("s", 84);
 		if (hasMilestone("g", 18)) base -= milestoneEffect("g", 18);
 		if (hasMilestone("g", 25)) base -= milestoneEffect("g", 25);
@@ -528,6 +528,7 @@ addLayer("g", {
 		if (hasMilestone("g", 49)) base -= milestoneEffect("g", 49);
 		if (hasMilestone("g", 53)) base -= milestoneEffect("g", 53);
 		if (hasMilestone("g", 59)) base -= milestoneEffect("g", 59);
+		if (hasMilestone("g", 68)) base -= milestoneEffect("g", 68);
 		return base;
 	},
 	exponent: 1,
@@ -591,19 +592,19 @@ addLayer("g", {
 			getBuyableAmount("g", 14).toNumber() - reduction + 1,
 			getBuyableAmount("g", 12).toNumber() - reduction + 1,
 		]);
-		let statPoint0 = 50 - (stats[0] / max * 45 - 0.5);
-		let statPoint2 = 50 + (stats[2] / max * 45 - 0.5);
-		if (!getClickableState("g", 14)) statText += "<polyline points='" + statPoint0 + "," + statPoint0 + " " + (50 + (stats[1] / max * 45 - 0.5)) + "," + (50 - (stats[1] / max * 45 - 0.5)) + " " + statPoint2 + "," + statPoint2 + " " + (50 - (stats[3] / max * 45 - 0.5)) + "," + (50 + (stats[3] / max * 45 - 0.5)) + " " + statPoint0 + "," + statPoint0 + "' fill='#ffffff40' stroke='#ffffff' stroke-linejoin='round' stroke-linecap='round'/>";
+		let statPoint0 = 50 - Math.max(stats[0] / max * 45 - 0.5, 0);
+		let statPoint2 = 50 + Math.max(stats[2] / max * 45 - 0.5, 0);
+		if (!getClickableState("g", 14)) statText += "<polyline points='" + statPoint0 + "," + statPoint0 + " " + (50 + Math.max(stats[1] / max * 45 - 0.5, 0)) + "," + (50 - Math.max(stats[1] / max * 45 - 0.5, 0)) + " " + statPoint2 + "," + statPoint2 + " " + (50 - Math.max(stats[3] / max * 45 - 0.5, 0)) + "," + (50 + Math.max(stats[3] / max * 45 - 0.5, 0)) + " " + statPoint0 + "," + statPoint0 + "' fill='#ffffff40' stroke='#ffffff' stroke-linejoin='round' stroke-linecap='round'/>";
 		// extra stats
 		if (!getClickableState("g", 13)) {
 			stats[0] += tmp.g.buyables[11].extra.toNumber();
 			stats[1] += tmp.g.buyables[13].extra.toNumber();
 			stats[2] += tmp.g.buyables[14].extra.toNumber();
 			stats[3] += tmp.g.buyables[12].extra.toNumber();
-			statPoint0 = 50 - (stats[0] / max * 45 - 0.5);
-			statPoint2 = 50 + (stats[2] / max * 45 - 0.5);
+			statPoint0 = 50 - Math.max(stats[0] / max * 45 - 0.5, 0);
+			statPoint2 = 50 + Math.max(stats[2] / max * 45 - 0.5, 0);
 		};
-		statText += "<polyline points='" + statPoint0 + "," + statPoint0 + " " + (50 + (stats[1] / max * 45 - 0.5)) + "," + (50 - (stats[1] / max * 45 - 0.5)) + " " + statPoint2 + "," + statPoint2 + " " + (50 - (stats[3] / max * 45 - 0.5)) + "," + (50 + (stats[3] / max * 45 - 0.5)) + " " + statPoint0 + "," + statPoint0 + "' fill='#ffffff40' stroke='#ffffff' stroke-linejoin='round' stroke-linecap='round'/>";
+		statText += "<polyline points='" + statPoint0 + "," + statPoint0 + " " + (50 + Math.max(stats[1] / max * 45 - 0.5, 0)) + "," + (50 - Math.max(stats[1] / max * 45 - 0.5, 0)) + " " + statPoint2 + "," + statPoint2 + " " + (50 - Math.max(stats[3] / max * 45 - 0.5, 0)) + "," + (50 + Math.max(stats[3] / max * 45 - 0.5, 0)) + " " + statPoint0 + "," + statPoint0 + "' fill='#ffffff40' stroke='#ffffff' stroke-linejoin='round' stroke-linecap='round'/>";
 		// buyable columns
 		let cols = [];
 		cols[1] = [
@@ -693,6 +694,7 @@ addLayer("g", {
 				if (hasMilestone("g", 43)) base = base.mul(milestoneEffect("g", 43));
 				if (hasMilestone("g", 54)) base = base.mul(milestoneEffect("g", 54));
 				if (hasMilestone("g", 61)) base = base.mul(milestoneEffect("g", 61));
+				if (hasMilestone("g", 66)) base = base.mul(milestoneEffect("g", 66));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
@@ -880,7 +882,8 @@ addLayer("g", {
 				let extra = new Decimal(0);
 				if (hasMilestone("g", 35)) extra = extra.add(milestoneEffect("g", 35));
 				if (hasMilestone("g", 41)) extra = extra.add(milestoneEffect("g", 41));
-				if (hasMilestone("g", 63)) extra = extra.add(milestoneEffect("g", 63));
+				if (hasMilestone("g", 63)) extra = extra.add(milestoneEffect("g", 63).min(5000));
+				if (hasMilestone("g", 69)) extra = extra.add(milestoneEffect("g", 69));
 				if (tmp.e.effect[3]) extra = extra.add(tmp.e.effect[3]);
 				if (tmp.a.effect[2]) extra = extra.add(tmp.a.effect[2]);
 				return extra;
@@ -912,6 +915,7 @@ addLayer("g", {
 			display() {return "<h2>-50</h2>"},
 			canClick() {return getClickableState("g", 11) > 0 && !getClickableState("g", 14)},
 			onClick() {setClickableState("g", 11, (+getClickableState("g", 11)) - 1)},
+			onHold() {setClickableState("g", 11, (+getClickableState("g", 11)) - 1)},
 			style: {"width": "45px", "border-radius": "10px 0 0 10px"},
 		},
 		12: {
@@ -921,6 +925,7 @@ addLayer("g", {
 				return getBuyableAmount("g", 11).gte(amt) && getBuyableAmount("g", 12).gte(amt) && getBuyableAmount("g", 13).gte(amt) && getBuyableAmount("g", 14).gte(amt) && !getClickableState("g", 14);
 			},
 			onClick() {setClickableState("g", 11, (+getClickableState("g", 11)) + 1)},
+			onHold() {setClickableState("g", 11, (+getClickableState("g", 11)) + 1)},
 			style: {"width": "45px", "border-radius": "0 10px 10px 0"},
 		},
 		13: {
@@ -1541,7 +1546,7 @@ addLayer("g", {
 			requirementDescription: "INT enhancement X",
 			popupTitle: "Enhancement Acquired!",
 			effect() {return getBuyableAmount("g", 14).add(tmp.g.buyables[14].extra).sub(248).div(2).floor()},
-			effectDescription() {return "every 2 INT past 248 gives 1 extra STR, WIS, and INT<br>and increase the maximum of INT by 800<br>Req: " + formatWhole(this.requirement) + " growth points"},
+			effectDescription() {return "every 2 INT past 248 gives 1 extra STR, WIS, and INT<br>and increase the maximum of INT by 800<br>(extra INT levels from this enhancement max at 5,000)<br>Req: " + formatWhole(this.requirement) + " growth points"},
 			done() {return player.g.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("g", this.id - 1) || player.sp.unlocked},
 		},
@@ -1562,6 +1567,42 @@ addLayer("g", {
 			effectDescription() {return "multiply the base effect of AGI by 1e7000<br>Req: " + formatWhole(this.requirement) + " growth points"},
 			done() {return player.g.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("g", this.id - 1)},
+		},
+		66: {
+			requirement: 325223444,
+			requirementDescription: "STR enhancement XI",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.g.points.mul(1e10).add(1).pow(39.3393)},
+			effectDescription() {return "multiply the base effect of STR based on growth points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " growth points"},
+			done() {return player.g.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("g", this.id - 1)},
+		},
+		67: {
+			requirement: 471368666,
+			requirementDescription: "Acclimation enhancement IV",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.142295},
+			effectDescription() {return "decrease base acclimation requirement by 0.142295<br>Req: " + formatWhole(this.requirement) + " growth points"},
+			done() {return player.g.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("g", this.id - 1)},
+		},
+		68: {
+			requirement: 500472500,
+			requirementDescription: "Growth enhancement XI",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.09912925},
+			effectDescription() {return "decrease base growth requirement by 0.09912925<br>Req: " + formatWhole(this.requirement) + " growth points"},
+			done() {return player.g.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("g", this.id - 1)},
+		},
+		69: {
+			requirement: 1450790500,
+			requirementDescription: "INT enhancement XI",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.g.points.add(1).pow(0.40495).sub(1).floor()},
+			effectDescription() {return "increase extra INT levels based on growth points<br>Effect: +" + formatWhole(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " growth points"},
+			done() {return player.g.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("g", this.id - 1) || player.sp.unlocked},
 		},
 	},
 });
@@ -1603,6 +1644,7 @@ addLayer("e", {
 		if (hasMilestone("g", 39)) mult = mult.div(milestoneEffect("g", 39));
 		if (hasMilestone("g", 45)) mult = mult.div(milestoneEffect("g", 45));
 		if (hasMilestone("g", 47)) mult = mult.div(milestoneEffect("g", 47));
+		if (hasChallenge("e", 17)) mult = mult.div(challengeEffect("e", 17));
 		if (tmp.a.effect[1]) mult = mult.div(tmp.a.effect[1]);
 		if (tmp.sp.effect[0]) mult = mult.div(tmp.sp.effect[0]);
 		return mult;
@@ -1614,6 +1656,12 @@ addLayer("e", {
 		if (player.e.points.gte(26)) mult[5] = mult[5].mul(10000);
 		if (player.e.points.gte(36)) mult[5] = mult[5].mul("1e1541");
 		if (player.e.points.gte(68)) mult[5] = mult[5].mul("1e19550");
+		if (player.e.points.gte(83)) {
+			mult[0] = mult[0].mul(1.5);
+			mult[1] = mult[1].mul(1.5);
+			mult[2] = mult[2].mul(1.5);
+			mult[3] = mult[3].mul(1.5);
+		};
 		if (hasChallenge("e", 12)) mult[3] = mult[3].mul(4);
 		if (hasChallenge("e", 13)) mult[2] = mult[2].mul(2);
 		if (hasChallenge("e", 14)) mult[1] = mult[1].mul(1.6);
@@ -1626,6 +1674,10 @@ addLayer("e", {
 			mult[1] = mult[1].mul(1.25);
 			mult[2] = mult[2].mul(1.25);
 			mult[3] = mult[3].mul(1.25);
+		};
+		if (hasChallenge("e", 17)) {
+			mult[0] = mult[0].mul(1.25);
+			mult[1] = mult[1].mul(1.25);
 		};
 		if (tmp.sp.effect[1]) {
 			mult[0] = mult[0].mul(tmp.sp.effect[1]);
@@ -1675,7 +1727,8 @@ addLayer("e", {
 				},
 				20: "You keep all stimulation upgrades on row 3 resets.",
 				26() {
-					if (player.e.points.gte(36)) return "The acclimation requirement is divided by 1.0915.";
+					if (player.e.points.gte(83)) return;
+					else if (player.e.points.gte(36)) return "The acclimation requirement is divided by 1.0915.";
 					else return "The acclimation requirement is divided by 1.0915.<br>The base of the last evolution effect is multiplied by 10,000.";
 				},
 				30() {
@@ -1694,6 +1747,10 @@ addLayer("e", {
 				68() {
 					if (player.e.points.gte(68)) return "The base of the last evolution effect is multiplied by 1e21,095.";
 					else return "The base of the last evolution effect is multiplied by 1e19,550.";
+				},
+				83() {
+					if (player.e.points.gte(83)) return "The acclimation requirement is divided by 2.905081825.<br>The extra STR, WIS, AGI, and INT from evolutions is multiplied by 1.5.";
+					else return "The acclimation requirement is divided by 2.66155.<br>The extra STR, WIS, AGI, and INT from evolutions is multiplied by 1.5.";
 				},
 			};
 			let text = "";
@@ -1745,70 +1802,94 @@ addLayer("e", {
 			fullDisplay() {return "Entering this retrogression does an evolution reset.<br>While in this retrogression, you cannot buy INT.<br><br>Goal: " + formatWhole(this.goal) + " growth points<br><br>Rewards: You always have all stimulation upgrades unlocked, you keep the first fifteen stimulation upgrades on growth resets, and the effects of <b>Growth enhancement I</b>, <b>Evolution enhancement III</b>, and INT are changed."},
 			goal: 290,
 			canComplete() {return player.g.points.gte(this.goal)},
-			unlocked() {return player.e.challengesUnlocked || player.sp.unlocked},
+			unlocked() {return player.e.challengesUnlocked || hasChallenge("e", this.id)},
 			doReset: true,
 		},
 		12: {
 			name: "2nd Retrogression",
 			fullDisplay() {
-				if (player.e.points.gte(this.unlockReq) || player.sp.unlocked) return "Entering this retrogression does an evolution reset.<br>While in this retrogression, you cannot buy STR, WIS, or AGI.<br><br>Goal: " + formatWhole(this.goal) + " growth points<br><br>Rewards: The costs of STR, WIS, AGI, and INT are reduced by one level, the extra INT from evolutions is multiplied by 4, and you keep the first sixteen growth enhancements on evolve resets.";
+				if (player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)) return "Entering this retrogression does an evolution reset.<br>While in this retrogression, you cannot buy STR, WIS, or AGI.<br><br>Goal: " + formatWhole(this.goal) + " growth points<br><br>Rewards: The costs of STR, WIS, AGI, and INT are reduced by one level, the extra INT from evolutions is multiplied by 4, and you keep the first sixteen growth enhancements on evolve resets.";
 				return "You need " + formatWhole(this.unlockReq) + " evolutions to unlock this retrogression.";
 			},
 			goal: 215,
 			canComplete() {return player.g.points.gte(this.goal)},
-			unlocked() {return hasChallenge("e", this.id - 1)},
+			unlocked() {return hasChallenge("e", this.id - 1) || hasChallenge("e", this.id)},
 			unlockReq: 8,
-			enterable() {return player.e.points.gte(this.unlockReq) || player.sp.unlocked},
+			enterable() {return player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)},
 			doReset: true,
 		},
 		13: {
 			name: "3rd Retrogression",
 			fullDisplay() {
-				if (player.e.points.gte(this.unlockReq) || player.sp.unlocked) return "Entering this retrogression does an evolution reset.<br>While in this retrogression, you cannot buy stimulation upgrades.<br><br>Goal: " + formatWhole(this.goal) + " growth points<br><br>Rewards: The extra AGI from evolutions is multiplied by 2, unlock 5 more stimulation upgrades, and unlock a new evolution effect";
+				if (player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)) return "Entering this retrogression does an evolution reset.<br>While in this retrogression, you cannot buy stimulation upgrades.<br><br>Goal: " + formatWhole(this.goal) + " growth points<br><br>Rewards: The extra AGI from evolutions is multiplied by 2, unlock 5 more stimulation upgrades, and unlock a new evolution effect";
 				return "You need " + formatWhole(this.unlockReq) + " evolutions to unlock this retrogression.";
 			},
 			goal: 345,
 			canComplete() {return player.g.points.gte(this.goal)},
-			unlocked() {return hasChallenge("e", this.id - 1)},
+			unlocked() {return hasChallenge("e", this.id - 1) || hasChallenge("e", this.id)},
 			unlockReq: 11,
-			enterable() {return player.e.points.gte(this.unlockReq) || player.sp.unlocked},
+			enterable() {return player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)},
 			doReset: true,
 		},
 		14: {
 			name: "4th Retrogression",
 			fullDisplay() {
-				if (player.e.points.gte(this.unlockReq) || player.sp.unlocked) return "Entering this retrogression does an evolution reset.<br>While in this retrogression, your power gain will not increase.<br><br>Goal: " + formatWhole(this.goal) + " growth points<br><br>Rewards: The extra WIS from evolutions is multiplied by 1.6 and if STR, WIS, AGI, and INT are all level 100 not counting extra levels, the maximum levels of STR, WIS, AGI, and INT will increase by 60 but their costs will increase much faster";
+				if (player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)) return "Entering this retrogression does an evolution reset.<br>While in this retrogression, your power gain will not increase.<br><br>Goal: " + formatWhole(this.goal) + " growth points<br><br>Rewards: The extra WIS from evolutions is multiplied by 1.6 and if STR, WIS, AGI, and INT are all level 100 not counting extra levels, the maximum levels of STR, WIS, AGI, and INT will increase by 60 but their costs will increase much faster";
 				return "You need " + formatWhole(this.unlockReq) + " evolutions to unlock this retrogression.";
 			},
 			goal: 650,
 			canComplete() {return player.g.points.gte(this.goal)},
-			unlocked() {return hasChallenge("e", this.id - 1)},
+			unlocked() {return hasChallenge("e", this.id - 1) || hasChallenge("e", this.id)},
 			unlockReq: 14,
-			enterable() {return player.e.points.gte(this.unlockReq) || player.sp.unlocked},
+			enterable() {return player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)},
 			doReset: true,
 		},
 		15: {
 			name: "5th Retrogression",
 			fullDisplay() {
-				if (player.e.points.gte(this.unlockReq) || player.sp.unlocked) return "Entering this retrogression does an evolution reset.<br>While in this retrogression, all previous in retrogression effects are applied, but growth enhancements past 16 multiply power by 1e10 after that.<br><br>Goal: " + formatWhole(this.goal) + " growth points<br><br>Rewards: The base of the last evolution effect is multiplied by 10,000 and the extra STR from evolutions is multiplied by 1.6";
+				if (player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)) return "Entering this retrogression does an evolution reset.<br>While in this retrogression, all previous in retrogression effects are applied, but growth enhancements past 16 multiply power by 1e10 after that.<br><br>Goal: " + formatWhole(this.goal) + " growth points<br><br>Rewards: The base of the last evolution effect is multiplied by 10,000 and the extra STR from evolutions is multiplied by 1.6";
 				return "You need " + formatWhole(this.unlockReq) + " evolutions to unlock this retrogression.";
 			},
 			goal: 660,
 			canComplete() {return player.g.points.gte(this.goal)},
-			unlocked() {return hasChallenge("e", this.id - 1)},
+			unlocked() {return hasChallenge("e", this.id - 1) || hasChallenge("e", this.id)},
 			unlockReq: 18,
-			enterable() {return player.e.points.gte(this.unlockReq) || player.sp.unlocked},
+			enterable() {return player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)},
 			doReset: true,
 			countsAs: [11, 12, 13, 14],
 		},
 		16: {
 			name: "6th Retrogression",
-			fullDisplay() {return "Entering this retrogression does an evolution reset.<br>While in this retrogression, you cannot buy STR, WIS, AGI, or INT.<br><br>Goal: " + formatWhole(this.goal) + " growth points<br><br>Rewards: Decrease the base evolution requirement by 0.052545, the extra STR, WIS, AGI, and INT from evolutions is multiplied by 1.25, and divide acclimation requirement based on evolutions (currently /" + format(this.rewardEffect()) + ")"},
+			fullDisplay() {return "Entering this retrogression does an evolution reset.<br>While in this retrogression, you cannot buy STR, WIS, AGI, or INT.<br><br>Goal: " + formatWhole(this.goal) + " growth points<br><br>Rewards: The base evolution requirement is decreased by 0.052545, the extra STR, WIS, AGI, and INT from evolutions is multiplied by 1.25, and acclimation requirement is divided based on evolutions (currently /" + format(this.rewardEffect()) + ")"},
 			rewardEffect() {return player.e.points.add(1).pow(0.439)},
 			goal: 106907666,
 			canComplete() {return player.g.points.gte(this.goal)},
-			unlocked() {return hasMilestone("a", 12)},
-			enterable() {return player.e.points.gte(this.unlockReq) || player.sp.unlocked},
+			unlocked() {return hasMilestone("a", 12) || hasChallenge("e", this.id)},
+			enterable() {return player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)},
+			doReset: true,
+		},
+		17: {
+			name: "7th Retrogression",
+			fullDisplay() {
+				if (player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)) return "Entering this retrogression does an evolution reset.<br>While in this retrogression, the original growth requirement base is set to 10.<br><br>Goal: " + formatWhole(this.goal) + " growth points<br><br>Rewards: The extra STR and WIS from evolutions is multiplied by 1.25 and evolution and acclimation requirements are divided based on retrogressions completed (currently /" + format(this.rewardEffect()) + ")";
+				return "You need " + formatWhole(this.unlockReq) + " evolutions to unlock this retrogression.";
+			},
+			rewardEffect() {
+				let retrogressions = 0;
+				for (const id in player.e.challenges) {
+					if (Object.hasOwnProperty.call(player.e.challenges, id)) {
+						if (player.e.challenges[id]) retrogressions++;
+					};
+				};
+				let base = new Decimal(1.1);
+				if (hasMilestone("a", 16)) base = base.add(milestoneEffect("a", 16));
+				return base.pow(retrogressions);
+			},
+			goal: 53356750,
+			canComplete() {return player.g.points.gte(this.goal)},
+			unlocked() {return hasChallenge("e", this.id - 1) || hasChallenge("e", this.id)},
+			unlockReq: 95,
+			enterable() {return player.e.points.gte(this.unlockReq)},
 			doReset: true,
 		},
 	},
@@ -1834,7 +1915,11 @@ addLayer("a", {
 	baseAmount() {return player.g.points},
 	requires: new Decimal(64000),
 	type: "static",
-	base: 2,
+	base() {
+		let base = 2;
+		if (hasMilestone("g", 67)) base -= milestoneEffect("g", 67);
+		return base;
+	},
 	exponent: 1,
 	gainMult() {
 		let mult = new Decimal(1);
@@ -1842,7 +1927,9 @@ addLayer("a", {
 		if (hasMilestone("g", 52)) mult = mult.div(milestoneEffect("g", 52));
 		if (hasMilestone("g", 60)) mult = mult.div(milestoneEffect("g", 60));
 		if (player.e.points.gte(26)) mult = mult.div(1.0915);
+		if (player.e.points.gte(83)) mult = mult.div(2.66155);
 		if (hasChallenge("e", 16)) mult = mult.div(challengeEffect("e", 16));
+		if (hasChallenge("e", 17)) mult = mult.div(challengeEffect("e", 17));
 		if (player.a.unlocked) mult = mult.div(buyableEffect("a", 13));
 		return mult;
 	},
@@ -1852,6 +1939,7 @@ addLayer("a", {
 		let mult = [1, 1, 1];
 		if (hasMilestone("a", 3)) mult[2] *= milestoneEffect("a", 3);
 		if (hasMilestone("a", 11)) mult[1] *= milestoneEffect("a", 11);
+		if (hasMilestone("a", 17)) mult[2] *= milestoneEffect("a", 17);
 		let eff = [
 			(hasMilestone("a", 6) ? amt.add(1).pow(amt.log10().add(1).pow(0.125).mul(200000)) : new Decimal(10).pow(amt.sub(1)).sub(1).mul(1e100).add(1)),
 			amt.pow(0.1).mul(mult[1]),
@@ -1968,6 +2056,7 @@ addLayer("a", {
 			cost() {return getBuyableAmount(this.layer, this.id).add(1)},
 			effectBase() {
 				let base = new Decimal(5);
+				if (hasMilestone("a", 15)) base = base.mul(milestoneEffect("a", 15));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
@@ -2009,6 +2098,7 @@ addLayer("a", {
 			effectBase() {
 				let base = new Decimal(3);
 				if (hasMilestone("a", 2)) base = base.mul(milestoneEffect("a", 2));
+				if (hasMilestone("a", 14)) base = base.mul(milestoneEffect("a", 14));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
@@ -2146,7 +2236,12 @@ addLayer("a", {
 			requirement: 20,
 			requirementDescription: "Retrogression enhancement I",
 			popupTitle: "Enhancement Acquired!",
-			effectDescription() {return "unlock the 6th retrogression<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			effectDescription() {
+				let text = "unlock the 6th retrogression";
+				if (hasMilestone("a", this.id) || hasChallenge("e", 16)) text += " (already unlocked)";
+				text += "<br>Req: " + formatWhole(this.requirement) + " acclimation points";
+				return text;
+			},
 			done() {return player.a.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("a", this.id - 1)},
 		},
@@ -2156,6 +2251,42 @@ addLayer("a", {
 			popupTitle: "Enhancement Acquired!",
 			effect() {return player.a.points.add(1).pow(0.25)},
 			effectDescription() {return "multiply the base effect of CRA based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		14: {
+			requirement: 26,
+			requirementDescription: "SOV enhancement III",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.a.points.mul(10).add(1).pow(0.2525)},
+			effectDescription() {return "multiply the base effect of SOV based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		15: {
+			requirement: 28,
+			requirementDescription: "FER enhancement III",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.a.points.add(1).pow(0.32)},
+			effectDescription() {return "multiply the base effect of FER based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		16: {
+			requirement: 32,
+			requirementDescription: "Retrogression enhancement II",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.a.points.add(1).pow(0.036).sub(1)},
+			effectDescription() {return "increase the base of the 7th retrogression's<br>last effect based on acclimation points<br>Effect: +" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		17: {
+			requirement: 34,
+			requirementDescription: "Population enhancement IV",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.a.points.add(1).pow(0.66)},
+			effectDescription() {return "multiply the last population effect based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("a", this.id - 1)},
 		},
@@ -2185,11 +2316,11 @@ addLayer("sp", {
 		return mult;
 	},
 	effect() {return [
-		new Decimal(2).pow(player.sp.points),
+		player.sp.points.pow(0.5).div(2).add(1.5).pow(player.sp.points),
 		player.sp.points.add(1),
 		player.sp.points.mul(5).add(1).pow(0.2),
 	]},
-	effectDescription() {return "which are dividing the evolution requirement by /" + format(tmp.sp.effect[0]) + ", multiplying the first four evolution effects by " + format(tmp.sp.effect[1]) + "x, and exponentiating evolution amount in the last evolution effect by ^" + format(tmp.sp.effect[2])},
+	effectDescription() {return "which are dividing the evolution requirement by /" + format(tmp.sp.effect[0]) + ", multiplying the extra STR, WIS, AGI, and INT from evolutions by " + format(tmp.sp.effect[1]) + "x, and exponentiating evolution amount in the last evolution effect by ^" + format(tmp.sp.effect[2])},
 	tabFormat: [
 		"main-display",
 		"prestige-button",

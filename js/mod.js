@@ -63,12 +63,12 @@ function addedPlayerData() { return {
 // Display extra things at the top of the page
 var displayThings = [
 	() => {return "(" + format(getPointPotential()) + " max power)"},
-	() => {return "<br>current endgame is 82 " + (player.e.unlocked ? "evolutions" : "???")},
+	() => {return "<br>current endgame is 105 " + (player.e.unlocked ? "evolutions" : "???")},
 ];
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.e.points.gte(82);
+	return player.e.points.gte(105);
 };
 
 // Style for the background, can be a function
