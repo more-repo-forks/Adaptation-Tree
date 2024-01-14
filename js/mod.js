@@ -9,8 +9,8 @@ const modInfo = {
 }
 
 const VERSION = {
-	num: "1.3",
-	name: "Acclimation",
+	num: "1.4",
+	name: "Speciation",
 };
 
 const winText = "Congratulations!<br>You have reached the end and beaten this game (for now),<br>but there is more content coming soon...";
@@ -46,7 +46,7 @@ function getPointPotential() {
 	if (hasUpgrade("s", 45)) gain = gain.mul(upgradeEffect("s", 45));
 	if (hasUpgrade("s", 65)) gain = gain.mul(upgradeEffect("s", 65));
 	if (hasUpgrade("s", 81)) gain = gain.mul(upgradeEffect("s", 81));
-	gain = gain.mul(buyableEffect("g", 11));
+	if (player.g.unlocked) gain = gain.mul(buyableEffect("g", 11));
 	// end
 	return gain;
 };
@@ -63,12 +63,12 @@ function addedPlayerData() { return {
 // Display extra things at the top of the page
 var displayThings = [
 	() => {return "(" + format(getPointPotential()) + " max power)"},
-	() => {return "<br>current endgame is 60 " + (player.e.unlocked ? "evolutions" : "???")},
+	() => {return "<br>current endgame is 82 " + (player.e.unlocked ? "evolutions" : "???")},
 ];
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.e.points.gte(60);
+	return player.e.points.gte(82);
 };
 
 // Style for the background, can be a function
