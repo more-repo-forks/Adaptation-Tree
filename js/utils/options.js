@@ -9,6 +9,7 @@ function getStartOptions() { return {
 	hideChallenges: false,
 	forceOneTab: false,
 	tooltipForcing: true,
+	showOOMs: true,
 	extendplaces: false,
 }};
 

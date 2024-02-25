@@ -530,6 +530,7 @@ addLayer("g", {
 		if (hasMilestone("g", 53)) base -= milestoneEffect("g", 53);
 		if (hasMilestone("g", 59)) base -= milestoneEffect("g", 59);
 		if (hasMilestone("g", 68)) base -= milestoneEffect("g", 68);
+		if (hasMilestone("g", 74)) base -= milestoneEffect("g", 74);
 		if (hasChallenge("e", 18)) base -= 0.01;
 		return base;
 	},
@@ -1570,7 +1571,7 @@ addLayer("g", {
 			effect() {return new Decimal("1e7000")},
 			effectDescription() {return "multiply the base effect of AGI by 1e7000<br>Req: " + formatWhole(this.requirement) + " growth points"},
 			done() {return player.g.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("g", this.id - 1) && player.sp.unlocked},
+			unlocked() {return hasMilestone("g", this.id - 1)},
 		},
 		66: {
 			requirement: 325223444,
@@ -1579,7 +1580,7 @@ addLayer("g", {
 			effect() {return player.g.points.mul(1e10).add(1).pow(39.3393)},
 			effectDescription() {return "multiply the base effect of STR based on growth points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " growth points"},
 			done() {return player.g.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("g", this.id - 1) && player.sp.unlocked},
+			unlocked() {return hasMilestone("g", this.id - 1)},
 		},
 		67: {
 			requirement: 471368666,
@@ -1588,7 +1589,7 @@ addLayer("g", {
 			effect() {return 0.142295},
 			effectDescription() {return "decrease base acclimation requirement by 0.142295<br>Req: " + formatWhole(this.requirement) + " growth points"},
 			done() {return player.g.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("g", this.id - 1) && player.sp.unlocked},
+			unlocked() {return hasMilestone("g", this.id - 1)},
 		},
 		68: {
 			requirement: 500472500,
@@ -1597,7 +1598,7 @@ addLayer("g", {
 			effect() {return 0.09912925},
 			effectDescription() {return "decrease base growth requirement by 0.09912925<br>Req: " + formatWhole(this.requirement) + " growth points"},
 			done() {return player.g.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("g", this.id - 1) && player.sp.unlocked},
+			unlocked() {return hasMilestone("g", this.id - 1)},
 		},
 		69: {
 			requirement: 1450790500,
@@ -1606,7 +1607,7 @@ addLayer("g", {
 			effect() {return player.g.points.add(1).pow(0.40495).sub(1).floor()},
 			effectDescription() {return "increase extra INT levels based on growth points<br>Effect: +" + formatWhole(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " growth points"},
 			done() {return player.g.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("g", this.id - 1) && player.sp.unlocked},
+			unlocked() {return hasMilestone("g", this.id - 1)},
 		},
 		70: {
 			requirement: 2865557000,
@@ -1615,7 +1616,7 @@ addLayer("g", {
 			effect() {return 0.0273939},
 			effectDescription() {return "decrease base evolution requirement by 0.0273939<br>Req: " + formatWhole(this.requirement) + " growth points"},
 			done() {return player.g.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("g", this.id - 1) && player.sp.unlocked},
+			unlocked() {return hasMilestone("g", this.id - 1)},
 		},
 		71: {
 			requirement: 3632610555,
@@ -1624,7 +1625,34 @@ addLayer("g", {
 			effect() {return player.g.points.mul(1.495575e10).add(1).pow(32)},
 			effectDescription() {return "multiply the base effect of WIS based on growth points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " growth points"},
 			done() {return player.g.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("g", this.id - 1) && player.sp.unlocked},
+			unlocked() {return hasMilestone("g", this.id - 1)},
+		},
+		72: {
+			requirement: 10812520000,
+			requirementDescription: "Acclimation enhancement V",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.042},
+			effectDescription() {return "decrease base acclimation requirement by 0.042<br>Req: " + formatWhole(this.requirement) + " growth points"},
+			done() {return player.g.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("g", this.id - 1)},
+		},
+		73: {
+			requirement: 38377554000,
+			requirementDescription: "Evolution enhancement XII",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.01022},
+			effectDescription() {return "decrease base evolution requirement by 0.01022<br>Req: " + formatWhole(this.requirement) + " growth points"},
+			done() {return player.g.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("g", this.id - 1)},
+		},
+		74: {
+			requirement: 59805129250,
+			requirementDescription: "Growth enhancement XII",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.126},
+			effectDescription() {return "decrease base growth requirement by 0.126<br>Req: " + formatWhole(this.requirement) + " growth points"},
+			done() {return player.g.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("g", this.id - 1)},
 		},
 	},
 });
@@ -1652,6 +1680,7 @@ addLayer("e", {
 		if (hasMilestone("g", 55)) base -= milestoneEffect("g", 55);
 		if (hasMilestone("g", 64)) base -= milestoneEffect("g", 64);
 		if (hasMilestone("g", 70)) base -= milestoneEffect("g", 70);
+		if (hasMilestone("g", 73)) base -= milestoneEffect("g", 73);
 		if (hasChallenge("e", 16)) base -= 0.052545;
 		if (hasChallenge("e", 18)) base -= 0.02;
 		return base;
@@ -1669,6 +1698,7 @@ addLayer("e", {
 		if (hasMilestone("g", 45)) mult = mult.div(milestoneEffect("g", 45));
 		if (hasMilestone("g", 47)) mult = mult.div(milestoneEffect("g", 47));
 		if (hasChallenge("e", 17)) mult = mult.div(challengeEffect("e", 17));
+		if (hasChallenge("e", 19)) mult = mult.div(challengeEffect("e", 19));
 		if (tmp.a.effect[1]) mult = mult.div(tmp.a.effect[1]);
 		if (tmp.sp.effect[0]) mult = mult.div(tmp.sp.effect[0]);
 		return mult;
@@ -1691,6 +1721,11 @@ addLayer("e", {
 		if (player.e.points.gte(120)) {
 			mult[0] = mult[0].mul(4);
 			mult[1] = mult[1].mul(4);
+		};
+		if (player.e.points.gte(142)) mult[5] = mult[5].mul("1e56000");
+		if (player.e.points.gte(180)) {
+			mult[2] = mult[2].mul(4);
+			mult[3] = mult[3].mul(40);
 		};
 		// challenge completions
 		if (hasChallenge("e", 12)) mult[3] = mult[3].mul(4);
@@ -1778,22 +1813,38 @@ addLayer("e", {
 					else return "A new layer is unlocked.";
 				},
 				68() {
-					if (player.e.points.gte(68)) return "The base of the last evolution effect is multiplied by 1e21,095.";
+					if (player.e.points.gte(142)) return;
+					else if (player.e.points.gte(68)) return "The base of the last evolution effect is multiplied by 1e21,095.";
 					else return "The base of the last evolution effect is multiplied by 1e19,550.";
 				},
 				83() {
-					if (player.e.points.gte(120)) return "The acclimation requirement is divided by 2.905081825.<br>The extra INT from evolutions is multiplied by 1.5.";
+					if (player.e.points.gte(180)) return;
+					else if (player.e.points.gte(155)) return "The extra INT from evolutions is multiplied by 1.5.";
+					else if (player.e.points.gte(120)) return "The acclimation requirement is divided by 2.905081825.<br>The extra INT from evolutions is multiplied by 1.5.";
 					else if (player.e.points.gte(105)) return "The acclimation requirement is divided by 2.905081825.<br>The extra STR, WIS, and INT from evolutions is multiplied by 1.5.";
 					else if (player.e.points.gte(83)) return "The acclimation requirement is divided by 2.905081825.<br>The extra STR, WIS, AGI, and INT from evolutions is multiplied by 1.5.";
 					else return "The acclimation requirement is divided by 2.66155.<br>The extra STR, WIS, AGI, and INT from evolutions is multiplied by 1.5.";
 				},
 				105() {
-					if (player.e.points.gte(105)) return "The extra AGI from evolutions is multiplied by 9.";
+					if (player.e.points.gte(180)) return;
+					else if (player.e.points.gte(105)) return "The extra AGI from evolutions is multiplied by 9.";
 					else return "The extra AGI from evolutions is multiplied by 6.";
 				},
 				120() {
 					if (player.e.points.gte(120)) return "The extra STR and WIS from evolutions is multiplied by 6.";
 					else return "The extra STR and WIS from evolutions is multiplied by 4.";
+				},
+				142() {
+					if (player.e.points.gte(142)) return "The base of the last evolution effect is multiplied by 1e77,095.";
+					else return "The base of the last evolution effect is multiplied by 1e56,000.";
+				},
+				155() {
+					if (player.e.points.gte(155)) return "The acclimation requirement is divided by 11.6203273.";
+					else return "The acclimation requirement is divided by 4.";
+				},
+				180() {
+					if (player.e.points.gte(180)) return "The extra AGI from evolutions is multiplied by 36.<br>The extra INT from evolutions is multiplied by 60.";
+					else return "The extra AGI from evolutions is multiplied by 4<br>The extra INT from evolutions is multiplied by 40.";
 				},
 			};
 			let text = "";
@@ -1952,7 +2003,9 @@ addLayer("e", {
 						if (player.e.challenges[id]) retrogressions++;
 					};
 				};
-				return new Decimal(retrogressions).add(1).pow(0.25);
+				let exp = new Decimal(0.25);
+				if (hasMilestone("a", 21)) exp = exp.add(milestoneEffect("a", 21));
+				return new Decimal(retrogressions).add(1).pow(exp);
 			},
 			goal: 6947077,
 			canComplete() {return player.g.points.gte(this.goal)},
@@ -1960,6 +2013,25 @@ addLayer("e", {
 			unlockReq: 124,
 			enterable() {return player.e.points.gte(this.unlockReq)},
 			doReset: true,
+		},
+		19: {
+			name: "9th Retrogression",
+			fullDisplay() {
+				if (player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)) return "Entering this retrogression does an evolution reset.<br>While in this retrogression, all previous in retrogression effects are applied.<br><br>Goal: " + formatWhole(this.goal) + " growth points<br><br>Rewards: Power gain is exponentiated by 1.02, the first population effect's exponent is multiplied by 100, and evolution requirement is divided based on evolutions (currently /" + format(this.rewardEffect()) + ")";
+				return "You need " + formatWhole(this.unlockReq) + " evolutions to unlock this retrogression.";
+			},
+			rewardEffect() {
+				let exp = new Decimal(0.026);
+				if (hasMilestone("a", 23)) exp = exp.add(milestoneEffect("a", 23));
+				return player.e.points.mul(player.sp.points).add(1).pow(exp);
+			},
+			goal: 65556,
+			canComplete() {return player.g.points.gte(this.goal)},
+			unlocked() {return hasChallenge("e", this.id - 1) || hasChallenge("e", this.id)},
+			unlockReq: 148,
+			enterable() {return player.e.points.gte(this.unlockReq)},
+			doReset: true,
+			countsAs: [11, 12, 13, 14, 15, 16, 17, 18],
 		},
 	},
 });
@@ -1987,6 +2059,7 @@ addLayer("a", {
 	base() {
 		let base = 2;
 		if (hasMilestone("g", 67)) base -= milestoneEffect("g", 67);
+		if (hasMilestone("g", 72)) base -= milestoneEffect("g", 72);
 		return base;
 	},
 	exponent: 1,
@@ -1997,6 +2070,7 @@ addLayer("a", {
 		if (hasMilestone("g", 60)) mult = mult.div(milestoneEffect("g", 60));
 		if (player.e.points.gte(26)) mult = mult.div(1.0915);
 		if (player.e.points.gte(83)) mult = mult.div(2.66155);
+		if (player.e.points.gte(155)) mult = mult.div(4);
 		if (hasChallenge("e", 16)) mult = mult.div(challengeEffect("e", 16));
 		if (hasChallenge("e", 17)) mult = mult.div(challengeEffect("e", 17));
 		if (player.a.unlocked) mult = mult.div(buyableEffect("a", 13));
@@ -2010,8 +2084,9 @@ addLayer("a", {
 		if (hasMilestone("a", 11)) mult[1] *= milestoneEffect("a", 11);
 		if (hasMilestone("a", 17)) mult[2] *= milestoneEffect("a", 17);
 		if (hasChallenge("e", 18)) mult[2] *= challengeEffect("e", 18);
+		if (hasChallenge("e", 19)) mult[0] *= 100;
 		let eff = [
-			(hasMilestone("a", 6) ? amt.add(1).pow(amt.log10().add(1).pow(0.125).mul(200000)) : new Decimal(10).pow(amt.sub(1)).sub(1).mul(1e100).add(1)),
+			(hasMilestone("a", 6) ? amt.add(1).pow(amt.log10().add(1).pow(0.125).mul(200000).mul(mult[0])) : new Decimal(10).pow(amt.sub(1).mul(mult[0])).sub(1).mul(1e100).add(1)),
 			amt.pow(0.1).mul(mult[1]),
 			amt.log10().mul(mult[2]).floor(),
 		];
@@ -2120,6 +2195,8 @@ addLayer("a", {
 				let extra = new Decimal(0);
 				if (hasMilestone("a", 7)) extra = extra.add(milestoneEffect("a", 7));
 				if (hasMilestone("a", 20)) extra = extra.add(milestoneEffect("a", 20));
+				if (hasMilestone("a", 22)) extra = extra.add(milestoneEffect("a", 22));
+				if (hasMilestone("a", 24)) extra = extra.add(milestoneEffect("a", 24));
 				return extra.floor();
 			},
 		},
@@ -2144,6 +2221,7 @@ addLayer("a", {
 				if (hasMilestone("a", 9)) extra = extra.add(milestoneEffect("a", 9));
 				if (hasMilestone("a", 18)) extra = extra.add(milestoneEffect("a", 18));
 				if (hasMilestone("a", 20)) extra = extra.add(milestoneEffect("a", 20));
+				if (hasMilestone("a", 22)) extra = extra.add(milestoneEffect("a", 22));
 				return extra.floor();
 			},
 		},
@@ -2167,6 +2245,8 @@ addLayer("a", {
 			extra() {
 				let extra = new Decimal(0);
 				if (hasMilestone("a", 18)) extra = extra.add(milestoneEffect("a", 18));
+				if (hasMilestone("a", 22)) extra = extra.add(milestoneEffect("a", 22));
+				if (hasMilestone("a", 24)) extra = extra.add(milestoneEffect("a", 24));
 				return extra.floor();
 			},
 		},
@@ -2191,6 +2271,7 @@ addLayer("a", {
 				if (hasMilestone("a", 6)) extra = extra.add(milestoneEffect("a", 6));
 				if (hasMilestone("a", 18)) extra = extra.add(milestoneEffect("a", 18));
 				if (hasMilestone("a", 20)) extra = extra.add(milestoneEffect("a", 20));
+				if (hasMilestone("a", 24)) extra = extra.add(milestoneEffect("a", 24));
 				return extra.floor();
 			},
 		},
@@ -2393,6 +2474,42 @@ addLayer("a", {
 			popupTitle: "Enhancement Acquired!",
 			effect() {return getBuyableAmount("a", 13).div(3).floor()},
 			effectDescription() {return "every 3 base levels of ANA give<br>an extra level to CRA, FER, and SOV<br>Effect: +" + formatWhole(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		21: {
+			requirement: 43,
+			requirementDescription: "Retrogression enhancement IV",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.75},
+			effectDescription() {return "increase the exponent of the<br>8th retrogression's last effect by 0.75<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		22: {
+			requirement: 46,
+			requirementDescription: "SOV enhancement IV",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return getBuyableAmount("a", 14).div(3).floor()},
+			effectDescription() {return "every 3 base levels of SOV give<br>an extra level to CRA, FER, and ANA<br>Effect: +" + formatWhole(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		23: {
+			requirement: 49,
+			requirementDescription: "Retrogression enhancement V",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.474},
+			effectDescription() {return "increase the exponent of the<br>9th retrogression's last effect by 0.474<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		24: {
+			requirement: 50,
+			requirementDescription: "FER enhancement IV",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return getBuyableAmount("a", 12).div(3).floor()},
+			effectDescription() {return "every 3 base levels of FER give<br>an extra level to CRA, ANA, and SOV<br>Effect: +" + formatWhole(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("a", this.id - 1)},
 		},
