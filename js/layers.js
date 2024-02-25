@@ -531,6 +531,8 @@ addLayer("g", {
 		if (hasMilestone("g", 59)) base -= milestoneEffect("g", 59);
 		if (hasMilestone("g", 68)) base -= milestoneEffect("g", 68);
 		if (hasMilestone("g", 74)) base -= milestoneEffect("g", 74);
+		if (player.e.points.gte(570)) base -= 0.025;
+		if (player.e.points.gte(635)) base -= 0.015;
 		if (hasChallenge("e", 18)) base -= 0.01;
 		return base;
 	},
@@ -1883,29 +1885,42 @@ addLayer("e", {
 					if (player.e.points.gte(322)) return "The extra AGI from evolutions is multiplied by 144.<br>The extra INT from evolutions is multiplied by 240.";
 					else return "The extra AGI from evolutions is multiplied by 4.<br>The extra INT from evolutions is multiplied by 4.";
 				},
-				343: "The 10th retrogression's last effect is improved further.",
+				343() {
+					if (player.e.points.gte(619)) return;
+					else return "The 10th retrogression's last effect is improved further.";
+				},
 				397() {
 					if (player.e.points.gte(397)) return "The acclimation requirement is divided by 23.2406546.";
 					else return "The acclimation requirement is divided by 2.";
 				},
 				503: "The base of the 10th retrogression's second effect is increased by 8.",
+				570() {
+					if (player.e.points.gte(635)) return;
+					else return "The growth requirement base is decreased by 0.025.";
+				},
+				619: "The 10th retrogression's last effect is improved even further.",
+				635() {
+					if (player.e.points.gte(635)) return "The growth requirement base is decreased by 0.04.";
+					else return "The growth requirement base is decreased by 0.015.";
+				},
 			};
 			let text = "";
 			for (const key in effects) {
-				if (Object.hasOwnProperty.call(effects, key) && (typeof effects[+key] == "function" ? effects[+key]() : effects[+key])) {
+				const eff = (typeof effects[+key] == "function" ? effects[+key]() : effects[+key]);
+				if (Object.hasOwnProperty.call(effects, key) && eff) {
 					if (player.e.points.gte(+key)) {
 						if (+key === 26 && !hasChallenge("e", 13)) {
 							text += "<br><br>You need to complete the 3rd retrogression to obtain the next effect.";
 							break;
 						} else {
 							if (!text.startsWith("Extra effect(s):")) text += "Extra effect(s):";
-							text += "<br>" + (typeof effects[+key] == "function" ? effects[+key]() : effects[+key]);
+							text += "<br>" + eff;
 						};
 					} else {
 						if (text) text += "<br><br>";
 						if (+key === 1) text += "After you evolve 1 time";
 						else text += "After you evolve " + formatWhole(key) + " times";
-						text += ", you will obtain the following effect(s):<br>" + (typeof effects[+key] == "function" ? effects[+key]() : effects[+key]);
+						text += ", you will obtain the following effect" + (eff.includes("<br>") ? "s" : "") + ":<br>" + eff;
 						if (player.e.points.add(tmp.e.resetGain).lt(+key) || !tmp.e.canReset) break;
 					};
 				};
@@ -2092,7 +2107,7 @@ addLayer("e", {
 		21: {
 			name: "10th Retrogression",
 			fullDisplay() {
-				if (player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)) return "Entering this retrogression does an evolution reset and forcibly removes all of your growth enhancements.<br>While in this retrogression, the original growth requirement base is set to 10; growth requirement cannot be modified by effects except the effect of AGI; extra STR, WIS, AGI, and INT levels are nullified; the costs of STR, WIS, AGI, and INT are multiplied by 10 but buying them does not spend any growth points; you always keep stimulation upgrades on growth resets; and each evolution past 200 divides growth requirement by 1e10.<br><br>Goal: " + formatWhole(this.goal()) + " growth points<br><br>Completions: " + formatWhole(challengeCompletions("e", this.id)) + "/" + formatWhole(this.completionLimit) + "<br><br>Rewards: evolution requirement is divided (currently&#160;/" + format(this.rewardEffect()[0]) + "), population gain is multiplied (currently&#160;" + format(this.rewardEffect()[1]) + "x), " + (player.e.points.gte(270) ? " effects based on retrogressions completed are multiplied (currently&#160;" + format(this.rewardEffect()[2]) + "x), and power gain is multiplied based on your population" + (player.e.points.gte(282) ? " and acclimation points" : "") + " (currently&#160;" + format(this.rewardEffect()[3]) + "x)" : "and effects based on retrogressions completed are multiplied (currently&#160;" + format(this.rewardEffect()[2]) + "x)") + "<div><br></div>";
+				if (player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)) return "Entering this retrogression does an evolution reset and forcibly removes all of your growth enhancements.<br>While in this retrogression, the original growth requirement base is set to 10; growth requirement cannot be modified by effects except the effect of AGI; extra STR, WIS, AGI, and INT levels are nullified; the costs of STR, WIS, AGI, and INT are multiplied by 10 but buying them does not spend any growth points; you always keep stimulation upgrades on growth resets; and each evolution past 200 divides growth requirement by 1e10.<br><br>Goal: " + formatWhole(this.goal()) + " growth points<br><br>Completions: " + formatWhole(challengeCompletions("e", this.id)) + "/" + formatWhole(this.completionLimit) + "<br><br>Rewards: evolution requirement is divided (currently&#160;/" + format(this.rewardEffect()[0]) + "), population maximum is multiplied (currently&#160;" + format(this.rewardEffect()[1]) + "x), " + (player.e.points.gte(270) ? " effects based on retrogressions completed are multiplied (currently&#160;" + format(this.rewardEffect()[2]) + "x), and power gain is multiplied based on your population" + (player.e.points.gte(282) ? " and acclimation points" : "") + " (currently&#160;" + format(this.rewardEffect()[3]) + "x)" : "and effects based on retrogressions completed are multiplied (currently&#160;" + format(this.rewardEffect()[2]) + "x)") + "<div><br></div>";
 				return "You need " + formatWhole(this.unlockReq) + " evolutions to unlock this retrogression. It is the very last one. Are you ready?";
 			},
 			rewardEffect() {
@@ -2111,20 +2126,21 @@ addLayer("e", {
 					new Decimal(1),
 				];
 				// last effect
-				if (player.e.points.gte(343)) eff[3] = new Decimal(player.a.population).pow(50).mul(new Decimal(10).pow(player.a.points)).pow(challengeCompletions("e", this.id) * 2);
+				if (player.e.points.gte(619)) eff[3] = new Decimal(player.a.population).pow(50).mul(new Decimal(10).pow(player.a.points)).pow(challengeCompletions("e", this.id) * 10);
+				else if (player.e.points.gte(343)) eff[3] = new Decimal(player.a.population).pow(50).mul(new Decimal(10).pow(player.a.points)).pow(challengeCompletions("e", this.id) * 2);
 				else if (player.e.points.gte(282)) eff[3] = new Decimal(player.a.population).mul(new Decimal(10).pow(player.a.points)).pow(challengeCompletions("e", this.id) * 2);
 				else if (player.e.points.gte(270)) eff[3] = new Decimal(player.a.population).pow(challengeCompletions("e", this.id) * 2);
 				// return
 				return eff;
 			},
-			goal() {return [1932, 2132, 2525, 4960, 6390, 9111, 23866, 27200, 31550, 165360, 172222, 237101, 274600, 299075, 417088][challengeCompletions("e", this.id)] || Infinity},
+			goal() {return [1932, 2132, 2525, 4960, 6390, 9111, 23866, 27200, 31550, 165360, 172222, 237101, 274600, 299075, 417088, 438088, 543644, 574280, 1891455, 2369288, 2710577][challengeCompletions("e", this.id)] || Infinity},
 			canComplete() {return player.g.points.gte(this.goal())},
 			unlocked() {return hasChallenge("e", 19) || hasChallenge("e", this.id)},
 			unlockReq: 209,
 			enterable() {return player.e.points.gte(this.unlockReq)},
 			doReset: true,
 			onEnter() {player.g.milestones = []},
-			completionLimit: 15,
+			completionLimit: 21,
 			style: {"width": "calc(100% - 8px)", "max-width": "600px", "min-height": "360px", "height": "fit-content"},
 		},
 	},
@@ -2185,9 +2201,11 @@ addLayer("a", {
 		if (hasMilestone("a", 31)) mult[0] *= milestoneEffect("a", 31);
 		if (hasChallenge("e", 18)) mult[2] *= challengeEffect("e", 18);
 		if (hasChallenge("e", 19)) mult[0] *= 100;
+		let exp1 = 0.1;
+		if (hasMilestone("a", 34)) exp1 += milestoneEffect("a", 34);
 		let eff = [
 			(hasMilestone("a", 6) ? amt.add(1).pow(amt.log10().add(1).pow(0.125).mul(200000).mul(mult[0])) : new Decimal(10).pow(amt.sub(1).mul(mult[0])).sub(1).mul(1e100).add(1)),
-			amt.pow(0.1).mul(mult[1]),
+			amt.pow(exp1).mul(mult[1]),
 			amt.log10().mul(mult[2]).floor(),
 		];
 		if (!hasMilestone("a", 6)) {
@@ -2283,6 +2301,7 @@ addLayer("a", {
 				if (hasMilestone("a", 0)) base = base.mul(milestoneEffect("a", 0));
 				if (hasMilestone("a", 13)) base = base.mul(milestoneEffect("a", 13));
 				if (hasMilestone("a", 26)) base = base.mul(milestoneEffect("a", 26));
+				if (hasMilestone("a", 37)) base = base.mul(milestoneEffect("a", 37));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
@@ -2308,6 +2327,7 @@ addLayer("a", {
 				let base = new Decimal(5);
 				if (hasMilestone("a", 15)) base = base.mul(milestoneEffect("a", 15));
 				if (hasMilestone("a", 30)) base = base.mul(milestoneEffect("a", 30));
+				if (hasMilestone("a", 35)) base = base.mul(milestoneEffect("a", 35));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
@@ -2361,6 +2381,7 @@ addLayer("a", {
 				if (hasMilestone("a", 2)) base = base.mul(milestoneEffect("a", 2));
 				if (hasMilestone("a", 14)) base = base.mul(milestoneEffect("a", 14));
 				if (hasMilestone("a", 27)) base = base.mul(milestoneEffect("a", 27));
+				if (hasMilestone("a", 36)) base = base.mul(milestoneEffect("a", 36));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
@@ -2707,6 +2728,42 @@ addLayer("a", {
 			popupTitle: "Enhancement Acquired!",
 			effect() {return 8},
 			effectDescription() {return "increase the base of the 10th retrogression's first effect by 8<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		34: {
+			requirement: 84,
+			requirementDescription: "Population enhancement VII",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.025},
+			effectDescription() {return "increase the exponent of the second population effect by 0.025<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		35: {
+			requirement: 88,
+			requirementDescription: "FER enhancement VI",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.a.points.add(1).pow(0.145)},
+			effectDescription() {return "multiply the base effect of FER based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		36: {
+			requirement: 90,
+			requirementDescription: "SOV enhancement VI",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.a.points.add(1).pow(0.1048)},
+			effectDescription() {return "multiply the base effect of SOV based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		37: {
+			requirement: 96,
+			requirementDescription: "CRA enhancement VI",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.a.points.add(1).pow(0.105)},
+			effectDescription() {return "multiply the base effect of CRA based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("a", this.id - 1)},
 		},
