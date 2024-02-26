@@ -14,8 +14,7 @@ function getResetGain(layer, useType = null) {
 		if (layers[layer].getResetGain !== undefined)
 			return layers[layer].getResetGain();
 	};
-	if (tmp[layer].type == "none")
-		return new Decimal (0);
+	if (tmp[layer].type == "none") return new Decimal(0);
 	if (tmp[layer].gainExp.eq(0)) return decimalZero;
 	if (type == "static") {
 		if ((!tmp[layer].canBuyMax) || tmp[layer].baseAmount.lt(tmp[layer].requires)) return decimalOne;
@@ -41,9 +40,8 @@ function getNextAt(layer, canMax = false, useType = null) {
 		type = tmp[layer].type;
 		if (layers[layer].getNextAt !== undefined)
 			return layers[layer].getNextAt(canMax);
-		};
-	if (tmp[layer].type == "none")
-		return new Decimal(Infinity);
+	};
+	if (tmp[layer].type == "none") return new Decimal(Infinity);
 	if (tmp[layer].gainMult.lte(0)) return new Decimal(Infinity);
 	if (tmp[layer].gainExp.lte(0)) return new Decimal(Infinity);
 	if (type == "static") {
@@ -250,7 +248,7 @@ function completeChallenge(layer, x) {
 	updateChallengeTemp(layer);
 };
 
-VERSION.withoutName = "v" + VERSION.num + (VERSION.pre ? " Pre-Release " + VERSION.pre : VERSION.pre ? " Beta " + VERSION.beta : "");
+VERSION.withoutName = "v" + VERSION.num + (VERSION.pre ? " Pre-Release " + VERSION.pre : (VERSION.beta ? " Beta " + VERSION.beta : ""));
 VERSION.withName = VERSION.withoutName + (VERSION.name ? ": " + VERSION.name : "");
 
 function autobuyUpgrades(layer) {
@@ -330,7 +328,7 @@ var ticking = false;
 var interval = setInterval(function() {
 	if (player === undefined || tmp === undefined) return;
 	if (ticking) return;
-	if (tmp.gameEnded&&!player.keepGoing) return;
+	if (tmp.gameEnded && !player.keepGoing) return;
 	ticking = true;
 	let now = Date.now();
 	let diff = (now - player.time) / 1e3;
@@ -346,7 +344,8 @@ var interval = setInterval(function() {
 	};
 	if (player.devSpeed) diff *= player.devSpeed;
 	player.time = now;
-	if (needCanvasUpdate) { resizeCanvas();
+	if (needCanvasUpdate) {
+		resizeCanvas();
 		needCanvasUpdate = false;
 	};
 	tmp.scrolled = document.getElementById('treeTab') && document.getElementById('treeTab').scrollTop > 30;

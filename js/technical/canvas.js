@@ -4,9 +4,9 @@ var ctx;
 window.addEventListener("resize", (_=>resizeCanvas()));
 
 function retrieveCanvasData() {
-	let treeCanv = document.getElementById("treeCanvas")
-	let treeTab = document.getElementById("treeTab")
-	if (treeCanv===undefined||treeCanv===null) return false;
+	let treeCanv = document.getElementById("treeCanvas");
+	let treeTab = document.getElementById("treeTab");
+	if (treeCanv === undefined || treeCanv === null) return false;
 	canvas = treeCanv;
 	ctx = canvas.getContext("2d");
 	return true;
@@ -18,7 +18,7 @@ function resizeCanvas() {
     canvas.height = 0;
 	canvas.width  = window.innerWidth;
 	canvas.height = window.innerHeight;
-		drawTree();
+	drawTree();
 };
 
 var colors_theme;
@@ -26,9 +26,9 @@ var colors_theme;
 function drawTree() {
 	if (!retrieveCanvasData()) return;
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	for (layer in layers){
-		if (tmp[layer].layerShown == true && tmp[layer].branches){
-			for (branch in tmp[layer].branches){
+	for (layer in layers) {
+		if (tmp[layer].layerShown == true && tmp[layer].branches) {
+			for (branch in tmp[layer].branches) {
 				drawTreeBranch(layer, tmp[layer].branches[branch])
 			};
 		};
@@ -41,7 +41,7 @@ function drawTree() {
 function drawComponentBranches(layer, data, prefix) {
 	for(id in data) {
 		if (data[id].branches) {
-			for (branch in data[id].branches){
+			for (branch in data[id].branches) {
 				drawTreeBranch(id, data[id].branches[branch], prefix + layer + "-")
 			};
 		};
@@ -52,12 +52,12 @@ function drawTreeBranch(num1, data, prefix) { // taken from Antimatter Dimension
 	let num2 = data
 	let color_id = 1
 	let width = 15
-	if (Array.isArray(data)){
+	if (Array.isArray(data)) {
 		num2 = data[0]
 		color_id = data[1]
 		width = data[2] || width
 	};
-	if(typeof(color_id) == "number")
+	if (typeof(color_id) == "number")
 		color_id = colors_theme[color_id];
 	if (prefix) {
 		num1 = prefix + num1;

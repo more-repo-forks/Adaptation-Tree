@@ -11,7 +11,7 @@ function respecBuyables(layer) {
 
 function canAffordUpgrade(layer, id) {
 	let upg = tmp[layer].upgrades[id];
-	if(tmp[layer].deactivated) return false;
+	if (tmp[layer].deactivated) return false;
 	if (tmp[layer].upgrades[id].canAfford === false) return false;
 	let cost = tmp[layer].upgrades[id].cost;
 	if (cost !== undefined) return canAffordPurchase(layer, upg, cost);

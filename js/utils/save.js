@@ -265,7 +265,7 @@ var saveInterval = setInterval(function () {
 }, 5000);
 
 window.onbeforeunload = () => {
-    if (player.autosave) {
-        save();
-    };
+	if (player.autosave) {
+		save();
+	};
 };

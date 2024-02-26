@@ -54,9 +54,9 @@ function setupTempData(layerData, tmpData, funcsData) {
 	for (item in layerData) {
 		if (layerData[item] == null) {
 			tmpData[item] = null;
-		} else if (layerData[item] instanceof Decimal)
+		} else if (layerData[item] instanceof Decimal) {
 			tmpData[item] = layerData[item];
-		else if (Array.isArray(layerData[item])) {
+		} else if (Array.isArray(layerData[item])) {
 			tmpData[item] = [];
 			funcsData[item] = [];
 			setupTempData(layerData[item], tmpData[item], funcsData[item]);

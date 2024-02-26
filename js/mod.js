@@ -9,8 +9,8 @@ const modInfo = {
 }
 
 const VERSION = {
-	num: "1.4",
-	name: "Speciation",
+	num: "1.5",
+	name: "Consciousness",
 };
 
 const winText = "Congratulations!<br>You have reached the end and beaten this game (for now),<br>but there is more content coming soon...";
@@ -69,12 +69,12 @@ var displayThings = [
 		if (tmp.other.oompsMag != 0 && options.showOOMs) return "(" + format(tmp.other.oomps) + " OOM" + (tmp.other.oompsMag < 0 ? "^OOM" : tmp.other.oompsMag > 1 ? "^" + tmp.other.oompsMag : "") + "s/sec)";
 		return "(" + format(getPointPotential()) + " max power)";
 	},
-	() => {return "<br>current endgame is 704 " + (player.e.unlocked ? "evolutions" : "???") + " and 99 " + (player.a.unlocked ? "acclimation points" : "???")},
+	() => {return "<br>current endgame is 869 " + (player.e.unlocked ? "evolutions" : "???") + " and 128 " + (player.a.unlocked ? "acclimation points" : "???")},
 ];
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.e.points.gte(704) && player.a.points.gte(99);
+	return player.e.points.gte(869) && player.a.points.gte(128);
 };
 
 // Style for the background, can be a function
