@@ -3,7 +3,7 @@ const modInfo = {
 	id: "adaptation-tree-yrahcaz7",
 	author: "Yrahcaz7",
 	pointsName: "power",
-	modFiles: ["layers.js", "technical/tree.js"],
+	modFiles: ["stimulation.js", "growth.js", "evolution.js", "acclimation.js", "species.js", "consciousness.js", "technical/tree.js"],
 	initialStartPoints: new Decimal(0),
 	offlineLimit: 1, // in hours
 }
