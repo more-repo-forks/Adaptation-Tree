@@ -543,6 +543,7 @@ addLayer("g", {
 	},
 	exponent: 1,
 	canBuyMax() {return hasMilestone("g", 8) || player.e.unlocked},
+	resetDescription: "Grow for ",
 	gainMult() {
 		let mult = new Decimal(1);
 		if (inChallenge("e", 18)) return mult;
@@ -1720,6 +1721,7 @@ addLayer("e", {
 	},
 	exponent: 1,
 	canBuyMax() {return player.sp.unlocked},
+	resetDescription: "Evolve for ",
 	gainMult() {
 		let mult = new Decimal(1);
 		if (hasUpgrade("s", 85)) mult = mult.div(upgradeEffect("s", 85));
@@ -1783,6 +1785,11 @@ addLayer("e", {
 		if (hasChallenge("e", 17)) {
 			mult[0] = mult[0].mul(1.25);
 			mult[1] = mult[1].mul(1.25);
+		};
+		if (hasChallenge("sp", 12)) {
+			mult[0] = mult[0].mul(10);
+			mult[1] = mult[1].mul(10);
+			mult[2] = mult[2].mul(10);
 		};
 		// layer effects
 		if (tmp.sp.effect[1]) {
@@ -1935,7 +1942,8 @@ addLayer("e", {
 					else return "The growth requirement base is decreased by 0.015.";
 				},
 				728() {
-					if (player.e.points.gte(728)) return "The acclimation requirement is divided by 34.8609819.";
+					if (player.e.points.gte(1306)) return;
+					else if (player.e.points.gte(728)) return "The acclimation requirement is divided by 34.8609819.";
 					else return "The acclimation requirement is divided by 1.5.";
 				},
 				789: "The extra STR, WIS, AGI, and INT from evolutions are greater.",
@@ -1953,7 +1961,12 @@ addLayer("e", {
 					if (player.e.points.gte(1142)) return "The species requirement base is decreased by 0.08.";
 					else return "The species requirement base is decreased by 0.03.";
 				},
+				1306() {
+					if (player.e.points.gte(1306)) return "The acclimation requirement is divided by 348.609819.";
+					else return "The acclimation requirement is divided by 10.";
+				},
 			};
+			let pending = false;
 			let text = "";
 			for (const key in effects) {
 				const eff = (typeof effects[+key] == "function" ? effects[+key]() : effects[+key]);
@@ -1966,12 +1979,19 @@ addLayer("e", {
 							if (!text.startsWith("Extra effect(s):")) text += "Extra effect(s):";
 							text += "<br>" + eff;
 						};
+					} else if (player.e.points.add(tmp.e.resetGain).gte(+key) && tmp.e.canReset) {
+						if (!pending) {
+							if (text) text += "<br><br>";
+							text += "Pending effect(s):";
+						};
+						text += "<br>" + eff;
+						pending = true;
 					} else {
 						if (text) text += "<br><br>";
 						if (+key === 1) text += "After you evolve 1 time";
 						else text += "After you evolve " + formatWhole(key) + " times";
 						text += ", you will obtain the following effect" + (eff.includes("<br>") ? "s" : "") + ":<br>" + eff;
-						if (player.e.points.add(tmp.e.resetGain).lt(+key) || !tmp.e.canReset) break;
+						break;
 					};
 				};
 			};
@@ -1989,7 +2009,8 @@ addLayer("e", {
 	}],
 	doReset(resettingLayer) {
 		let keep = [];
-		if (resettingLayer == "sp") keep.push("challenges");
+		if (layers[resettingLayer].row == 3 && player.cb.points.gte(6)) keep.push("challenges");
+		else if (resettingLayer == "sp") keep.push("challenges");
 		if (layers[resettingLayer].row > this.row) layerDataReset("e", keep);
 	},
 	update(diff) {
@@ -2067,7 +2088,7 @@ addLayer("e", {
 		},
 		16: {
 			name: "6th Retrogression",
-			fullDisplay() {return "Entering this retrogression does an evolution reset.<br>While in this retrogression, you cannot buy STR, WIS, AGI, or INT.<br><br>Goal: " + formatWhole(this.goal) + " growth points<br><br>Rewards: Base evolution requirement is decreased by 0.052545, the extra STR, WIS, AGI, and INT from evolutions is multiplied by 1.25, and acclimation requirement is divided based on evolutions (currently&#160;/" + format(this.rewardEffect()) + ")"},
+			fullDisplay() {return "Entering this retrogression does an evolution reset.<br>While in this retrogression, you cannot buy STR, WIS, AGI, or INT.<br><br>Goal: " + formatWhole(this.goal) + " growth points<br><br>Rewards: Base evolution requirement is decreased by 0.052545, the extra STR, WIS, AGI, and INT from evolutions is multiplied by 1.25, and acclimation requirement is divided based on evolutions (currently&nbsp;/" + format(this.rewardEffect()) + ")"},
 			rewardEffect() {
 				let exp = new Decimal(0.439);
 				if (hasMilestone("a", 19)) exp = exp.add(milestoneEffect("a", 19));
@@ -2083,7 +2104,7 @@ addLayer("e", {
 		17: {
 			name: "7th Retrogression",
 			fullDisplay() {
-				if (player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)) return "Entering this retrogression does an evolution reset.<br>While in this retrogression, the original growth requirement base is set to 10.<br><br>Goal: " + formatWhole(this.goal) + " growth points<br><br>Rewards: The extra STR and WIS from evolutions is multiplied by 1.25 and evolution and acclimation requirements are divided based on retrogressions completed (currently&#160;/" + format(this.rewardEffect()) + ")";
+				if (player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)) return "Entering this retrogression does an evolution reset.<br>While in this retrogression, the original growth requirement base is set to 10.<br><br>Goal: " + formatWhole(this.goal) + " growth points<br><br>Rewards: The extra STR and WIS from evolutions is multiplied by 1.25 and evolution and acclimation requirements are divided based on retrogressions completed (currently&nbsp;/" + format(this.rewardEffect()) + ")";
 				return "You need " + formatWhole(this.unlockReq) + " evolutions to unlock this retrogression.";
 			},
 			rewardEffect() {
@@ -2110,7 +2131,7 @@ addLayer("e", {
 		18: {
 			name: "8th Retrogression",
 			fullDisplay() {
-				if (player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)) return "Entering this retrogression does an evolution reset.<br>While in this retrogression, the growth requirement cannot be modified by effects.<br><br>Goal: " + formatWhole(this.goal) + " growth points<br><br>Rewards: Base growth requirement is decreased by 0.01, base evolution requirement is decreased by 0.02, and the last population effect is multiplied based on retrogressions completed (currently&#160;" + format(this.rewardEffect()) + "x)";
+				if (player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)) return "Entering this retrogression does an evolution reset.<br>While in this retrogression, the growth requirement cannot be modified by effects.<br><br>Goal: " + formatWhole(this.goal) + " growth points<br><br>Rewards: Base growth requirement is decreased by 0.01, base evolution requirement is decreased by 0.02, and the last population effect is multiplied based on retrogressions completed (currently&nbsp;" + format(this.rewardEffect()) + "x)";
 				return "You need " + formatWhole(this.unlockReq) + " evolutions to unlock this retrogression.";
 			},
 			rewardEffect() {
@@ -2137,7 +2158,7 @@ addLayer("e", {
 		19: {
 			name: "9th Retrogression",
 			fullDisplay() {
-				if (player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)) return "Entering this retrogression does an evolution reset.<br>While in this retrogression, all previous in retrogression effects are applied.<br><br>Goal: " + formatWhole(this.goal) + " growth points<br><br>Rewards: Power gain is exponentiated by 1.02, the first population effect's exponent is multiplied by 100, and evolution requirement is divided based on evolutions (currently&#160;/" + format(this.rewardEffect()) + ")";
+				if (player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)) return "Entering this retrogression does an evolution reset.<br>While in this retrogression, all previous in retrogression effects are applied.<br><br>Goal: " + formatWhole(this.goal) + " growth points<br><br>Rewards: Power gain is exponentiated by 1.02, the first population effect's exponent is multiplied by 100, and evolution requirement is divided based on evolutions (currently&nbsp;/" + format(this.rewardEffect()) + ")";
 				return "You need " + formatWhole(this.unlockReq) + " evolutions to unlock this retrogression.";
 			},
 			rewardEffect() {
@@ -2157,7 +2178,7 @@ addLayer("e", {
 		21: {
 			name: "10th Retrogression",
 			fullDisplay() {
-				if (player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)) return "Entering this retrogression does an evolution reset and forcibly removes all of your growth enhancements.<br>While in this retrogression, the original growth requirement base is set to 10; growth requirement cannot be modified by effects except the effect of AGI; extra STR, WIS, AGI, and INT levels are nullified; the costs of STR, WIS, AGI, and INT are multiplied by 10 but buying them does not spend any growth points;" + (player.cb.unlocked ? "" : " you always keep stimulation upgrades on growth resets;") + " and each evolution past " + (player.e.points.gte(940) ? "900 divides growth requirement by 1e100,000" : "200 divides growth requirement by 1e10") + ".<br><br>Goal: " + formatWhole(this.goal()) + " growth points<br><br>Completions: " + formatWhole(challengeCompletions("e", this.id)) + "/" + formatWhole(this.completionLimit()) + "<br><br>Rewards: evolution requirement is divided (currently&#160;/" + format(this.rewardEffect()[0]) + "), population maximum is multiplied (currently&#160;" + format(this.rewardEffect()[1]) + "x), " + (player.e.points.gte(270) ? " effects based on retrogressions completed are multiplied (currently&#160;" + format(this.rewardEffect()[2]) + "x), and power gain is multiplied based on your population" + (player.e.points.gte(282) ? " and acclimation points" : "") + " (currently&#160;" + format(this.rewardEffect()[3]) + "x)" : "and effects based on retrogressions completed are multiplied (currently&#160;" + format(this.rewardEffect()[2]) + "x)") + "<div><br></div>";
+				if (player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)) return "Entering this retrogression does an evolution reset and forcibly removes all of your growth enhancements.<br>While in this retrogression, the original growth requirement base is set to 10; growth requirement cannot be modified by effects except the effect of AGI; extra STR, WIS, AGI, and INT levels are nullified; the costs of STR, WIS, AGI, and INT are multiplied by 10 but buying them does not spend any growth points;" + (player.cb.unlocked ? "" : " you always keep stimulation upgrades on growth resets;") + " and each evolution past " + (player.e.points.gte(940) ? "900 divides growth requirement by 1e100,000" : "200 divides growth requirement by 1e10") + ".<br><br>Goal: " + formatWhole(this.goal()) + " growth points<br><br>Completions: " + formatWhole(challengeCompletions("e", this.id)) + "/" + formatWhole(this.completionLimit()) + "<br><br>Rewards: evolution requirement is divided (currently&nbsp;/" + format(this.rewardEffect()[0]) + "), population maximum is multiplied (currently&nbsp;" + format(this.rewardEffect()[1]) + "x), " + (player.e.points.gte(270) ? " effects based on retrogressions completed are multiplied (currently&nbsp;" + format(this.rewardEffect()[2]) + "x), and power gain is multiplied based on your population" + (player.e.points.gte(282) ? " and acclimation points" : "") + " (currently&nbsp;" + format(this.rewardEffect()[3]) + "x)" : "and effects based on retrogressions completed are multiplied (currently&nbsp;" + format(this.rewardEffect()[2]) + "x)") + "<div><br></div>";
 				return "You need " + formatWhole(this.unlockReq) + " evolutions to unlock this retrogression. It is the very last one. Are you ready?";
 			},
 			rewardEffect() {
@@ -2185,7 +2206,7 @@ addLayer("e", {
 				// return
 				return eff;
 			},
-			goal() {return [1932, 2132, 2525, 4960, 6390, 9111, 23866, 27200, 31550, 165360, 172222, 237101, 274600, 299075, 417088, 438088, 543644, 574280, 1891455, 2369288, 2710577, 3038161, 3432757, 12804264, 18518825, 25033969, 41771320, 44681050, 53741755, 56712288][challengeCompletions("e", this.id)] || Infinity},
+			goal() {return [1932, 2132, 2525, 4960, 6390, 9111, 23866, 27200, 31550, 165360, 172222, 237101, 274600, 299075, 417088, 438088, 543644, 574280, 1891455, 2369288, 2710577, 3038161, 3432757, 12804264, 18518825, 25033969, 41771320, 44681050, 53741755, 56712288, 64654633, 89470100][challengeCompletions("e", this.id)] || Infinity},
 			canComplete() {return player.g.points.gte(this.goal())},
 			unlocked() {return hasChallenge("e", 19) || hasChallenge("e", this.id)},
 			unlockReq: 209,
@@ -2194,7 +2215,8 @@ addLayer("e", {
 			onEnter() {player.g.milestones = []},
 			completionLimit() {
 				let limit = 22;
-				if (hasMilestone("a", 42)) limit = limit += milestoneEffect("a", 42);
+				if (hasMilestone("a", 42)) limit += milestoneEffect("a", 42);
+				if (player.cb.focusUnlocked) limit += clickableEffect("cb", 11);
 				return limit;
 			},
 			style: {"width": "calc(100% - 8px)", "max-width": "600px", "min-height": "360px", "height": "fit-content"},
@@ -2230,6 +2252,7 @@ addLayer("a", {
 	},
 	exponent: 1,
 	canBuyMax() {return player.cb.unlocked},
+	resetDescription: "Acclimate for ",
 	gainMult() {
 		let mult = new Decimal(1);
 		if (hasMilestone("g", 48)) mult = mult.div(milestoneEffect("g", 48));
@@ -2240,6 +2263,7 @@ addLayer("a", {
 		if (player.e.points.gte(155)) mult = mult.div(4);
 		if (player.e.points.gte(397)) mult = mult.div(2);
 		if (player.e.points.gte(728)) mult = mult.div(1.5);
+		if (player.e.points.gte(1306)) mult = mult.div(10);
 		if (hasChallenge("e", 16)) mult = mult.div(challengeEffect("e", 16));
 		if (hasChallenge("e", 17)) mult = mult.div(challengeEffect("e", 17));
 		if (hasChallenge("sp", 11)) mult = mult.div(challengeEffect("sp", 11));
@@ -2346,10 +2370,12 @@ addLayer("a", {
 		let max = new Decimal(1);
 		max = max.mul(buyableEffect("a", 11));
 		if (hasChallenge("e", 21) && challengeEffect("e", 21)[1]) max = max.mul(challengeEffect("e", 21)[1]);
+		if (player.cb.focusUnlocked) max = max.mul(clickableEffect("cb", 12));
 		player.a.populationMax = max;
 		// calculate rate
 		let rate = new Decimal(player.a.populationTime).mul(2).div(max.pow(0.5));
 		rate = rate.mul(buyableEffect("a", 12));
+		if (player.cb.focusUnlocked) rate = rate.mul(clickableEffect("cb", 12));
 		// calculate population
 		player.a.population = max.div(max.sub(1).mul(new Decimal(Math.E).pow(rate.neg())).add(1)).round();
 	},
@@ -2365,6 +2391,7 @@ addLayer("a", {
 				if (hasMilestone("a", 13)) base = base.mul(milestoneEffect("a", 13));
 				if (hasMilestone("a", 26)) base = base.mul(milestoneEffect("a", 26));
 				if (hasMilestone("a", 37)) base = base.mul(milestoneEffect("a", 37));
+				if (hasMilestone("a", 46)) base = base.mul(milestoneEffect("a", 46));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
@@ -2427,7 +2454,7 @@ addLayer("a", {
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
 			title: "(ANA)LYTICITY",
 			display() {return "divide acclimation requirement by " + format(this.effectBase()) + "<br><br>Effect: /" + format(this.effect()) + "<br><br>Cost: " + formatWhole(this.cost()) + " acclimation points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id)) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
-			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost())},
+			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && !inChallenge("sp", 12)},
 			buy() {
 				player[this.layer].spent = player[this.layer].spent.add(this.cost());
 				addBuyables(this.layer, this.id, 1);
@@ -2911,6 +2938,15 @@ addLayer("a", {
 			done() {return player.a.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("a", this.id - 1)},
 		},
+		46: {
+			requirement: 159,
+			requirementDescription: "CRA enhancement VII",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.a.points.add(1).pow(0.1)},
+			effectDescription() {return "multiply the base effect of CRA based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
 	},
 });
 
@@ -2937,6 +2973,7 @@ addLayer("sp", {
 		return base;
 	},
 	exponent: 1,
+	resetDescription: "Speciate for ",
 	gainMult() {
 		let mult = new Decimal(1);
 		return mult;
@@ -2945,6 +2982,7 @@ addLayer("sp", {
 		// base
 		let base0 = player.sp.points;
 		if (hasChallenge("sp", 11)) base0 = base0.mul(2);
+		if (hasChallenge("sp", 12)) base0 = base0.mul(challengeEffect("sp", 12));
 		// exponent
 		let exp2 = 0.5;
 		if (hasChallenge("sp", 11)) exp2 += 0.075;
@@ -2966,7 +3004,7 @@ addLayer("sp", {
 		"prestige-button",
 		"resource-display",
 		["display-text", () => {
-			let text = "You keep retrogression completions on species resets.<br><br>After your first species reset, you can always bulk growth and evolutions,<br>the effect of <b>Growth enhancement I</b> is always changed,<br>and more automation for growth is always unlocked.<br><br>These extra effects will not go away even if this layer is reset.";
+			let text = "You keep retrogression completions on species resets.<br><br>After speciating 1 time, you can always bulk growth and evolutions,<br>the effect of <b>Growth enhancement I</b> is always changed,<br>and more automation for growth is always unlocked.<br><br>The above extra effects will not go away even if this layer is reset.";
 			if (player.sp.points.gte(5)) text += "<br><br>After speciating 6 times, all species effects are massively increased.";
 			return text;
 		}],
@@ -2991,13 +3029,36 @@ addLayer("sp", {
 		11: {
 			name: "1st Hybridization",
 			fullDisplay() {
-				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does an species reset.<br>While in this hybridization, you cannot buy CRA, FER, or SOV.<br><br>Goal: " + formatWhole(this.goal) + " evolutions<br><br>Rewards: The base of the first species effect is multiplied by 2, the exponent of the last species effect is increased by 0.075, and acclimation point requirement is divided based on species (currently&#160;/" + format(this.rewardEffect()) + ")";
+				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does a species reset.<br>While in this hybridization, you cannot buy CRA, FER, or SOV.<br><br>Goal: " + formatWhole(this.goal) + " evolutions<br><br>Rewards: The base of the first species effect is multiplied by 2, the exponent of the last species effect is increased by 0.075, and acclimation point requirement is divided based on species (currently&nbsp;/" + format(this.rewardEffect()) + ")";
 				return "You need " + formatWhole(this.unlockReq) + " species to unlock this hybridization.";
 			},
 			rewardEffect() {return new Decimal(1.3).pow(player.sp.points)},
 			goal: 692,
 			canComplete() {return player.e.points.gte(this.goal)},
 			unlockReq: 8,
+			enterable() {return player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)},
+			doReset: true,
+			style: {"width": "250px", "height": "360px"},
+		},
+		12: {
+			name: "2nd Hybridization",
+			fullDisplay() {
+				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does a species reset.<br>While in this hybridization, you cannot buy ANA.<br><br>Goal: " + formatWhole(this.goal) + " evolutions<br><br>Rewards: The extra STR, WIS, and AGI from evolutions is multiplied by 10, the base of the first species effect is multiplied based on hybridizations completed (currently&nbsp;" + format(this.rewardEffect()) + "x), and something new is unlocked in the conscious beings layer" + (player.cb.focusUnlocked ? " (already unlocked)" : "");
+				return "You need " + formatWhole(this.unlockReq) + " species to unlock this hybridization.";
+			},
+			rewardEffect() {
+				let hybridizations = 0;
+				for (const id in player.sp.challenges) {
+					if (Object.hasOwnProperty.call(player.sp.challenges, id)) {
+						hybridizations += player.sp.challenges[id];
+					};
+				};
+				return new Decimal(hybridizations).add(1);
+			},
+			goal: 1095,
+			canComplete() {return player.e.points.gte(this.goal)},
+			unlocked() {return hasChallenge("e", this.id - 1) || hasChallenge("e", this.id)},
+			unlockReq: 9,
 			enterable() {return player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)},
 			doReset: true,
 			style: {"width": "250px", "height": "360px"},
@@ -3013,6 +3074,7 @@ addLayer("cb", {
 	startData() { return {
 		unlocked: false,
 		points: new Decimal(0),
+		focusUnlocked: false,
 	}},
 	color: "#E6B45A",
 	nodeStyle: {"background": "border-box linear-gradient(to right, #ED6A5E, #E6B45A, #B3478F)"},
@@ -3024,23 +3086,63 @@ addLayer("cb", {
 	type: "static",
 	base: 10,
 	exponent: 1,
+	resetDescription: "Enlighten for ",
 	gainMult() {
 		let mult = new Decimal(1);
 		return mult;
 	},
-	effect() {return [
-		new Decimal(100).pow(player.cb.points),
-		new Decimal(5).pow(player.cb.points),
-		player.cb.points.add(1),
-	]},
+	effect() {
+		let eff = [
+			new Decimal(100).pow(player.cb.points),
+			new Decimal(5).pow(player.cb.points),
+			player.cb.points.add(1),
+		];
+		if (player.cb.focusUnlocked) {
+			let extra = tmp.g.buyables[11].extra.add(tmp.g.buyables[12].extra).add(tmp.g.buyables[13].extra).add(tmp.g.buyables[14].extra);
+			eff[3] = extra.div(5e11).max(1).log2().floor().toNumber();
+		};
+		return eff;
+	},
 	effectDescription() {return "which are dividing the evolution requirement by /" + format(tmp.cb.effect[0]) + ", dividing the acclimation requirement by /" + format(tmp.cb.effect[1]) + ", and multiplying extra STR, WIS, AGI, and INT levels by " + format(tmp.cb.effect[2]) + "x"},
-	tabFormat: [
-		"main-display",
-		"prestige-button",
-		"resource-display",
-		["display-text", "After your first conscious beings reset, you can bulk acclimation points;<br>you keep all stimulation upgrades on row 2, 3, and 4 resets;<br>and you keep all growth enhancements on row 3 and 4 resets.<br><br>These extra effects will not go away even if this layer is reset."],
-		"blank",
-	],
+	tabFormat() {
+		let text = "After enlightening 1 time, you can bulk acclimation points;<br>you keep all stimulation upgrades on row 2, 3, and 4 resets;<br>and you keep all growth enhancements on row 3 and 4 resets.<br><br>The above extra effects will not go away even if this layer is reset.";
+		if (player.cb.points.gte(5)) text += "<br><br>After enlightening 6 times, you keep retrogression completions on row 4 resets.";
+		let arr = [
+			"main-display",
+			"prestige-button",
+			"resource-display",
+			["display-text", text],
+			"blank",
+		];
+		if (player.cb.focusUnlocked) {
+			let svg = "<svg viewBox='0 0 500 50' style='width: 500px; height: 50px'>";
+			let maximum = Math.max((getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0), tmp.cb.effect[3]);
+			if (maximum > 0) {
+				let right = (500 * getClickableState("cb", 12) / maximum);
+				svg += "<rect x='0' y='0' width='" + (500 * getClickableState("cb", 11) / maximum) + "' height='50' fill='#ED6A5E'/>";
+				svg += "<rect x='" + (500 - right) + "' y='0' width='" + right + "' height='50' fill='#B3478F'/>";
+				let div = (2 ** Math.floor(Math.log2(maximum) - 5));
+				if (div > 1) maximum /= div;
+				for (let index = (maximum % 1) / 2; index < maximum; index++) {
+					if (index == 0) continue;
+					let x = (500 * index / maximum);
+					svg += "<line x1='" + x + "' y1='0' x2='" + x + "' y2='50' stroke='#E6B45A'/>";
+				};
+			};
+			svg += "</svg>";
+			svg += "<div style='position: relative; float: left; margin: -54px 0px 0px 7.5px; font-size: 48px; color: #DFDFDF'>E</div>";
+			svg += "<div style='position: relative; float: right; margin: -54px 9px 0px 0px; font-size: 48px; color: #DFDFDF'>A</div>";
+			arr.push(["display-text", svg, {"display": "inline-block", "width": "500px", "height": "50px", "border": "solid 4px #E6B45A"}]);
+			arr.push("blank");
+			arr.push(["display-text", "You have " + formatWhole(tmp.g.buyables[11].extra.add(tmp.g.buyables[12].extra).add(tmp.g.buyables[13].extra).add(tmp.g.buyables[14].extra)) + " total extra growth stat levels,<br>making the maximum focus points be " + tmp.cb.effect[3] + ".<br><br>The next point can be gained at " + formatWhole(new Decimal(2).pow(tmp.cb.effect[3] + 1).mul(5e11)) + " extra levels."]);
+			arr.push("blank");
+			arr.push(["row", [["clickable", 11], ["blank", ["10px"]], ["clickable", 13], ["blank", ["10px"]], ["clickable", 12]]]);
+			arr.push("blank");
+			arr.push(["display-text", "<div style='display: inline-block; vertical-align: top; width: 50%'>You have <h2 style='color: #ED6A5E; text-shadow: #ED6A5E 0px 0px 10px'>" + formatWhole(getClickableState("cb", 11)) + "</h2> focus points on evolution, which are increasing the completion limit of the 10th retrogression by " + formatWhole(clickableEffect("cb", 11)) + ".</div><div style='display: inline-block; vertical-align: top; width: 50%'>You have <h2 style='color: #B3478F; text-shadow: #B3478F 0px 0px 10px'>" + formatWhole(getClickableState("cb", 12)) + "</h2> focus points on acclimation, which are multiplying population maximum and gain by " + format(clickableEffect("cb", 12)) + "x.<div>"]);
+			arr.push("blank");
+		};
+		return arr;
+	},
 	layerShown() {return hasMilestone("a", 39) || player.cb.unlocked},
 	hotkeys: [{
 		key: "b",
@@ -3051,8 +3153,42 @@ addLayer("cb", {
 		let keep = [];
 		if (layers[resettingLayer].row > this.row) layerDataReset("cb", keep);
 	},
+	update(diff) {
+		if (hasChallenge("sp", 12) && !player.cb.focusUnlocked) player.cb.focusUnlocked = true;
+	},
+	shouldNotify() {
+		if (player.cb.focusUnlocked && (getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0) < tmp.cb.effect[3]) return true;
+	},
 	componentStyles: {
 		"prestige-button"() {if (tmp.cb.canReset) return {"background": "border-box linear-gradient(to right, #ED6A5E, #E6B45A, #B3478F)"}},
+		"clickable"() {return {"min-height": "50px", "border": "solid 4px #E6B45A", "border-radius": "0px", "color": "#DFDFDF"}},
+	},
+	clickables: {
+		11: {
+			title: "Focus on evolution",
+			effect() {return (getClickableState("cb", 11) || 0) ** 0.75},
+			canClick() {return (getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0) < tmp.cb.effect[3]},
+			onClick() {setClickableState("cb", 11, (getClickableState("cb", 11) || 0) + 1)},
+			onHold() {setClickableState("cb", 11, (getClickableState("cb", 11) || 0) + 1)},
+			style: {"background-color": "#ED6A5E"},
+		},
+		12: {
+			title: "Focus on acclimation",
+			effect() {return new Decimal(10).pow(getClickableState("cb", 12) || 0)},
+			canClick() {return (getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0) < tmp.cb.effect[3]},
+			onClick() {setClickableState("cb", 12, (getClickableState("cb", 12) || 0) + 1)},
+			onHold() {setClickableState("cb", 12, (getClickableState("cb", 12) || 0) + 1)},
+			style: {"background-color": "#B3478F"},
+		},
+		13: {
+			title: "Reset Focus",
+			canClick() {return (getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0) > 0},
+			onClick() {
+				setClickableState("cb", 11, 0);
+				setClickableState("cb", 12, 0);
+			},
+			style: {"background-color": "#000"},
+		},
 	},
 });
 
