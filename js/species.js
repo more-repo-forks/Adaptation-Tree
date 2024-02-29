@@ -32,6 +32,7 @@ addLayer("sp", {
 		let base0 = player.sp.points;
 		if (hasChallenge("sp", 11)) base0 = base0.mul(2);
 		if (hasChallenge("sp", 12)) base0 = base0.mul(challengeEffect("sp", 12));
+		if (hasChallenge("sp", 13)) base0 = base0.mul(2);
 		// exponent
 		let exp2 = 0.5;
 		if (hasChallenge("sp", 11)) exp2 += 0.075;
@@ -108,6 +109,20 @@ addLayer("sp", {
 			canComplete() {return player.e.points.gte(this.goal)},
 			unlocked() {return hasChallenge("e", this.id - 1) || hasChallenge("e", this.id)},
 			unlockReq: 9,
+			enterable() {return player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)},
+			doReset: true,
+			style: {"width": "250px", "height": "360px"},
+		},
+		13: {
+			name: "3rd Hybridization",
+			fullDisplay() {
+				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does a species reset.<br>While in this hybridization, the original evolution requirement base is set to 2.<br><br>Goal: " + formatWhole(this.goal) + " evolutions<br><br>Rewards: The base of the first species effect is multiplied by 2, focus requirement is divided by 2, and acclimation requirement is divided based on conscious beings (currently&nbsp;/" + format(this.rewardEffect()) + ")";
+			},
+			rewardEffect() {return new Decimal(1.36).pow(player.cb.points)},
+			goal: 537,
+			canComplete() {return player.e.points.gte(this.goal)},
+			unlocked() {return hasChallenge("e", this.id - 1) || hasChallenge("e", this.id)},
+			unlockReq: 10,
 			enterable() {return player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)},
 			doReset: true,
 			style: {"width": "250px", "height": "360px"},

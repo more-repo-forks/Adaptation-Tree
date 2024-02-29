@@ -1,3 +1,10 @@
+function getFocusRequirement() {
+	let req = new Decimal(5e11);
+	if (hasChallenge("sp", 13)) req = req.div(2);
+	if (hasMilestone("a", 50)) req = req.div(milestoneEffect("a", 50));
+	return req;
+};
+
 addLayer("cb", {
 	name: "Conscious Beings",
 	symbol: "CB",
@@ -31,7 +38,7 @@ addLayer("cb", {
 		];
 		if (player.cb.focusUnlocked) {
 			let extra = tmp.g.buyables[11].extra.add(tmp.g.buyables[12].extra).add(tmp.g.buyables[13].extra).add(tmp.g.buyables[14].extra);
-			eff[3] = extra.div(5e11).max(1).log2().floor().toNumber();
+			eff[3] = extra.div(getFocusRequirement()).max(1).log2().floor().toNumber();
 		};
 		return eff;
 	},
@@ -67,7 +74,7 @@ addLayer("cb", {
 			arr.push(["display-text", svg, {"display": "inline-block", "width": "500px", "height": "50px", "border": "solid 4px #E6B45A"}]);
 			arr.push(["row", [["clickable", 13], ["clickable", 11], ["clickable", 15], ["clickable", 12], ["clickable", 14]]]);
 			arr.push("blank");
-			arr.push(["display-text", "You have " + formatWhole(tmp.g.buyables[11].extra.add(tmp.g.buyables[12].extra).add(tmp.g.buyables[13].extra).add(tmp.g.buyables[14].extra)) + " total extra growth stat levels,<br>making the maximum focus points be " + tmp.cb.effect[3] + ".<br><br>The next point can be gained at " + formatWhole(new Decimal(2).pow(tmp.cb.effect[3] + 1).mul(5e11)) + " extra levels."]);
+			arr.push(["display-text", "You have " + formatWhole(tmp.g.buyables[11].extra.add(tmp.g.buyables[12].extra).add(tmp.g.buyables[13].extra).add(tmp.g.buyables[14].extra)) + " total extra growth stat levels,<br>making the maximum focus points be " + tmp.cb.effect[3] + ".<br><br>The next point can be gained at " + formatWhole(new Decimal(2).pow(tmp.cb.effect[3] + 1).mul(getFocusRequirement())) + " extra levels."]);
 			arr.push("blank");
 			arr.push(["display-text", "<div style='display: inline-block; vertical-align: top; width: 50%'>You have <h2 style='color: #ED6A5E; text-shadow: #ED6A5E 0px 0px 10px'>" + formatWhole(getClickableState("cb", 11)) + "</h2> focus points allocated to evolution, which are increasing the completion limit of the 10th retrogression by " + formatWhole(clickableEffect("cb", 11)) + ".</div><div style='display: inline-block; vertical-align: top; width: 50%'>You have <h2 style='color: #B3478F; text-shadow: #B3478F 0px 0px 10px'>" + formatWhole(getClickableState("cb", 12)) + "</h2> focus points allocated to acclimation, which are multiplying population maximum and gain by " + format(clickableEffect("cb", 12)) + "x.<div>"]);
 			arr.push("blank");

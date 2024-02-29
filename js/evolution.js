@@ -1,3 +1,165 @@
+const extraEvolutionEffects = {
+	1: () => {
+		if (player.sp.unlocked) return;
+		else return "You can always bulk growth.<br>The effect of <b>Growth enhancement I</b> is changed."
+	},
+	6: () => {
+		if (player.e.points.gte(14)) return;
+		else if (hasChallenge("e", 13)) return "The second to last evolution effect is multiplied by 32.";
+		else return "The last evolution effect is multiplied by 32.";
+	},
+	14: () => {
+		if (player.e.points.gte(233)) {
+			return;
+		} else if (hasChallenge("e", 13)) {
+			if (player.e.points.gte(14)) return "The second to last evolution effect is multiplied by 16,000.";
+			else return "The second to last evolution effect is multiplied by 500.";
+		} else {
+			if (player.e.points.gte(14)) return "The last evolution effect is multiplied by 16,000.";
+			else return "The last evolution effect is multiplied by 500.";
+		};
+	},
+	20() {
+		if (player.cb.unlocked) return;
+		else return "You keep all stimulation upgrades on row 3 resets.";
+	},
+	26() {
+		if (player.e.points.gte(83)) return;
+		else if (player.e.points.gte(36)) return "The acclimation requirement is divided by 1.0915.";
+		else return "The acclimation requirement is divided by 1.0915.<br>The base of the last evolution effect is multiplied by 10,000.";
+	},
+	30() {
+		if (player.sp.unlocked) return;
+		else return "More automation for growth is unlocked.";
+	},
+	36() {
+		if (player.cb.unlocked) return;
+		else if (player.e.points.gte(68)) return "You keep the first fourty-one growth enhancements on row 3 resets.";
+		else if (player.e.points.gte(36)) return "The base of the last evolution effect is multiplied by 1e1545.<br>You keep the first fourty-one growth enhancements on row 3 resets.";
+		else return "The base of the last evolution effect is multiplied by 1e1541.<br>You keep the first fourty-one growth enhancements on row 3 resets.";
+	},
+	60() {
+		if (player.sp.unlocked) return "Potential growth points are automatically claimed.";
+		else return "A new layer is unlocked.";
+	},
+	68() {
+		if (player.e.points.gte(142)) return;
+		else if (player.e.points.gte(68)) return "The base of the last evolution effect is multiplied by 1e21,095.";
+		else return "The base of the last evolution effect is multiplied by 1e19,550.";
+	},
+	83() {
+		if (player.e.points.gte(180)) return;
+		else if (player.e.points.gte(155)) return "The extra INT from evolutions is multiplied by 1.5.";
+		else if (player.e.points.gte(120)) return "The acclimation requirement is divided by 2.905081825.<br>The extra INT from evolutions is multiplied by 1.5.";
+		else if (player.e.points.gte(105)) return "The acclimation requirement is divided by 2.905081825.<br>The extra STR, WIS, and INT from evolutions is multiplied by 1.5.";
+		else if (player.e.points.gte(83)) return "The acclimation requirement is divided by 2.905081825.<br>The extra STR, WIS, AGI, and INT from evolutions is multiplied by 1.5.";
+		else return "The acclimation requirement is divided by 2.66155.<br>The extra STR, WIS, AGI, and INT from evolutions is multiplied by 1.5.";
+	},
+	105() {
+		if (player.e.points.gte(180)) return;
+		else if (player.e.points.gte(105)) return "The extra AGI from evolutions is multiplied by 9.";
+		else return "The extra AGI from evolutions is multiplied by 6.";
+	},
+	120() {
+		if (player.e.points.gte(789)) return;
+		else if (player.e.points.gte(120)) return "The extra STR and WIS from evolutions is multiplied by 6.";
+		else return "The extra STR and WIS from evolutions is multiplied by 4.";
+	},
+	142() {
+		if (player.e.points.gte(142)) return "The base of the last evolution effect is multiplied by 1e77,095.";
+		else return "The base of the last evolution effect is multiplied by 1e56,000.";
+	},
+	155() {
+		if (player.e.points.gte(397)) return;
+		else if (player.e.points.gte(155)) return "The acclimation requirement is divided by 11.6203273.";
+		else return "The acclimation requirement is divided by 4.";
+	},
+	180() {
+		if (player.e.points.gte(322)) return;
+		else if (player.e.points.gte(180)) return "The extra AGI from evolutions is multiplied by 36.<br>The extra INT from evolutions is multiplied by 60.";
+		else return "The extra AGI from evolutions is multiplied by 4<br>The extra INT from evolutions is multiplied by 40.";
+	},
+	233() {
+		if (player.e.points.gte(256)) return;
+		else return "The second to last evolution effect is improved.";
+	},
+	256: "The second to last evolution effect is improved further.",
+	270: "The 10th retrogression has an additional reward.",
+	282() {
+		if (player.e.points.gte(343)) return;
+		else return "The 10th retrogression's last effect is improved.";
+	},
+	322() {
+		if (player.e.points.gte(789)) return;
+		else if (player.e.points.gte(322)) return "The extra AGI from evolutions is multiplied by 144.<br>The extra INT from evolutions is multiplied by 240.";
+		else return "The extra AGI from evolutions is multiplied by 4.<br>The extra INT from evolutions is multiplied by 4.";
+	},
+	343() {
+		if (player.e.points.gte(619)) return;
+		else return "The 10th retrogression's last effect is improved further.";
+	},
+	397() {
+		if (player.e.points.gte(728)) return;
+		else if (player.e.points.gte(397)) return "The acclimation requirement is divided by 23.2406546.";
+		else return "The acclimation requirement is divided by 2.";
+	},
+	503: "The base of the 10th retrogression's second effect is increased by 8.",
+	570() {
+		if (player.e.points.gte(635)) return;
+		else return "The growth requirement base is decreased by 0.025.";
+	},
+	619() {
+		if (player.e.points.gte(886)) return;
+		else return "The 10th retrogression's last effect is improved even further.";
+	},
+	635() {
+		if (player.e.points.gte(974)) return;
+		else if (player.e.points.gte(635)) return "The growth requirement base is decreased by 0.04.";
+		else return "The growth requirement base is decreased by 0.015.";
+	},
+	728() {
+		if (player.e.points.gte(1306)) return;
+		else if (player.e.points.gte(728)) return "The acclimation requirement is divided by 34.8609819.";
+		else return "The acclimation requirement is divided by 1.5.";
+	},
+	789() {
+		if (player.e.points.gte(1345)) return;
+		else return "The extra STR, WIS, AGI, and INT from evolutions are greater.";
+	},
+	824() {
+		if (player.e.points.gte(1142)) return;
+		else return "The species requirement base is decreased by 0.05.";
+	},
+	886: "The 10th retrogression's last effect is improved even further still.",
+	940() {
+		if (player.e.points.gte(1425)) return;
+		else return "The 10th retrogression is easier.";
+	},
+	974() {
+		if (player.e.points.gte(974)) return "The growth requirement base is decreased by 0.042.";
+		else return "The growth requirement base is decreased by 0.002.";
+	},
+	1142() {
+		if (player.e.points.gte(1372)) return;
+		else if (player.e.points.gte(1142)) return "The species requirement base is decreased by 0.08.";
+		else return "The species requirement base is decreased by 0.03.";
+	},
+	1306() {
+		if (player.e.points.gte(1306)) return "The acclimation requirement is divided by 348.609819.";
+		else return "The acclimation requirement is divided by 10.";
+	},
+	1345: "The extra STR, WIS, AGI, and INT from evolutions are even greater.",
+	1372() {
+		if (player.e.points.gte(1372)) return "The species requirement base is decreased by 0.1.";
+		else return "The species requirement base is decreased by 0.02.";
+	},
+	1425() {
+		if (player.e.points.gte(1547)) return;
+		else return "The 10th retrogression is even easier.";
+	},
+	1547: "The 10th retrogression is even easier still.",
+};
+
 addLayer("e", {
 	name: "Evolution",
 	symbol: "E",
@@ -16,7 +178,7 @@ addLayer("e", {
 	requires: new Decimal(300),
 	type: "static",
 	base() {
-		let base = 1.5;
+		let base = (inChallenge("sp", 13) ? 2 : 1.5);
 		if (hasMilestone("g", 50)) base -= milestoneEffect("g", 50);
 		if (hasMilestone("g", 55)) base -= milestoneEffect("g", 55);
 		if (hasMilestone("g", 64)) base -= milestoneEffect("g", 64);
@@ -135,168 +297,11 @@ addLayer("e", {
 		"prestige-button",
 		"resource-display",
 		["display-text", () => {
-			const effects = {
-				1: () => {
-					if (player.sp.unlocked) return;
-					else return "You can always bulk growth.<br>The effect of <b>Growth enhancement I</b> is changed."
-				},
-				6: () => {
-					if (player.e.points.gte(14)) return;
-					else if (hasChallenge("e", 13)) return "The second to last evolution effect is multiplied by 32.";
-					else return "The last evolution effect is multiplied by 32.";
-				},
-				14: () => {
-					if (player.e.points.gte(233)) {
-						return;
-					} else if (hasChallenge("e", 13)) {
-						if (player.e.points.gte(14)) return "The second to last evolution effect is multiplied by 16,000.";
-						else return "The second to last evolution effect is multiplied by 500.";
-					} else {
-						if (player.e.points.gte(14)) return "The last evolution effect is multiplied by 16,000.";
-						else return "The last evolution effect is multiplied by 500.";
-					};
-				},
-				20() {
-					if (player.cb.unlocked) return;
-					else return "You keep all stimulation upgrades on row 3 resets.";
-				},
-				26() {
-					if (player.e.points.gte(83)) return;
-					else if (player.e.points.gte(36)) return "The acclimation requirement is divided by 1.0915.";
-					else return "The acclimation requirement is divided by 1.0915.<br>The base of the last evolution effect is multiplied by 10,000.";
-				},
-				30() {
-					if (player.sp.unlocked) return;
-					else return "More automation for growth is unlocked.";
-				},
-				36() {
-					if (player.cb.unlocked) return;
-					else if (player.e.points.gte(68)) return "You keep the first fourty-one growth enhancements on row 3 resets.";
-					else if (player.e.points.gte(36)) return "The base of the last evolution effect is multiplied by 1e1545.<br>You keep the first fourty-one growth enhancements on row 3 resets.";
-					else return "The base of the last evolution effect is multiplied by 1e1541.<br>You keep the first fourty-one growth enhancements on row 3 resets.";
-				},
-				60() {
-					if (player.sp.unlocked) return "Potential growth points are automatically claimed.";
-					else return "A new layer is unlocked.";
-				},
-				68() {
-					if (player.e.points.gte(142)) return;
-					else if (player.e.points.gte(68)) return "The base of the last evolution effect is multiplied by 1e21,095.";
-					else return "The base of the last evolution effect is multiplied by 1e19,550.";
-				},
-				83() {
-					if (player.e.points.gte(180)) return;
-					else if (player.e.points.gte(155)) return "The extra INT from evolutions is multiplied by 1.5.";
-					else if (player.e.points.gte(120)) return "The acclimation requirement is divided by 2.905081825.<br>The extra INT from evolutions is multiplied by 1.5.";
-					else if (player.e.points.gte(105)) return "The acclimation requirement is divided by 2.905081825.<br>The extra STR, WIS, and INT from evolutions is multiplied by 1.5.";
-					else if (player.e.points.gte(83)) return "The acclimation requirement is divided by 2.905081825.<br>The extra STR, WIS, AGI, and INT from evolutions is multiplied by 1.5.";
-					else return "The acclimation requirement is divided by 2.66155.<br>The extra STR, WIS, AGI, and INT from evolutions is multiplied by 1.5.";
-				},
-				105() {
-					if (player.e.points.gte(180)) return;
-					else if (player.e.points.gte(105)) return "The extra AGI from evolutions is multiplied by 9.";
-					else return "The extra AGI from evolutions is multiplied by 6.";
-				},
-				120() {
-					if (player.e.points.gte(789)) return;
-					else if (player.e.points.gte(120)) return "The extra STR and WIS from evolutions is multiplied by 6.";
-					else return "The extra STR and WIS from evolutions is multiplied by 4.";
-				},
-				142() {
-					if (player.e.points.gte(142)) return "The base of the last evolution effect is multiplied by 1e77,095.";
-					else return "The base of the last evolution effect is multiplied by 1e56,000.";
-				},
-				155() {
-					if (player.e.points.gte(397)) return;
-					else if (player.e.points.gte(155)) return "The acclimation requirement is divided by 11.6203273.";
-					else return "The acclimation requirement is divided by 4.";
-				},
-				180() {
-					if (player.e.points.gte(322)) return;
-					else if (player.e.points.gte(180)) return "The extra AGI from evolutions is multiplied by 36.<br>The extra INT from evolutions is multiplied by 60.";
-					else return "The extra AGI from evolutions is multiplied by 4<br>The extra INT from evolutions is multiplied by 40.";
-				},
-				233() {
-					if (player.e.points.gte(256)) return;
-					else return "The second to last evolution effect is improved.";
-				},
-				256: "The second to last evolution effect is improved further.",
-				270: "The 10th retrogression has an additional reward.",
-				282() {
-					if (player.e.points.gte(343)) return;
-					else return "The 10th retrogression's last effect is improved.";
-				},
-				322() {
-					if (player.e.points.gte(789)) return;
-					else if (player.e.points.gte(322)) return "The extra AGI from evolutions is multiplied by 144.<br>The extra INT from evolutions is multiplied by 240.";
-					else return "The extra AGI from evolutions is multiplied by 4.<br>The extra INT from evolutions is multiplied by 4.";
-				},
-				343() {
-					if (player.e.points.gte(619)) return;
-					else return "The 10th retrogression's last effect is improved further.";
-				},
-				397() {
-					if (player.e.points.gte(728)) return;
-					else if (player.e.points.gte(397)) return "The acclimation requirement is divided by 23.2406546.";
-					else return "The acclimation requirement is divided by 2.";
-				},
-				503: "The base of the 10th retrogression's second effect is increased by 8.",
-				570() {
-					if (player.e.points.gte(635)) return;
-					else return "The growth requirement base is decreased by 0.025.";
-				},
-				619() {
-					if (player.e.points.gte(886)) return;
-					else return "The 10th retrogression's last effect is improved even further.";
-				},
-				635() {
-					if (player.e.points.gte(974)) return;
-					else if (player.e.points.gte(635)) return "The growth requirement base is decreased by 0.04.";
-					else return "The growth requirement base is decreased by 0.015.";
-				},
-				728() {
-					if (player.e.points.gte(1306)) return;
-					else if (player.e.points.gte(728)) return "The acclimation requirement is divided by 34.8609819.";
-					else return "The acclimation requirement is divided by 1.5.";
-				},
-				789() {
-					if (player.e.points.gte(1345)) return;
-					else return "The extra STR, WIS, AGI, and INT from evolutions are greater.";
-				},
-				824() {
-					if (player.e.points.gte(1142)) return;
-					else return "The species requirement base is decreased by 0.05.";
-				},
-				886: "The 10th retrogression's last effect is improved even further still.",
-				940() {
-					if (player.e.points.gte(1425)) return;
-					else return "The 10th retrogression is easier.";
-				},
-				974() {
-					if (player.e.points.gte(974)) return "The growth requirement base is decreased by 0.042.";
-					else return "The growth requirement base is decreased by 0.002.";
-				},
-				1142() {
-					if (player.e.points.gte(1372)) return;
-					else if (player.e.points.gte(1142)) return "The species requirement base is decreased by 0.08.";
-					else return "The species requirement base is decreased by 0.03.";
-				},
-				1306() {
-					if (player.e.points.gte(1306)) return "The acclimation requirement is divided by 348.609819.";
-					else return "The acclimation requirement is divided by 10.";
-				},
-				1345: "The extra STR, WIS, AGI, and INT from evolutions are even greater.",
-				1372() {
-					if (player.e.points.gte(1372)) return "The species requirement base is decreased by 0.1.";
-					else return "The species requirement base is decreased by 0.02.";
-				},
-				1425: "The 10th retrogression is even easier.",
-			};
 			let pending = false;
 			let text = "";
-			for (const key in effects) {
-				const eff = (typeof effects[+key] == "function" ? effects[+key]() : effects[+key]);
-				if (Object.hasOwnProperty.call(effects, key) && eff) {
+			for (const key in extraEvolutionEffects) {
+				const eff = (typeof extraEvolutionEffects[+key] == "function" ? extraEvolutionEffects[+key]() : extraEvolutionEffects[+key]);
+				if (Object.hasOwnProperty.call(extraEvolutionEffects, key) && eff) {
 					if (player.e.points.gte(+key)) {
 						if (+key === 26 && !hasChallenge("e", 13)) {
 							text += "<br><br>You need to complete the 3rd retrogression to obtain the next effect.";
@@ -505,7 +510,7 @@ addLayer("e", {
 		21: {
 			name: "10th Retrogression",
 			fullDisplay() {
-				if (player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)) return "Entering this retrogression does an evolution reset and forcibly removes all of your growth enhancements.<br>While in this retrogression, the original growth requirement base is set to 10; growth requirement cannot be modified by effects except the effect of AGI; extra STR, WIS, AGI, and INT levels are nullified; the costs of STR, WIS, AGI, and INT are multiplied by 10 but buying them does not spend any growth points;" + (player.cb.unlocked ? "" : " you always keep stimulation upgrades on growth resets;") + " and each evolution past " + (player.e.points.gte(1425) ? "1,000 divides growth requirement by 1e1,000,000" : (player.e.points.gte(940) ? "900 divides growth requirement by 1e100,000" : "200 divides growth requirement by 1e10")) + ".<br><br>Goal: " + formatWhole(this.goal()) + " growth points<br><br>Completions: " + formatWhole(challengeCompletions("e", this.id)) + "/" + formatWhole(this.completionLimit()) + "<br><br>Rewards: evolution requirement is divided (currently&nbsp;/" + format(this.rewardEffect()[0]) + "), population maximum is multiplied (currently&nbsp;" + format(this.rewardEffect()[1]) + "x), " + (player.e.points.gte(270) ? " effects based on retrogressions completed are multiplied (currently&nbsp;" + format(this.rewardEffect()[2]) + "x), and power gain is multiplied based on your population" + (player.e.points.gte(282) ? " and acclimation points" : "") + " (currently&nbsp;" + format(this.rewardEffect()[3]) + "x)" : "and effects based on retrogressions completed are multiplied (currently&nbsp;" + format(this.rewardEffect()[2]) + "x)") + "<div><br></div>";
+				if (player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)) return "Entering this retrogression does an evolution reset" + (player.e.points.gte(1547) ? "" : " and forcibly removes all of your growth enhancements") + ".<br>While in this retrogression, the original growth requirement base is set to 10; growth requirement cannot be modified by effects except the effect of AGI; extra STR, WIS, AGI, and INT levels are nullified; the costs of STR, WIS, AGI, and INT are multiplied by 10 but buying them does not spend any growth points;" + (player.cb.unlocked ? "" : " you always keep stimulation upgrades on growth resets;") + " and each evolution past " + (player.e.points.gte(1425) ? "1,000 divides growth requirement by 1e1,000,000" : (player.e.points.gte(940) ? "900 divides growth requirement by 1e100,000" : "200 divides growth requirement by 1e10")) + ".<br><br>Goal: " + formatWhole(this.goal()) + " growth points<br><br>Completions: " + formatWhole(challengeCompletions("e", this.id)) + "/" + formatWhole(this.completionLimit()) + "<br><br>Rewards: evolution requirement is divided (currently&nbsp;/" + format(this.rewardEffect()[0]) + "), population maximum is multiplied (currently&nbsp;" + format(this.rewardEffect()[1]) + "x), " + (player.e.points.gte(270) ? " effects based on retrogressions completed are multiplied (currently&nbsp;" + format(this.rewardEffect()[2]) + "x), and power gain is multiplied based on your population" + (player.e.points.gte(282) ? " and acclimation points" : "") + " (currently&nbsp;" + format(this.rewardEffect()[3]) + "x)" : "and effects based on retrogressions completed are multiplied (currently&nbsp;" + format(this.rewardEffect()[2]) + "x)") + "<div><br></div>";
 				return "You need " + formatWhole(this.unlockReq) + " evolutions to unlock this retrogression. It is the very last one. Are you ready?";
 			},
 			rewardEffect() {
@@ -533,13 +538,13 @@ addLayer("e", {
 				// return
 				return eff;
 			},
-			goal() {return [1932, 2132, 2525, 4960, 6390, 9111, 23866, 27200, 31550, 165360, 172222, 237101, 274600, 299075, 417088, 438088, 543644, 574280, 1891455, 2369288, 2710577, 3038161, 3432757, 12804264, 18518825, 25033969, 41771320, 44681050, 53741755, 56712288, 64654633, 89470100, 94354100, 504777099][challengeCompletions("e", this.id)] || Infinity},
+			goal() {return [1932, 2132, 2525, 4960, 6390, 9111, 23866, 27200, 31550, 165360, 172222, 237101, 274600, 299075, 417088, 438088, 543644, 574280, 1891455, 2369288, 2710577, 3038161, 3432757, 12804264, 18518825, 25033969, 41771320, 44681050, 53741755, 56712288, 64654633, 89470100, 94354100, 504777099, 580014455, 618312800, 655288313, 677988377][challengeCompletions("e", this.id)] || Infinity},
 			canComplete() {return player.g.points.gte(this.goal())},
 			unlocked() {return hasChallenge("e", 19) || hasChallenge("e", this.id)},
 			unlockReq: 209,
 			enterable() {return player.e.points.gte(this.unlockReq)},
 			doReset: true,
-			onEnter() {player.g.milestones = []},
+			onEnter() {if (!player.e.points.gte(1547)) player.g.milestones = []},
 			completionLimit() {
 				let limit = 22;
 				if (hasMilestone("a", 42)) limit += milestoneEffect("a", 42);
