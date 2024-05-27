@@ -19,12 +19,15 @@ addLayer("sp", {
 		if (player.e.points.gte(824)) base -= 0.05;
 		if (player.e.points.gte(1142)) base -= 0.03;
 		if (player.e.points.gte(1372)) base -= 0.02;
+		if (player.e.points.gte(1591)) base -= 0.0375;
+		if (player.e.points.gte(2171)) base -= 0.0075;
 		return base;
 	},
 	exponent: 1,
 	resetDescription: "Speciate for ",
 	gainMult() {
 		let mult = new Decimal(1);
+		if (hasChallenge("sp", 14)) mult = mult.div(challengeEffect("sp", 14));
 		return mult;
 	},
 	effect() {
@@ -33,8 +36,11 @@ addLayer("sp", {
 		if (hasChallenge("sp", 11)) base0 = base0.mul(2);
 		if (hasChallenge("sp", 12)) base0 = base0.mul(challengeEffect("sp", 12));
 		if (hasChallenge("sp", 13)) base0 = base0.mul(2);
+		if (hasChallenge("sp", 14)) base0 = base0.mul(2);
+		if (hasChallenge("sp", 15)) base0 = base0.mul(2);
 		// exponent
-		let exp2 = 0.5;
+		let exp2 = 0.2;
+		if (player.sp.points.gte(6)) exp2 += 0.3;
 		if (hasChallenge("sp", 11)) exp2 += 0.075;
 		// return
 		if (player.sp.points.gte(6)) return [
@@ -43,9 +49,9 @@ addLayer("sp", {
 			player.sp.points.pow(exp2),
 		];
 		return [
-			player.sp.points.pow(0.5).div(2).add(1.5).pow(player.sp.points),
+			base0.pow(0.5).div(2).add(1.5).pow(player.sp.points),
 			player.sp.points.add(1),
-			player.sp.points.mul(5).add(1).pow(0.2),
+			player.sp.points.mul(5).add(1).pow(exp2),
 		];
 	},
 	effectDescription() {return "which are dividing the evolution requirement by /" + format(tmp.sp.effect[0]) + ", multiplying the extra STR, WIS, AGI, and INT from evolutions by " + format(tmp.sp.effect[1]) + "x, and exponentiating evolution amount in the last evolution effect by ^" + format(tmp.sp.effect[2])},
@@ -117,6 +123,7 @@ addLayer("sp", {
 			name: "3rd Hybridization",
 			fullDisplay() {
 				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does a species reset.<br>While in this hybridization, the original evolution requirement base is set to 2.<br><br>Goal: " + formatWhole(this.goal) + " evolutions<br><br>Rewards: The base of the first species effect is multiplied by 2, focus requirement is divided by 2, and acclimation requirement is divided based on conscious beings (currently&nbsp;/" + format(this.rewardEffect()) + ")";
+				return "You need " + formatWhole(this.unlockReq) + " species to unlock this hybridization.";
 			},
 			rewardEffect() {return new Decimal(1.36).pow(player.cb.points)},
 			goal: 537,
@@ -125,6 +132,37 @@ addLayer("sp", {
 			unlockReq: 10,
 			enterable() {return player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)},
 			doReset: true,
+			style: {"width": "250px", "height": "360px"},
+		},
+		14: {
+			name: "4th Hybridization",
+			fullDisplay() {
+				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does a species reset.<br>While in this hybridization, the original acclimation requirement base is set to 10.<br><br>Goal: " + formatWhole(this.goal) + " evolutions<br><br>Rewards: The base of the first species effect is multiplied by 2, the last conscious beings effect is powered to 1.5, and species requirement is divided based on acclimation points past 200 (currently&nbsp;/" + format(this.rewardEffect()) + ")";
+				return "You need " + formatWhole(this.unlockReq) + " species to unlock this hybridization.";
+			},
+			rewardEffect() {return new Decimal(1.01).pow(player.a.points.sub(200).pow(0.5)).max(1)},
+			goal: 1096,
+			canComplete() {return player.e.points.gte(this.goal)},
+			unlocked() {return hasChallenge("e", this.id - 1) || hasChallenge("e", this.id)},
+			unlockReq: 12,
+			enterable() {return player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)},
+			doReset: true,
+			style: {"width": "250px", "height": "360px"},
+		},
+		15: {
+			name: "5th Hybridization",
+			fullDisplay() {
+				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does a species reset.<br>While in this hybridization, all previous in hybridization effects are applied.<br><br>Goal: " + formatWhole(this.goal) + " evolutions<br><br>Rewards: The base of the first species effect is multiplied by 2, base acclimation requirement is decreased by 0.0505, focus requirement is divided by 1.5, and a new layer is unlocked";
+				return "You need " + formatWhole(this.unlockReq) + " species to unlock this hybridization.";
+			},
+			rewardEffect() {return 0.0505},
+			goal: 501,
+			canComplete() {return player.e.points.gte(this.goal)},
+			unlocked() {return hasChallenge("e", this.id - 1) || hasChallenge("e", this.id)},
+			unlockReq: 13,
+			enterable() {return player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)},
+			doReset: true,
+			countsAs: [11, 12, 13, 14],
 			style: {"width": "250px", "height": "360px"},
 		},
 	},

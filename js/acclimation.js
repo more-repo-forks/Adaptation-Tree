@@ -19,9 +19,10 @@ addLayer("a", {
 	requires: new Decimal(64000),
 	type: "static",
 	base() {
-		let base = 2;
+		let base = (inChallenge("sp", 14) ? 10 : 2);
 		if (hasMilestone("g", 67)) base -= milestoneEffect("g", 67);
 		if (hasMilestone("g", 72)) base -= milestoneEffect("g", 72);
+		if (hasChallenge("sp", 15)) base -= challengeEffect("sp", 15);
 		return base;
 	},
 	exponent: 1,
@@ -64,6 +65,7 @@ addLayer("a", {
 		if (hasMilestone("a", 51)) mult[2] *= milestoneEffect("a", 51);
 		if (hasChallenge("e", 18)) mult[2] *= challengeEffect("e", 18);
 		if (hasChallenge("e", 19)) mult[0] *= 100;
+		if (hasMilestone("a", 52)) mult[0] *= clickableEffect("cb", 14);
 		let exp1 = 0.1;
 		if (hasMilestone("a", 34)) exp1 += milestoneEffect("a", 34);
 		let eff = [
@@ -768,6 +770,31 @@ addLayer("a", {
 			popupTitle: "Enhancement Acquired!",
 			effect() {return player.a.points.add(1).pow(0.29922)},
 			effectDescription() {return "multiply the last population effect based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		52: {
+			requirement: 196,
+			requirementDescription: "Retrogression enhancement X",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.05},
+			effectDescription() {return "increase the base of the 10th retrogression's third effect by 0.05<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		53: {
+			requirement: 206,
+			requirementDescription: "Conscious enhancement III",
+			popupTitle: "Enhancement Acquired!",
+			effectDescription() {return "give both types of focus points an additional effect<br>Req: " + formatWhole(this.requirement) + " acclimation points and 40 completions of the 10th retrogression"},
+			done() {return player.a.points.gte(this.requirement) && challengeCompletions("e", 21) >= 40},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		54: {
+			requirement: 218,
+			requirementDescription: "Retrogression enhancement XI",
+			popupTitle: "Enhancement Acquired!",
+			effectDescription() {return "gain 10th retrogression completions automatically<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("a", this.id - 1)},
 		},

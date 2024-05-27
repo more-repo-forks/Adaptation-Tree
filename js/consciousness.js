@@ -1,7 +1,8 @@
 function getFocusRequirement() {
 	let req = new Decimal(5e11);
-	if (hasChallenge("sp", 13)) req = req.div(2);
 	if (hasMilestone("a", 50)) req = req.div(milestoneEffect("a", 50));
+	if (hasChallenge("sp", 13)) req = req.div(2);
+	if (hasChallenge("sp", 15)) req = req.div(1.5);
 	return req;
 };
 
@@ -31,15 +32,20 @@ addLayer("cb", {
 		return mult;
 	},
 	effect() {
+		// effects
 		let eff = [
 			new Decimal(100).pow(player.cb.points),
 			new Decimal(5).pow(player.cb.points),
 			player.cb.points.add(1),
 		];
+		// third effect
+		if (hasChallenge("sp", 14)) eff[2] = eff[2].pow(1.5);
+		// focus
 		if (player.cb.focusUnlocked) {
 			let extra = tmp.g.buyables[11].extra.add(tmp.g.buyables[12].extra).add(tmp.g.buyables[13].extra).add(tmp.g.buyables[14].extra);
 			eff[3] = extra.div(getFocusRequirement()).max(1).log2().floor().toNumber();
 		};
+		// return
 		return eff;
 	},
 	effectDescription() {return "which are dividing the evolution requirement by /" + format(tmp.cb.effect[0]) + ", dividing the acclimation requirement by /" + format(tmp.cb.effect[1]) + ", and multiplying extra STR, WIS, AGI, and INT levels by " + format(tmp.cb.effect[2]) + "x"},
@@ -76,7 +82,8 @@ addLayer("cb", {
 			arr.push("blank");
 			arr.push(["display-text", "You have " + formatWhole(tmp.g.buyables[11].extra.add(tmp.g.buyables[12].extra).add(tmp.g.buyables[13].extra).add(tmp.g.buyables[14].extra)) + " total extra growth stat levels,<br>making the maximum focus points be " + tmp.cb.effect[3] + ".<br><br>The next point can be gained at " + formatWhole(new Decimal(2).pow(tmp.cb.effect[3] + 1).mul(getFocusRequirement())) + " extra levels."]);
 			arr.push("blank");
-			arr.push(["display-text", "<div style='display: inline-block; vertical-align: top; width: 50%'>You have <h2 style='color: #ED6A5E; text-shadow: #ED6A5E 0px 0px 10px'>" + formatWhole(getClickableState("cb", 11)) + "</h2> focus points allocated to evolution, which are increasing the completion limit of the 10th retrogression by " + formatWhole(clickableEffect("cb", 11)) + ".</div><div style='display: inline-block; vertical-align: top; width: 50%'>You have <h2 style='color: #B3478F; text-shadow: #B3478F 0px 0px 10px'>" + formatWhole(getClickableState("cb", 12)) + "</h2> focus points allocated to acclimation, which are multiplying population maximum and gain by " + format(clickableEffect("cb", 12)) + "x.<div>"]);
+			if (hasMilestone("a", 52)) arr.push(["display-text", "<div style='display: inline-block; vertical-align: top; width: 50%'>You have <h2 style='color: #ED6A5E; text-shadow: #ED6A5E 0px 0px 10px'>" + formatWhole(getClickableState("cb", 11)) + "</h2> focus points allocated to evolution, which are increasing the completion limit of the 10th retrogression by " + formatWhole(clickableEffect("cb", 11)) + " and dividing the evolution requirement by /" + format(clickableEffect("cb", 13)) + ".</div><div style='display: inline-block; vertical-align: top; width: 50%'>You have <h2 style='color: #B3478F; text-shadow: #B3478F 0px 0px 10px'>" + formatWhole(getClickableState("cb", 12)) + "</h2> focus points allocated to acclimation, which are multiplying population maximum and gain by " + format(clickableEffect("cb", 12)) + "x and multiplying the exponent of the first population effect by " + format(clickableEffect("cb", 14)) + "x.<div>"]);
+			else arr.push(["display-text", "<div style='display: inline-block; vertical-align: top; width: 50%'>You have <h2 style='color: #ED6A5E; text-shadow: #ED6A5E 0px 0px 10px'>" + formatWhole(getClickableState("cb", 11)) + "</h2> focus points allocated to evolution, which are increasing the completion limit of the 10th retrogression by " + formatWhole(clickableEffect("cb", 11)) + ".</div><div style='display: inline-block; vertical-align: top; width: 50%'>You have <h2 style='color: #B3478F; text-shadow: #B3478F 0px 0px 10px'>" + formatWhole(getClickableState("cb", 12)) + "</h2> focus points allocated to acclimation, which are multiplying population maximum and gain by " + format(clickableEffect("cb", 12)) + "x.<div>"]);
 			arr.push("blank");
 		};
 		return arr;
@@ -120,12 +127,14 @@ addLayer("cb", {
 		},
 		13: {
 			title: "MAX E",
+			effect() {if (hasMilestone("a", 52)) return new Decimal(5).pow(getClickableState("cb", 11) || 0)},
 			canClick() {return (getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0) < tmp.cb.effect[3]},
 			onClick() {setClickableState("cb", 11, tmp.cb.effect[3] - (getClickableState("cb", 12) || 0))},
 			style: {"width": "74px", "background-color": "#ED6A5E"},
 		},
 		14: {
 			title: "MAX A",
+			effect() {if (hasMilestone("a", 52)) return ((getClickableState("cb", 12) || 0) + 1) ** 0.5},
 			canClick() {return (getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0) < tmp.cb.effect[3]},
 			onClick() {setClickableState("cb", 12, tmp.cb.effect[3] - (getClickableState("cb", 11) || 0))},
 			style: {"width": "74px", "background-color": "#B3478F"},

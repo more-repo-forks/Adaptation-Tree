@@ -150,7 +150,8 @@ const extraEvolutionEffects = {
 	},
 	1345: "The extra STR, WIS, AGI, and INT from evolutions are even greater.",
 	1372() {
-		if (player.e.points.gte(1372)) return "The species requirement base is decreased by 0.1.";
+		if (player.e.points.gte(1591)) return;
+		else if (player.e.points.gte(1372)) return "The species requirement base is decreased by 0.1.";
 		else return "The species requirement base is decreased by 0.02.";
 	},
 	1425() {
@@ -158,6 +159,15 @@ const extraEvolutionEffects = {
 		else return "The 10th retrogression is even easier.";
 	},
 	1547: "The 10th retrogression is even easier still.",
+	1591() {
+		if (player.e.points.gte(2171)) return;
+		else if (player.e.points.gte(1591)) return "The species requirement base is decreased by 0.1375.";
+		else return "The species requirement base is decreased by 0.0375.";
+	},
+	2171() {
+		if (player.e.points.gte(2171)) return "The species requirement base is decreased by 0.145.";
+		else return "The species requirement base is decreased by 0.0075.";
+	},
 };
 
 addLayer("e", {
@@ -204,6 +214,7 @@ addLayer("e", {
 		if (hasChallenge("e", 17)) mult = mult.div(challengeEffect("e", 17));
 		if (hasChallenge("e", 19)) mult = mult.div(challengeEffect("e", 19));
 		if (hasChallenge("e", 21) && challengeEffect("e", 21)[0]) mult = mult.div(challengeEffect("e", 21)[0]);
+		if (hasMilestone("a", 52)) mult = mult.div(clickableEffect("cb", 13));
 		if (tmp.a.effect[1]) mult = mult.div(tmp.a.effect[1]);
 		if (tmp.sp.effect[0]) mult = mult.div(tmp.sp.effect[0]);
 		if (tmp.cb.effect[0]) mult = mult.div(tmp.cb.effect[0]);
@@ -346,6 +357,7 @@ addLayer("e", {
 	},
 	update(diff) {
 		if (hasMilestone("g", 24) && !player.e.challengesUnlocked) player.e.challengesUnlocked = true;
+		if (hasMilestone("a", 54) && tmp.e.challenges[21].completionLimit > player.e.challenges[21]) player.e.challenges[21]++;
 		player.e.challenges[21] = Math.floor(player.e.challenges[21]);
 	},
 	componentStyles: {
@@ -522,11 +534,14 @@ addLayer("e", {
 				// 2nd effect base
 				let base1 = new Decimal(2);
 				if (player.e.points.gte(503)) base1 = base1.add(8);
+				// 3rd effect base
+				let base2 = new Decimal(1.2);
+				if (hasMilestone("a", 52)) base2 = base2.add(0.05);
 				// first three effects
 				let eff = [
 					base0.pow(challengeCompletions("e", this.id)),
 					base1.pow(challengeCompletions("e", this.id)),
-					new Decimal(1.2).pow(challengeCompletions("e", this.id)),
+					base2.pow(challengeCompletions("e", this.id)),
 					new Decimal(1),
 				];
 				// last effect
@@ -538,7 +553,7 @@ addLayer("e", {
 				// return
 				return eff;
 			},
-			goal() {return [1932, 2132, 2525, 4960, 6390, 9111, 23866, 27200, 31550, 165360, 172222, 237101, 274600, 299075, 417088, 438088, 543644, 574280, 1891455, 2369288, 2710577, 3038161, 3432757, 12804264, 18518825, 25033969, 41771320, 44681050, 53741755, 56712288, 64654633, 89470100, 94354100, 504777099, 580014455, 618312800, 655288313, 677988377][challengeCompletions("e", this.id)] || Infinity},
+			goal() {return [1932, 2132, 2525, 4960, 6390, 9111, 23866, 27200, 31550, 165360, 172222, 237101, 274600, 299075, 417088, 438088, 543644, 574280, 1891455, 2369288, 2710577, 3038161, 3432757, 12804264, 18518825, 25033969, 41771320, 44681050, 53741755, 56712288, 64654633, 89470100, 94354100, 504777099, 580014455, 618312800, 655288313, 677988377, 734667450, 811310777, 914555555][challengeCompletions("e", this.id)] || Infinity},
 			canComplete() {return player.g.points.gte(this.goal())},
 			unlocked() {return hasChallenge("e", 19) || hasChallenge("e", this.id)},
 			unlockReq: 209,
