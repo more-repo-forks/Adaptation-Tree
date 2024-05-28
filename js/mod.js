@@ -71,12 +71,12 @@ var displayThings = [
 		if (tmp.other.oompsMag != 0 && options.showOOMs) return "(" + format(tmp.other.oomps) + " OOM" + (tmp.other.oompsMag < 0 ? "^OOM" : tmp.other.oompsMag > 1 ? "^" + tmp.other.oompsMag : "") + "s/sec)";
 		return "(" + format(getPointPotential()) + " max power)";
 	},
-	() => {return "<br>current endgame is 2,297 " + (player.e.unlocked ? "evolutions" : "???") + " and 250 " + (player.a.unlocked ? "acclimation points" : "???")},
+	() => {return "<br>current endgame is at 483 " + (player.a.unlocked ? "acclimation points" : "???")},
 ];
 
 // Determines when the game "ends"
 function isEndgame() {
-	return false; // player.e.points.gte(2297) && player.a.points.gte(250);
+	return player.a.points.gte(483);
 };
 
 // Style for the background, can be a function

@@ -52,8 +52,10 @@ addLayer("a", {
 		return mult;
 	},
 	effect() {
+		// initialize
 		let amt = player.a.population;
 		amt = amt.mul(buyableEffect("a", 14));
+		// multiply
 		let mult = [1, 1, 1];
 		if (hasMilestone("a", 3)) mult[2] *= milestoneEffect("a", 3);
 		if (hasMilestone("a", 11)) mult[1] *= milestoneEffect("a", 11);
@@ -70,8 +72,11 @@ addLayer("a", {
 		if (hasChallenge("e", 18)) mult[2] *= challengeEffect("e", 18);
 		if (hasChallenge("e", 19)) mult[0] *= 100;
 		if (hasMilestone("a", 52)) mult[0] *= clickableEffect("cb", 14);
+		// exponent
 		let exp1 = 0.1;
 		if (hasMilestone("a", 34)) exp1 += milestoneEffect("a", 34);
+		if (hasMilestone("a", 60)) exp1 += milestoneEffect("a", 60);
+		// return
 		let eff = [
 			(hasMilestone("a", 6) ? amt.add(1).pow(amt.log10().add(1).pow(0.125).mul(200000).mul(mult[0])) : new Decimal(10).pow(amt.sub(1).mul(mult[0])).sub(1).mul(1e100).add(1)),
 			amt.pow(exp1).mul(mult[1]),
@@ -170,7 +175,10 @@ addLayer("a", {
 	},
 	buyables: {
 		11: {
-			cost() {return getBuyableAmount(this.layer, this.id).add(1)},
+			cost() {
+				if (hasChallenge("sp", 18)) return getBuyableAmount(this.layer, this.id);
+				return getBuyableAmount(this.layer, this.id).add(1);
+			},
 			effectBase() {
 				let base = new Decimal(10);
 				if (hasMilestone("a", 0)) base = base.mul(milestoneEffect("a", 0));
@@ -200,7 +208,10 @@ addLayer("a", {
 			},
 		},
 		12: {
-			cost() {return getBuyableAmount(this.layer, this.id).add(1)},
+			cost() {
+				if (hasChallenge("sp", 18)) return getBuyableAmount(this.layer, this.id);
+				return getBuyableAmount(this.layer, this.id).add(1);
+			},
 			effectBase() {
 				let base = new Decimal(5);
 				if (hasMilestone("a", 15)) base = base.mul(milestoneEffect("a", 15));
@@ -230,7 +241,10 @@ addLayer("a", {
 			},
 		},
 		13: {
-			cost() {return getBuyableAmount(this.layer, this.id).add(1)},
+			cost() {
+				if (hasChallenge("sp", 18)) return getBuyableAmount(this.layer, this.id);
+				return getBuyableAmount(this.layer, this.id).add(1);
+			},
 			effectBase() {
 				let base = new Decimal(1.25);
 				if (hasMilestone("a", 1)) base = base.add(milestoneEffect("a", 1));
@@ -240,6 +254,7 @@ addLayer("a", {
 				if (hasMilestone("a", 38)) base = base.add(milestoneEffect("a", 38));
 				if (hasMilestone("a", 49)) base = base.add(milestoneEffect("a", 49));
 				if (hasMilestone("a", 58)) base = base.add(milestoneEffect("a", 58));
+				if (hasMilestone("a", 63)) base = base.add(milestoneEffect("a", 63));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
@@ -260,7 +275,10 @@ addLayer("a", {
 			},
 		},
 		14: {
-			cost() {return getBuyableAmount(this.layer, this.id).add(1)},
+			cost() {
+				if (hasChallenge("sp", 18)) return getBuyableAmount(this.layer, this.id);
+				return getBuyableAmount(this.layer, this.id).add(1);
+			},
 			effectBase() {
 				let base = new Decimal(3);
 				if (hasMilestone("a", 2)) base = base.mul(milestoneEffect("a", 2));
@@ -666,7 +684,7 @@ addLayer("a", {
 		},
 		39: {
 			requirement: 105,
-			requirementDescription: "Conscious enhancement I",
+			requirementDescription: "Consciousness enhancement I",
 			popupTitle: "Enhancement Acquired!",
 			effectDescription() {
 				let text = "unlock a new layer";
@@ -769,7 +787,7 @@ addLayer("a", {
 		},
 		50: {
 			requirement: 190,
-			requirementDescription: "Conscious enhancement II",
+			requirementDescription: "Consciousness enhancement II",
 			popupTitle: "Enhancement Acquired!",
 			effect() {return player.a.points.add(1).pow(0.25)},
 			effectDescription() {return "divide focus requirement based on acclimation points<br>Effect: /" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " acclimation points and 35 completions of the 10th retrogression"},
@@ -796,7 +814,7 @@ addLayer("a", {
 		},
 		53: {
 			requirement: 206,
-			requirementDescription: "Conscious enhancement III",
+			requirementDescription: "Consciousness enhancement III",
 			popupTitle: "Enhancement Acquired!",
 			effectDescription() {return "give both types of focus points an additional effect<br>Req: " + formatWhole(this.requirement) + " acclimation points and 40 completions of the 10th retrogression"},
 			done() {return player.a.points.gte(this.requirement) && challengeCompletions("e", 21) >= 40},
@@ -830,9 +848,9 @@ addLayer("a", {
 		},
 		57: {
 			requirement: 284,
-			requirementDescription: "Conscious enhancement IV",
+			requirementDescription: "Consciousness enhancement IV",
 			popupTitle: "Enhancement Acquired!",
-			effectDescription() {return "improve acclimation focus's second effect<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			effectDescription() {return "greatly improve acclimation focus's second effect<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("a", this.id - 1)},
 		},
@@ -851,6 +869,40 @@ addLayer("a", {
 			popupTitle: "Enhancement Acquired!",
 			effect() {return player.a.points.add(1).pow(0.36)},
 			effectDescription() {return "multiply the base effect of CRA based on acclimation points<br>and reduce population max's influence on gain<br>Effects: " + format(this.effect()) + "x and -0.03<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		60: {
+			requirement: 350,
+			requirementDescription: "Population enhancement XII",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.055},
+			effectDescription() {return "increase the exponent of the second population effect by 0.055<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		61: {
+			requirement: 394,
+			requirementDescription: "Consciousness enhancement V",
+			popupTitle: "Enhancement Acquired!",
+			effectDescription() {return "greatly improve evolution focus's second effect<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		62: {
+			requirement: 405,
+			requirementDescription: "Consciousness enhancement VI",
+			popupTitle: "Enhancement Acquired!",
+			effectDescription() {return "improve conscious beings's last effect<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		63: {
+			requirement: 438,
+			requirementDescription: "ANA enhancement IX",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.5},
+			effectDescription() {return "increase the base effect of ANA by 0.5<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("a", this.id - 1)},
 		},

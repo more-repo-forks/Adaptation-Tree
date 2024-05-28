@@ -34,6 +34,8 @@ addLayer("sp", {
 		return mult;
 	},
 	effect() {
+		// overrides
+		if (inChallenge("sp", 17)) return [1, 1, 1];
 		// base
 		let base0 = player.sp.points;
 		if (hasChallenge("sp", 11)) base0 = base0.mul(2);
@@ -43,17 +45,19 @@ addLayer("sp", {
 		if (hasChallenge("sp", 15)) base0 = base0.mul(2);
 		if (hasChallenge("sp", 16)) base0 = base0.mul(5);
 		// exponent
+		let exp0 = 1;
+		if (hasChallenge("sp", 17)) exp0 += 0.25;
 		let exp2 = 0.2;
 		if (player.sp.points.gte(6)) exp2 += 0.3;
 		if (hasChallenge("sp", 11)) exp2 += 0.075;
 		// return
 		if (player.sp.points.gte(6)) return [
-			base0.pow(player.sp.points),
+			base0.pow(player.sp.points.pow(exp0)),
 			player.sp.points.pow(2),
 			player.sp.points.pow(exp2),
 		];
 		return [
-			base0.pow(0.5).div(2).add(1.5).pow(player.sp.points),
+			base0.pow(0.5).div(2).add(1.5).pow(player.sp.points.pow(exp0)),
 			player.sp.points.add(1),
 			player.sp.points.mul(5).add(1).pow(exp2),
 		];
@@ -104,7 +108,7 @@ addLayer("sp", {
 		12: {
 			name: "2nd Hybridization",
 			fullDisplay() {
-				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does a species reset.<br>While in this hybridization, you cannot buy ANA.<br><br>Goal: " + formatWhole(this.goal) + " evolutions<br><br>Rewards: The extra STR, WIS, and AGI from evolutions is multiplied by 10, the base of the first species effect is multiplied based on hybridizations completed (currently&nbsp;" + format(this.rewardEffect()) + "x), and something new is unlocked in the conscious beings layer" + (player.cb.focusUnlocked ? " (already unlocked)" : "");
+				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does a species reset.<br>While in this hybridization, you cannot buy ANA.<br><br>Goal: " + formatWhole(this.goal) + " evolutions<br><br>Rewards: The extra STR, WIS, and AGI from evolutions is multiplied by 10, the base of the first species effect is multiplied based on hybridizations completed (" + (this.rewardEffect().gte(10) ? "maxed at 10" : "currently&nbsp;" + formatWhole(this.rewardEffect())) + "x), and something new is unlocked in the consciousness layer" + (player.cb.focusUnlocked ? " (already unlocked)" : "");
 				return "You need " + formatWhole(this.unlockReq) + " species to unlock this hybridization.";
 			},
 			rewardEffect() {
@@ -114,11 +118,11 @@ addLayer("sp", {
 						hybridizations += player.sp.challenges[id];
 					};
 				};
-				return new Decimal(hybridizations).add(1);
+				return new Decimal(hybridizations).add(1).min(10);
 			},
 			goal: 1095,
 			canComplete() {return player.e.points.gte(this.goal)},
-			unlocked() {return hasChallenge("e", this.id - 1) || hasChallenge("e", this.id)},
+			unlocked() {return hasChallenge("sp", this.id - 1) || hasChallenge("sp", this.id)},
 			unlockReq: 9,
 			enterable() {return player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)},
 			doReset: true,
@@ -134,7 +138,7 @@ addLayer("sp", {
 			rewardEffect() {return new Decimal(1.36).pow(player.cb.points)},
 			goal: 537,
 			canComplete() {return player.e.points.gte(this.goal)},
-			unlocked() {return hasChallenge("e", this.id - 1) || hasChallenge("e", this.id)},
+			unlocked() {return hasChallenge("sp", this.id - 1) || hasChallenge("sp", this.id)},
 			unlockReq: 10,
 			enterable() {return player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)},
 			doReset: true,
@@ -148,12 +152,13 @@ addLayer("sp", {
 				return "You need " + formatWhole(this.unlockReq) + " species to unlock this hybridization.";
 			},
 			rewardEffect() {
+				if (hasChallenge("sp", 19)) return new Decimal(1.04).pow(player.a.points.sub(200).pow(0.5)).max(1);
 				if (hasChallenge("sp", 16)) return new Decimal(1.02).pow(player.a.points.sub(200).pow(0.5)).max(1);
 				return new Decimal(1.01).pow(player.a.points.sub(200).pow(0.5)).max(1);
 			},
 			goal: 1096,
 			canComplete() {return player.e.points.gte(this.goal)},
-			unlocked() {return hasChallenge("e", this.id - 1) || hasChallenge("e", this.id)},
+			unlocked() {return hasChallenge("sp", this.id - 1) || hasChallenge("sp", this.id)},
 			unlockReq: 12,
 			enterable() {return player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)},
 			doReset: true,
@@ -169,7 +174,7 @@ addLayer("sp", {
 			rewardEffect() {return 0.0505},
 			goal: 501,
 			canComplete() {return player.e.points.gte(this.goal)},
-			unlocked() {return hasChallenge("e", this.id - 1) || hasChallenge("e", this.id)},
+			unlocked() {return hasChallenge("sp", this.id - 1) || hasChallenge("sp", this.id)},
 			unlockReq: 13,
 			enterable() {return player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)},
 			doReset: true,
@@ -186,11 +191,67 @@ addLayer("sp", {
 			rewardEffect() {return 0.01},
 			goal: 2067,
 			canComplete() {return player.e.points.gte(this.goal)},
-			unlocked() {return hasChallenge("e", this.id - 1) || hasChallenge("e", this.id)},
+			unlocked() {return hasChallenge("sp", this.id - 1) || hasChallenge("sp", this.id)},
 			unlockReq: 15,
 			enterable() {return player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)},
 			doReset: true,
 			overrideResetsNothing: true,
+			style: {"width": "250px", "height": "360px"},
+		},
+		17: {
+			name: "7th Hybridization",
+			fullDisplay() {
+				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does a species reset.<br>While in this hybridization, species effects do nothing.<br><br>Goal: " + formatWhole(this.goal) + " evolutions<br><br>Rewards: The first species effect is greatly improved, focus can be allocated to both evolution and acclimation, focus points are automatically allocated, and domination point requirement is divided based on hybridizations completed (currently&nbsp;/" + format(this.rewardEffect()) + ")";
+				return "You need " + formatWhole(this.unlockReq) + " species to unlock this hybridization.";
+			},
+			rewardEffect() {
+				let hybridizations = 0;
+				for (const id in player.sp.challenges) {
+					if (Object.hasOwnProperty.call(player.sp.challenges, id)) {
+						hybridizations += player.sp.challenges[id];
+					};
+				};
+				if (hasChallenge("sp", 18)) return new Decimal(hybridizations).div(100).add(1).pow(12.88888888888889);
+				return new Decimal(hybridizations).div(100).add(1).pow(6.555555555555555);
+			},
+			goal: 2131,
+			canComplete() {return player.e.points.gte(this.goal)},
+			unlocked() {return hasChallenge("sp", this.id - 1) || hasChallenge("sp", this.id)},
+			unlockReq: 16,
+			enterable() {return player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)},
+			doReset: true,
+			overrideResetsNothing: true,
+			style: {"width": "250px", "height": "360px"},
+		},
+		18: {
+			name: "8th Hybridization",
+			fullDisplay() {
+				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does a species reset.<br>While in this hybridization, the original growth requirement base is set to 1e100.<br><br>Goal: " + formatWhole(this.goal) + " evolutions<br><br>Rewards: The first two conscious being effects are improved; the costs of CRA, FER, ANA, and SOV are reduced by one level; and the 7th hybridization's last effect is improved.";
+				return "You need " + formatWhole(this.unlockReq) + " species to unlock this hybridization.";
+			},
+			goal: 3931,
+			canComplete() {return player.e.points.gte(this.goal)},
+			unlocked() {return hasChallenge("sp", this.id - 1) || hasChallenge("sp", this.id)},
+			unlockReq: 18,
+			enterable() {return player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)},
+			doReset: true,
+			overrideResetsNothing: true,
+			style: {"width": "250px", "height": "360px"},
+		},
+		19: {
+			name: "9th Hybridization",
+			fullDisplay() {
+				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does a species reset.<br>While in this hybridization, all previous in hybridization effects are applied.<br><br>Goal: " + formatWhole(this.goal) + " evolutions<br><br>Rewards: The 4th hybridization's last effect is improved again; the base consciousness and domination requirements are decreased; and a new layer is unlocked";
+				return "You need " + formatWhole(this.unlockReq) + " species to unlock this hybridization.";
+			},
+			goal: 301,
+			canComplete() {return player.e.points.gte(this.goal)},
+			unlocked() {return hasChallenge("sp", this.id - 1) || hasChallenge("sp", this.id)},
+			unlockReq: 19,
+			enterable() {return player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)},
+			doReset: true,
+			overrideResetsNothing: true,
+			countsAs: [11, 12, 13, 14, 15, 16, 17, 18],
 			style: {"width": "250px", "height": "360px"},
 		},
 	},

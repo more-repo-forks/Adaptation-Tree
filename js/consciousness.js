@@ -8,7 +8,7 @@ function getFocusRequirement() {
 };
 
 addLayer("cb", {
-	name: "Conscious Beings",
+	name: "Consciousness",
 	symbol: "CB",
 	position: 1,
 	branches: ["e", "g", "a"],
@@ -25,7 +25,10 @@ addLayer("cb", {
 	baseAmount() {return player.g.points},
 	requires: new Decimal(1e15),
 	type: "static",
-	base: 10,
+	base() {
+		if (hasChallenge("sp", 19)) return 8;
+		return 10;
+	},
 	exponent: 1,
 	canBuyMax() {return false},
 	resetDescription: "Enlighten for ",
@@ -34,14 +37,16 @@ addLayer("cb", {
 		return mult;
 	},
 	effect() {
+		// third effect
+		let pow2 = 1;
+		if (hasChallenge("sp", 14)) pow2 += 0.5;
+		if (hasMilestone("a", 62)) pow2 += 0.5;
 		// effects
 		let eff = (inChallenge("sp", 16) ? [new Decimal(1), new Decimal(1), new Decimal(1)] : [
-			new Decimal(100).pow(player.cb.points),
-			new Decimal(5).pow(player.cb.points),
-			player.cb.points.add(1),
+			new Decimal(hasChallenge("sp", 18) ? 150 : 100).pow(player.cb.points),
+			new Decimal(hasChallenge("sp", 18) ? 7.5 : 5).pow(player.cb.points),
+			player.cb.points.add(1).pow(pow2),
 		]);
-		// third effect
-		if (hasChallenge("sp", 14)) eff[2] = eff[2].pow(1.5);
 		// focus
 		if (player.cb.focusUnlocked) {
 			let extra = tmp.g.buyables[11].extra.add(tmp.g.buyables[12].extra).add(tmp.g.buyables[13].extra).add(tmp.g.buyables[14].extra);
@@ -63,24 +68,29 @@ addLayer("cb", {
 		];
 		if (player.cb.focusUnlocked) {
 			let svg = "<svg viewBox='0 0 500 50' style='width: 500px; height: 50px'>";
-			let maximum = Math.max((getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0), tmp.cb.effect[3]);
+			let maximum = (hasChallenge("sp", 17) ?
+				Math.max((getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0), tmp.cb.effect[3] * 2)
+				: Math.max((getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0), tmp.cb.effect[3])
+			);
 			if (maximum > 0) {
 				let right = (500 * getClickableState("cb", 12) / maximum);
 				svg += "<rect x='0' y='0' width='" + (500 * getClickableState("cb", 11) / maximum) + "' height='50' fill='#ED6A5E'/>";
 				svg += "<rect x='" + (500 - right) + "' y='0' width='" + right + "' height='50' fill='#B3478F'/>";
 				let div = (2 ** Math.floor(Math.log2(maximum) - 5));
 				if (div > 1) maximum /= div;
-				for (let index = (maximum % 1) / 2; index < maximum; index++) {
-					if (index == 0) continue;
-					let x = (500 * index / maximum);
-					svg += "<line x1='" + x + "' y1='0' x2='" + x + "' y2='50' stroke='#E6B45A'/>";
+				if (!hasChallenge("sp", 17)) {
+					for (let index = (maximum % 1) / 2; index < maximum; index++) {
+						if (index == 0) continue;
+						let x = (500 * index / maximum);
+						svg += "<line x1='" + x + "' y1='0' x2='" + x + "' y2='50' stroke='#E6B45A'/>";
+					};
 				};
 			};
 			svg += "</svg>";
 			svg += "<div style='position: relative; float: left; margin: -54px 0px 0px 7.5px; font-size: 48px; color: #DFDFDF'>E</div>";
 			svg += "<div style='position: relative; float: right; margin: -54px 9px 0px 0px; font-size: 48px; color: #DFDFDF'>A</div>";
 			arr.push(["display-text", svg, {"display": "inline-block", "width": "500px", "height": "50px", "border": "solid 4px #E6B45A"}]);
-			arr.push(["row", [["clickable", 13], ["clickable", 11], ["clickable", 15], ["clickable", 12], ["clickable", 14]]]);
+			if (!hasChallenge("sp", 17)) arr.push(["row", [["clickable", 13], ["clickable", 11], ["clickable", 15], ["clickable", 12], ["clickable", 14]]]);
 			arr.push("blank");
 			arr.push(["display-text", "You have " + formatWhole(tmp.g.buyables[11].extra.add(tmp.g.buyables[12].extra).add(tmp.g.buyables[13].extra).add(tmp.g.buyables[14].extra)) + " total extra growth stat levels,<br>making the maximum focus points be " + tmp.cb.effect[3] + ".<br><br>The next point can be gained at " + formatWhole(new Decimal(2).pow(tmp.cb.effect[3] + 1).mul(getFocusRequirement())) + " extra levels."]);
 			arr.push("blank");
@@ -102,9 +112,13 @@ addLayer("cb", {
 	},
 	update(diff) {
 		if (hasChallenge("sp", 12) && !player.cb.focusUnlocked) player.cb.focusUnlocked = true;
+		if (hasChallenge("sp", 17)) {
+			setClickableState("cb", 11, tmp.cb.effect[3]);
+			setClickableState("cb", 12, tmp.cb.effect[3]);
+		};
 	},
 	shouldNotify() {
-		if (player.cb.focusUnlocked && (getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0) < tmp.cb.effect[3] && !inChallenge("sp", 16)) return true;
+		if (player.cb.focusUnlocked && (getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0) < tmp.cb.effect[3] && !inChallenge("sp", 16) && !hasChallenge("sp", 17)) return true;
 	},
 	componentStyles: {
 		"prestige-button"() {if (tmp.cb.canReset) return {"background": "border-box linear-gradient(to right, #ED6A5E, #E6B45A, #B3478F)"}},
@@ -137,6 +151,7 @@ addLayer("cb", {
 			title: "MAX E",
 			effect() {
 				if (inChallenge("sp", 16)) return new Decimal(1);
+				if (hasMilestone("a", 61)) return new Decimal(88).pow(getClickableState("cb", 11) || 0);
 				if (hasMilestone("a", 52)) return new Decimal(5).pow(getClickableState("cb", 11) || 0);
 			},
 			canClick() {return (getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0) < tmp.cb.effect[3]},

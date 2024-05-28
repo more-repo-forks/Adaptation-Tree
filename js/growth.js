@@ -20,7 +20,7 @@ addLayer("g", {
 	requires: new Decimal(100000000),
 	type: "static",
 	base() {
-		let base = (inChallenge("e", 17) || inChallenge("e", 21) ? 10 : 2);
+		let base = (inChallenge("sp", 18) ? 1e100 : (inChallenge("e", 17) || inChallenge("e", 21) ? 10 : 2));
 		if (inChallenge("e", 18)) return base;
 		if (hasUpgrade("s", 84)) base -= upgradeEffect("s", 84);
 		if (hasMilestone("g", 18)) base -= milestoneEffect("g", 18);

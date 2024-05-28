@@ -16,13 +16,17 @@ addLayer("d", {
 	baseAmount() {return player.a.points},
 	requires: new Decimal(250),
 	type: "static",
-	base: 2,
+	base() {
+		if (hasChallenge("sp", 19)) return 1.84;
+		return 2;
+	},
 	exponent: 1,
 	canBuyMax() {return false},
 	resetDescription: "Dominate for ",
 	gainMult() {
 		let mult = new Decimal(1);
 		if (player.d.unlocks[3]) mult = mult.div(buyableEffect("d", 14));
+		if (hasChallenge("sp", 17)) mult = mult.div(challengeEffect("sp", 17));
 		return mult;
 	},
 	effect() {return player.points.add(1).pow(0.025)},
@@ -75,6 +79,8 @@ addLayer("d", {
 		]],
 		"blank",
 		"respec-button",
+		"blank",
+		"milestones",
 	],
 	layerShown() {return hasChallenge("sp", 15) || player.d.unlocked},
 	hotkeys: [{
@@ -98,12 +104,16 @@ addLayer("d", {
 	buyables: {
 		11: {
 			cost() {return getBuyableAmount(this.layer, this.id).add(1)},
-			baseEffect() {return 2.5},
-			effect() {return new Decimal(this.baseEffect()).pow(getBuyableAmount(this.layer, this.id))},
+			effectBase() {
+				let base = new Decimal(2.5);
+				if (hasMilestone("d", 0)) base = base.mul(milestoneEffect("d", 0));
+				return base;
+			},
+			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id))},
 			title: "DOMINATE (FOC)US",
 			display() {
 				if (!player.d.unlocks[0]) return "<br>requires 11 conscious beings to unlock";
-				return "divide focus requirement by " + format(this.baseEffect()) + "<br><br>Effect: /" + format(this.effect()) + "<br><br>Cost: " + formatWhole(this.cost()) + " domination points<br><br>Progress: " + format(getBuyableAmount(this.layer, this.id) * 20) + "%";
+				return "divide focus requirement by " + format(this.effectBase()) + "<br><br>Effect: /" + format(this.effect()) + "<br><br>Cost: " + formatWhole(this.cost()) + " domination points<br><br>Progress: " + format(getBuyableAmount(this.layer, this.id) * 20) + "%";
 			},
 			purchaseLimit: 5,
 			canAfford() {return player.d.unlocks[0] && player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit)},
@@ -176,4 +186,24 @@ addLayer("d", {
 		},
 		respecText: "respec domination points",
 	},
+	milestones: {
+		0: {
+			requirement: 5,
+			requirementDescription: "FOC enhancement I",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.d.points.add(1)},
+			effectDescription() {return "multiply the base effect of FOC based on domination points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+		},
+	},
+});
+
+addNode("blank", {
+	symbol: "EC",
+	branches: ["sp"],
+	position: 0,
+	nodeStyle: {"margin": "0 10px 0 10px", "border-radius": "50%"},
+	tooltipLocked: "coming soon!",
+	row: 4,
+	layerShown() {return hasChallenge("sp", 19)},
 });
