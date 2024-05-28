@@ -3,6 +3,7 @@ function getFocusRequirement() {
 	if (hasMilestone("a", 50)) req = req.div(milestoneEffect("a", 50));
 	if (hasChallenge("sp", 13)) req = req.div(2);
 	if (hasChallenge("sp", 15)) req = req.div(1.5);
+	if (player.d.unlocks[0]) req = req.div(buyableEffect("d", 11));
 	return req;
 };
 
@@ -26,6 +27,7 @@ addLayer("cb", {
 	type: "static",
 	base: 10,
 	exponent: 1,
+	canBuyMax() {return false},
 	resetDescription: "Enlighten for ",
 	gainMult() {
 		let mult = new Decimal(1);
@@ -33,11 +35,11 @@ addLayer("cb", {
 	},
 	effect() {
 		// effects
-		let eff = [
+		let eff = (inChallenge("sp", 16) ? [new Decimal(1), new Decimal(1), new Decimal(1)] : [
 			new Decimal(100).pow(player.cb.points),
 			new Decimal(5).pow(player.cb.points),
 			player.cb.points.add(1),
-		];
+		]);
 		// third effect
 		if (hasChallenge("sp", 14)) eff[2] = eff[2].pow(1.5);
 		// focus
@@ -102,7 +104,7 @@ addLayer("cb", {
 		if (hasChallenge("sp", 12) && !player.cb.focusUnlocked) player.cb.focusUnlocked = true;
 	},
 	shouldNotify() {
-		if (player.cb.focusUnlocked && (getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0) < tmp.cb.effect[3]) return true;
+		if (player.cb.focusUnlocked && (getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0) < tmp.cb.effect[3] && !inChallenge("sp", 16)) return true;
 	},
 	componentStyles: {
 		"prestige-button"() {if (tmp.cb.canReset) return {"background": "border-box linear-gradient(to right, #ED6A5E, #E6B45A, #B3478F)"}},
@@ -111,7 +113,10 @@ addLayer("cb", {
 	clickables: {
 		11: {
 			title: "Focus on evolution",
-			effect() {return (getClickableState("cb", 11) || 0)},
+			effect() {
+				if (inChallenge("sp", 16)) return 0;
+				return (getClickableState("cb", 11) || 0);
+			},
 			canClick() {return (getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0) < tmp.cb.effect[3]},
 			onClick() {setClickableState("cb", 11, (getClickableState("cb", 11) || 0) + 1)},
 			onHold() {setClickableState("cb", 11, (getClickableState("cb", 11) || 0) + 1)},
@@ -119,7 +124,10 @@ addLayer("cb", {
 		},
 		12: {
 			title: "Focus on acclimation",
-			effect() {return new Decimal(10).pow(getClickableState("cb", 12) || 0)},
+			effect() {
+				if (inChallenge("sp", 16)) return new Decimal(1);
+				return new Decimal(10).pow(getClickableState("cb", 12) || 0);
+			},
 			canClick() {return (getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0) < tmp.cb.effect[3]},
 			onClick() {setClickableState("cb", 12, (getClickableState("cb", 12) || 0) + 1)},
 			onHold() {setClickableState("cb", 12, (getClickableState("cb", 12) || 0) + 1)},
@@ -127,14 +135,21 @@ addLayer("cb", {
 		},
 		13: {
 			title: "MAX E",
-			effect() {if (hasMilestone("a", 52)) return new Decimal(5).pow(getClickableState("cb", 11) || 0)},
+			effect() {
+				if (inChallenge("sp", 16)) return new Decimal(1);
+				if (hasMilestone("a", 52)) return new Decimal(5).pow(getClickableState("cb", 11) || 0);
+			},
 			canClick() {return (getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0) < tmp.cb.effect[3]},
 			onClick() {setClickableState("cb", 11, tmp.cb.effect[3] - (getClickableState("cb", 12) || 0))},
 			style: {"width": "74px", "background-color": "#ED6A5E"},
 		},
 		14: {
 			title: "MAX A",
-			effect() {if (hasMilestone("a", 52)) return ((getClickableState("cb", 12) || 0) + 1) ** 0.5},
+			effect() {
+				if (inChallenge("sp", 16)) return 1;
+				if (hasMilestone("a", 57)) return ((getClickableState("cb", 12) || 0) * 2 + 1) ** 2;
+				if (hasMilestone("a", 52)) return ((getClickableState("cb", 12) || 0) + 1) ** 0.5;
+			},
 			canClick() {return (getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0) < tmp.cb.effect[3]},
 			onClick() {setClickableState("cb", 12, tmp.cb.effect[3] - (getClickableState("cb", 11) || 0))},
 			style: {"width": "74px", "background-color": "#B3478F"},
@@ -149,14 +164,4 @@ addLayer("cb", {
 			style: {"background-color": "#000"},
 		},
 	},
-});
-
-addNode("blank", {
-	symbol: "?",
-	branches: ["a"],
-	position: 2,
-	nodeStyle: {"margin": "0 10px 0 10px", "border-radius": "50%"},
-	tooltipLocked: "coming soon!",
-	row: 3,
-	layerShown() {return hasMilestone("a", 39) || player.cb.unlocked},
 });

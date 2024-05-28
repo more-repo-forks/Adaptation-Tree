@@ -132,7 +132,7 @@ const extraEvolutionEffects = {
 	},
 	886: "The 10th retrogression's last effect is improved even further still.",
 	940() {
-		if (player.e.points.gte(1425)) return;
+		if (player.e.points.gte(1425) || hasMilestone("a", 54)) return;
 		else return "The 10th retrogression is easier.";
 	},
 	974() {
@@ -145,7 +145,8 @@ const extraEvolutionEffects = {
 		else return "The species requirement base is decreased by 0.03.";
 	},
 	1306() {
-		if (player.e.points.gte(1306)) return "The acclimation requirement is divided by 348.609819.";
+		if (player.e.points.gte(2498)) return;
+		else if (player.e.points.gte(1306)) return "The acclimation requirement is divided by 348.609819.";
 		else return "The acclimation requirement is divided by 10.";
 	},
 	1345: "The extra STR, WIS, AGI, and INT from evolutions are even greater.",
@@ -155,18 +156,35 @@ const extraEvolutionEffects = {
 		else return "The species requirement base is decreased by 0.02.";
 	},
 	1425() {
-		if (player.e.points.gte(1547)) return;
+		if (player.e.points.gte(1547) || hasMilestone("a", 54)) return;
 		else return "The 10th retrogression is even easier.";
 	},
-	1547: "The 10th retrogression is even easier still.",
+	1547() {
+		if (hasMilestone("a", 54)) return;
+		else return "The 10th retrogression is even easier still.";
+	},
 	1591() {
 		if (player.e.points.gte(2171)) return;
 		else if (player.e.points.gte(1591)) return "The species requirement base is decreased by 0.1375.";
 		else return "The species requirement base is decreased by 0.0375.";
 	},
 	2171() {
+		if (player.e.points.gte(2420)) return;
 		if (player.e.points.gte(2171)) return "The species requirement base is decreased by 0.145.";
 		else return "The species requirement base is decreased by 0.0075.";
+	},
+	2420() {
+		if (player.e.points.gte(2420)) return "The species requirement base is decreased by 0.175.";
+		else return "The species requirement base is decreased by 0.03.";
+	},
+	2498() {
+		if (player.e.points.gte(2510)) return;
+		else if (player.e.points.gte(2498)) return "The acclimation requirement is divided by 3,486.";
+		else return "The acclimation requirement is divided by 10.";
+	},
+	2510() {
+		if (player.e.points.gte(2510)) return "The acclimation requirement is divided by 34,860.";
+		else return "The acclimation requirement is divided by 10.";
 	},
 };
 
@@ -303,6 +321,8 @@ addLayer("e", {
 		if (hasChallenge("e", 13)) text += " and dividing growth requirement by /" + format(tmp.e.effect[5]);
 		return text;
 	},
+	resetsNothing() {return player.d.unlocked},
+	autoPrestige() {return player.d.unlocked},
 	tabFormat: [
 		"main-display",
 		"prestige-button",
@@ -371,6 +391,7 @@ addLayer("e", {
 			canComplete() {return player.g.points.gte(this.goal)},
 			unlocked() {return player.e.challengesUnlocked || hasChallenge("e", this.id)},
 			doReset: true,
+			overrideResetsNothing: true,
 			style: {"width": "250px", "height": "360px"},
 		},
 		12: {
@@ -385,6 +406,7 @@ addLayer("e", {
 			unlockReq: 8,
 			enterable() {return player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)},
 			doReset: true,
+			overrideResetsNothing: true,
 			style: {"width": "250px", "height": "360px"},
 		},
 		13: {
@@ -399,6 +421,7 @@ addLayer("e", {
 			unlockReq: 11,
 			enterable() {return player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)},
 			doReset: true,
+			overrideResetsNothing: true,
 			style: {"width": "250px", "height": "360px"},
 		},
 		14: {
@@ -413,6 +436,7 @@ addLayer("e", {
 			unlockReq: 14,
 			enterable() {return player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)},
 			doReset: true,
+			overrideResetsNothing: true,
 			style: {"width": "250px", "height": "360px"},
 		},
 		15: {
@@ -427,6 +451,7 @@ addLayer("e", {
 			unlockReq: 18,
 			enterable() {return player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)},
 			doReset: true,
+			overrideResetsNothing: true,
 			countsAs: [11, 12, 13, 14],
 			style: {"width": "250px", "height": "360px"},
 		},
@@ -443,6 +468,7 @@ addLayer("e", {
 			unlocked() {return (hasChallenge("e", this.id - 1) && hasMilestone("a", 12)) || hasChallenge("e", this.id)},
 			enterable() {return player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)},
 			doReset: true,
+			overrideResetsNothing: true,
 			style: {"width": "250px", "height": "360px"},
 		},
 		17: {
@@ -470,6 +496,7 @@ addLayer("e", {
 			unlockReq: 95,
 			enterable() {return player.e.points.gte(this.unlockReq)},
 			doReset: true,
+			overrideResetsNothing: true,
 			style: {"width": "250px", "height": "360px"},
 		},
 		18: {
@@ -497,6 +524,7 @@ addLayer("e", {
 			unlockReq: 124,
 			enterable() {return player.e.points.gte(this.unlockReq)},
 			doReset: true,
+			overrideResetsNothing: true,
 			style: {"width": "250px", "height": "360px"},
 		},
 		19: {
@@ -516,6 +544,7 @@ addLayer("e", {
 			unlockReq: 148,
 			enterable() {return player.e.points.gte(this.unlockReq)},
 			doReset: true,
+			overrideResetsNothing: true,
 			countsAs: [11, 12, 13, 14, 15, 16, 17, 18],
 			style: {"width": "250px", "height": "360px"},
 		},
@@ -559,6 +588,7 @@ addLayer("e", {
 			unlockReq: 209,
 			enterable() {return player.e.points.gte(this.unlockReq)},
 			doReset: true,
+			overrideResetsNothing: true,
 			onEnter() {if (!player.e.points.gte(1547)) player.g.milestones = []},
 			completionLimit() {
 				let limit = 22;

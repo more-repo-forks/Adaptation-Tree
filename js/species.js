@@ -21,13 +21,16 @@ addLayer("sp", {
 		if (player.e.points.gte(1372)) base -= 0.02;
 		if (player.e.points.gte(1591)) base -= 0.0375;
 		if (player.e.points.gte(2171)) base -= 0.0075;
+		if (player.e.points.gte(2420)) base -= 0.03;
 		return base;
 	},
 	exponent: 1,
+	canBuyMax() {return false},
 	resetDescription: "Speciate for ",
 	gainMult() {
 		let mult = new Decimal(1);
 		if (hasChallenge("sp", 14)) mult = mult.div(challengeEffect("sp", 14));
+		if (player.d.unlocks[1]) mult = mult.div(buyableEffect("d", 12));
 		return mult;
 	},
 	effect() {
@@ -38,6 +41,7 @@ addLayer("sp", {
 		if (hasChallenge("sp", 13)) base0 = base0.mul(2);
 		if (hasChallenge("sp", 14)) base0 = base0.mul(2);
 		if (hasChallenge("sp", 15)) base0 = base0.mul(2);
+		if (hasChallenge("sp", 16)) base0 = base0.mul(5);
 		// exponent
 		let exp2 = 0.2;
 		if (player.sp.points.gte(6)) exp2 += 0.3;
@@ -61,7 +65,7 @@ addLayer("sp", {
 		"resource-display",
 		["display-text", () => {
 			let text = "You keep retrogression completions on species resets.<br><br>After speciating 1 time, you can always bulk growth and evolutions,<br>the effect of <b>Growth enhancement I</b> is always changed,<br>and more automation for growth is always unlocked.<br><br>The above extra effects will not go away even if this layer is reset.";
-			if (player.sp.points.gte(5)) text += "<br><br>After speciating 6 times, all species effects are massively increased.";
+			if (player.sp.points.gte(5)) text += "<br><br>After speciating 6 times, all species effects are massively improved.";
 			return text;
 		}],
 		"blank",
@@ -85,7 +89,7 @@ addLayer("sp", {
 		11: {
 			name: "1st Hybridization",
 			fullDisplay() {
-				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does a species reset.<br>While in this hybridization, you cannot buy CRA, FER, or SOV.<br><br>Goal: " + formatWhole(this.goal) + " evolutions<br><br>Rewards: The base of the first species effect is multiplied by 2, the exponent of the last species effect is increased by 0.075, and acclimation point requirement is divided based on species (currently&nbsp;/" + format(this.rewardEffect()) + ")";
+				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does a species reset.<br>While in this hybridization, you cannot buy CRA, FER, or SOV.<br><br>Goal: " + formatWhole(this.goal) + " evolutions<br><br>Rewards: The base of the first species effect is multiplied by 2, the exponent of the last species effect is increased by 0.075, and acclimation requirement is divided based on species (currently&nbsp;/" + format(this.rewardEffect()) + ")";
 				return "You need " + formatWhole(this.unlockReq) + " species to unlock this hybridization.";
 			},
 			rewardEffect() {return new Decimal(1.3).pow(player.sp.points)},
@@ -94,6 +98,7 @@ addLayer("sp", {
 			unlockReq: 8,
 			enterable() {return player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)},
 			doReset: true,
+			overrideResetsNothing: true,
 			style: {"width": "250px", "height": "360px"},
 		},
 		12: {
@@ -117,6 +122,7 @@ addLayer("sp", {
 			unlockReq: 9,
 			enterable() {return player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)},
 			doReset: true,
+			overrideResetsNothing: true,
 			style: {"width": "250px", "height": "360px"},
 		},
 		13: {
@@ -132,6 +138,7 @@ addLayer("sp", {
 			unlockReq: 10,
 			enterable() {return player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)},
 			doReset: true,
+			overrideResetsNothing: true,
 			style: {"width": "250px", "height": "360px"},
 		},
 		14: {
@@ -140,19 +147,23 @@ addLayer("sp", {
 				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does a species reset.<br>While in this hybridization, the original acclimation requirement base is set to 10.<br><br>Goal: " + formatWhole(this.goal) + " evolutions<br><br>Rewards: The base of the first species effect is multiplied by 2, the last conscious beings effect is powered to 1.5, and species requirement is divided based on acclimation points past 200 (currently&nbsp;/" + format(this.rewardEffect()) + ")";
 				return "You need " + formatWhole(this.unlockReq) + " species to unlock this hybridization.";
 			},
-			rewardEffect() {return new Decimal(1.01).pow(player.a.points.sub(200).pow(0.5)).max(1)},
+			rewardEffect() {
+				if (hasChallenge("sp", 16)) return new Decimal(1.02).pow(player.a.points.sub(200).pow(0.5)).max(1);
+				return new Decimal(1.01).pow(player.a.points.sub(200).pow(0.5)).max(1);
+			},
 			goal: 1096,
 			canComplete() {return player.e.points.gte(this.goal)},
 			unlocked() {return hasChallenge("e", this.id - 1) || hasChallenge("e", this.id)},
 			unlockReq: 12,
 			enterable() {return player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)},
 			doReset: true,
+			overrideResetsNothing: true,
 			style: {"width": "250px", "height": "360px"},
 		},
 		15: {
 			name: "5th Hybridization",
 			fullDisplay() {
-				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does a species reset.<br>While in this hybridization, all previous in hybridization effects are applied.<br><br>Goal: " + formatWhole(this.goal) + " evolutions<br><br>Rewards: The base of the first species effect is multiplied by 2, base acclimation requirement is decreased by 0.0505, focus requirement is divided by 1.5, and a new layer is unlocked";
+				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does a species reset.<br>While in this hybridization, all previous in hybridization effects are applied.<br><br>Goal: " + formatWhole(this.goal) + " evolutions<br><br>Rewards: The base of the first species effect is multiplied by 2, base acclimation requirement is decreased by 0.0505, focus requirement is divided by 1.5, and a new layer is unlocked" + (player.d.unlocked ? " (already unlocked)" : "");
 				return "You need " + formatWhole(this.unlockReq) + " species to unlock this hybridization.";
 			},
 			rewardEffect() {return 0.0505},
@@ -162,7 +173,24 @@ addLayer("sp", {
 			unlockReq: 13,
 			enterable() {return player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)},
 			doReset: true,
+			overrideResetsNothing: true,
 			countsAs: [11, 12, 13, 14],
+			style: {"width": "250px", "height": "360px"},
+		},
+		16: {
+			name: "6th Hybridization",
+			fullDisplay() {
+				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does a species reset.<br>While in this hybridization, conscious beings and focus do nothing.<br><br>Goal: " + formatWhole(this.goal) + " evolutions<br><br>Rewards: The base of the first species effect is multiplied by 5, base acclimation requirement is decreased by 0.01, and the 4th hybridization's last effect is improved.";
+				return "You need " + formatWhole(this.unlockReq) + " species to unlock this hybridization.";
+			},
+			rewardEffect() {return 0.01},
+			goal: 2067,
+			canComplete() {return player.e.points.gte(this.goal)},
+			unlocked() {return hasChallenge("e", this.id - 1) || hasChallenge("e", this.id)},
+			unlockReq: 15,
+			enterable() {return player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)},
+			doReset: true,
+			overrideResetsNothing: true,
 			style: {"width": "250px", "height": "360px"},
 		},
 	},

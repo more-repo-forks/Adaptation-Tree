@@ -3,14 +3,14 @@ const modInfo = {
 	id: "adaptation-tree-yrahcaz7",
 	author: "Yrahcaz7",
 	pointsName: "power",
-	modFiles: ["stimulation.js", "growth.js", "evolution.js", "acclimation.js", "species.js", "consciousness.js", "technical/tree.js"],
+	modFiles: ["stimulation.js", "growth.js", "evolution.js", "acclimation.js", "species.js", "consciousness.js", "domination.js", "technical/tree.js"],
 	initialStartPoints: new Decimal(0),
 	offlineLimit: 1, // in hours
 }
 
 const VERSION = {
-	num: "1.5",
-	name: "Consciousness",
+	num: "1.6",
+	name: "Rise to Dominance",
 };
 
 const winText = "Congratulations!<br>You have reached the end and beaten this game (for now),<br>but there is more content coming soon...";
@@ -50,6 +50,8 @@ function getPointPotential() {
 	if (hasChallenge("e", 21) && challengeEffect("e", 21)[3]) gain = gain.mul(challengeEffect("e", 21)[3]);
 	// exponentiate power gain
 	if (hasChallenge("e", 19)) gain = gain.pow(1.02);
+	// special effects
+	if (player.d.unlocked) gain = gain.mul(tmp.d.effect);
 	// return
 	return gain;
 };
@@ -74,7 +76,7 @@ var displayThings = [
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.e.points.gte(2297) && player.a.points.gte(250);
+	return false; // player.e.points.gte(2297) && player.a.points.gte(250);
 };
 
 // Style for the background, can be a function

@@ -23,6 +23,7 @@ addLayer("a", {
 		if (hasMilestone("g", 67)) base -= milestoneEffect("g", 67);
 		if (hasMilestone("g", 72)) base -= milestoneEffect("g", 72);
 		if (hasChallenge("sp", 15)) base -= challengeEffect("sp", 15);
+		if (hasChallenge("sp", 16)) base -= challengeEffect("sp", 15);
 		return base;
 	},
 	exponent: 1,
@@ -39,12 +40,15 @@ addLayer("a", {
 		if (player.e.points.gte(397)) mult = mult.div(2);
 		if (player.e.points.gte(728)) mult = mult.div(1.5);
 		if (player.e.points.gte(1306)) mult = mult.div(10);
+		if (player.e.points.gte(2498)) mult = mult.div(10);
+		if (player.e.points.gte(2510)) mult = mult.div(10);
 		if (hasChallenge("e", 16)) mult = mult.div(challengeEffect("e", 16));
 		if (hasChallenge("e", 17)) mult = mult.div(challengeEffect("e", 17));
 		if (hasChallenge("sp", 11)) mult = mult.div(challengeEffect("sp", 11));
 		if (hasChallenge("sp", 13)) mult = mult.div(challengeEffect("sp", 13));
 		if (player.a.unlocked) mult = mult.div(buyableEffect("a", 13));
 		if (tmp.cb.effect[1]) mult = mult.div(tmp.cb.effect[1]);
+		if (player.d.unlocks[2]) mult = mult.div(buyableEffect("d", 13));
 		return mult;
 	},
 	effect() {
@@ -138,6 +142,7 @@ addLayer("a", {
 	}],
 	doReset(resettingLayer) {
 		let keep = [];
+		if (resettingLayer == "d" && player.d.unlocked) keep.push("milestones");
 		if (layers[resettingLayer].row > this.row) layerDataReset("a", keep);
 		player.a.populationTime = 0;
 	},
@@ -150,8 +155,11 @@ addLayer("a", {
 		if (hasChallenge("e", 21) && challengeEffect("e", 21)[1]) max = max.mul(challengeEffect("e", 21)[1]);
 		if (player.cb.focusUnlocked) max = max.mul(clickableEffect("cb", 12));
 		player.a.populationMax = max;
+		// max exponent
+		let exp = 0.5;
+		if (hasMilestone("a", 59)) exp -= 0.03;
 		// calculate rate
-		let rate = new Decimal(player.a.populationTime).mul(2).div(max.pow(0.5));
+		let rate = new Decimal(player.a.populationTime).mul(2).div(max.pow(exp));
 		rate = rate.mul(buyableEffect("a", 12));
 		if (player.cb.focusUnlocked) rate = rate.mul(clickableEffect("cb", 12));
 		// calculate population
@@ -170,6 +178,7 @@ addLayer("a", {
 				if (hasMilestone("a", 26)) base = base.mul(milestoneEffect("a", 26));
 				if (hasMilestone("a", 37)) base = base.mul(milestoneEffect("a", 37));
 				if (hasMilestone("a", 46)) base = base.mul(milestoneEffect("a", 46));
+				if (hasMilestone("a", 59)) base = base.mul(milestoneEffect("a", 59));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
@@ -198,6 +207,7 @@ addLayer("a", {
 				if (hasMilestone("a", 30)) base = base.mul(milestoneEffect("a", 30));
 				if (hasMilestone("a", 35)) base = base.mul(milestoneEffect("a", 35));
 				if (hasMilestone("a", 48)) base = base.mul(milestoneEffect("a", 48));
+				if (hasMilestone("a", 55)) base = base.mul(milestoneEffect("a", 55));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
@@ -229,6 +239,7 @@ addLayer("a", {
 				if (hasMilestone("a", 28)) base = base.add(milestoneEffect("a", 28));
 				if (hasMilestone("a", 38)) base = base.add(milestoneEffect("a", 38));
 				if (hasMilestone("a", 49)) base = base.add(milestoneEffect("a", 49));
+				if (hasMilestone("a", 58)) base = base.add(milestoneEffect("a", 58));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
@@ -257,6 +268,7 @@ addLayer("a", {
 				if (hasMilestone("a", 27)) base = base.mul(milestoneEffect("a", 27));
 				if (hasMilestone("a", 36)) base = base.mul(milestoneEffect("a", 36));
 				if (hasMilestone("a", 47)) base = base.mul(milestoneEffect("a", 47));
+				if (hasMilestone("a", 56)) base = base.mul(milestoneEffect("a", 56));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
@@ -303,7 +315,7 @@ addLayer("a", {
 			effect() {return 0.11},
 			effectDescription() {return "increase the base effect of ANA by 0.11<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		2: {
 			requirement: 7,
@@ -312,7 +324,7 @@ addLayer("a", {
 			effect() {return player.a.points.mul(10).add(1).pow(0.25)},
 			effectDescription() {return "multiply the base effect of SOV based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		3: {
 			requirement: 8,
@@ -321,7 +333,7 @@ addLayer("a", {
 			effect() {return 6},
 			effectDescription() {return "multiply the last population effect by 6<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		4: {
 			requirement: 9,
@@ -330,7 +342,7 @@ addLayer("a", {
 			effect() {return 1},
 			effectDescription() {return "increase extra FER levels by 1<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		5: {
 			requirement: 10,
@@ -339,7 +351,7 @@ addLayer("a", {
 			effect() {return 0.39},
 			effectDescription() {return "increase the base effect of ANA by 0.39<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		6: {
 			requirement: 11,
@@ -348,7 +360,7 @@ addLayer("a", {
 			effect() {return 1},
 			effectDescription() {return "increase extra SOV levels by 1<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		7: {
 			requirement: 13,
@@ -357,7 +369,7 @@ addLayer("a", {
 			effect() {return 1},
 			effectDescription() {return "increase extra CRA levels by 1<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		8: {
 			requirement: 14,
@@ -365,7 +377,7 @@ addLayer("a", {
 			popupTitle: "Enhancement Acquired!",
 			effectDescription() {return "change the formula of the first population effect<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		9: {
 			requirement: 16,
@@ -374,7 +386,7 @@ addLayer("a", {
 			effect() {return 1},
 			effectDescription() {return "increase extra FER levels by 1<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		10: {
 			requirement: 17,
@@ -383,7 +395,7 @@ addLayer("a", {
 			effect() {return 0.25},
 			effectDescription() {return "increase the base effect of ANA by 0.25<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		11: {
 			requirement: 18,
@@ -392,7 +404,7 @@ addLayer("a", {
 			effect() {return 2.5},
 			effectDescription() {return "multiply the second population effect by 2.5<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		12: {
 			requirement: 20,
@@ -405,7 +417,7 @@ addLayer("a", {
 				return text;
 			},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		13: {
 			requirement: 24,
@@ -414,7 +426,7 @@ addLayer("a", {
 			effect() {return player.a.points.add(1).pow(0.25)},
 			effectDescription() {return "multiply the base effect of CRA based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		14: {
 			requirement: 26,
@@ -423,7 +435,7 @@ addLayer("a", {
 			effect() {return player.a.points.mul(10).add(1).pow(0.2525)},
 			effectDescription() {return "multiply the base effect of SOV based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		15: {
 			requirement: 28,
@@ -432,7 +444,7 @@ addLayer("a", {
 			effect() {return player.a.points.add(1).pow(0.32)},
 			effectDescription() {return "multiply the base effect of FER based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		16: {
 			requirement: 32,
@@ -441,7 +453,7 @@ addLayer("a", {
 			effect() {return player.a.points.add(1).pow(0.036).sub(1)},
 			effectDescription() {return "increase the base of the 7th retrogression's last effect based on acclimation points<br>Effect: +" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		17: {
 			requirement: 34,
@@ -450,7 +462,7 @@ addLayer("a", {
 			effect() {return player.a.points.add(1).pow(0.66)},
 			effectDescription() {return "multiply the last population effect based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		18: {
 			requirement: 35,
@@ -462,7 +474,7 @@ addLayer("a", {
 			},
 			effectDescription() {return "every " + (hasMilestone("a", 32) ? 2 : 3) + " base levels of CRA give an extra level to FER, ANA, and SOV<br>Effect: +" + formatWhole(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		19: {
 			requirement: 37,
@@ -471,7 +483,7 @@ addLayer("a", {
 			effect() {return 0.23},
 			effectDescription() {return "increase the exponent of the 6th retrogression's last effect by 0.23<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		20: {
 			requirement: 40,
@@ -483,7 +495,7 @@ addLayer("a", {
 			},
 			effectDescription() {return "every " + (hasMilestone("a", 32) ? 2 : 3) + " base levels of ANA give an extra level to CRA, FER, and SOV<br>Effect: +" + formatWhole(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		21: {
 			requirement: 43,
@@ -492,7 +504,7 @@ addLayer("a", {
 			effect() {return 0.75},
 			effectDescription() {return "increase the exponent of the 8th retrogression's last effect by 0.75<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		22: {
 			requirement: 46,
@@ -504,7 +516,7 @@ addLayer("a", {
 			},
 			effectDescription() {return "every " + (hasMilestone("a", 32) ? 2 : 3) + " base levels of SOV give an extra level to CRA, FER, and ANA<br>Effect: +" + formatWhole(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		23: {
 			requirement: 49,
@@ -513,7 +525,7 @@ addLayer("a", {
 			effect() {return 0.474},
 			effectDescription() {return "increase the exponent of the 9th retrogression's last effect by 0.474<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		24: {
 			requirement: 50,
@@ -525,7 +537,7 @@ addLayer("a", {
 			},
 			effectDescription() {return "every " + (hasMilestone("a", 32) ? 2 : 3) + " base levels of FER give an extra level to CRA, ANA, and SOV<br>Effect: +" + formatWhole(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		25: {
 			requirement: 53,
@@ -534,7 +546,7 @@ addLayer("a", {
 			effect() {return player.a.points.add(1).pow(0.2758664)},
 			effectDescription() {return "multiply the last two population effects based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		26: {
 			requirement: 57,
@@ -543,7 +555,7 @@ addLayer("a", {
 			effect() {return player.a.points.add(1).pow(0.1)},
 			effectDescription() {return "multiply the base effect of CRA based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		27: {
 			requirement: 60,
@@ -552,7 +564,7 @@ addLayer("a", {
 			effect() {return player.a.points.add(1).pow(0.075)},
 			effectDescription() {return "multiply the base effect of SOV based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		28: {
 			requirement: 64,
@@ -561,7 +573,7 @@ addLayer("a", {
 			effect() {return 0.2},
 			effectDescription() {return "increase the base effect of ANA by 0.2<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		29: {
 			requirement: 67,
@@ -570,7 +582,7 @@ addLayer("a", {
 			effect() {return 2},
 			effectDescription() {return "increase the base of the 10th retrogression's first effect by 2<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		30: {
 			requirement: 69,
@@ -579,7 +591,7 @@ addLayer("a", {
 			effect() {return player.a.points.add(1).pow(0.095)},
 			effectDescription() {return "multiply the base effect of FER based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		31: {
 			requirement: 70,
@@ -588,7 +600,7 @@ addLayer("a", {
 			effect() {return player.a.points.mul(2).add(1).pow(0.88477)},
 			effectDescription() {return "multiply the exponent of the first population effect based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		32: {
 			requirement: 74,
@@ -596,7 +608,7 @@ addLayer("a", {
 			popupTitle: "Enhancement Acquired!",
 			effectDescription() {return "decrease the base levels of CRA, FER, ANA, and SOV required<br>to give extra levels to the other stats by 1 (from 3 to 2)<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		33: {
 			requirement: 80,
@@ -605,7 +617,7 @@ addLayer("a", {
 			effect() {return 8},
 			effectDescription() {return "increase the base of the 10th retrogression's first effect by 8<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		34: {
 			requirement: 84,
@@ -614,7 +626,7 @@ addLayer("a", {
 			effect() {return 0.025},
 			effectDescription() {return "increase the exponent of the second population effect by 0.025<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		35: {
 			requirement: 88,
@@ -623,7 +635,7 @@ addLayer("a", {
 			effect() {return player.a.points.add(1).pow(0.145)},
 			effectDescription() {return "multiply the base effect of FER based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		36: {
 			requirement: 90,
@@ -632,7 +644,7 @@ addLayer("a", {
 			effect() {return player.a.points.add(1).pow(0.1048)},
 			effectDescription() {return "multiply the base effect of SOV based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		37: {
 			requirement: 96,
@@ -641,7 +653,7 @@ addLayer("a", {
 			effect() {return player.a.points.add(1).pow(0.105)},
 			effectDescription() {return "multiply the base effect of CRA based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		38: {
 			requirement: 99,
@@ -650,7 +662,7 @@ addLayer("a", {
 			effect() {return 0.3},
 			effectDescription() {return "increase the base effect of ANA by 0.3<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		39: {
 			requirement: 105,
@@ -663,7 +675,7 @@ addLayer("a", {
 				return text;
 			},
 			done() {return player.a.points.gte(this.requirement) && challengeCompletions("e", 21) >= 22},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		40: {
 			requirement: 114,
@@ -672,7 +684,7 @@ addLayer("a", {
 			effect() {return new Decimal(1.033333333333333).pow(player.a.points)},
 			effectDescription() {return "multiply the exponent of the first population effect based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		41: {
 			requirement: 122,
@@ -681,7 +693,7 @@ addLayer("a", {
 			effect() {return new Decimal(1.15).pow(player.a.points.pow(0.5))},
 			effectDescription() {return "multiply the last population effect based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		42: {
 			requirement: 128,
@@ -690,7 +702,7 @@ addLayer("a", {
 			effect() {return 8},
 			effectDescription() {return "increase the completion limit of the 10th retrogression by 8<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		43: {
 			requirement: 135,
@@ -699,7 +711,7 @@ addLayer("a", {
 			effect() {return getBuyableAmount("a", 11).min(getBuyableAmount("a", 12)).min(getBuyableAmount("a", 13)).min(getBuyableAmount("a", 14)).div(4).floor()},
 			effectDescription() {return "every 4 base levels of CRA, FER, ANA, and SOV give an extra level to CRA, FER, ANA, and SOV<br>Effect: +" + formatWhole(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		44: {
 			requirement: 146,
@@ -708,7 +720,7 @@ addLayer("a", {
 			effect() {return 15},
 			effectDescription() {return "increase the base of the 10th retrogression's first effect by 15<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		45: {
 			requirement: 150,
@@ -717,7 +729,7 @@ addLayer("a", {
 			effect() {return player.a.points.add(1).pow(0.925)},
 			effectDescription() {return "multiply the exponent of the first population effect based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		46: {
 			requirement: 159,
@@ -726,7 +738,7 @@ addLayer("a", {
 			effect() {return player.a.points.add(1).pow(0.1)},
 			effectDescription() {return "multiply the base effect of CRA based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		47: {
 			requirement: 166,
@@ -735,7 +747,7 @@ addLayer("a", {
 			effect() {return player.a.points.add(1).pow(0.075)},
 			effectDescription() {return "multiply the base effect of SOV based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		48: {
 			requirement: 173,
@@ -744,7 +756,7 @@ addLayer("a", {
 			effect() {return player.a.points.add(1).pow(0.05)},
 			effectDescription() {return "multiply the base effect of FER based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		49: {
 			requirement: 180,
@@ -753,7 +765,7 @@ addLayer("a", {
 			effect() {return 0.5},
 			effectDescription() {return "increase the base effect of ANA by 0.5<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		50: {
 			requirement: 190,
@@ -762,7 +774,7 @@ addLayer("a", {
 			effect() {return player.a.points.add(1).pow(0.25)},
 			effectDescription() {return "divide focus requirement based on acclimation points<br>Effect: /" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " acclimation points and 35 completions of the 10th retrogression"},
 			done() {return player.a.points.gte(this.requirement) && challengeCompletions("e", 21) >= 35},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		51: {
 			requirement: 193,
@@ -771,7 +783,7 @@ addLayer("a", {
 			effect() {return player.a.points.add(1).pow(0.29922)},
 			effectDescription() {return "multiply the last population effect based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		52: {
 			requirement: 196,
@@ -780,7 +792,7 @@ addLayer("a", {
 			effect() {return 0.05},
 			effectDescription() {return "increase the base of the 10th retrogression's third effect by 0.05<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		53: {
 			requirement: 206,
@@ -788,13 +800,57 @@ addLayer("a", {
 			popupTitle: "Enhancement Acquired!",
 			effectDescription() {return "give both types of focus points an additional effect<br>Req: " + formatWhole(this.requirement) + " acclimation points and 40 completions of the 10th retrogression"},
 			done() {return player.a.points.gte(this.requirement) && challengeCompletions("e", 21) >= 40},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
 		},
 		54: {
 			requirement: 218,
 			requirementDescription: "Retrogression enhancement XI",
 			popupTitle: "Enhancement Acquired!",
 			effectDescription() {return "gain 10th retrogression completions automatically<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.d.unlocked},
+		},
+		55: {
+			requirement: 258,
+			requirementDescription: "FER enhancement VIII",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.a.points.add(1).pow(0.125)},
+			effectDescription() {return "multiply the base effect of FER based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		56: {
+			requirement: 266,
+			requirementDescription: "SOV enhancement VIII",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.a.points.add(1).pow(0.115)},
+			effectDescription() {return "multiply the base effect of SOV based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		57: {
+			requirement: 284,
+			requirementDescription: "Conscious enhancement IV",
+			popupTitle: "Enhancement Acquired!",
+			effectDescription() {return "improve acclimation focus's second effect<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		58: {
+			requirement: 310,
+			requirementDescription: "ANA enhancement VIII",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.5},
+			effectDescription() {return "increase the base effect of ANA by 0.5<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		59: {
+			requirement: 323,
+			requirementDescription: "CRA enhancement VIII",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.a.points.add(1).pow(0.36)},
+			effectDescription() {return "multiply the base effect of CRA based on acclimation points<br>and reduce population max's influence on gain<br>Effects: " + format(this.effect()) + "x and -0.03<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("a", this.id - 1)},
 		},
