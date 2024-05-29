@@ -206,7 +206,7 @@ addLayer("e", {
 	requires: new Decimal(300),
 	type: "static",
 	base() {
-		let base = (inChallenge("sp", 13) ? 2 : 1.5);
+		let base = (inChallenge("sp", 21) ? 10 : (inChallenge("sp", 13) ? 2 : 1.5));
 		if (hasMilestone("g", 50)) base -= milestoneEffect("g", 50);
 		if (hasMilestone("g", 55)) base -= milestoneEffect("g", 55);
 		if (hasMilestone("g", 64)) base -= milestoneEffect("g", 64);
@@ -232,10 +232,12 @@ addLayer("e", {
 		if (hasChallenge("e", 17)) mult = mult.div(challengeEffect("e", 17));
 		if (hasChallenge("e", 19)) mult = mult.div(challengeEffect("e", 19));
 		if (hasChallenge("e", 21) && challengeEffect("e", 21)[0]) mult = mult.div(challengeEffect("e", 21)[0]);
+		if (hasChallenge("sp", 21) && challengeEffect("sp", 21)[0]) mult = mult.div(challengeEffect("sp", 21)[0]);
 		if (hasMilestone("a", 52)) mult = mult.div(clickableEffect("cb", 13));
 		if (tmp.a.effect[1]) mult = mult.div(tmp.a.effect[1]);
 		if (tmp.sp.effect[0]) mult = mult.div(tmp.sp.effect[0]);
 		if (tmp.cb.effect[0]) mult = mult.div(tmp.cb.effect[0]);
+		if (inChallenge("sp", 21)) mult = mult.div(new Decimal(5).pow(player.a.points.add(player.a.milestones.length).add(player.sp.points).add(player.cb.points).add(tmp.cb.effect[3]).add(player.d.points)));
 		return mult;
 	},
 	effect() {
@@ -586,7 +588,7 @@ addLayer("e", {
 			canComplete() {return player.g.points.gte(this.goal())},
 			unlocked() {return hasChallenge("e", 19) || hasChallenge("e", this.id)},
 			unlockReq: 209,
-			enterable() {return player.e.points.gte(this.unlockReq)},
+			enterable() {return player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)},
 			doReset: true,
 			overrideResetsNothing: true,
 			onEnter() {if (!player.e.points.gte(1547)) player.g.milestones = []},

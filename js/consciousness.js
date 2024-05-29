@@ -3,6 +3,7 @@ function getFocusRequirement() {
 	if (hasMilestone("a", 50)) req = req.div(milestoneEffect("a", 50));
 	if (hasChallenge("sp", 13)) req = req.div(2);
 	if (hasChallenge("sp", 15)) req = req.div(1.5);
+	if (hasChallenge("sp", 21) && challengeEffect("sp", 21)[3]) req = req.div(challengeEffect("sp", 21)[3]);
 	if (player.d.unlocks[0]) req = req.div(buyableEffect("d", 11));
 	return req;
 };
@@ -34,6 +35,7 @@ addLayer("cb", {
 	resetDescription: "Enlighten for ",
 	gainMult() {
 		let mult = new Decimal(1);
+		if (hasChallenge("sp", 21) && challengeEffect("sp", 21)[2]) mult = mult.div(challengeEffect("sp", 21)[2]);
 		return mult;
 	},
 	effect() {
@@ -140,6 +142,7 @@ addLayer("cb", {
 			title: "Focus on acclimation",
 			effect() {
 				if (inChallenge("sp", 16)) return new Decimal(1);
+				if (hasMilestone("a", 68)) return new Decimal(100).pow(getClickableState("cb", 12) || 0);
 				return new Decimal(10).pow(getClickableState("cb", 12) || 0);
 			},
 			canClick() {return (getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0) < tmp.cb.effect[3]},
@@ -162,6 +165,7 @@ addLayer("cb", {
 			title: "MAX A",
 			effect() {
 				if (inChallenge("sp", 16)) return 1;
+				if (hasMilestone("a", 68)) return ((getClickableState("cb", 12) || 0) * 4 + 1) ** 4;
 				if (hasMilestone("a", 57)) return ((getClickableState("cb", 12) || 0) * 2 + 1) ** 2;
 				if (hasMilestone("a", 52)) return ((getClickableState("cb", 12) || 0) + 1) ** 0.5;
 			},

@@ -76,6 +76,7 @@ addLayer("a", {
 		let exp1 = 0.1;
 		if (hasMilestone("a", 34)) exp1 += milestoneEffect("a", 34);
 		if (hasMilestone("a", 60)) exp1 += milestoneEffect("a", 60);
+		if (hasMilestone("a", 64)) exp1 += milestoneEffect("a", 64);
 		// return
 		let eff = [
 			(hasMilestone("a", 6) ? amt.add(1).pow(amt.log10().add(1).pow(0.125).mul(200000).mul(mult[0])) : new Decimal(10).pow(amt.sub(1).mul(mult[0])).sub(1).mul(1e100).add(1)),
@@ -158,11 +159,13 @@ addLayer("a", {
 		let max = new Decimal(1);
 		max = max.mul(buyableEffect("a", 11));
 		if (hasChallenge("e", 21) && challengeEffect("e", 21)[1]) max = max.mul(challengeEffect("e", 21)[1]);
+		if (hasChallenge("sp", 21) && challengeEffect("sp", 21)[1]) max = max.mul(challengeEffect("sp", 21)[1]);
 		if (player.cb.focusUnlocked) max = max.mul(clickableEffect("cb", 12));
 		player.a.populationMax = max;
 		// max exponent
 		let exp = 0.5;
 		if (hasMilestone("a", 59)) exp -= 0.03;
+		if (hasMilestone("a", 66)) exp -= 0.14;
 		// calculate rate
 		let rate = new Decimal(player.a.populationTime).mul(2).div(max.pow(exp));
 		rate = rate.mul(buyableEffect("a", 12));
@@ -187,11 +190,15 @@ addLayer("a", {
 				if (hasMilestone("a", 37)) base = base.mul(milestoneEffect("a", 37));
 				if (hasMilestone("a", 46)) base = base.mul(milestoneEffect("a", 46));
 				if (hasMilestone("a", 59)) base = base.mul(milestoneEffect("a", 59));
+				if (hasMilestone("a", 66)) base = base.mul(milestoneEffect("a", 66));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
 			title: "(CRA)FTSMANSHIP",
-			display() {return "multiply population maximum by " + format(this.effectBase()) + "<br>(population max also influences gain)<br><br>Effect: " + format(this.effect()) + "x<br><br>Cost: " + formatWhole(this.cost()) + " acclimation points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id)) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
+			display() {
+				let eff = format(this.effectBase());
+				return "multiply population maximum by " + eff + (eff.length > 7 ? "" : "<br>(population max also influences gain)") + "<br><br>Effect: " + format(this.effect()) + "x<br><br>Cost: " + formatWhole(this.cost()) + " acclimation points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id)) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()));
+			},
 			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && !inChallenge("sp", 11)},
 			buy() {
 				player[this.layer].spent = player[this.layer].spent.add(this.cost());
@@ -204,6 +211,7 @@ addLayer("a", {
 				if (hasMilestone("a", 22)) extra = extra.add(milestoneEffect("a", 22));
 				if (hasMilestone("a", 24)) extra = extra.add(milestoneEffect("a", 24));
 				if (hasMilestone("a", 43)) extra = extra.add(milestoneEffect("a", 43));
+				if (hasMilestone("a", 67)) extra = extra.add(milestoneEffect("a", 67));
 				return extra.floor();
 			},
 		},
@@ -237,6 +245,7 @@ addLayer("a", {
 				if (hasMilestone("a", 20)) extra = extra.add(milestoneEffect("a", 20));
 				if (hasMilestone("a", 22)) extra = extra.add(milestoneEffect("a", 22));
 				if (hasMilestone("a", 43)) extra = extra.add(milestoneEffect("a", 43));
+				if (hasMilestone("a", 67)) extra = extra.add(milestoneEffect("a", 67));
 				return extra.floor();
 			},
 		},
@@ -271,6 +280,7 @@ addLayer("a", {
 				if (hasMilestone("a", 22)) extra = extra.add(milestoneEffect("a", 22));
 				if (hasMilestone("a", 24)) extra = extra.add(milestoneEffect("a", 24));
 				if (hasMilestone("a", 43)) extra = extra.add(milestoneEffect("a", 43));
+				if (hasMilestone("a", 67)) extra = extra.add(milestoneEffect("a", 67));
 				return extra.floor();
 			},
 		},
@@ -287,6 +297,7 @@ addLayer("a", {
 				if (hasMilestone("a", 36)) base = base.mul(milestoneEffect("a", 36));
 				if (hasMilestone("a", 47)) base = base.mul(milestoneEffect("a", 47));
 				if (hasMilestone("a", 56)) base = base.mul(milestoneEffect("a", 56));
+				if (hasMilestone("a", 65)) base = base.mul(milestoneEffect("a", 65));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
@@ -304,6 +315,7 @@ addLayer("a", {
 				if (hasMilestone("a", 20)) extra = extra.add(milestoneEffect("a", 20));
 				if (hasMilestone("a", 24)) extra = extra.add(milestoneEffect("a", 24));
 				if (hasMilestone("a", 43)) extra = extra.add(milestoneEffect("a", 43));
+				if (hasMilestone("a", 67)) extra = extra.add(milestoneEffect("a", 67));
 				return extra.floor();
 			},
 		},
@@ -903,6 +915,59 @@ addLayer("a", {
 			popupTitle: "Enhancement Acquired!",
 			effect() {return 0.5},
 			effectDescription() {return "increase the base effect of ANA by 0.5<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		64: {
+			requirement: 584,
+			requirementDescription: "Population enhancement XIII",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.25},
+			effectDescription() {return "increase the exponent of the second population effect by 0.25<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		65: {
+			requirement: 622,
+			requirementDescription: "SOV enhancement IX",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.a.points.add(1)},
+			effectDescription() {return "multiply the base effect of SOV based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		66: {
+			requirement: 704,
+			requirementDescription: "CRA enhancement IX",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.a.points.add(1).pow(1.5)},
+			effectDescription() {return "multiply the base effect of CRA based on acclimation points<br>and reduce population max's influence on gain<br>Effects: " + format(this.effect()) + "x and -0.14<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		67: {
+			requirement: 705,
+			requirementDescription: "FER enhancement IX",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return getBuyableAmount("a", 12).div(15).floor()},
+			effectDescription() {return "every 15 base levels of FER give an extra level to CRA, FER, ANA, and SOV<br>Effect: +" + formatWhole(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		68: {
+			requirement: 742,
+			requirementDescription: "Consciousness enhancement VII",
+			popupTitle: "Enhancement Acquired!",
+			effectDescription() {return "improve acclimation focus's effects<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		69: {
+			requirement: 751,
+			requirementDescription: "Domination enhancement I",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.a.points.add(1).pow(0.01888888888888889)},
+			effectDescription() {return "divide domination requirement based on acclimation points<br>Effect: /" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("a", this.id - 1)},
 		},

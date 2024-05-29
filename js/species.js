@@ -30,6 +30,7 @@ addLayer("sp", {
 	gainMult() {
 		let mult = new Decimal(1);
 		if (hasChallenge("sp", 14)) mult = mult.div(challengeEffect("sp", 14));
+		if (hasMilestone("d", 4)) mult = mult.div(milestoneEffect("d", 4));
 		if (player.d.unlocks[1]) mult = mult.div(buyableEffect("d", 12));
 		return mult;
 	},
@@ -253,6 +254,30 @@ addLayer("sp", {
 			overrideResetsNothing: true,
 			countsAs: [11, 12, 13, 14, 15, 16, 17, 18],
 			style: {"width": "250px", "height": "360px"},
+		},
+		21: {
+			name: "10th Hybridization",
+			fullDisplay() {
+				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does a species reset.<br>While in this hybridization, all previous in hybridization effects are applied; the original evolution requirement base is set to 10; and each acclimation point, acclimation enhancement, species, conscious being, focus point, and domination point divides evolution requirement by 5.<br><br>Goal: " + formatWhole(this.goal()) + " growth points<br><br>Completions: " + formatWhole(challengeCompletions("sp", this.id)) + "/" + formatWhole(this.completionLimit) + "<br><br>Rewards: evolution requirement is divided (currently&nbsp;/" + format(this.rewardEffect()[0]) + "), population maximum is multiplied (currently&nbsp;" + format(this.rewardEffect()[1]) + "x), conscious beings requirement is divided (currently&nbsp;/" + format(this.rewardEffect()[2]) + "), focus requirement is divided (currently&nbsp;/" + format(this.rewardEffect()[3]) + "), and domination requirement is divided (currently&nbsp;/" + format(this.rewardEffect()[4]) + ")<div><br></div>";
+				return "You need " + formatWhole(this.unlockReq) + " evolutions to unlock this hybridization. It is the very last one. Are you ready?";
+			},
+			rewardEffect() { return [
+				new Decimal(1e25).pow(challengeCompletions("sp", this.id)),
+				new Decimal(1e10).pow(challengeCompletions("sp", this.id)),
+				new Decimal(2).pow(challengeCompletions("sp", this.id)),
+				new Decimal(100).pow(challengeCompletions("sp", this.id)),
+				new Decimal(1.353).pow(challengeCompletions("sp", this.id)),
+			]},
+			goal() {return [166, 237, 288, 340, 436][challengeCompletions("sp", this.id)] || Infinity},
+			canComplete() {return player.e.points.gte(this.goal())},
+			unlocked() {return hasChallenge("sp", 19) || hasChallenge("sp", this.id)},
+			unlockReq: 21,
+			enterable() {return player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)},
+			doReset: true,
+			overrideResetsNothing: true,
+			completionLimit: 5,
+			countsAs: [11, 12, 13, 14, 15, 16, 17, 18, 19],
+			style: {"width": "calc(100% - 8px)", "max-width": "600px", "min-height": "360px", "height": "fit-content"},
 		},
 	},
 });
