@@ -16,7 +16,7 @@ const VERSION = {
 const winText = "Congratulations!<br>You have reached the end and beaten this game (for now),<br>but there is more content coming soon...";
 
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
-var doNotCallTheseFunctionsEveryTick = [];
+let doNotCallTheseFunctionsEveryTick = [];
 
 function canGenPoints() {
 	return false;
@@ -66,12 +66,12 @@ function addedPlayerData() { return {
 }};
 
 // Display extra things at the top of the page
-var displayThings = [
+let displayThings = [
 	() => {
 		if (tmp.other.oompsMag != 0 && options.showOOMs) return "(" + format(tmp.other.oomps) + " OOM" + (tmp.other.oompsMag < 0 ? "^OOM" : tmp.other.oompsMag > 1 ? "^" + tmp.other.oompsMag : "") + "s/sec)";
 		return "(" + format(getPointPotential()) + " max power)";
 	},
-	() => {return "<br>current endgame is at 30 " + (player.sp.unlocked ? "species" : "???")},
+	() => "<br>current endgame is at 30 " + (player.sp.unlocked ? "species" : "???"),
 ];
 
 // Determines when the game "ends"
@@ -80,8 +80,7 @@ function isEndgame() {
 };
 
 // Style for the background, can be a function
-var backgroundStyle = {
-};
+let backgroundStyle = {};
 
 // You can change this if you have things that can be messed up by long tick lengths
 function maxTickLength() {
@@ -90,5 +89,4 @@ function maxTickLength() {
 
 // Use this if you need to undo inflation from an older version. If the version is older than the version that fixed the issue,
 // you can cap their current resources with this.
-function fixOldSave(oldVersion) {
-};
+function fixOldSave(oldVersion) {};

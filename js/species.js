@@ -88,7 +88,7 @@ addLayer("sp", {
 		if (layers[resettingLayer].row > this.row) layerDataReset("sp", keep);
 	},
 	componentStyles: {
-		"challenge"() {return {'border-radius': '50px'}},
+		"challenge"() {return {"min-height": "360px", "height": "fit-content", "border-radius": "50px"}},
 	},
 	challenges: {
 		11: {
@@ -104,7 +104,7 @@ addLayer("sp", {
 			enterable() {return player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)},
 			doReset: true,
 			overrideResetsNothing: true,
-			style: {"width": "250px", "height": "360px"},
+			style: {"width": "250px"},
 		},
 		12: {
 			name: "2nd Hybridization",
@@ -128,7 +128,7 @@ addLayer("sp", {
 			enterable() {return player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)},
 			doReset: true,
 			overrideResetsNothing: true,
-			style: {"width": "250px", "height": "360px"},
+			style: {"width": "250px"},
 		},
 		13: {
 			name: "3rd Hybridization",
@@ -144,7 +144,7 @@ addLayer("sp", {
 			enterable() {return player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)},
 			doReset: true,
 			overrideResetsNothing: true,
-			style: {"width": "250px", "height": "360px"},
+			style: {"width": "250px"},
 		},
 		14: {
 			name: "4th Hybridization",
@@ -164,7 +164,7 @@ addLayer("sp", {
 			enterable() {return player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)},
 			doReset: true,
 			overrideResetsNothing: true,
-			style: {"width": "250px", "height": "360px"},
+			style: {"width": "250px"},
 		},
 		15: {
 			name: "5th Hybridization",
@@ -181,7 +181,7 @@ addLayer("sp", {
 			doReset: true,
 			overrideResetsNothing: true,
 			countsAs: [11, 12, 13, 14],
-			style: {"width": "250px", "height": "360px"},
+			style: {"width": "250px"},
 		},
 		16: {
 			name: "6th Hybridization",
@@ -197,7 +197,7 @@ addLayer("sp", {
 			enterable() {return player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)},
 			doReset: true,
 			overrideResetsNothing: true,
-			style: {"width": "250px", "height": "360px"},
+			style: {"width": "250px"},
 		},
 		17: {
 			name: "7th Hybridization",
@@ -222,7 +222,7 @@ addLayer("sp", {
 			enterable() {return player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)},
 			doReset: true,
 			overrideResetsNothing: true,
-			style: {"width": "250px", "height": "360px"},
+			style: {"width": "250px"},
 		},
 		18: {
 			name: "8th Hybridization",
@@ -237,7 +237,7 @@ addLayer("sp", {
 			enterable() {return player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)},
 			doReset: true,
 			overrideResetsNothing: true,
-			style: {"width": "250px", "height": "360px"},
+			style: {"width": "250px"},
 		},
 		19: {
 			name: "9th Hybridization",
@@ -253,7 +253,7 @@ addLayer("sp", {
 			doReset: true,
 			overrideResetsNothing: true,
 			countsAs: [11, 12, 13, 14, 15, 16, 17, 18],
-			style: {"width": "250px", "height": "360px"},
+			style: {"width": "250px"},
 		},
 		21: {
 			name: "10th Hybridization",
@@ -277,7 +277,7 @@ addLayer("sp", {
 			overrideResetsNothing: true,
 			completionLimit: 5,
 			countsAs: [11, 12, 13, 14, 15, 16, 17, 18, 19],
-			style: {"width": "calc(100% - 8px)", "max-width": "600px", "min-height": "360px", "height": "fit-content"},
+			style: {"width": "calc(100% - 8px)", "max-width": "600px"},
 		},
 	},
 });

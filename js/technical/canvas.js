@@ -1,11 +1,9 @@
-var canvas;
-var ctx;
+let canvas, ctx;
 
-window.addEventListener("resize", (_=>resizeCanvas()));
+window.addEventListener("resize", () => resizeCanvas());
 
 function retrieveCanvasData() {
 	let treeCanv = document.getElementById("treeCanvas");
-	let treeTab = document.getElementById("treeTab");
 	if (treeCanv === undefined || treeCanv === null) return false;
 	canvas = treeCanv;
 	ctx = canvas.getContext("2d");
@@ -15,13 +13,13 @@ function retrieveCanvasData() {
 function resizeCanvas() {
 	if (!retrieveCanvasData()) return;
 	canvas.width = 0;
-    canvas.height = 0;
-	canvas.width  = window.innerWidth;
+	canvas.height = 0;
+	canvas.width = window.innerWidth;
 	canvas.height = window.innerHeight;
 	drawTree();
 };
 
-var colors_theme;
+let colors_theme;
 
 function drawTree() {
 	if (!retrieveCanvasData()) return;
@@ -29,35 +27,35 @@ function drawTree() {
 	for (layer in layers) {
 		if (tmp[layer].layerShown == true && tmp[layer].branches) {
 			for (branch in tmp[layer].branches) {
-				drawTreeBranch(layer, tmp[layer].branches[branch])
+				drawTreeBranch(layer, tmp[layer].branches[branch]);
 			};
 		};
-		drawComponentBranches(layer, tmp[layer].upgrades, "upgrade-")
-		drawComponentBranches(layer, tmp[layer].buyables, "buyable-")
-		drawComponentBranches(layer, tmp[layer].clickables, "clickable-")
+		drawComponentBranches(layer, tmp[layer].upgrades, "upgrade-");
+		drawComponentBranches(layer, tmp[layer].buyables, "buyable-");
+		drawComponentBranches(layer, tmp[layer].clickables, "clickable-");
 	};
 };
 
 function drawComponentBranches(layer, data, prefix) {
-	for(id in data) {
+	for (id in data) {
 		if (data[id].branches) {
 			for (branch in data[id].branches) {
-				drawTreeBranch(id, data[id].branches[branch], prefix + layer + "-")
+				drawTreeBranch(id, data[id].branches[branch], prefix + layer + "-");
 			};
 		};
 	};
 };
 
 function drawTreeBranch(num1, data, prefix) { // taken from Antimatter Dimensions & adjusted slightly
-	let num2 = data
-	let color_id = 1
-	let width = 15
+	let num2 = data;
+	let color_id = 1;
+	let width = 15;
 	if (Array.isArray(data)) {
-		num2 = data[0]
-		color_id = data[1]
-		width = data[2] || width
+		num2 = data[0];
+		color_id = data[1];
+		width = data[2] || width;
 	};
-	if (typeof(color_id) == "number")
+	if (typeof color_id == "number")
 		color_id = colors_theme[color_id];
 	if (prefix) {
 		num1 = prefix + num1;

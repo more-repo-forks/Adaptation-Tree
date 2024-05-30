@@ -27,15 +27,15 @@ function canAffordPurchase(layer, thing, cost) {
 	if (thing.currencyInternalName) {
 		let name = thing.currencyInternalName;
 		if (thing.currencyLocation) {
-			return !(thing.currencyLocation[name].lt(cost));
+			return thing.currencyLocation[name].gte(cost);
 		} else if (thing.currencyLayer) {
 			let lr = thing.currencyLayer;
-			return !(player[lr][name].lt(cost));
+			return player[lr][name].gte(cost);
 		} else {
-			return !(player[name].lt(cost));
+			return player[name].gte(cost);
 		};
 	} else {
-		return !(player[layer].points.lt(cost));
+		return player[layer].points.gte(cost);
 	};
 };
 
@@ -109,8 +109,8 @@ function clickClickable(layer, id) {
 function clickGrid(layer, id) {
 	if (!player[layer].unlocked  || tmp[layer].deactivated) return;
 	if (!run(layers[layer].grid.getUnlocked, layers[layer].grid, id)) return;
-	if (!gridRun(layer, 'getCanClick', player[layer].grid[id], id)) return;
-	gridRun(layer, 'onClick', player[layer].grid[id], id);
+	if (!gridRun(layer, "getCanClick", player[layer].grid[id], id)) return;
+	gridRun(layer, "onClick", player[layer].grid[id], id);
 };
 
 // Function to determine if the player is in a challenge
@@ -126,7 +126,7 @@ function inChallenge(layer, id) {
 
 // ************ Misc ************
 
-var onTreeTab = true;
+let onTreeTab = true;
 
 function showTab(name) {
 	if (LAYERS.includes(name) && !layerunlocked(name)) return;
@@ -135,7 +135,7 @@ function showTab(name) {
 		player.subtabs[name].mainTabs = Object.keys(layers[name].tabFormat)[0];
 	};
 	player.tab = name;
-	if (tmp[name] && (tmp[name].row !== 'side') && (tmp[name].row !== 'otherside')) player.lastSafeTab = name;
+	if (tmp[name] && (tmp[name].row !== "side") && (tmp[name].row !== "otherside")) player.lastSafeTab = name;
 	updateTabFormats();
 	needCanvasUpdate = true;
 	document.activeElement.blur();
@@ -147,17 +147,17 @@ function showNavTab(name, prev) {
 	if (player.navTab !== name) clearParticles(function(p) {return p.layer === player.navTab});
 	if (tmp[name] && tmp[name].previousTab !== undefined) prev = tmp[name].previousTab;
 	console.log(name, prev);
-	if (name !== 'none' && prev && !tmp[prev]?.leftTab == !tmp[name]?.leftTab) player[name].prevTab = prev;
-	else if (player[name]) player[name].prevTab = '';
+	if (name !== "none" && prev && !tmp[prev]?.leftTab === !tmp[name]?.leftTab) player[name].prevTab = prev;
+	else if (player[name]) player[name].prevTab = "";
 	player.navTab = name;
 	updateTabFormats();
 	needCanvasUpdate = true;
 };
 
 function goBack(layer) {
-	let nextTab = 'none';
+	let nextTab = "none";
 	if (player[layer].prevTab) nextTab = player[layer].prevTab;
-	if (player.navTab === 'none' && (tmp[layer]?.row == 'side' || tmp[layer].row == 'otherside')) nextTab = player.lastSafeTab;
+	if (player.navTab === "none" && (tmp[layer]?.row === "side" || tmp[layer].row === "otherside")) nextTab = player.lastSafeTab;
 	if (tmp[layer].leftTab) showNavTab(nextTab, layer);
 	else showTab(nextTab, layer);
 };
@@ -174,7 +174,7 @@ function prestigeNotify(layer) {
 	if (layers[layer].prestigeNotify) return layers[layer].prestigeNotify();
 	if (isPlainObject(tmp[layer].tabFormat)) {
 		for (subtab in tmp[layer].tabFormat) {
-			if (subtabResetNotify(layer, 'mainTabs', subtab)) return true;
+			if (subtabResetNotify(layer, "mainTabs", subtab)) return true;
 		};
 	};
 	for (family in tmp[layer].microtabs) {
@@ -183,8 +183,8 @@ function prestigeNotify(layer) {
 		};
 	};
 	if (tmp[layer].autoPrestige || tmp[layer].passiveGeneration) return false;
-	else if (tmp[layer].type == 'static') return tmp[layer].canReset;
-	else if (tmp[layer].type == 'normal') return (tmp[layer].canReset && (tmp[layer].resetGain.gte(player[layer].points.div(10))));
+	else if (tmp[layer].type == "static") return tmp[layer].canReset;
+	else if (tmp[layer].type == "normal") return (tmp[layer].canReset && (tmp[layer].resetGain.gte(player[layer].points.div(10))));
 	else return false;
 };
 
@@ -195,7 +195,7 @@ function notifyLayer(name) {
 
 function subtabShouldNotify(layer, family, id) {
     let subtab = {};
-    if (family == 'mainTabs') subtab = tmp[layer].tabFormat[id];
+    if (family == "mainTabs") subtab = tmp[layer].tabFormat[id];
     else subtab = tmp[layer].microtabs[family][id];
 	if (!subtab.unlocked) return false;
     if (subtab.embedLayer) return tmp[subtab.embedLayer].notify;
@@ -204,7 +204,7 @@ function subtabShouldNotify(layer, family, id) {
 
 function subtabResetNotify(layer, family, id) {
 	let subtab = {};
-	if (family == 'mainTabs') subtab = tmp[layer].tabFormat[id];
+	if (family == "mainTabs") subtab = tmp[layer].tabFormat[id];
 	else subtab = tmp[layer].microtabs[family][id];
 	if (subtab.embedLayer) return tmp[subtab.embedLayer].prestigeNotify;
 	else return subtab.prestigeNotify;
@@ -215,7 +215,7 @@ function nodeShown(layer) {
 };
 
 function layerunlocked(layer) {
-	if (tmp[layer] && tmp[layer].type == 'none') return (player[layer].unlocked);
+	if (tmp[layer] && tmp[layer].type == "none") return (player[layer].unlocked);
 	return LAYERS.includes(layer) && (player[layer].unlocked || (tmp[layer].canReset && tmp[layer].layerShown));
 };
 
@@ -243,8 +243,8 @@ function updateMilestones(layer) {
 			if (layers[layer].milestones[id].onComplete) layers[layer].milestones[id].onComplete();
 			if (layers[layer].milestones[id].color) color = layers[layer].milestones[id].color;
 			else color = tmp[layer].color;
-			let popupTitle = (typeof tmp[layer].milestones[id].popupTitle != "undefined" ? tmp[layer].milestones[id].popupTitle : 'Milestone Gotten!');
-			if (tmp[layer].milestonePopups || tmp[layer].milestonePopups === undefined) doPopup('milestone', tmp[layer].milestones[id].requirementDescription, popupTitle, 3, color);
+			let popupTitle = (typeof tmp[layer].milestones[id].popupTitle != "undefined" ? tmp[layer].milestones[id].popupTitle : "Milestone Gotten!");
+			if (tmp[layer].milestonePopups || tmp[layer].milestonePopups === undefined) doPopup("milestone", tmp[layer].milestones[id].requirementDescription, popupTitle, 3, color);
 			player[layer].lastMilestone = id;
 		};
 	};
@@ -258,8 +258,8 @@ function updateAchievements(layer) {
 			if (layers[layer].achievements[id].onComplete) layers[layer].achievements[id].onComplete();
 			if (layers[layer].achievements[id].color) color = layers[layer].achievements[id].color;
 			else color = tmp[layer].color;
-			let popupTitle = (typeof tmp[layer].achievements[id].popupTitle != "undefined" ? tmp[layer].achievements[id].popupTitle : 'Achievement Gotten!');
-			if (tmp[layer].achievementPopups || tmp[layer].achievementPopups === undefined) doPopup('achievement', tmp[layer].achievements[id].name, popupTitle, 3, color);
+			let popupTitle = (typeof tmp[layer].achievements[id].popupTitle != "undefined" ? tmp[layer].achievements[id].popupTitle : "Achievement Gotten!");
+			if (tmp[layer].achievementPopups || tmp[layer].achievementPopups === undefined) doPopup("achievement", tmp[layer].achievements[id].name, popupTitle, 3, color);
 		};
 	};
 };
@@ -271,12 +271,12 @@ function addTime(diff, layer) {
 		data = data[layer];
 		time = data.time;
 	};
-	//I am not that good to perfectly fix that leak. ~ DB Aarex
+	// I am not that good to perfectly fix that leak. ~ DB Aarex
 	if (time + 0 !== time) {
-		console.log('Memory leak detected. Trying to fix...');
+		console.log("Memory leak detected. Trying to fix...");
 		time = toNumber(time);
 		if (isNaN(time) || time == 0) {
-			console.log('Couldn\'t fix! Resetting...');
+			console.log("Couldn't fix! Resetting...");
 			time = layer ? player.timePlayed : 0;
 			if (!layer) player.timePlayedReset = true;
 		};
@@ -286,18 +286,19 @@ function addTime(diff, layer) {
 	else data.timePlayed = time;
 };
 
+let focused = false;
 let shiftDown = false;
 let ctrlDown = false;
 
-document.onkeydown = function(e) {
+document.onkeydown = e => {
 	if (player === undefined) return;
 	shiftDown = e.shiftKey;
 	ctrlDown = e.ctrlKey;
 	if (tmp.gameEnded && !player.keepGoing) return;
 	player.nerdMode = ctrlDown ? !player.nerdMode : player.nerdMode;
 	let key = e.key;
-	if (ctrlDown) key = 'ctrl+' + key;
-	if (onFocused) return;
+	if (ctrlDown) key = "ctrl+" + key;
+	if (focused) return;
 	if (ctrlDown && hotkeys[key]) e.preventDefault();
 	if (hotkeys[key]) {
 		let k = hotkeys[key];
@@ -305,20 +306,10 @@ document.onkeydown = function(e) {
 	};
 };
 
-document.onkeyup = function(e) {
+document.onkeyup = e => {
 	if (!ctrlDown && player.nerdMode) tmp.nerdMode = false;
 	shiftDown = e.shiftKey;
 	ctrlDown = e.ctrlKey;
-};
-
-var onFocused = false;
-
-function focused(x) {
-	onFocused = x;
-};
-
-function isFunction(obj) {
-	return !!(obj && obj.constructor && obj.call && obj.apply);
 };
 
 function isPlainObject(obj) {
@@ -330,7 +321,7 @@ document.title = modInfo.name;
 // Converts a string value to whatever it's supposed to be
 function toValue(value, oldValue) {
 	if (oldValue instanceof Decimal) {
-		value = new Decimal (value);
+		value = new Decimal(value);
 		if (checkDecimalNaN(value)) return decimalZero;
 		return value;
 	};
@@ -340,44 +331,42 @@ function toValue(value, oldValue) {
 };
 
 // Variables that must be defined to display popups
-var activePopups = [];
-var popupID = 0;
+let activePopups = [];
+let popupID = 0;
 
 // Function to show popups
-function doPopup(type = 'none', text = 'This is a test popup.', title = '', timer = 3, color = '') {
+function doPopup(type = "none", text = "This is a test popup.", title = "", timer = 3, color = "") {
 	switch (type) {
-		case 'achievement':
-			popupTitle = 'Achievement Unlocked!';
-			popupType = 'achievement-popup';
+		case "achievement":
+			popupTitle = "Achievement Unlocked!";
+			popupType = "achievement-popup";
 			break;
-		case 'challenge':
-			popupTitle = 'Challenge Complete';
-			popupType = 'challenge-popup';
+		case "challenge":
+			popupTitle = "Challenge Complete";
+			popupType = "challenge-popup";
 			break;
 		default:
-			popupTitle = 'Something Happened?';
-			popupType = 'default-popup';
+			popupTitle = "Something Happened?";
+			popupType = "default-popup";
 			break;
 	};
-	if (title != '') popupTitle = title;
-	popupMessage = text;
-	popupTimer = timer;
-	activePopups.push({'time':popupTimer, 'type':popupType, 'title':popupTitle, 'message':(popupMessage+'<br>'), 'id':popupID, 'color':color});
+	if (title != "") popupTitle = title;
+	activePopups.push({"time": timer, "type": popupType, "title": popupTitle, "message": text + "<br>", "id": popupID, "color": color});
 	popupID++;
 };
 
-//Function to reduce time on active popups
+// Function to reduce time on active popups
 function adjustPopupTime(diff) {
 	for (popup in activePopups) {
 		activePopups[popup].time -= diff;
-		if (activePopups[popup]['time'] < 0) {
+		if (activePopups[popup].time < 0) {
 			activePopups.splice(popup, 1); // Remove popup when time hits 0
 		};
 	};
 };
 
 function run(func, target, args = null) {
-	if (isFunction(func)) {
+	if (typeof func == "function") {
 		let bound = func.bind(target);
 		return bound(args);
 	} else
@@ -385,7 +374,7 @@ function run(func, target, args = null) {
 };
 
 function gridRun(layer, func, data, id) {
-	if (isFunction(layers[layer].grid[func])) {
+	if (typeof layers[layer].grid[func] == "function") {
 		let bound = layers[layer].grid[func].bind(layers[layer].grid);
 		return bound(data, id);
 	} else

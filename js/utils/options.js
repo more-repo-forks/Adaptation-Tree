@@ -2,8 +2,8 @@ let options = {};
 
 function getStartOptions() { return {
 	autosave: true,
-	msDisplay: 'automation',
-	theme: 'default',
+	msDisplay: "last",
+	theme: "default",
 	hqTree: false,
 	offlineProd: true,
 	hideChallenges: false,
@@ -17,17 +17,16 @@ function toggleOpt(name) {
 	// toggle option
 	options[name] = !options[name];
 	// special
-	if (name == 'hqTree') changeTreeQuality();
+	if (name == "hqTree") changeTreeQuality();
 	// update canvas
-	if (name == 'forceOneTab' || name == 'forceTooltips') needsCanvasUpdate = true;
+	if (name == "forceOneTab" || name == "tooltipForcing") needsCanvasUpdate = true;
 };
 
 function changeTreeQuality() {
-	var on = options.hqTree;
-	document.body.style.setProperty('--hqProperty1', on ? '2px solid' : '4px solid');
-	document.body.style.setProperty('--hqProperty2a', on ? '-4px -4px 4px #00000040 inset' : '-4px -4px 4px #00000000 inset');
-	document.body.style.setProperty('--hqProperty2b', on ? '0px 0px 20px var(--background)' : '');
-	document.body.style.setProperty('--hqProperty3', on ? '2px 2px 4px #00000040' : 'none');
+	document.body.style.setProperty("--hqProperty1", options.hqTree ? "2px solid" : "4px solid");
+	document.body.style.setProperty("--hqProperty2a", options.hqTree ? "-4px -4px 4px #00000040 inset" : "-4px -4px 4px #00000000 inset");
+	document.body.style.setProperty("--hqProperty2b", options.hqTree ? "0px 0px 20px var(--background)" : "");
+	document.body.style.setProperty("--hqProperty3", options.hqTree ? "2px 2px 4px #00000040" : "none");
 };
 
 function toggleAuto(toggle) {
@@ -35,9 +34,9 @@ function toggleAuto(toggle) {
 	needCanvasUpdate = true;
 };
 
-const MS_DISPLAYS = ['ALL', 'LAST, AUTO, INCOMPLETE (recommended)', 'AUTOMATION, INCOMPLETE (recommended)', 'INCOMPLETE', 'NONE'];
+const MS_DISPLAYS = ["ALL", "LAST, AUTO, INCOMPLETE (recommended)", "AUTOMATION, INCOMPLETE (recommended)", "INCOMPLETE", "NONE"];
 
-const MS_SETTINGS = ['always', 'last', 'automation', 'incomplete', 'never'];
+const MS_SETTINGS = ["always", "last", "automation", "incomplete", "never"];
 
 function adjustMSDisp() {
 	options.msDisplay = MS_SETTINGS[(MS_SETTINGS.indexOf(options.msDisplay) + 1) % MS_SETTINGS.length];
@@ -48,15 +47,15 @@ function milestoneShown(layer, id) {
 	complete = player[layer].milestones.includes(id);
 	auto = layers[layer].milestones[id].toggles;
 	switch (options.msDisplay) {
-		case 'always':
+		case "always":
 			return true;
-		case 'last':
+		case "last":
 			return (auto) || !complete || player[layer].lastMilestone === id;
-		case 'automation':
+		case "automation":
 			return (auto) || !complete;
-		case 'incomplete':
+		case "incomplete":
 			return !complete;
-		case 'never':
+		case "never":
 			return false;
 	};
 	return false;

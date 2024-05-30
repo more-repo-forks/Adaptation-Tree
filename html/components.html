@@ -281,7 +281,7 @@ thing_tree: `<div>
 	</span>
 </div>`,
 
-text_input: `<input class="instant" :id="'input-' + layer + '-' + data" :value="player[layer][data].toString()" v-on:focus="focused(true)" v-on:blur="focused(false)" v-on:change="player[layer][data] = toValue(document.getElementById('input-' + layer + '-' + data).value, player[layer][data])">`,
+text_input: `<input class="instant" :id="'input-' + layer + '-' + data" :value="player[layer][data].toString()" v-on:focus="focused = true" v-on:blur="focused = false" v-on:change="player[layer][data] = toValue(document.getElementById('input-' + layer + '-' + data).value, player[layer][data])">`,
 
 slider: `<div class="tooltipBox">
 	<tooltip :text="player[layer][data[0]]"></tooltip><input type="range" v-model="player[layer][data[0]]" :min="data[1]" :max="data[2]">
@@ -431,7 +431,7 @@ layer_tab: `<div v-bind:style="[
 
 overlay_head: `<div class="overlayThing" style="
 	padding-bottom: 10px;
-	background-image: linear-gradient(#000, #000C, #0009, #0006, #0000);
+	background-image: linear-gradient(var(--background), color-mix(in srgb, var(--background) 80%, transparent), color-mix(in srgb, var(--background) 60%, transparent), color-mix(in srgb, var(--background) 40%, transparent), transparent);
 	z-index: 1000;
 	position: relative;
 ">

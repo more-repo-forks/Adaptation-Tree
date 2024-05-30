@@ -1,17 +1,17 @@
-var particles = {};
-var particleID = 0;
-var mouseX = 0;
-var mouseY = 0;
+let particles = {};
+let particleID = 0;
+let mouseX = 0;
+let mouseY = 0;
 
 function makeParticles(data, amount = 1, type = "normal") {
 	for (let x = 0; x < amount; x++) {
 		let particle = newParticles[type]();
 		for (thing in data) {
 			switch (thing) {
-				case 'onClick': // Functions that should be copied over
-				case 'onMouseEnter':
-				case 'onMouseLeave':
-				case 'update':
+				case "onClick": // Functions that should be copied over
+				case "onMouseEnter":
+				case "onMouseLeave":
+				case "update":
 					particle[thing] = data[thing];
 					break;
 				default:
@@ -21,7 +21,7 @@ function makeParticles(data, amount = 1, type = "normal") {
 		if (data.dir === undefined) {
 			particle.dir = particle.angle;
 		};
-		particle.dir = particle.dir + (particle.spread * (x - amount/2 + 0.5));
+		particle.dir = particle.dir + (particle.spread * (x - amount / 2 + 0.5));
 		if (particle.offset) {
 			particle.x += particle.offset * sin(particle.dir);
 			particle.y += particle.offset * cos(particle.dir) * -1;
@@ -43,7 +43,7 @@ function updateParticles(diff) {
 		let particle = particles[p];
 		particle.time -= diff;
 		particle.fadeInTimer -= diff;
-		if (particle["time"] < 0) {
+		if (particle.time < 0) {
 			Vue.delete(particles, p);
 		} else {
 			if (particle.update) run(particle.update, particle);
@@ -124,7 +124,7 @@ function updateMouse(event) {
 };
 
 function getOpacity(particle) {
-	if ((particle.time < particle.fadeOutTime) && particle.fadeOutTime)
+	if (particle.time < particle.fadeOutTime && particle.fadeOutTime)
 		return particle.time / particle.fadeOutTime;
 	if (particle.fadeInTimer > 0) 
 		return 1 - (particle.fadeInTimer / particle.fadeInTime);
@@ -133,13 +133,13 @@ function getOpacity(particle) {
 
 function constructParticleStyle(particle) {
 	let style = {
-		left: (particle.x - particle.height / 2) + 'px',
-		top: (particle.y - particle.height / 2) + 'px',
-		width: particle.width + 'px',
-		height: particle.height + 'px',
+		left: (particle.x - particle.height / 2) + "px",
+		top: (particle.y - particle.height / 2) + "px",
+		width: particle.width + "px",
+		height: particle.height + "px",
 		transform: "rotate(" + particle.angle + "deg)",
 		opacity: getOpacity(particle),
-		"pointer-events": (particle.onClick || particle.onHover) ? 'auto' : 'none',
+		"pointer-events": (particle.onClick || particle.onHover ? "auto" : "none"),
 	};
 	if (particle.color) {
 		style["background-color"] = particle.color;

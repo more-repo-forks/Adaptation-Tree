@@ -1,10 +1,10 @@
-var tmp = {};
-var temp = tmp; // Proxy for tmp
-var funcs = {};
-var NaNalert = false;
+let tmp = {};
+let temp = tmp; // Proxy for tmp
+let funcs = {};
+let NaNalert = false;
 
 // Tmp will not call these
-var activeFunctions = [
+let activeFunctions = [
 	"startData", "onPrestige", "doReset", "update", "automate",
 	"buy", "buyMax", "respec", "onPress", "onClick", "onHold", "masterButtonPress",
 	"sellOne", "sellAll", "pay", "actualCostFunction", "actualEffectFunction",
@@ -15,7 +15,7 @@ var activeFunctions = [
 ];
 
 // Add the names of classes to traverse
-var traversableClasses = [];
+let traversableClasses = [];
 
 function setupTemp() {
 	tmp = {};
@@ -24,7 +24,6 @@ function setupTemp() {
 	tmp.scrolled = 0;
 	tmp.gameEnded = false;
 	funcs = {};
-
 	setupTempData(layers, tmp, funcs);
 	for (layer in layers) {
 		tmp[layer].resetGain = {};
@@ -37,14 +36,11 @@ function setupTemp() {
 		setupBuyables(layer);
 		tmp[layer].trueGlowColor = [];
 	};
-
 	tmp.other = {
 		screenWidth: 0,
 		screenHeight: 0,
     };
-
 	updateWidth();
-
 	temp = tmp;
 };
 
@@ -60,14 +56,14 @@ function setupTempData(layerData, tmpData, funcsData) {
 			tmpData[item] = [];
 			funcsData[item] = [];
 			setupTempData(layerData[item], tmpData[item], funcsData[item]);
-		} else if ((!!layerData[item]) && (layerData[item].constructor === Object)) {
+		} else if (!!layerData[item] && layerData[item].constructor === Object) {
 			tmpData[item] = {};
 			funcsData[item] = [];
 			setupTempData(layerData[item], tmpData[item], funcsData[item]);
-		} else if ((!!layerData[item]) && (typeof layerData[item] === "object") && traversableClasses.includes(layerData[item].constructor.name)) {
+		} else if (!!layerData[item] && typeof layerData[item] == "object" && traversableClasses.includes(layerData[item].constructor.name)) {
 			tmpData[item] = new layerData[item].constructor();
 			funcsData[item] = new layerData[item].constructor();
-		} else if (isFunction(layerData[item]) && !activeFunctions.includes(item)) {
+		} else if (typeof layerData[item] == "function" && !activeFunctions.includes(item)) {
 			funcsData[item] = layerData[item];
 			if (boolNames.includes(item)) tmpData[item] = false;
 			else tmpData[item] = decimalOne; // The safest thing to put probably?
@@ -79,9 +75,7 @@ function setupTempData(layerData, tmpData, funcsData) {
 
 function updateTemp() {
 	if (tmp === undefined) setupTemp();
-
 	updateTempData(layers, tmp, funcs);
-
 	for (layer in layers) {
 		tmp[layer].resetGain = getResetGain(layer);
 		tmp[layer].nextAt = getNextAt(layer);
@@ -92,13 +86,11 @@ function updateTemp() {
 		tmp[layer].prestigeNotify = prestigeNotify(layer);
 		if (tmp[layer].passiveGeneration === true) tmp[layer].passiveGeneration = 1; // new Decimal(true) = decimalZero
 	};
-
 	tmp.backgroundStyle = readData(backgroundStyle);
-
 	tmp.displayThings = [];
 	for (thing in displayThings) {
 		let text = displayThings[thing];
-		if (isFunction(text)) text = text();
+		if (typeof text == "function") text = text();
 		tmp.displayThings.push(text);
 	};
 };
@@ -108,9 +100,9 @@ function updateTempData(layerData, tmpData, funcsData, useThis) {
 		if (Array.isArray(layerData[item])) {
 			if (item !== "tabFormat" && item !== "content") // These are only updated when needed
 				updateTempData(layerData[item], tmpData[item], funcsData[item], useThis);
-		} else if ((!!layerData[item]) && (layerData[item].constructor === Object) || (typeof layerData[item] === "object") && traversableClasses.includes(layerData[item].constructor.name)) {
+		} else if (!!layerData[item] && layerData[item].constructor === Object || typeof layerData[item] === "object" && traversableClasses.includes(layerData[item].constructor.name)) {
 			updateTempData(layerData[item], tmpData[item], funcsData[item], useThis);
-		} else if (isFunction(layerData[item]) && !isFunction(tmpData[item])) {
+		} else if (typeof layerData[item] == "function" && typeof tmpData[item] != "function") {
 			let value;
 			if (useThis !== undefined) value = layerData[item].bind(useThis)();
 			else value = layerData[item]();
@@ -150,5 +142,5 @@ function setupBuyables(layer) {
 };
 
 function checkDecimalNaN(x) {
-	return (x instanceof Decimal) && !x.eq(x);
+	return x instanceof Decimal && !x.eq(x);
 };

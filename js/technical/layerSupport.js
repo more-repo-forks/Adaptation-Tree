@@ -1,4 +1,4 @@
-var layers = {};
+let layers = {};
 
 const decimalZero = new Decimal(0);
 const decimalOne = new Decimal(1);
@@ -10,11 +10,9 @@ function layerShown(layer) {
 	return tmp[layer].layerShown;
 };
 
-var LAYERS = Object.keys(layers);
-
-var hotkeys = {};
-
-var maxRow = 0;
+let LAYERS = Object.keys(layers);
+let hotkeys = {};
+let maxRow = 0;
 
 function updateHotkeys() {
 	hotkeys = {};
@@ -32,9 +30,9 @@ function updateHotkeys() {
 	};
 };
 
-var ROW_LAYERS = {};
-var TREE_LAYERS = {};
-var OTHER_LAYERS = {};
+let ROW_LAYERS = {};
+let TREE_LAYERS = {};
+let OTHER_LAYERS = {};
 
 function updateLayers() {
 	LAYERS = Object.keys(layers);
@@ -45,12 +43,12 @@ function updateLayers() {
 		setupLayer(layer);
 	};
 	for (row in OTHER_LAYERS) {
-		OTHER_LAYERS[row].sort((a, b) => (a.position > b.position) ? 1 : -1);
+		OTHER_LAYERS[row].sort((a, b) => a.position > b.position ? 1 : -1);
 		for (layer in OTHER_LAYERS[row])
 			OTHER_LAYERS[row][layer] = OTHER_LAYERS[row][layer].layer;
 	};
 	for (row in TREE_LAYERS) {
-		TREE_LAYERS[row].sort((a, b) => (a.position > b.position) ? 1 : -1);
+		TREE_LAYERS[row].sort((a, b) => a.position > b.position ? 1 : -1);
 		for (layer in TREE_LAYERS[row])
 			TREE_LAYERS[row][layer] = TREE_LAYERS[row][layer].layer;
 	};
@@ -121,7 +119,8 @@ function setupLayer(layer) {
 				if (layers[layer].buyables[thing].unlocked === undefined)
 					layers[layer].buyables[thing].unlocked = true;
 				layers[layer].buyables[thing].canBuy = function() {return canBuyBuyable(this.layer, this.id)}
-				if (layers[layer].buyables[thing].purchaseLimit === undefined) layers[layer].buyables[thing].purchaseLimit = new Decimal(Infinity);
+				if (layers[layer].buyables[thing].purchaseLimit === undefined)
+					layers[layer].buyables[thing].purchaseLimit = new Decimal(Infinity);
 			};
 		};
 	};
@@ -180,18 +179,13 @@ function setupLayer(layer) {
 	if (layers[layer].name === undefined) layers[layer].name = layer;
 	if (layers[layer].layerShown === undefined) layers[layer].layerShown = true;
 	if (layers[layer].glowColor === undefined) layers[layer].glowColor = defaultGlow;
-
 	let row = layers[layer].row;
-
 	let displayRow = layers[layer].displayRow;
-
 	if (!ROW_LAYERS[row]) ROW_LAYERS[row] = {};
 	if (!TREE_LAYERS[displayRow] && !isNaN(displayRow)) TREE_LAYERS[displayRow] = [];
 	if (!OTHER_LAYERS[displayRow] && isNaN(displayRow)) OTHER_LAYERS[displayRow] = [];
-
 	ROW_LAYERS[row][layer] = layer;
 	let position = (layers[layer].position !== undefined ? layers[layer].position : layer);
-	
 	if (!isNaN(displayRow) || displayRow < 0) TREE_LAYERS[displayRow].push({layer: layer, position: position});
 	else OTHER_LAYERS[displayRow].push({layer: layer, position: position});
 	if (maxRow < layers[layer].displayRow) maxRow = layers[layer].displayRow;  
@@ -207,10 +201,12 @@ function addLayer(layerName, layerData, tabLayers = null) { // Call this to add 
 			format[(layers[layer].name ? layers[layer].name : layer)] = {
 				embedLayer: layer,
 				buttonStyle() {
-					if (!tmp[this.embedLayer].nodeStyle) return {'border-color': tmp[this.embedLayer].color};
+					if (!tmp[this.embedLayer].nodeStyle)
+						return {"border-color": tmp[this.embedLayer].color};
 					else {
 						style = tmp[this.embedLayer].nodeStyle;
-						if (style['border-color'] === undefined) style['border-color'] = tmp[this.embedLayer].color;
+						if (style["border-color"] === undefined)
+							style["border-color"] = tmp[this.embedLayer].color;
 						return style;
 					};
 				},
@@ -228,10 +224,8 @@ function addNode(layerName, layerData) { // Does the same thing, but for non-lay
 
 // If data is a function, return the result of calling it. Otherwise, return the data.
 function readData(data, args = null) {
-	if ((!!data && data.constructor && data.call && data.apply))
-		return data(args);
-	else
-		return data;
+	if (typeof data == "function") return data(args);
+	else return data;
 };
 
 function setRowCol(upgrades) {

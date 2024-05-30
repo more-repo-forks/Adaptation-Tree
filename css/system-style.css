@@ -116,6 +116,7 @@ td {
 	position: absolute;
 	overflow-y: auto;
 	overflow-x: auto;
+	overscroll-behavior: none;
 	transition-duration: 0s;
 }
 

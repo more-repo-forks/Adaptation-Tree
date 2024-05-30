@@ -20,7 +20,7 @@ function startPlayerBase() {
 		hasNaN: false,
 		points: modInfo.initialStartPoints,
 		subtabs: {},
-		lastSafeTab: (readData(layoutInfo.showTree) ? "none" : layoutInfo.startTab)
+		lastSafeTab: (readData(layoutInfo.showTree) ? "none" : layoutInfo.startTab),
 	};
 };
 
@@ -122,11 +122,13 @@ function fixSave() {
 		if (player[layer].best !== undefined) player[layer].best = new Decimal(player[layer].best);
 		if (player[layer].total !== undefined) player[layer].total = new Decimal(player[layer].total);
 		if (layers[layer].tabFormat && !Array.isArray(layers[layer].tabFormat)) {
-			if (!Object.keys(layers[layer].tabFormat).includes(player.subtabs[layer].mainTabs)) player.subtabs[layer].mainTabs = Object.keys(layers[layer].tabFormat)[0];
+			if (!Object.keys(layers[layer].tabFormat).includes(player.subtabs[layer].mainTabs))
+				player.subtabs[layer].mainTabs = Object.keys(layers[layer].tabFormat)[0];
 		};
 		if (layers[layer].microtabs) {
 			for (item in layers[layer].microtabs)
-				if (!Object.keys(layers[layer].microtabs[item]).includes(player.subtabs[layer][item])) player.subtabs[layer][item] = Object.keys(layers[layer].microtabs[item])[0];
+				if (!Object.keys(layers[layer].microtabs[item]).includes(player.subtabs[layer][item]))
+					player.subtabs[layer][item] = Object.keys(layers[layer].microtabs[item])[0];
 		};
 	};
 };
@@ -141,14 +143,15 @@ function fixData(defaultData, newData) {
 		} else if (defaultData[item] instanceof Decimal) { // Convert to Decimal
 			if (newData[item] === undefined) newData[item] = defaultData[item];
 			else newData[item] = new Decimal(newData[item]);
-		} else if ((!!defaultData[item]) && (typeof defaultData[item] === "object")) {
-			if (newData[item] === undefined || (typeof defaultData[item] !== "object")) newData[item] = defaultData[item];
+		} else if (!!defaultData[item] && typeof defaultData[item] == "object") {
+			if (newData[item] === undefined || typeof defaultData[item] != "object") newData[item] = defaultData[item];
 			else fixData(defaultData[item], newData[item]);
 		} else {
 			if (newData[item] === undefined) newData[item] = defaultData[item];
 		};
 	};
 };
+
 function load() {
 	let get = localStorage.getItem(modInfo.id);
 	if (get === null || get === undefined) {
@@ -160,8 +163,7 @@ function load() {
 		loadOptions();
 	};
 	if (options.offlineProd) {
-		if (player.offTime === undefined)
-			player.offTime = {remain: 0};
+		if (player.offTime === undefined) player.offTime = {remain: 0};
 		player.offTime.remain += (Date.now() - player.time) / 1000;
 	};
 	player.time = Date.now();
@@ -187,7 +189,7 @@ function loadOptions() {
 
 function setupModInfo() {
 	modInfo.changelog = changelog;
-	modInfo.winText = winText ? (typeof winText == "function" ? winText() : winText) : `Congratulations! You have reached the end and beaten this game, but for now...`;
+	modInfo.winText = winText ? (typeof winText == "function" ? winText() : winText) : "Congratulations! You have reached the end and beaten this game, but for now...";
 };
 
 function NaNcheck(data) {
@@ -204,7 +206,7 @@ function NaNcheck(data) {
 				return;
 			};
 		} else if (data[item] instanceof Decimal) {
-		} else if ((!!data[item]) && (data[item].constructor === Object)) {
+		} else if (!!data[item] && data[item].constructor === Object) {
 			NaNcheck(data[item]);
 		};
 	};
@@ -215,7 +217,6 @@ function exportSave() {
 	el.value = btoa(JSON.stringify(player));
 	document.body.appendChild(el);
 	el.select();
-	el.setSelectionRange(0, 99999);
 	document.execCommand("copy");
 	document.body.removeChild(el);
 };
@@ -223,10 +224,9 @@ function exportSave() {
 function importSave(imported = undefined, forced = false) {
 	if (imported === undefined) imported = prompt("Paste your save here");
 	try {
-		let tempPlr = Object.assign(getStartPlayer(), JSON.parse(atob(imported)));
-		if (tempPlr.versionType != modInfo.id && !forced && !confirm("This save appears to be for a different mod! Are you sure you want to import?")) // Wrong save (use "Forced" to force it to accept.)
-			return;
-		player = tempPlr;
+		let tempPlayer = Object.assign(getStartPlayer(), JSON.parse(atob(imported)));
+		if (tempPlayer.versionType != modInfo.id && !forced && !confirm("This save appears to be for a different mod! Are you sure you want to import?")) return;
+		player = tempPlayer;
 		player.versionType = modInfo.id;
 		fixSave();
 		versionCheck();
@@ -255,17 +255,11 @@ function versionCheck() {
 	};
 };
 
-var saveInterval = setInterval(function () {
-	if (player === undefined)
-		return;
-	if (tmp.gameEnded && !player.keepGoing)
-		return;
-	if (options.autosave)
-		save();
+let saveInterval = setInterval(() => {
+	if (player === undefined || (tmp.gameEnded && !player.keepGoing)) return;
+	if (options.autosave) save();
 }, 5000);
 
 window.onbeforeunload = () => {
-	if (player.autosave) {
-		save();
-	};
+	if (player.autosave) save();
 };
