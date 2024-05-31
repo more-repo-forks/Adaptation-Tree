@@ -4,12 +4,12 @@ const extraEvolutionEffects = {
 		else return "You can always bulk growth.<br>The effect of <b>Growth enhancement I</b> is changed."
 	},
 	6: () => {
-		if (player.e.points.gte(14)) return;
+		if (player.e.points.gte(14) || tmp.e.effect[4].gte(1e300)) return;
 		else if (hasChallenge("e", 13)) return "The second to last evolution effect is multiplied by 32.";
 		else return "The last evolution effect is multiplied by 32.";
 	},
 	14: () => {
-		if (player.e.points.gte(233)) {
+		if (player.e.points.gte(233) || tmp.e.effect[4].gte(1e300)) {
 			return;
 		} else if (hasChallenge("e", 13)) {
 			if (player.e.points.gte(14)) return "The second to last evolution effect is multiplied by 16,000.";
@@ -80,10 +80,13 @@ const extraEvolutionEffects = {
 		else return "The extra AGI from evolutions is multiplied by 4<br>The extra INT from evolutions is multiplied by 40.";
 	},
 	233() {
-		if (player.e.points.gte(256)) return;
+		if (player.e.points.gte(256) || tmp.e.effect[4].gte(1e300)) return;
 		else return "The second to last evolution effect is improved.";
 	},
-	256: "The second to last evolution effect is improved further.",
+	256() {
+		if (tmp.e.effect[4].gte(1e300)) return;
+		else return "The second to last evolution effect is improved further.";
+	},
 	270: "The 10th retrogression has an additional reward.",
 	282() {
 		if (player.e.points.gte(343)) return;
@@ -198,7 +201,7 @@ addLayer("e", {
 		points: new Decimal(0),
 		challengesUnlocked: false,
 	}},
-	color: "#ED6A5E",
+	color: "#EE7770",
 	resource: "evolutions",
 	row: 2,
 	baseResource: "growth points",
@@ -217,6 +220,7 @@ addLayer("e", {
 		return base;
 	},
 	exponent: 1,
+	roundUpCost: true,
 	canBuyMax() {return player.sp.unlocked},
 	resetDescription: "Evolve for ",
 	gainMult() {

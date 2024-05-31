@@ -3,14 +3,14 @@ const modInfo = {
 	id: "adaptation-tree-yrahcaz7",
 	author: "Yrahcaz7",
 	pointsName: "power",
-	modFiles: ["stimulation.js", "growth.js", "evolution.js", "acclimation.js", "species.js", "consciousness.js", "domination.js", "technical/tree.js"],
+	modFiles: ["stimulation.js", "growth.js", "evolution.js", "acclimation.js", "species.js", "consciousness.js", "domination.js", "ecosystem.js", "technical/tree.js"],
 	initialStartPoints: new Decimal(0),
 	offlineLimit: 1, // in hours
 }
 
 const VERSION = {
-	num: "1.6",
-	name: "Rise to Dominance",
+	num: "2.0",
+	name: "Successive Ecosystems",
 };
 
 const winText = "Congratulations!<br>You have reached the end and beaten this game (for now),<br>but there is more content coming soon...";
@@ -71,12 +71,12 @@ let displayThings = [
 		if (tmp.other.oompsMag != 0 && options.showOOMs) return "(" + format(tmp.other.oomps) + " OOM" + (tmp.other.oompsMag < 0 ? "^OOM" : tmp.other.oompsMag > 1 ? "^" + tmp.other.oompsMag : "") + "s/sec)";
 		return "(" + format(getPointPotential()) + " max power)";
 	},
-	() => "<br>current endgame is at 30 " + (player.sp.unlocked ? "species" : "???"),
+	() => "<br>current endgame is at 51 " + (player.sp.unlocked ? "species" : "???"),
 ];
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.sp.points.gte(30);
+	return player.sp.points.gte(51);
 };
 
 // Style for the background, can be a function

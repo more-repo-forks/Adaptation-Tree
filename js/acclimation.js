@@ -10,6 +10,10 @@ addLayer("a", {
 		population: new Decimal(1),
 		populationMax: new Decimal(1),
 		populationTime: 0,
+		autoCRA: false,
+		autoFER: false,
+		autoANA: false,
+		autoSOV: false,
 	}},
 	color: "#B3478F",
 	resource: "acclimation points",
@@ -27,6 +31,7 @@ addLayer("a", {
 		return base;
 	},
 	exponent: 1,
+	roundUpCost: true,
 	canBuyMax() {return player.cb.unlocked},
 	resetDescription: "Acclimate for ",
 	gainMult() {
@@ -90,56 +95,102 @@ addLayer("a", {
 		return eff;
 	},
 	effectDescription() {return "of which " + formatWhole(player[this.layer].points.sub(player[this.layer].spent)) + " are unspent"},
-	tabFormat: [
-		"main-display",
-		"prestige-button",
-		"resource-display",
-		["display-text", () => "Your population is currently <h2 style='color: #B3478F; text-shadow: #B3478F 0px 0px 10px'>" + formatWhole(player.a.population) + "</h2>, which is dividing growth requirement by /" + format(tmp.a.effect[0]) + ", dividing evolution requirement by /" + format(tmp.a.effect[1]) + ", and giving " + formatWhole(tmp.a.effect[2]) + " extra STR, WIS, AGI, and INT.<br>(" + formatWhole(player.a.populationMax) + " max population)"],
-		"blank",
-		["row", [
-			["column", [["buyable", 11], ["blank", "75px"], ["buyable", 12]]],
-			["display-text", () => {
-				let max = getBuyableAmount("a", 11).add(tmp.a.buyables[11].extra).max(getBuyableAmount("a", 12).add(tmp.a.buyables[12].extra)).max(getBuyableAmount("a", 13).add(tmp.a.buyables[13].extra)).max(getBuyableAmount("a", 14).add(tmp.a.buyables[14].extra)).toNumber() + 1;
-				if (max < 2) max = 2;
-				let text = "<svg viewBox='0 0 100 100' style='width: 200px; height: 200px'>";
-				text += "<line x1='6' y1='6' x2='94' y2='94' fill='none' stroke='#404040'/>";
-				text += "<line x1='6' y1='94' x2='94' y2='6' fill='none' stroke='#404040'/>";
-				let rectMax = max;
-				if (rectMax >= 16) {
-					rectMax = max / (2 ** Math.floor(Math.log2(max) - 3));
-				};
-				for (let index = 0; index < rectMax; index++) {
-					let low = Math.min((index / rectMax * 45) + 5.5, 50);
-					let high = Math.max(((rectMax - index) / rectMax * 90) - 1, 0);
-					text += "<rect x='" + low + "' y='" + low + "' width=" + high + " height='" + high + "' rx='1' ry='1' fill='none' stroke='#808080'/>";
-				};
-				// normal stats
-				let stats = [
-					getBuyableAmount("a", 11).toNumber() + 1,
-					getBuyableAmount("a", 13).toNumber() + 1,
-					getBuyableAmount("a", 14).toNumber() + 1,
-					getBuyableAmount("a", 12).toNumber() + 1,
-				];
-				let statPoint0 = 50 - (stats[0] / max * 45 - 0.5);
-				let statPoint2 = 50 + (stats[2] / max * 45 - 0.5);
-				text += "<polyline points='" + statPoint0 + "," + statPoint0 + " " + (50 + (stats[1] / max * 45 - 0.5)) + "," + (50 - (stats[1] / max * 45 - 0.5)) + " " + statPoint2 + "," + statPoint2 + " " + (50 - (stats[3] / max * 45 - 0.5)) + "," + (50 + (stats[3] / max * 45 - 0.5)) + " " + statPoint0 + "," + statPoint0 + "' fill='#ffffff40' stroke='#ffffff' stroke-linejoin='round' stroke-linecap='round'/>";
-				// extra stats
-				stats[0] += tmp.a.buyables[11].extra.toNumber();
-				stats[1] += tmp.a.buyables[13].extra.toNumber();
-				stats[2] += tmp.a.buyables[14].extra.toNumber();
-				stats[3] += tmp.a.buyables[12].extra.toNumber();
-				statPoint0 = 50 - (stats[0] / max * 45 - 0.5);
-				statPoint2 = 50 + (stats[2] / max * 45 - 0.5);
-				text += "<polyline points='" + statPoint0 + "," + statPoint0 + " " + (50 + (stats[1] / max * 45 - 0.5)) + "," + (50 - (stats[1] / max * 45 - 0.5)) + " " + statPoint2 + "," + statPoint2 + " " + (50 - (stats[3] / max * 45 - 0.5)) + "," + (50 + (stats[3] / max * 45 - 0.5)) + " " + statPoint0 + "," + statPoint0 + "' fill='#ffffff40' stroke='#ffffff' stroke-linejoin='round' stroke-linecap='round'/>";
-				// return
-				return text + "</svg>";
-			}],
-			["column", [["buyable", 13], ["blank", "75px"], ["buyable", 14]]],
-		]],
-		"respec-button",
-		"blank",
-		"milestones",
-	],
+	tabFormat() {
+		// top text
+		let topText = "<div style='height: 25px; padding-top: ";
+		if (player.ec.unlocked) {
+			topText += "20px'>";
+		} else {
+			topText += "5px'>";
+		};
+		if (getClickableState("a", 14)) {
+			topText += "Only extra levels";
+		} else if (getClickableState("a", 11)) {
+			if (getClickableState("a", 13)) topText += "Only base levels " + formatWhole((+getClickableState("a", 11)) * 4) + "+";
+			else topText += "Only levels " + formatWhole((+getClickableState("a", 11)) * 4) + "+";
+		} else {
+			if (getClickableState("a", 13)) topText += "Only base levels";
+			else topText += "All levels";
+		};
+		// stat svg display
+		const reduction = (+getClickableState("a", 11)) * 4;
+		let max = 1;
+		if (getClickableState("a", 13)) {
+			max += getBuyableAmount("a", 11).max(getBuyableAmount("a", 12)).max(getBuyableAmount("a", 13)).max(getBuyableAmount("a", 14)).toNumber() - reduction;
+		} else if (getClickableState("a", 14)) {
+			max += tmp.a.buyables[11].extra.max(tmp.a.buyables[12].extra).max(tmp.a.buyables[13].extra).max(tmp.a.buyables[14].extra).toNumber();
+		} else {
+			max += getBuyableAmount("a", 11).add(tmp.a.buyables[11].extra).max(getBuyableAmount("a", 12).add(tmp.a.buyables[12].extra)).max(getBuyableAmount("a", 13).add(tmp.a.buyables[13].extra)).max(getBuyableAmount("a", 14).add(tmp.a.buyables[14].extra)).toNumber() - reduction;
+		};
+		if (max < 2) max = 2;
+		let statText = "<svg viewBox='0 0 100 100' style='width: 200px; height: 200px'>";
+		statText += "<line x1='6' y1='6' x2='94' y2='94' fill='none' stroke='#404040'/>";
+		statText += "<line x1='6' y1='94' x2='94' y2='6' fill='none' stroke='#404040'/>";
+		let rectMax = max;
+		if (rectMax >= 16) {
+			rectMax = max / (2 ** Math.floor(Math.log2(max) - 3));
+		};
+		for (let index = 0; index < rectMax; index++) {
+			let low = Math.min((index / rectMax * 45) + 5.5, 50);
+			let high = Math.max(((rectMax - index) / rectMax * 90) - 1, 0);
+			statText += "<rect x='" + low + "' y='" + low + "' width=" + high + " height='" + high + "' rx='1' ry='1' fill='none' stroke='#808080'/>";
+		};
+		// normal stats
+		let stats = (getClickableState("a", 14) ? [1, 1, 1, 1] : [
+			getBuyableAmount("a", 11).toNumber() - reduction + 1,
+			getBuyableAmount("a", 13).toNumber() - reduction + 1,
+			getBuyableAmount("a", 14).toNumber() - reduction + 1,
+			getBuyableAmount("a", 12).toNumber() - reduction + 1,
+		]);
+		let statPoint0 = 50 - Math.max(stats[0] / max * 45 - 0.5, 0);
+		let statPoint2 = 50 + Math.max(stats[2] / max * 45 - 0.5, 0);
+		if (!getClickableState("a", 14)) statText += "<polyline points='" + statPoint0 + "," + statPoint0 + " " + (50 + Math.max(stats[1] / max * 45 - 0.5, 0)) + "," + (50 - Math.max(stats[1] / max * 45 - 0.5, 0)) + " " + statPoint2 + "," + statPoint2 + " " + (50 - Math.max(stats[3] / max * 45 - 0.5, 0)) + "," + (50 + Math.max(stats[3] / max * 45 - 0.5, 0)) + " " + statPoint0 + "," + statPoint0 + "' fill='#ffffff40' stroke='#ffffff' stroke-linejoin='round' stroke-linecap='round'/>";
+		// extra stats
+		if (!getClickableState("a", 13)) {
+			stats[0] += tmp.a.buyables[11].extra.toNumber();
+			stats[1] += tmp.a.buyables[13].extra.toNumber();
+			stats[2] += tmp.a.buyables[14].extra.toNumber();
+			stats[3] += tmp.a.buyables[12].extra.toNumber();
+			statPoint0 = 50 - Math.max(stats[0] / max * 45 - 0.5, 0);
+			statPoint2 = 50 + Math.max(stats[2] / max * 45 - 0.5, 0);
+		};
+		statText += "<polyline points='" + statPoint0 + "," + statPoint0 + " " + (50 + Math.max(stats[1] / max * 45 - 0.5, 0)) + "," + (50 - Math.max(stats[1] / max * 45 - 0.5, 0)) + " " + statPoint2 + "," + statPoint2 + " " + (50 - Math.max(stats[3] / max * 45 - 0.5, 0)) + "," + (50 + Math.max(stats[3] / max * 45 - 0.5, 0)) + " " + statPoint0 + "," + statPoint0 + "' fill='#ffffff40' stroke='#ffffff' stroke-linejoin='round' stroke-linecap='round'/>";
+		// buyable columns
+		let cols = [];
+		cols[1] = [
+			["display-text", topText + "</div>"],
+			["display-text", statText + "</svg>"],
+			["row", [
+				["clickable", 11],
+				["clickable", 12],
+				["blank", ["10px", "30px"]],
+				["clickable", 13],
+				["clickable", 14],
+			]],
+		];
+		if (player.ec.unlocked) {
+			cols[0] = [["buyable", 11], ["blank", "10px"], ["toggle", ["a", "autoCRA"]], ["blank", "25px"], ["buyable", 12], ["blank", "10px"], ["toggle", ["a", "autoFER"]]];
+			cols[2] = [["buyable", 13], ["blank", "10px"], ["toggle", ["a", "autoANA"]], ["blank", "25px"], ["buyable", 14], ["blank", "10px"], ["toggle", ["a", "autoSOV"]]];
+			cols[1].push(["blank", "15px"], "respec-button");
+		} else {
+			cols[0] = [["buyable", 11], ["blank", "75px"], ["buyable", 12]];
+			cols[2] = [["buyable", 13], ["blank", "75px"], ["buyable", 14]];
+		};
+		// return
+		return [
+			"main-display",
+			"prestige-button",
+			"resource-display",
+			["display-text", "Your population is currently <h2 style='color: #B3478F; text-shadow: #B3478F 0px 0px 10px'>" + formatWhole(player.a.population) + "</h2>, which is dividing growth requirement by /" + format(tmp.a.effect[0]) + ", dividing evolution requirement by /" + format(tmp.a.effect[1]) + ", and giving " + formatWhole(tmp.a.effect[2]) + " extra STR, WIS, AGI, and INT.<br>(" + formatWhole(player.a.populationMax) + " max population)"],
+			"blank",
+			["row", [
+				["column", cols[0]], ["column", cols[1]], ["column", cols[2]],
+			]],
+			(player.ec.unlocked ? undefined : "respec-button"),
+			"blank",
+			"milestones",
+		];
+	},
 	layerShown() {return hasMilestone("g", 40) || player.a.unlocked},
 	hotkeys: [{
 		key: "a",
@@ -147,7 +198,7 @@ addLayer("a", {
 		onPress() {if (player.a.unlocked) doReset("a")},
 	}],
 	doReset(resettingLayer) {
-		let keep = [];
+		let keep = ["autoCRA", "autoFER", "autoANA", "autoSOV"];
 		if (resettingLayer == "d" && player.d.unlocked) keep.push("milestones");
 		if (layers[resettingLayer].row > this.row) layerDataReset("a", keep);
 		player.a.populationTime = 0;
@@ -173,8 +224,17 @@ addLayer("a", {
 		// calculate population
 		player.a.population = max.div(max.sub(1).mul(new Decimal(Math.E).pow(rate.neg())).add(1)).round();
 	},
+	automate() {
+		if (player.ec.unlocked) {
+			if (player.a.autoCRA && layers.a.buyables[11].canAfford()) layers.a.buyables[11].buy();
+			if (player.a.autoFER && layers.a.buyables[12].canAfford()) layers.a.buyables[12].buy();
+			if (player.a.autoANA && layers.a.buyables[13].canAfford()) layers.a.buyables[13].buy();
+			if (player.a.autoSOV && layers.a.buyables[14].canAfford()) layers.a.buyables[14].buy();
+		};
+	},
 	componentStyles: {
 		"buyable"() {return {'width': '210px', 'height': '110px'}},
+		"clickable"() {return {'min-height': '30px', 'transform': 'none'}},
 	},
 	buyables: {
 		11: {
@@ -264,6 +324,7 @@ addLayer("a", {
 				if (hasMilestone("a", 49)) base = base.add(milestoneEffect("a", 49));
 				if (hasMilestone("a", 58)) base = base.add(milestoneEffect("a", 58));
 				if (hasMilestone("a", 63)) base = base.add(milestoneEffect("a", 63));
+				if (hasMilestone("a", 70)) base = base.add(milestoneEffect("a", 70));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
@@ -298,6 +359,7 @@ addLayer("a", {
 				if (hasMilestone("a", 47)) base = base.mul(milestoneEffect("a", 47));
 				if (hasMilestone("a", 56)) base = base.mul(milestoneEffect("a", 56));
 				if (hasMilestone("a", 65)) base = base.mul(milestoneEffect("a", 65));
+				if (hasMilestone("a", 72)) base = base.mul(milestoneEffect("a", 72));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
@@ -328,6 +390,43 @@ addLayer("a", {
 			doReset("a", true, true);
 		},
 		respecText: "respec acclimation points",
+	},
+	clickables: {
+		11: {
+			display() {return "<h2>-4</h2>"},
+			canClick() {return getClickableState("a", 11) > 0 && !getClickableState("a", 14)},
+			onClick() {setClickableState("a", 11, (+getClickableState("a", 11)) - 1)},
+			onHold() {setClickableState("a", 11, (+getClickableState("a", 11)) - 1)},
+			style: {"width": "45px", "border-radius": "10px 0 0 10px"},
+		},
+		12: {
+			display() {return "<h2>+4</h2>"},
+			canClick() {
+				let amt = new Decimal(((+getClickableState("a", 11)) + 1) * 4);
+				return getBuyableAmount("a", 11).gte(amt) && getBuyableAmount("a", 12).gte(amt) && getBuyableAmount("a", 13).gte(amt) && getBuyableAmount("a", 14).gte(amt) && !getClickableState("a", 14);
+			},
+			onClick() {setClickableState("a", 11, (+getClickableState("a", 11)) + 1)},
+			onHold() {setClickableState("a", 11, (+getClickableState("a", 11)) + 1)},
+			style: {"width": "45px", "border-radius": "0 10px 10px 0"},
+		},
+		13: {
+			display() {return (getClickableState("a", 13) ? "Both" : "Only Base")},
+			canClick() {return tmp.a.buyables[11].extra.gte(1) || tmp.a.buyables[12].extra.gte(1) || tmp.a.buyables[13].extra.gte(1) || tmp.a.buyables[14].extra.gte(1)},
+			onClick() {
+				setClickableState("a", 13, !getClickableState("a", 13));
+				if (getClickableState("a", 13)) setClickableState("a", 14, false);
+			},
+			style: {"width": "40px", "border-radius": "10px 0 0 10px"},
+		},
+		14: {
+			display() {return (getClickableState("a", 14) ? "Both" : "Only Extra")},
+			canClick() {return tmp.a.buyables[11].extra.gte(1) || tmp.a.buyables[12].extra.gte(1) || tmp.a.buyables[13].extra.gte(1) || tmp.a.buyables[14].extra.gte(1)},
+			onClick() {
+				setClickableState("a", 14, !getClickableState("a", 14));
+				if (getClickableState("a", 14)) setClickableState("a", 13, false);
+			},
+			style: {"width": "40px", "border-radius": "0 10px 10px 0"},
+		},
 	},
 	milestones: {
 		0: {
@@ -847,7 +946,7 @@ addLayer("a", {
 			effect() {return player.a.points.add(1).pow(0.125)},
 			effectDescription() {return "multiply the base effect of FER based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.ec.unlocked},
 		},
 		56: {
 			requirement: 266,
@@ -856,7 +955,7 @@ addLayer("a", {
 			effect() {return player.a.points.add(1).pow(0.115)},
 			effectDescription() {return "multiply the base effect of SOV based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.ec.unlocked},
 		},
 		57: {
 			requirement: 284,
@@ -864,7 +963,7 @@ addLayer("a", {
 			popupTitle: "Enhancement Acquired!",
 			effectDescription() {return "greatly improve acclimation focus's second effect<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.ec.unlocked},
 		},
 		58: {
 			requirement: 310,
@@ -873,7 +972,7 @@ addLayer("a", {
 			effect() {return 0.5},
 			effectDescription() {return "increase the base effect of ANA by 0.5<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.ec.unlocked},
 		},
 		59: {
 			requirement: 323,
@@ -882,7 +981,7 @@ addLayer("a", {
 			effect() {return player.a.points.add(1).pow(0.36)},
 			effectDescription() {return "multiply the base effect of CRA based on acclimation points<br>and reduce population max's influence on gain<br>Effects: " + format(this.effect()) + "x and -0.03<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.ec.unlocked},
 		},
 		60: {
 			requirement: 350,
@@ -891,7 +990,7 @@ addLayer("a", {
 			effect() {return 0.055},
 			effectDescription() {return "increase the exponent of the second population effect by 0.055<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.ec.unlocked},
 		},
 		61: {
 			requirement: 394,
@@ -899,7 +998,7 @@ addLayer("a", {
 			popupTitle: "Enhancement Acquired!",
 			effectDescription() {return "greatly improve evolution focus's second effect<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.ec.unlocked},
 		},
 		62: {
 			requirement: 405,
@@ -907,7 +1006,7 @@ addLayer("a", {
 			popupTitle: "Enhancement Acquired!",
 			effectDescription() {return "improve conscious beings's last effect<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.ec.unlocked},
 		},
 		63: {
 			requirement: 438,
@@ -916,7 +1015,7 @@ addLayer("a", {
 			effect() {return 0.5},
 			effectDescription() {return "increase the base effect of ANA by 0.5<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.ec.unlocked},
 		},
 		64: {
 			requirement: 584,
@@ -925,7 +1024,7 @@ addLayer("a", {
 			effect() {return 0.25},
 			effectDescription() {return "increase the exponent of the second population effect by 0.25<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.ec.unlocked},
 		},
 		65: {
 			requirement: 622,
@@ -934,7 +1033,7 @@ addLayer("a", {
 			effect() {return player.a.points.add(1)},
 			effectDescription() {return "multiply the base effect of SOV based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.ec.unlocked},
 		},
 		66: {
 			requirement: 704,
@@ -943,7 +1042,7 @@ addLayer("a", {
 			effect() {return player.a.points.add(1).pow(1.5)},
 			effectDescription() {return "multiply the base effect of CRA based on acclimation points<br>and reduce population max's influence on gain<br>Effects: " + format(this.effect()) + "x and -0.14<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.ec.unlocked},
 		},
 		67: {
 			requirement: 705,
@@ -952,7 +1051,7 @@ addLayer("a", {
 			effect() {return getBuyableAmount("a", 12).div(15).floor()},
 			effectDescription() {return "every 15 base levels of FER give an extra level to CRA, FER, ANA, and SOV<br>Effect: +" + formatWhole(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.ec.unlocked},
 		},
 		68: {
 			requirement: 742,
@@ -960,7 +1059,7 @@ addLayer("a", {
 			popupTitle: "Enhancement Acquired!",
 			effectDescription() {return "improve acclimation focus's effects<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("a", this.id - 1)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.ec.unlocked},
 		},
 		69: {
 			requirement: 751,
@@ -968,6 +1067,33 @@ addLayer("a", {
 			popupTitle: "Enhancement Acquired!",
 			effect() {return player.a.points.add(1).pow(0.01888888888888889)},
 			effectDescription() {return "divide domination requirement based on acclimation points<br>Effect: /" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1) || player.ec.unlocked},
+		},
+		70: {
+			requirement: 786,
+			requirementDescription: "ANA enhancement X",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.a.points.add(1).pow(0.15151515151515152)},
+			effectDescription() {return "increase the base effect of ANA based on acclimation points<br>Effect: +" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		71: {
+			requirement: 897,
+			requirementDescription: "Domination enhancement II",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.a.points.add(1).pow(0.02)},
+			effectDescription() {return "divide domination requirement based on acclimation points<br>Effect: /" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		72: {
+			requirement: 1305,
+			requirementDescription: "SOV enhancement X",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.a.points.add(1).pow(5)},
+			effectDescription() {return "multiply the base effect of SOV based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("a", this.id - 1)},
 		},

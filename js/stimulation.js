@@ -65,7 +65,8 @@ addLayer("s", {
 	layerShown() {return player.s.unlocked},
 	passiveGeneration() {
 		let gen = 0;
-		if (player.e.unlocked && tmp.e.effect[4]) gen += tmp.e.effect[4].toNumber() / 100;
+		if (tmp.e.effect[4]) gen += tmp.e.effect[4].toNumber() / 100;
+		if (tmp.ec.effect[2]) gen += tmp.ec.effect[2].toNumber() / 100;
 		return gen;
 	},
 	hotkeys: [{

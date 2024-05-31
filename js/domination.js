@@ -9,7 +9,7 @@ addLayer("d", {
 		spent: new Decimal(0),
 		unlocks: [],
 	}},
-	color: "#F03930",
+	color: "#E03330",
 	resource: "domination points",
 	row: 3,
 	baseResource: "acclimation points",
@@ -21,11 +21,13 @@ addLayer("d", {
 		return 2;
 	},
 	exponent: 1,
-	canBuyMax() {return false},
+	roundUpCost: true,
+	canBuyMax() {return player.ec.unlocked},
 	resetDescription: "Dominate for ",
 	gainMult() {
 		let mult = new Decimal(1);
 		if (hasMilestone("a", 69)) mult = mult.div(milestoneEffect("a", 69));
+		if (hasMilestone("a", 71)) mult = mult.div(milestoneEffect("a", 71));
 		if (hasChallenge("sp", 17)) mult = mult.div(challengeEffect("sp", 17));
 		if (hasChallenge("sp", 21) && challengeEffect("sp", 21)[4]) mult = mult.div(challengeEffect("sp", 21)[4]);
 		if (player.d.unlocks[3]) mult = mult.div(buyableEffect("d", 14));
@@ -115,6 +117,7 @@ addLayer("d", {
 			title: "DOMINATE (FOC)US",
 			display() {
 				if (!player.d.unlocks[0]) return "<br>requires 11 conscious beings to unlock";
+				if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return "Normal effect: divides focus requirement by " + format(this.effect()) + "<br><br>Complete domination effect: decreases the focus requirement base by 0.15<br><br>Progress: " + format(100) + "%";
 				return "divide focus requirement by " + format(this.effectBase()) + "<br><br>Effect: /" + format(this.effect()) + "<br><br>Cost: " + formatWhole(this.cost()) + " domination points<br><br>Progress: " + format(getBuyableAmount(this.layer, this.id) * 20) + "%";
 			},
 			purchaseLimit: 5,
@@ -124,12 +127,14 @@ addLayer("d", {
 				addBuyables(this.layer, this.id, 1);
 			},
 			extra: new Decimal(0),
+			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return {"border-color": "#E03330"}},
 		},
 		12: {
 			cost() {return getBuyableAmount(this.layer, this.id).add(1)},
 			effectBase() {
 				let base = new Decimal(1.2);
 				if (hasMilestone("d", 3)) base = base.mul(milestoneEffect("d", 3));
+				if (hasMilestone("d", 5)) base = base.mul(milestoneEffect("d", 5));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id))},
@@ -145,12 +150,14 @@ addLayer("d", {
 				addBuyables(this.layer, this.id, 1);
 			},
 			extra: new Decimal(0),
+			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return {"border-color": "#E03330"}},
 		},
 		13: {
 			cost() {return getBuyableAmount(this.layer, this.id).add(1)},
 			effectBase() {
 				let base = new Decimal(1000);
 				if (hasMilestone("d", 1)) base = base.mul(milestoneEffect("d", 1));
+				if (hasMilestone("d", 6)) base = base.mul(milestoneEffect("d", 6));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id))},
@@ -166,6 +173,7 @@ addLayer("d", {
 				addBuyables(this.layer, this.id, 1);
 			},
 			extra: new Decimal(0),
+			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return {"border-color": "#E03330"}},
 		},
 		14: {
 			cost() {return getBuyableAmount(this.layer, this.id).add(1)},
@@ -187,6 +195,7 @@ addLayer("d", {
 				addBuyables(this.layer, this.id, 1);
 			},
 			extra: new Decimal(0),
+			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return {"border-color": "#E03330"}},
 		},
 		respec() {
 			setBuyableAmount("d", 11, new Decimal(0));
@@ -216,7 +225,7 @@ addLayer("d", {
 			effect() {return player.d.points.add(1).pow(3)},
 			effectDescription() {return "multiply the base effect of CLI based on domination points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.ec.unlocked},
 		},
 		2: {
 			requirement: 9,
@@ -225,7 +234,7 @@ addLayer("d", {
 			effect() {return player.d.points.add(1).pow(0.0252)},
 			effectDescription() {return "multiply the base effect of DOM based on domination points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.ec.unlocked},
 		},
 		3: {
 			requirement: 12,
@@ -234,7 +243,7 @@ addLayer("d", {
 			effect() {return player.d.points.add(1).pow(0.031)},
 			effectDescription() {return "multiply the base effect of SPE based on domination points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.ec.unlocked},
 		},
 		4: {
 			requirement: 13,
@@ -243,17 +252,25 @@ addLayer("d", {
 			effect() {return player.d.points.add(1).pow(0.242)},
 			effectDescription() {return "divide species requirement based on domination points<br>Effect: /" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.ec.unlocked},
+		},
+		5: {
+			requirement: 14,
+			requirementDescription: "SPE enhancement II",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.d.points.add(1).pow(0.1)},
+			effectDescription() {return "multiply the base effect of SPE based on domination points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		6: {
+			requirement: 17,
+			requirementDescription: "CLI enhancement II",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.d.points.add(1).pow(7)},
+			effectDescription() {return "multiply the base effect of CLI based on domination points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("d", this.id - 1)},
 		},
 	},
-});
-
-addNode("blank", {
-	symbol: "EC",
-	branches: ["sp"],
-	position: 0,
-	nodeStyle: {"margin": "0 10px 0 10px", "border-radius": "50%"},
-	tooltipLocked: "coming soon!",
-	row: 4,
-	layerShown() {return hasChallenge("sp", 19)},
 });

@@ -7,7 +7,7 @@ addLayer("sp", {
 		unlocked: false,
 		points: new Decimal(0),
 	}},
-	color: "#4AA40E",
+	color: "#55B020",
 	resource: "species",
 	row: 3,
 	baseResource: "evolutions",
@@ -25,13 +25,15 @@ addLayer("sp", {
 		return base;
 	},
 	exponent: 1,
-	canBuyMax() {return false},
+	roundUpCost: true,
+	canBuyMax() {return player.ec.unlocked},
 	resetDescription: "Speciate for ",
 	gainMult() {
 		let mult = new Decimal(1);
 		if (hasChallenge("sp", 14)) mult = mult.div(challengeEffect("sp", 14));
 		if (hasMilestone("d", 4)) mult = mult.div(milestoneEffect("d", 4));
 		if (player.d.unlocks[1]) mult = mult.div(buyableEffect("d", 12));
+		if (tmp.ec.effect[0]) mult = mult.div(tmp.ec.effect[0]);
 		return mult;
 	},
 	effect() {
@@ -85,6 +87,7 @@ addLayer("sp", {
 	}],
 	doReset(resettingLayer) {
 		let keep = [];
+		if (resettingLayer == "ec") keep.push("challenges");
 		if (layers[resettingLayer].row > this.row) layerDataReset("sp", keep);
 	},
 	componentStyles: {
@@ -242,7 +245,7 @@ addLayer("sp", {
 		19: {
 			name: "9th Hybridization",
 			fullDisplay() {
-				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does a species reset.<br>While in this hybridization, all previous in hybridization effects are applied.<br><br>Goal: " + formatWhole(this.goal) + " evolutions<br><br>Rewards: The 4th hybridization's last effect is improved again; the base consciousness and domination requirements are decreased; and a new layer is unlocked";
+				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does a species reset.<br>While in this hybridization, all previous in hybridization effects are applied.<br><br>Goal: " + formatWhole(this.goal) + " evolutions<br><br>Rewards: The 4th hybridization's last effect is improved again; the base consciousness and domination requirements are decreased; and a new layer is unlocked" + (player.ec.unlocked ? " (already unlocked)" : "");
 				return "You need " + formatWhole(this.unlockReq) + " species to unlock this hybridization.";
 			},
 			goal: 301,
@@ -258,7 +261,7 @@ addLayer("sp", {
 		21: {
 			name: "10th Hybridization",
 			fullDisplay() {
-				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does a species reset.<br>While in this hybridization, all previous in hybridization effects are applied; the original evolution requirement base is set to 10; and each acclimation point, acclimation enhancement, species, conscious being, focus point, and domination point divides evolution requirement by 5.<br><br>Goal: " + formatWhole(this.goal()) + " growth points<br><br>Completions: " + formatWhole(challengeCompletions("sp", this.id)) + "/" + formatWhole(this.completionLimit) + "<br><br>Rewards: evolution requirement is divided (currently&nbsp;/" + format(this.rewardEffect()[0]) + "), population maximum is multiplied (currently&nbsp;" + format(this.rewardEffect()[1]) + "x), conscious beings requirement is divided (currently&nbsp;/" + format(this.rewardEffect()[2]) + "), focus requirement is divided (currently&nbsp;/" + format(this.rewardEffect()[3]) + "), and domination requirement is divided (currently&nbsp;/" + format(this.rewardEffect()[4]) + ")<div><br></div>";
+				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does a species reset.<br>While in this hybridization, all previous in hybridization effects are applied; the original evolution requirement base is set to 10; and each acclimation point, acclimation enhancement, species, conscious being, focus point, and domination point divides evolution requirement by 5.<br><br>Goal: " + formatWhole(this.goal()) + " growth points<br><br>Completions: " + formatWhole(challengeCompletions("sp", this.id)) + "/" + formatWhole(this.completionLimit()) + "<br><br>Rewards: evolution requirement is divided (currently&nbsp;/" + format(this.rewardEffect()[0]) + "), population maximum is multiplied (currently&nbsp;" + format(this.rewardEffect()[1]) + "x), conscious being requirement is divided (currently&nbsp;/" + format(this.rewardEffect()[2]) + "), focus requirement is divided (currently&nbsp;/" + format(this.rewardEffect()[3]) + "), and domination requirement is divided (currently&nbsp;/" + format(this.rewardEffect()[4]) + ")<div><br></div>";
 				return "You need " + formatWhole(this.unlockReq) + " evolutions to unlock this hybridization. It is the very last one. Are you ready?";
 			},
 			rewardEffect() { return [
@@ -268,14 +271,18 @@ addLayer("sp", {
 				new Decimal(100).pow(challengeCompletions("sp", this.id)),
 				new Decimal(1.353).pow(challengeCompletions("sp", this.id)),
 			]},
-			goal() {return [166, 237, 288, 340, 436][challengeCompletions("sp", this.id)] || Infinity},
+			goal() {return [166, 237, 288, 340, 436, 555, 617, 755, 932][challengeCompletions("sp", this.id)] || Infinity},
 			canComplete() {return player.e.points.gte(this.goal())},
 			unlocked() {return hasChallenge("sp", 19) || hasChallenge("sp", this.id)},
 			unlockReq: 21,
 			enterable() {return player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)},
 			doReset: true,
 			overrideResetsNothing: true,
-			completionLimit: 5,
+			completionLimit() {
+				let limit = 5;
+				if (tmp.ec.effect[0]) limit += tmp.ec.effect[0].toNumber();
+				return limit;
+			},
 			countsAs: [11, 12, 13, 14, 15, 16, 17, 18, 19],
 			style: {"width": "calc(100% - 8px)", "max-width": "600px"},
 		},
