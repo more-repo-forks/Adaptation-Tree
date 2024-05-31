@@ -33,7 +33,12 @@ addLayer("ec", {
 		"main-display",
 		"prestige-button",
 		"resource-display",
-		["display-text", () => "You keep hybridization completions on ecosystem resets.<br><br>After succeeding 1 time, more automation for acclimation is always unlocked<br>and you can always bulk species, conscious beings, and domination points.<br><br>The above extra effects will not go away even if this layer is reset.<br><br><br><br><h2><b style='color: #116022; text-shadow: 0 0 10px #116022'>ANACHRONISM</b> is coming soon!</h2>"],
+		["display-text", () => {
+			let text = "You keep hybridization completions on ecosystem resets.<br><br>After succeeding 1 time, more automation for acclimation is always unlocked<br>and you can always bulk species, conscious beings, and domination points.<br><br>The above extra effects will not go away even if this layer is reset.";
+			if (player.ec.points.gte(2)) text += "<br><br>After succeeding 3 times, you keep retrogression completions on all resets.";
+			text += "<br><br><br><br><h2><b style='color: #116022; text-shadow: 0 0 10px #116022'>ANACHRONISM</b> is coming soon!</h2>";
+			return text;
+		}],
 		"blank",
 	],
 	layerShown() {return hasChallenge("sp", 19) || player.ec.unlocked},

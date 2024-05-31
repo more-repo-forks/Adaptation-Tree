@@ -377,7 +377,8 @@ addLayer("e", {
 	}],
 	doReset(resettingLayer) {
 		let keep = [];
-		if (layers[resettingLayer].row == 3 && player.cb.points.gte(6)) keep.push("challenges");
+		if (player.ec.points.gte(3)) keep.push("challenges");
+		else if (layers[resettingLayer].row == 3 && player.cb.points.gte(6)) keep.push("challenges");
 		else if (resettingLayer == "sp") keep.push("challenges");
 		if (layers[resettingLayer].row > this.row) layerDataReset("e", keep);
 	},

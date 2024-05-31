@@ -199,7 +199,7 @@ addLayer("a", {
 	}],
 	doReset(resettingLayer) {
 		let keep = ["autoCRA", "autoFER", "autoANA", "autoSOV"];
-		if (resettingLayer == "d" && player.d.unlocked) keep.push("milestones");
+		if (resettingLayer == "d" && player.d.unlocked) keep.push("milestones", "lastMilestone");
 		if (layers[resettingLayer].row > this.row) layerDataReset("a", keep);
 		player.a.populationTime = 0;
 	},
@@ -217,6 +217,7 @@ addLayer("a", {
 		let exp = 0.5;
 		if (hasMilestone("a", 59)) exp -= 0.03;
 		if (hasMilestone("a", 66)) exp -= 0.14;
+		if (hasMilestone("a", 73)) exp -= 0.17;
 		// calculate rate
 		let rate = new Decimal(player.a.populationTime).mul(2).div(max.pow(exp));
 		rate = rate.mul(buyableEffect("a", 12));
@@ -251,6 +252,7 @@ addLayer("a", {
 				if (hasMilestone("a", 46)) base = base.mul(milestoneEffect("a", 46));
 				if (hasMilestone("a", 59)) base = base.mul(milestoneEffect("a", 59));
 				if (hasMilestone("a", 66)) base = base.mul(milestoneEffect("a", 66));
+				if (hasMilestone("a", 73)) base = base.mul(milestoneEffect("a", 73));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
@@ -1048,7 +1050,7 @@ addLayer("a", {
 			requirement: 705,
 			requirementDescription: "FER enhancement IX",
 			popupTitle: "Enhancement Acquired!",
-			effect() {return getBuyableAmount("a", 12).div(15).floor()},
+			effect() {return getBuyableAmount("a", 12).div(hasMilestone("a", 74) ? 2 : 15).floor()},
 			effectDescription() {return "every 15 base levels of FER give an extra level to CRA, FER, ANA, and SOV<br>Effect: +" + formatWhole(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("a", this.id - 1) || player.ec.unlocked},
@@ -1094,6 +1096,23 @@ addLayer("a", {
 			popupTitle: "Enhancement Acquired!",
 			effect() {return player.a.points.add(1).pow(5)},
 			effectDescription() {return "multiply the base effect of SOV based on acclimation points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		73: {
+			requirement: 1440,
+			requirementDescription: "CRA enhancement X",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.a.points.add(1).pow(10)},
+			effectDescription() {return "multiply the base effect of CRA based on acclimation points<br>and reduce population max's influence on gain<br>Effects: " + format(this.effect()) + "x and -0.17<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			done() {return player.a.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("a", this.id - 1)},
+		},
+		74: {
+			requirement: 1809,
+			requirementDescription: "FER enhancement X",
+			popupTitle: "Enhancement Acquired!",
+			effectDescription() {return "decrease the base levels of FER required to give extra levels to<br>CRA, FER, ANA, and SOV from <b>FER enhancement IX</b> by 13 (from 15 to 2)<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("a", this.id - 1)},
 		},

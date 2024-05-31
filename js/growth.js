@@ -163,10 +163,12 @@ addLayer("g", {
 	}],
 	doReset(resettingLayer) {
 		let keep = ["autoSTR", "autoWIS", "autoAGI", "autoINT"];
-		if (layers[resettingLayer].row <= 3 && player.cb.unlocked) keep.push("milestones");
+		if (layers[resettingLayer].row <= 3 && player.cb.unlocked) keep.push("milestones", "lastMilestone");
 		if (layers[resettingLayer].row > this.row) {
-			let keepMile = [];
-			if (!keep.includes("milestones")) {
+			if (keep.includes("milestones")) {
+				layerDataReset("g", keep);
+			} else {
+				let keepMile = [];
 				let keepMileNum = 0;
 				if (resettingLayer == "e" && hasChallenge("e", 12)) keepMileNum = 16;
 				if (layers[resettingLayer].row == 2 && player.e.points.gte(36)) keepMileNum = 41;
@@ -175,9 +177,7 @@ addLayer("g", {
 						if (player.g.milestones[index] < keepMileNum) keepMile.push(player.g.milestones[index]);
 					};
 				};
-			};
-			layerDataReset("g", keep);
-			if (!keep.includes("milestones")) {
+				layerDataReset("g", keep);
 				player.g.milestones = keepMile;
 			};
 		};

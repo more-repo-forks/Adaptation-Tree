@@ -114,10 +114,16 @@ addLayer("d", {
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id))},
+			completionEffect() {
+				let eff = 0.15;
+				if (hasMilestone("d", 7)) eff += milestoneEffect("d", 7);
+				if (hasMilestone("d", 10)) eff += milestoneEffect("d", 10);
+				return eff;
+			},
 			title: "DOMINATE (FOC)US",
 			display() {
 				if (!player.d.unlocks[0]) return "<br>requires 11 conscious beings to unlock";
-				if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return "Normal effect: divides focus requirement by " + format(this.effect()) + "<br><br>Complete domination effect: decreases the focus requirement base by 0.15<br><br>Progress: " + format(100) + "%";
+				if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return "Normal effect: divides focus requirement by " + format(this.effect()) + "<br><br>Complete domination effect: decreases the focus requirement base by " + format(this.completionEffect()) + "<br><br>Progress: " + format(100) + "%";
 				return "divide focus requirement by " + format(this.effectBase()) + "<br><br>Effect: /" + format(this.effect()) + "<br><br>Cost: " + formatWhole(this.cost()) + " domination points<br><br>Progress: " + format(getBuyableAmount(this.layer, this.id) * 20) + "%";
 			},
 			purchaseLimit: 5,
@@ -135,6 +141,7 @@ addLayer("d", {
 				let base = new Decimal(1.2);
 				if (hasMilestone("d", 3)) base = base.mul(milestoneEffect("d", 3));
 				if (hasMilestone("d", 5)) base = base.mul(milestoneEffect("d", 5));
+				if (hasMilestone("d", 11)) base = base.mul(milestoneEffect("d", 11));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id))},
@@ -180,6 +187,7 @@ addLayer("d", {
 			effectBase() {
 				let base = new Decimal(2);
 				if (hasMilestone("d", 2)) base = base.mul(milestoneEffect("d", 2));
+				if (hasMilestone("d", 8)) base = base.mul(milestoneEffect("d", 8));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id))},
@@ -269,6 +277,50 @@ addLayer("d", {
 			popupTitle: "Enhancement Acquired!",
 			effect() {return player.d.points.add(1).pow(7)},
 			effectDescription() {return "multiply the base effect of CLI based on domination points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		7: {
+			requirement: 18,
+			requirementDescription: "FOC enhancement II",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.05},
+			effectDescription() {return "increase the complete domination effect of FOC by 0.05<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		8: {
+			requirement: 20,
+			requirementDescription: "DOM enhancement II",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.d.points.add(1).pow(0.025)},
+			effectDescription() {return "multiply the base effect of DOM based on domination points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		9: {
+			requirement: 22,
+			requirementDescription: "Hybridization enhancement I",
+			popupTitle: "Enhancement Acquired!",
+			effectDescription() {return "make the 10th hybridization have an additional reward<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		10: {
+			requirement: 23,
+			requirementDescription: "FOC enhancement III",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.05},
+			effectDescription() {return "increase the complete domination effect of FOC by 0.05<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		11: {
+			requirement: 26,
+			requirementDescription: "SPE enhancement III",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.d.points.add(1).pow(0.075)},
+			effectDescription() {return "multiply the base effect of SPE based on domination points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("d", this.id - 1)},
 		},

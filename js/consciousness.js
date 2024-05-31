@@ -1,6 +1,6 @@
 function getFocusBase() {
 	let base = 2;
-	if (getBuyableAmount("d", 11).gte(tmp.d.buyables[11].purchaseLimit)) base -= 0.15;
+	if (getBuyableAmount("d", 11).gte(tmp.d.buyables[11].purchaseLimit)) base -= tmp.d.buyables[11].completionEffect;
 	return base;
 };
 

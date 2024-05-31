@@ -31,6 +31,7 @@ addLayer("sp", {
 	gainMult() {
 		let mult = new Decimal(1);
 		if (hasChallenge("sp", 14)) mult = mult.div(challengeEffect("sp", 14));
+		if (hasChallenge("sp", 21) && challengeEffect("sp", 21)[5]) mult = mult.div(challengeEffect("sp", 21)[5]);
 		if (hasMilestone("d", 4)) mult = mult.div(milestoneEffect("d", 4));
 		if (player.d.unlocks[1]) mult = mult.div(buyableEffect("d", 12));
 		if (tmp.ec.effect[0]) mult = mult.div(tmp.ec.effect[0]);
@@ -261,7 +262,7 @@ addLayer("sp", {
 		21: {
 			name: "10th Hybridization",
 			fullDisplay() {
-				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does a species reset.<br>While in this hybridization, all previous in hybridization effects are applied; the original evolution requirement base is set to 10; and each acclimation point, acclimation enhancement, species, conscious being, focus point, and domination point divides evolution requirement by 5.<br><br>Goal: " + formatWhole(this.goal()) + " growth points<br><br>Completions: " + formatWhole(challengeCompletions("sp", this.id)) + "/" + formatWhole(this.completionLimit()) + "<br><br>Rewards: evolution requirement is divided (currently&nbsp;/" + format(this.rewardEffect()[0]) + "), population maximum is multiplied (currently&nbsp;" + format(this.rewardEffect()[1]) + "x), conscious being requirement is divided (currently&nbsp;/" + format(this.rewardEffect()[2]) + "), focus requirement is divided (currently&nbsp;/" + format(this.rewardEffect()[3]) + "), and domination requirement is divided (currently&nbsp;/" + format(this.rewardEffect()[4]) + ")<div><br></div>";
+				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does a species reset.<br>While in this hybridization, all previous in hybridization effects are applied; the original evolution requirement base is set to 10; and each acclimation point, acclimation enhancement, species, conscious being, focus point, and domination point divides evolution requirement by 5.<br><br>Goal: " + formatWhole(this.goal()) + " evolutions<br><br>Completions: " + formatWhole(challengeCompletions("sp", this.id)) + "/" + formatWhole(this.completionLimit()) + "<br><br>Rewards: evolution requirement is divided (currently&nbsp;/" + format(this.rewardEffect()[0]) + "), population maximum is multiplied (currently&nbsp;" + format(this.rewardEffect()[1]) + "x), conscious being requirement is divided (currently&nbsp;/" + format(this.rewardEffect()[2]) + "), focus requirement is divided (currently&nbsp;/" + format(this.rewardEffect()[3]) + "), " + (hasMilestone("d", 9) ? "domination requirement is divided (currently&nbsp;/" + format(this.rewardEffect()[4]) + "), and species requirement is divided (currently&nbsp;/" + format(this.rewardEffect()[5]) + ")" : "and domination requirement is divided (currently&nbsp;/" + format(this.rewardEffect()[4]) + ")") + "<div><br></div>";
 				return "You need " + formatWhole(this.unlockReq) + " evolutions to unlock this hybridization. It is the very last one. Are you ready?";
 			},
 			rewardEffect() { return [
@@ -270,8 +271,9 @@ addLayer("sp", {
 				new Decimal(2).pow(challengeCompletions("sp", this.id)),
 				new Decimal(100).pow(challengeCompletions("sp", this.id)),
 				new Decimal(1.353).pow(challengeCompletions("sp", this.id)),
+				(hasMilestone("d", 9) ? new Decimal(1.25).pow(challengeCompletions("sp", this.id)) : new Decimal(1)),
 			]},
-			goal() {return [166, 237, 288, 340, 436, 555, 617, 755, 932][challengeCompletions("sp", this.id)] || Infinity},
+			goal() {return [166, 237, 288, 340, 436, 555, 617, 755, 932, 1001, 1110, 1183, 1317, 1446, 1510, 1589, 1665, 1737][challengeCompletions("sp", this.id)] || Infinity},
 			canComplete() {return player.e.points.gte(this.goal())},
 			unlocked() {return hasChallenge("sp", 19) || hasChallenge("sp", this.id)},
 			unlockReq: 21,
@@ -280,7 +282,7 @@ addLayer("sp", {
 			overrideResetsNothing: true,
 			completionLimit() {
 				let limit = 5;
-				if (tmp.ec.effect[0]) limit += tmp.ec.effect[0].toNumber();
+				if (tmp.ec.effect[1]) limit += tmp.ec.effect[1].toNumber();
 				return limit;
 			},
 			countsAs: [11, 12, 13, 14, 15, 16, 17, 18, 19],
