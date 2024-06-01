@@ -28,6 +28,7 @@ addLayer("a", {
 		if (hasMilestone("g", 72)) base -= milestoneEffect("g", 72);
 		if (hasChallenge("sp", 15)) base -= challengeEffect("sp", 15);
 		if (hasChallenge("sp", 16)) base -= challengeEffect("sp", 15);
+		if (inChallenge("ec", 11)) base *= tmp.ec.challenges[11].penalty;
 		return base;
 	},
 	exponent: 1,

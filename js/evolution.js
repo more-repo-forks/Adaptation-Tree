@@ -217,6 +217,7 @@ addLayer("e", {
 		if (hasMilestone("g", 73)) base -= milestoneEffect("g", 73);
 		if (hasChallenge("e", 16)) base -= 0.052545;
 		if (hasChallenge("e", 18)) base -= 0.02;
+		if (inChallenge("ec", 11)) base *= tmp.ec.challenges[11].penalty;
 		return base;
 	},
 	exponent: 1,
@@ -397,7 +398,6 @@ addLayer("e", {
 			goal: 290,
 			canComplete() {return player.g.points.gte(this.goal)},
 			unlocked() {return player.e.challengesUnlocked || hasChallenge("e", this.id)},
-			doReset: true,
 			overrideResetsNothing: true,
 			style: {"width": "250px"},
 		},
@@ -412,7 +412,6 @@ addLayer("e", {
 			unlocked() {return hasChallenge("e", this.id - 1) || hasChallenge("e", this.id)},
 			unlockReq: 8,
 			enterable() {return player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)},
-			doReset: true,
 			overrideResetsNothing: true,
 			style: {"width": "250px"},
 		},
@@ -427,7 +426,6 @@ addLayer("e", {
 			unlocked() {return hasChallenge("e", this.id - 1) || hasChallenge("e", this.id)},
 			unlockReq: 11,
 			enterable() {return player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)},
-			doReset: true,
 			overrideResetsNothing: true,
 			style: {"width": "250px"},
 		},
@@ -442,7 +440,6 @@ addLayer("e", {
 			unlocked() {return hasChallenge("e", this.id - 1) || hasChallenge("e", this.id)},
 			unlockReq: 14,
 			enterable() {return player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)},
-			doReset: true,
 			overrideResetsNothing: true,
 			style: {"width": "250px"},
 		},
@@ -457,7 +454,6 @@ addLayer("e", {
 			unlocked() {return hasChallenge("e", this.id - 1) || hasChallenge("e", this.id)},
 			unlockReq: 18,
 			enterable() {return player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)},
-			doReset: true,
 			overrideResetsNothing: true,
 			countsAs: [11, 12, 13, 14],
 			style: {"width": "250px"},
@@ -474,7 +470,6 @@ addLayer("e", {
 			canComplete() {return player.g.points.gte(this.goal)},
 			unlocked() {return (hasChallenge("e", this.id - 1) && hasMilestone("a", 12)) || hasChallenge("e", this.id)},
 			enterable() {return player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)},
-			doReset: true,
 			overrideResetsNothing: true,
 			style: {"width": "250px"},
 		},
@@ -502,7 +497,6 @@ addLayer("e", {
 			unlocked() {return hasChallenge("e", this.id - 1) || hasChallenge("e", this.id)},
 			unlockReq: 95,
 			enterable() {return player.e.points.gte(this.unlockReq)},
-			doReset: true,
 			overrideResetsNothing: true,
 			style: {"width": "250px"},
 		},
@@ -530,7 +524,6 @@ addLayer("e", {
 			unlocked() {return hasChallenge("e", this.id - 1) || hasChallenge("e", this.id)},
 			unlockReq: 124,
 			enterable() {return player.e.points.gte(this.unlockReq)},
-			doReset: true,
 			overrideResetsNothing: true,
 			style: {"width": "250px"},
 		},
@@ -550,7 +543,6 @@ addLayer("e", {
 			unlocked() {return hasChallenge("e", this.id - 1) || hasChallenge("e", this.id)},
 			unlockReq: 148,
 			enterable() {return player.e.points.gte(this.unlockReq)},
-			doReset: true,
 			overrideResetsNothing: true,
 			countsAs: [11, 12, 13, 14, 15, 16, 17, 18],
 			style: {"width": "250px"},
@@ -594,7 +586,6 @@ addLayer("e", {
 			unlocked() {return hasChallenge("e", 19) || hasChallenge("e", this.id)},
 			unlockReq: 209,
 			enterable() {return player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)},
-			doReset: true,
 			overrideResetsNothing: true,
 			onEnter() {if (!player.e.points.gte(1547)) player.g.milestones = []},
 			completionLimit() {

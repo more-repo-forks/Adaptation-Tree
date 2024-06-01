@@ -196,10 +196,10 @@ function startChallenge(layer, x) {
 	};
 	if (enter) {
 		run(layers[layer].challenges[x].onEnter, layers[layer].challenges[x]);
-		if (tmp[layer].challenges[x].doReset)
+		if (layers[layer].challenges[x].doReset === undefined || tmp[layer].challenges[x].doReset)
 			doReset(layer, true, tmp[layer].challenges[x].overrideResetsNothing === true);
 		Vue.set(player[layer], "activeChallenge", x);
-	} else if (tmp[layer].challenges[x].doReset) {
+	} else if (layers[layer].challenges[x].doReset === undefined || tmp[layer].challenges[x].doReset) {
 		doReset(layer, true, tmp[layer].challenges[x].overrideResetsNothing === true);
 	};
 	updateChallengeTemp(layer);
