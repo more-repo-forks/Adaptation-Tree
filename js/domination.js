@@ -17,8 +17,10 @@ addLayer("d", {
 	requires: new Decimal(250),
 	type: "static",
 	base() {
-		if (hasChallenge("sp", 19)) return 1.84;
-		return 2;
+		let base = 2;
+		if (hasChallenge("sp", 19)) base -= 0.16;
+		if (challengeCompletions("ec", 11) >= 1 && challengeEffect("ec", 11)[0]) base -= challengeEffect("ec", 11)[0];
+		return base;
 	},
 	exponent: 1,
 	roundUpCost: true,
@@ -165,6 +167,7 @@ addLayer("d", {
 				let base = new Decimal(1000);
 				if (hasMilestone("d", 1)) base = base.mul(milestoneEffect("d", 1));
 				if (hasMilestone("d", 6)) base = base.mul(milestoneEffect("d", 6));
+				if (hasMilestone("d", 13)) base = base.mul(milestoneEffect("d", 13));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id))},
@@ -188,6 +191,7 @@ addLayer("d", {
 				let base = new Decimal(2);
 				if (hasMilestone("d", 2)) base = base.mul(milestoneEffect("d", 2));
 				if (hasMilestone("d", 8)) base = base.mul(milestoneEffect("d", 8));
+				if (hasMilestone("d", 12)) base = base.mul(milestoneEffect("d", 12));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id))},
@@ -321,6 +325,33 @@ addLayer("d", {
 			popupTitle: "Enhancement Acquired!",
 			effect() {return player.d.points.add(1).pow(0.075)},
 			effectDescription() {return "multiply the base effect of SPE based on domination points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		12: {
+			requirement: 31,
+			requirementDescription: "DOM enhancement III",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.d.points.add(1).pow(0.045)},
+			effectDescription() {return "multiply the base effect of DOM based on domination points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		13: {
+			requirement: 34,
+			requirementDescription: "CLI enhancement III",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.d.points.add(1).pow(11)},
+			effectDescription() {return "multiply the base effect of CLI based on domination points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		14: {
+			requirement: 35,
+			requirementDescription: "Species enhancement II",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.0383},
+			effectDescription() {return "decrease species requirement base by 0.0383<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("d", this.id - 1)},
 		},
