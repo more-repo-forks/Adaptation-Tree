@@ -182,7 +182,7 @@ addLayer("a", {
 			"main-display",
 			"prestige-button",
 			"resource-display",
-			["display-text", "Your population is currently <h2 style='color: #B3478F; text-shadow: #B3478F 0px 0px 10px'>" + formatWhole(player.a.population) + "</h2>, which is dividing growth requirement by /" + format(tmp.a.effect[0]) + ", dividing evolution requirement by /" + format(tmp.a.effect[1]) + ", and giving " + formatWhole(tmp.a.effect[2]) + " extra STR, WIS, AGI, and INT.<br>(" + formatWhole(player.a.populationMax) + " max population)"],
+			["display-text", "Your population is currently <h2 style='color: #B3478F; text-shadow: #B3478F 0px 0px 10px'>" + formatWhole(player.a.population) + "</h2>, which is dividing growth requirement by /" + format(tmp.a.effect[0]) + "; dividing evolution requirement by /" + format(tmp.a.effect[1]) + "; and giving " + formatWhole(tmp.a.effect[2]) + " extra STR, WIS, AGI, and INT." + (hasMilestone("r", 3) ? "" : "<br>(" + formatWhole(player.a.populationMax) + " max population)")],
 			"blank",
 			["row", [
 				["column", cols[0]], ["column", cols[1]], ["column", cols[2]],
@@ -213,18 +213,23 @@ addLayer("a", {
 		if (hasChallenge("e", 21) && challengeEffect("e", 21)[1]) max = max.mul(challengeEffect("e", 21)[1]);
 		if (hasChallenge("sp", 21) && challengeEffect("sp", 21)[1]) max = max.mul(challengeEffect("sp", 21)[1]);
 		if (player.cb.focusUnlocked) max = max.mul(clickableEffect("cb", 12));
-		player.a.populationMax = max;
-		// max exponent
-		let exp = 0.5;
-		if (hasMilestone("a", 59)) exp -= 0.03;
-		if (hasMilestone("a", 66)) exp -= 0.14;
-		if (hasMilestone("a", 73)) exp -= 0.17;
-		// calculate rate
-		let rate = new Decimal(player.a.populationTime).mul(2).div(max.pow(exp));
-		rate = rate.mul(buyableEffect("a", 12));
-		if (player.cb.focusUnlocked) rate = rate.mul(clickableEffect("cb", 12));
-		// calculate population
-		player.a.population = max.div(max.sub(1).mul(new Decimal(Math.E).pow(rate.neg())).add(1)).round();
+		player.a.populationMax = max.round();
+		// overrides
+		if (hasMilestone("r", 3)) {
+			player.a.population = player.a.populationMax;
+		} else {
+			// max exponent
+			let exp = 0.5;
+			if (hasMilestone("a", 59)) exp -= 0.03;
+			if (hasMilestone("a", 66)) exp -= 0.14;
+			if (hasMilestone("a", 73)) exp -= 0.17;
+			// calculate rate
+			let rate = new Decimal(player.a.populationTime).mul(2).div(max.pow(exp));
+			rate = rate.mul(buyableEffect("a", 12));
+			if (player.cb.focusUnlocked) rate = rate.mul(clickableEffect("cb", 12));
+			// calculate population
+			player.a.population = max.div(max.sub(1).mul(new Decimal(Math.E).pow(rate.neg())).add(1)).round();
+		};
 	},
 	automate() {
 		if (player.ec.unlocked) {
@@ -241,8 +246,10 @@ addLayer("a", {
 	buyables: {
 		11: {
 			cost() {
-				if (hasChallenge("sp", 18)) return getBuyableAmount(this.layer, this.id);
-				return getBuyableAmount(this.layer, this.id).add(1);
+				let cost = getBuyableAmount(this.layer, this.id).add(1);
+				if (hasChallenge("sp", 18)) cost = cost.sub(1);
+				if (hasMilestone("r", 2)) cost = cost.mul(50);
+				return cost;
 			},
 			effectBase() {
 				let base = new Decimal(10);
@@ -258,13 +265,10 @@ addLayer("a", {
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
 			title: "(CRA)FTSMANSHIP",
-			display() {
-				let eff = format(this.effectBase());
-				return "multiply population maximum by " + eff + (eff.length > 7 ? "" : "<br>(population max also influences gain)") + "<br><br>Effect: " + format(this.effect()) + "x<br><br>Cost: " + formatWhole(this.cost()) + " acclimation points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id)) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()));
-			},
+			display() {return "multiply population maximum by " + format(this.effectBase()) + (this.effectBase().gte(1000000) ? "" : "<br>(population max also influences gain)") + "<br><br>Effect: " + format(this.effect()) + "x<br><br>Cost: " + formatWhole(this.cost()) + " acclimation points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id)) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
 			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && !inChallenge("sp", 11)},
 			buy() {
-				player[this.layer].spent = player[this.layer].spent.add(this.cost());
+				if (!hasMilestone("r", 2)) player[this.layer].spent = player[this.layer].spent.add(this.cost());
 				addBuyables(this.layer, this.id, 1);
 			},
 			extra() {
@@ -280,8 +284,10 @@ addLayer("a", {
 		},
 		12: {
 			cost() {
-				if (hasChallenge("sp", 18)) return getBuyableAmount(this.layer, this.id);
-				return getBuyableAmount(this.layer, this.id).add(1);
+				let cost = getBuyableAmount(this.layer, this.id).add(1);
+				if (hasChallenge("sp", 18)) cost = cost.sub(1);
+				if (hasMilestone("r", 2)) cost = cost.mul(50);
+				return cost;
 			},
 			effectBase() {
 				let base = new Decimal(5);
@@ -297,7 +303,7 @@ addLayer("a", {
 			display() {return "multiply population gain by " + format(this.effectBase()) + "<br><br>Effect: " + format(this.effect()) + "x<br><br>Cost: " + formatWhole(this.cost()) + " acclimation points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id)) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
 			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && !inChallenge("sp", 11)},
 			buy() {
-				player[this.layer].spent = player[this.layer].spent.add(this.cost());
+				if (!hasMilestone("r", 2)) player[this.layer].spent = player[this.layer].spent.add(this.cost());
 				addBuyables(this.layer, this.id, 1);
 			},
 			extra() {
@@ -314,8 +320,10 @@ addLayer("a", {
 		},
 		13: {
 			cost() {
-				if (hasChallenge("sp", 18)) return getBuyableAmount(this.layer, this.id);
-				return getBuyableAmount(this.layer, this.id).add(1);
+				let cost = getBuyableAmount(this.layer, this.id).add(1);
+				if (hasChallenge("sp", 18)) cost = cost.sub(1);
+				if (hasMilestone("r", 2)) cost = cost.mul(50);
+				return cost;
 			},
 			effectBase() {
 				let base = new Decimal(1.25);
@@ -335,7 +343,7 @@ addLayer("a", {
 			display() {return "divide acclimation requirement by " + format(this.effectBase()) + "<br><br>Effect: /" + format(this.effect()) + "<br><br>Cost: " + formatWhole(this.cost()) + " acclimation points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id)) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
 			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && !inChallenge("sp", 12)},
 			buy() {
-				player[this.layer].spent = player[this.layer].spent.add(this.cost());
+				if (!hasMilestone("r", 2)) player[this.layer].spent = player[this.layer].spent.add(this.cost());
 				addBuyables(this.layer, this.id, 1);
 			},
 			extra() {
@@ -350,8 +358,10 @@ addLayer("a", {
 		},
 		14: {
 			cost() {
-				if (hasChallenge("sp", 18)) return getBuyableAmount(this.layer, this.id);
-				return getBuyableAmount(this.layer, this.id).add(1);
+				let cost = getBuyableAmount(this.layer, this.id).add(1);
+				if (hasChallenge("sp", 18)) cost = cost.sub(1);
+				if (hasMilestone("r", 2)) cost = cost.mul(50);
+				return cost;
 			},
 			effectBase() {
 				let base = new Decimal(3);
@@ -370,7 +380,7 @@ addLayer("a", {
 			display() {return "multiply population amount in population effects by " + format(this.effectBase()) + "<br><br>Effect: " + format(this.effect()) + "x<br><br>Cost: " + formatWhole(this.cost()) + " acclimation points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id)) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
 			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && !inChallenge("sp", 11)},
 			buy() {
-				player[this.layer].spent = player[this.layer].spent.add(this.cost());
+				if (!hasMilestone("r", 2)) player[this.layer].spent = player[this.layer].spent.add(this.cost());
 				addBuyables(this.layer, this.id, 1);
 			},
 			extra() {

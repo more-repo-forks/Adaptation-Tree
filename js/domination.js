@@ -33,6 +33,7 @@ addLayer("d", {
 		if (hasChallenge("sp", 17)) mult = mult.div(challengeEffect("sp", 17));
 		if (hasChallenge("sp", 21) && challengeEffect("sp", 21)[4]) mult = mult.div(challengeEffect("sp", 21)[4]);
 		if (player.d.unlocks[3]) mult = mult.div(buyableEffect("d", 14));
+		if (tmp.r.effect[5]) mult = mult.div(tmp.r.effect[5]);
 		return mult;
 	},
 	effect() {return player.points.add(1).pow(0.025)},
@@ -144,12 +145,15 @@ addLayer("d", {
 				if (hasMilestone("d", 3)) base = base.mul(milestoneEffect("d", 3));
 				if (hasMilestone("d", 5)) base = base.mul(milestoneEffect("d", 5));
 				if (hasMilestone("d", 11)) base = base.mul(milestoneEffect("d", 11));
+				if (hasMilestone("d", 16)) base = base.mul(milestoneEffect("d", 16));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id))},
+			completionEffect() {return 0.064},
 			title: "DOMINATE (SPE)CIES",
 			display() {
 				if (!player.d.unlocks[1]) return "<br>requires 14 species to unlock";
+				if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return "Normal effect: divides species requirement by " + format(this.effect()) + "<br><br>Complete domination effect: decreases the species requirement base by " + format(this.completionEffect()) + "<br><br>Progress: " + format(100) + "%";
 				return "divide species requirement by " + format(this.effectBase()) + "<br><br>Effect: /" + format(this.effect()) + "<br><br>Cost: " + formatWhole(this.cost()) + " domination points<br><br>Progress: " + format(getBuyableAmount(this.layer, this.id) * 10) + "%";
 			},
 			purchaseLimit: 10,
@@ -352,6 +356,33 @@ addLayer("d", {
 			popupTitle: "Enhancement Acquired!",
 			effect() {return 0.0383},
 			effectDescription() {return "decrease species requirement base by 0.0383<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		15: {
+			requirement: 41,
+			requirementDescription: "D-E synergy enhancement",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return new Decimal(1e100).pow(getBuyableAmount("d", 11).add(getBuyableAmount("d", 12)).add(getBuyableAmount("d", 13)).add(getBuyableAmount("d", 14)))},
+			effectDescription() {return "divide the evolution requirement based on FOC, SPE, CLI, and DOM<br>Effect: /" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		16: {
+			requirement: 50,
+			requirementDescription: "SPE enhancement IV",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.d.points.add(1).pow(0.1055)},
+			effectDescription() {return "multiply the base effect of SPE based on domination points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		17: {
+			requirement: 54,
+			requirementDescription: "D-R synergy enhancement",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return getBuyableAmount("d", 11).add(getBuyableAmount("d", 12)).add(getBuyableAmount("d", 13)).add(getBuyableAmount("d", 14)).add(1).pow(0.164)},
+			effectDescription() {return "divide the revolution requirement based on FOC, SPE, CLI, and DOM<br>Effect: /" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("d", this.id - 1)},
 		},

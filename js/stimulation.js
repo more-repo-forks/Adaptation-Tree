@@ -76,7 +76,8 @@ addLayer("s", {
 	}],
 	doReset(resettingLayer) {
 		let keep = [];
-		if (layers[resettingLayer].row <= 3 && player.cb.unlocked) keep.push("upgrades");
+		if (player.ec.points.gte(6)) keep.push("upgrades");
+		else if (layers[resettingLayer].row <= 3 && player.cb.unlocked) keep.push("upgrades");
 		else if (layers[resettingLayer].row == 2 && player.e.points.gte(20)) keep.push("upgrades");
 		else if (resettingLayer == "g" && ((hasMilestone("g", 8) && hasChallenge("e", 11)) || inChallenge("e", 21))) keep.push("upgrades");
 		if (layers[resettingLayer].row > this.row) {

@@ -43,6 +43,7 @@ addLayer("cb", {
 	gainMult() {
 		let mult = new Decimal(1);
 		if (hasChallenge("sp", 21) && challengeEffect("sp", 21)[2]) mult = mult.div(challengeEffect("sp", 21)[2]);
+		if (tmp.r.effect[1]) mult = mult.div(tmp.r.effect[1]);
 		return mult;
 	},
 	effect() {
@@ -64,7 +65,7 @@ addLayer("cb", {
 		// return
 		return eff;
 	},
-	effectDescription() {return "which are dividing the evolution requirement by /" + format(tmp.cb.effect[0]) + ", dividing the acclimation requirement by /" + format(tmp.cb.effect[1]) + ", and multiplying extra STR, WIS, AGI, and INT levels by " + format(tmp.cb.effect[2]) + "x"},
+	effectDescription() {return "which are dividing the evolution requirement by /" + format(tmp.cb.effect[0]) + "; dividing the acclimation requirement by /" + format(tmp.cb.effect[1]) + "; and multiplying extra STR, WIS, AGI, and INT levels by " + format(tmp.cb.effect[2]) + "x"},
 	tabFormat() {
 		let text = "After enlightening 1 time, you can bulk acclimation points;<br>you keep all stimulation upgrades on row 2, 3, and 4 resets;<br>and you keep all growth enhancements on row 3 and 4 resets.<br><br>The above extra effects will not go away even if this layer is reset.";
 		if (player.cb.points.gte(5)) text += "<br><br>After enlightening 6 times, you keep retrogression completions on row 4 resets.";
@@ -131,7 +132,7 @@ addLayer("cb", {
 		if (player.cb.focusUnlocked && (getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0) < tmp.cb.effect[3] && !inChallenge("sp", 16) && !hasChallenge("sp", 17)) return true;
 	},
 	componentStyles: {
-		"prestige-button"() {if (tmp.cb.canReset) return {"background": "border-box linear-gradient(to right, #EE7770, #E6B45A, #B3478F)"}},
+		"prestige-button"() {if (tmp.cb.canReset) return layers.cb.nodeStyle},
 		"clickable"() {return {"min-height": "58px", "border": "solid 4px #E6B45A", "border-radius": "0px", "color": "#DFDFDF", "transform": "none"}},
 	},
 	clickables: {

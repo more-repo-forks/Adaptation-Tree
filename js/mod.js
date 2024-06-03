@@ -3,14 +3,14 @@ const modInfo = {
 	id: "adaptation-tree-yrahcaz7",
 	author: "Yrahcaz7",
 	pointsName: "power",
-	modFiles: ["stimulation.js", "growth.js", "evolution.js", "acclimation.js", "species.js", "consciousness.js", "domination.js", "ecosystem.js", "technical/tree.js"],
+	modFiles: ["stimulation.js", "growth.js", "evolution.js", "acclimation.js", "species.js", "consciousness.js", "domination.js", "ecosystem.js", "revolution.js", "technical/tree.js"],
 	initialStartPoints: new Decimal(0),
 	offlineLimit: 1, // in hours
 }
 
 const VERSION = {
-	num: "2.0",
-	name: "Successive Ecosystems",
+	num: "2.1",
+	name: "The Age of Revolution",
 };
 
 const winText = "Congratulations!<br>You have reached the end and beaten this game (for now),<br>but there is more content coming soon...";
@@ -68,15 +68,15 @@ function addedPlayerData() { return {
 // Display extra things at the top of the page
 let displayThings = [
 	() => {
-		if (tmp.other.oompsMag != 0 && options.showOOMs) return "(" + format(tmp.other.oomps) + " OOM" + (tmp.other.oompsMag < 0 ? "^OOM" : tmp.other.oompsMag > 1 ? "^" + tmp.other.oompsMag : "") + "s/sec)";
+		if (tmp.other.oompsMag != 0 && options.showOOMs) return "(" + format(tmp.other.oomps) + " OOM" + (tmp.other.oompsMag < 0 ? "^OOM" : (tmp.other.oompsMag > 1 ? "^" + tmp.other.oompsMag : "")) + "s/sec)";
 		return "(" + format(getPointPotential()) + " max power)";
 	},
-	() => "<br>current endgame is at 2 " + (player.ec.unlocked ? "ANACHRONISM completions" : "???"),
+	() => "<br>current endgame is at 6 " + (player.r.unlocked ? "revolutions" : "???"),
 ];
 
 // Determines when the game "ends"
 function isEndgame() {
-	return challengeCompletions("ec", 11) >= 2;
+	return player.r.points.gte(6);
 };
 
 // Style for the background, can be a function

@@ -163,7 +163,8 @@ addLayer("g", {
 	}],
 	doReset(resettingLayer) {
 		let keep = ["autoSTR", "autoWIS", "autoAGI", "autoINT"];
-		if (layers[resettingLayer].row <= 3 && player.cb.unlocked) keep.push("milestones", "lastMilestone");
+		if (player.r.points.gte(6)) keep.push("milestones", "lastMilestone");
+		else if (layers[resettingLayer].row <= 3 && player.cb.unlocked) keep.push("milestones", "lastMilestone");
 		if (layers[resettingLayer].row > this.row) {
 			if (keep.includes("milestones")) {
 				layerDataReset("g", keep);

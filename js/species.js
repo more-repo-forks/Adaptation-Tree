@@ -23,6 +23,7 @@ addLayer("sp", {
 		if (player.e.points.gte(2171)) base -= 0.0075;
 		if (player.e.points.gte(2420)) base -= 0.03;
 		if (hasMilestone("d", 14)) base -= milestoneEffect("d", 14);
+		if (getBuyableAmount("d", 12).gte(tmp.d.buyables[12].purchaseLimit)) base -= tmp.d.buyables[12].completionEffect;
 		return base;
 	},
 	exponent: 1,
@@ -36,6 +37,7 @@ addLayer("sp", {
 		if (hasMilestone("d", 4)) mult = mult.div(milestoneEffect("d", 4));
 		if (player.d.unlocks[1]) mult = mult.div(buyableEffect("d", 12));
 		if (tmp.ec.effect[0]) mult = mult.div(tmp.ec.effect[0]);
+		if (tmp.r.effect[0]) mult = mult.div(tmp.r.effect[0]);
 		return mult;
 	},
 	effect() {
@@ -89,8 +91,12 @@ addLayer("sp", {
 	}],
 	doReset(resettingLayer) {
 		let keep = [];
-		if (resettingLayer == "ec") keep.push("challenges");
+		if (player.r.points.gte(3)) keep.push("challenges");
+		else if (resettingLayer == "ec") keep.push("challenges");
 		if (layers[resettingLayer].row > this.row) layerDataReset("sp", keep);
+	},
+	update(diff) {
+		if (player.r.unlocked && canCompleteChallenge("sp", 21) && player.sp.challenges[21] < tmp.sp.challenges[21].completionLimit) player.sp.challenges[21]++;
 	},
 	componentStyles: {
 		"challenge"() {return {"min-height": "360px", "height": "fit-content", "border-radius": "50px"}},
@@ -265,7 +271,7 @@ addLayer("sp", {
 				new Decimal(1.353).pow(challengeCompletions("sp", this.id)),
 				(hasMilestone("d", 9) ? new Decimal(1.25).pow(challengeCompletions("sp", this.id)) : new Decimal(1)),
 			]},
-			goal() {return [166, 237, 288, 340, 436, 555, 617, 755, 932, 1001, 1110, 1183, 1317, 1446, 1510, 1589, 1665, 1737, 1875, 2024, 2115][challengeCompletions("sp", this.id)] || Infinity},
+			goal() {return [166, 237, 288, 340, 436, 555, 617, 755, 932, 1001, 1110, 1183, 1317, 1446, 1510, 1589, 1665, 1737, 1875, 2024, 2115, 2440][challengeCompletions("sp", this.id)] || (challengeCompletions("sp", this.id) - 16) * 500},
 			canComplete() {return player.e.points.gte(this.goal())},
 			unlocked() {return hasChallenge("sp", 19) || hasChallenge("sp", this.id)},
 			unlockReq: 21,

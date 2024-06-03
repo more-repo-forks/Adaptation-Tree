@@ -239,9 +239,11 @@ addLayer("e", {
 		if (hasChallenge("e", 21) && challengeEffect("e", 21)[0]) mult = mult.div(challengeEffect("e", 21)[0]);
 		if (hasChallenge("sp", 21) && challengeEffect("sp", 21)[0]) mult = mult.div(challengeEffect("sp", 21)[0]);
 		if (hasMilestone("a", 52)) mult = mult.div(clickableEffect("cb", 13));
+		if (hasMilestone("d", 15)) mult = mult.div(milestoneEffect("d", 15));
 		if (tmp.a.effect[1]) mult = mult.div(tmp.a.effect[1]);
 		if (tmp.sp.effect[0]) mult = mult.div(tmp.sp.effect[0]);
 		if (tmp.cb.effect[0]) mult = mult.div(tmp.cb.effect[0]);
+		if (tmp.r.effect[4]) mult = mult.div(tmp.r.effect[4]);
 		if (inChallenge("sp", 21)) mult = mult.div(new Decimal(5).pow(player.a.points.add(player.a.milestones.length).add(player.sp.points).add(player.cb.points).add(tmp.cb.effect[3]).add(player.d.points)));
 		return mult;
 	},
@@ -592,7 +594,8 @@ addLayer("e", {
 				let limit = 22;
 				if (hasMilestone("a", 42)) limit += milestoneEffect("a", 42);
 				if (player.cb.focusUnlocked) limit += clickableEffect("cb", 11);
-				return limit;
+				if (tmp.r.effect[2]) limit *= tmp.r.effect[2].toNumber();
+				return Math.floor(limit);
 			},
 			style: {"width": "calc(100% - 8px)", "max-width": "600px"},
 		},
