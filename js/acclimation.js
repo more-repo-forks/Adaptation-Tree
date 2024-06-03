@@ -28,6 +28,7 @@ addLayer("a", {
 		if (hasMilestone("g", 72)) base -= milestoneEffect("g", 72);
 		if (hasChallenge("sp", 15)) base -= challengeEffect("sp", 15);
 		if (hasChallenge("sp", 16)) base -= challengeEffect("sp", 15);
+		if (challengeCompletions("ec", 11) >= 4 && challengeEffect("ec", 11)[3]) base -= challengeEffect("ec", 11)[3];
 		if (inChallenge("ec", 11)) base *= tmp.ec.challenges[11].penalty;
 		return base;
 	},
@@ -50,11 +51,13 @@ addLayer("a", {
 		if (player.e.points.gte(2510)) mult = mult.div(10);
 		if (hasChallenge("e", 16)) mult = mult.div(challengeEffect("e", 16));
 		if (hasChallenge("e", 17)) mult = mult.div(challengeEffect("e", 17));
+		if (player.a.unlocked) mult = mult.div(buyableEffect("a", 13));
 		if (hasChallenge("sp", 11)) mult = mult.div(challengeEffect("sp", 11));
 		if (hasChallenge("sp", 13)) mult = mult.div(challengeEffect("sp", 13));
-		if (player.a.unlocked) mult = mult.div(buyableEffect("a", 13));
-		if (tmp.cb.effect[1]) mult = mult.div(tmp.cb.effect[1]);
 		if (player.d.unlocks[2]) mult = mult.div(buyableEffect("d", 13));
+		if (hasMilestone("d", 19)) mult = mult.div(milestoneEffect("d", 19));
+		if (tmp.cb.effect[1]) mult = mult.div(tmp.cb.effect[1]);
+		if (tmp.r.effect[7]) mult = mult.div(tmp.r.effect[7]);
 		return mult;
 	},
 	effect() {
@@ -400,6 +403,7 @@ addLayer("a", {
 			setBuyableAmount("a", 13, new Decimal(0));
 			setBuyableAmount("a", 14, new Decimal(0));
 			player.a.spent = new Decimal(0);
+			setClickableState("a", 11, 0);
 			doReset("a", true, true);
 		},
 		respecText: "respec acclimation points",

@@ -99,13 +99,14 @@ addLayer("ec", {
 				if (challengeCompletions("sp", 21) >= 18 || hasChallenge("ec", 11)) return "Entering any ANACHRONISM does a species reset.<br><br>While in " + tmp.ec.challenges[11].name + ", the evolution and acclimation<br>requirement bases are multipled by " + formatWhole(tmp.ec.challenges[11].penalty) + ".<br><br>While in any ANACHRONISM, you are trapped in<br>the 10th retrogression and hybridization.<br><br>Goal: " + formatWhole(tmp.ec.challenges[11].goal) + " growth points<br><br>Completed: " + formatWhole(challengeCompletions("ec", 11)) + "/" + formatWhole(tmp.ec.challenges[11].completionLimit);
 				return "You need 18 completions of the 10th hybridization<br>to unlock ANACHRONISM.";
 			},
-			rewardEffect() {return [0.1, 3, 3]},
+			rewardEffect() {return [0.1, 3, 3, 0.125]},
 			rewards: [
 				"domination requirement base is decreased by 0.1",
 				() => "three new layers are unlocked" + (player.r.unlocked ? " (1/3 already unlocked)" : ""),
-				"revolution requirement base is decreased by 3"
+				"revolution requirement base is decreased by 3",
+				"acclimation requirement base is decreased by 0.125",
 			],
-			goal() {return [167098, 155454, 155040][challengeCompletions("ec", 11)] || Infinity},
+			goal() {return [167098, 155454, 155040, 869153600][challengeCompletions("ec", 11)] || Infinity},
 			canComplete() {return player.g.points.gte(this.goal())},
 			unlockReq: 21,
 			enterable() {return challengeCompletions("sp", 21) >= 18 || hasChallenge("ec", 11)},

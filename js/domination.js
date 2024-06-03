@@ -386,5 +386,22 @@ addLayer("d", {
 			done() {return player.d.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("d", this.id - 1)},
 		},
+		18: {
+			requirement: 62,
+			requirementDescription: "Hybridization enhancement II",
+			popupTitle: "Enhancement Acquired!",
+			effectDescription() {return "improve the 10th hybridization's last effect<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		19: {
+			requirement: 65,
+			requirementDescription: "D-A synergy enhancement",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return new Decimal(1e25).pow(getBuyableAmount("d", 11).add(getBuyableAmount("d", 12)).add(getBuyableAmount("d", 13)).add(getBuyableAmount("d", 14)).add(1))},
+			effectDescription() {return "divide the acclimation requirement based on FOC, SPE, CLI, and DOM<br>Effect: /" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
 	},
 });

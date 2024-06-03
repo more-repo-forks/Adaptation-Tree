@@ -269,7 +269,7 @@ addLayer("sp", {
 				new Decimal(2).pow(challengeCompletions("sp", this.id)),
 				new Decimal(100).pow(challengeCompletions("sp", this.id)),
 				new Decimal(1.353).pow(challengeCompletions("sp", this.id)),
-				(hasMilestone("d", 9) ? new Decimal(1.25).pow(challengeCompletions("sp", this.id)) : new Decimal(1)),
+				(hasMilestone("d", 9) ? new Decimal(hasMilestone("d", 18) ? 1.85 : 1.25).pow(challengeCompletions("sp", this.id)) : new Decimal(1)),
 			]},
 			goal() {return [166, 237, 288, 340, 436, 555, 617, 755, 932, 1001, 1110, 1183, 1317, 1446, 1510, 1589, 1665, 1737, 1875, 2024, 2115, 2440][challengeCompletions("sp", this.id)] || (challengeCompletions("sp", this.id) - 16) * 500},
 			canComplete() {return player.e.points.gte(this.goal())},

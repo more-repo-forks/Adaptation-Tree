@@ -80,21 +80,21 @@ addLayer("g", {
 		};
 		// stat svg display
 		const reduction = (+getClickableState("g", 11)) * 50;
-		let max = 1;
+		let max = new Decimal(1);
 		if (getClickableState("g", 13)) {
-			max += getBuyableAmount("g", 11).max(getBuyableAmount("g", 12)).max(getBuyableAmount("g", 13)).max(getBuyableAmount("g", 14)).toNumber() - reduction;
+			max = max.add(getBuyableAmount("g", 11).max(getBuyableAmount("g", 12)).max(getBuyableAmount("g", 13)).max(getBuyableAmount("g", 14))).sub(reduction);
 		} else if (getClickableState("g", 14)) {
-			max += tmp.g.buyables[11].extra.max(tmp.g.buyables[12].extra).max(tmp.g.buyables[13].extra).max(tmp.g.buyables[14].extra).toNumber();
+			max = max.add(tmp.g.buyables[11].extra.max(tmp.g.buyables[12].extra).max(tmp.g.buyables[13].extra).max(tmp.g.buyables[14].extra));
 		} else {
-			max += getBuyableAmount("g", 11).add(tmp.g.buyables[11].extra).max(getBuyableAmount("g", 12).add(tmp.g.buyables[12].extra)).max(getBuyableAmount("g", 13).add(tmp.g.buyables[13].extra)).max(getBuyableAmount("g", 14).add(tmp.g.buyables[14].extra)).toNumber() - reduction;
+			max = max.add(getBuyableAmount("g", 11).add(tmp.g.buyables[11].extra).max(getBuyableAmount("g", 12).add(tmp.g.buyables[12].extra)).max(getBuyableAmount("g", 13).add(tmp.g.buyables[13].extra)).max(getBuyableAmount("g", 14).add(tmp.g.buyables[14].extra))).sub(reduction);
 		};
-		if (max < 2) max = 2;
+		if (max.lt(2)) max = new Decimal(2);
 		let statText = "<svg viewBox='0 0 100 100' style='width: 200px; height: 200px'>";
 		statText += "<line x1='6' y1='6' x2='94' y2='94' fill='none' stroke='#404040'/>";
 		statText += "<line x1='6' y1='94' x2='94' y2='6' fill='none' stroke='#404040'/>";
-		let rectMax = max;
+		let rectMax = max.toNumber();
 		if (rectMax >= 16) {
-			rectMax = max / (2 ** Math.floor(Math.log2(max) - 3));
+			rectMax = max.div(new Decimal(2).pow(max.log2().sub(3).floor())).toNumber();
 		};
 		for (let index = 0; index < rectMax; index++) {
 			let low = Math.min((index / rectMax * 45) + 5.5, 50);
@@ -102,25 +102,25 @@ addLayer("g", {
 			statText += "<rect x='" + low + "' y='" + low + "' width=" + high + " height='" + high + "' rx='1' ry='1' fill='none' stroke='#808080'/>";
 		};
 		// normal stats
-		let stats = (getClickableState("g", 14) ? [1, 1, 1, 1] : [
-			getBuyableAmount("g", 11).toNumber() - reduction + 1,
-			getBuyableAmount("g", 13).toNumber() - reduction + 1,
-			getBuyableAmount("g", 14).toNumber() - reduction + 1,
-			getBuyableAmount("g", 12).toNumber() - reduction + 1,
+		let stats = (getClickableState("g", 14) ? [new Decimal(1), new Decimal(1), new Decimal(1), new Decimal(1)] : [
+			getBuyableAmount("g", 11).sub(reduction).add(1),
+			getBuyableAmount("g", 13).sub(reduction).add(1),
+			getBuyableAmount("g", 14).sub(reduction).add(1),
+			getBuyableAmount("g", 12).sub(reduction).add(1),
 		]);
-		let statPoint0 = 50 - Math.max(stats[0] / max * 45 - 0.5, 0);
-		let statPoint2 = 50 + Math.max(stats[2] / max * 45 - 0.5, 0);
-		if (!getClickableState("g", 14)) statText += "<polyline points='" + statPoint0 + "," + statPoint0 + " " + (50 + Math.max(stats[1] / max * 45 - 0.5, 0)) + "," + (50 - Math.max(stats[1] / max * 45 - 0.5, 0)) + " " + statPoint2 + "," + statPoint2 + " " + (50 - Math.max(stats[3] / max * 45 - 0.5, 0)) + "," + (50 + Math.max(stats[3] / max * 45 - 0.5, 0)) + " " + statPoint0 + "," + statPoint0 + "' fill='#ffffff40' stroke='#ffffff' stroke-linejoin='round' stroke-linecap='round'/>";
+		let statPoint0 = 50 - Math.max(stats[0].div(max).toNumber() * 45 - 0.5, 0);
+		let statPoint2 = 50 + Math.max(stats[2].div(max).toNumber() * 45 - 0.5, 0);
+		if (!getClickableState("g", 14)) statText += "<polyline points='" + statPoint0 + "," + statPoint0 + " " + (50 + Math.max(stats[1].div(max).toNumber() * 45 - 0.5, 0)) + "," + (50 - Math.max(stats[1].div(max).toNumber() * 45 - 0.5, 0)) + " " + statPoint2 + "," + statPoint2 + " " + (50 - Math.max(stats[3].div(max).toNumber() * 45 - 0.5, 0)) + "," + (50 + Math.max(stats[3].div(max).toNumber() * 45 - 0.5, 0)) + " " + statPoint0 + "," + statPoint0 + "' fill='#ffffff40' stroke='#ffffff' stroke-linejoin='round' stroke-linecap='round'/>";
 		// extra stats
 		if (!getClickableState("g", 13)) {
-			stats[0] += tmp.g.buyables[11].extra.toNumber();
-			stats[1] += tmp.g.buyables[13].extra.toNumber();
-			stats[2] += tmp.g.buyables[14].extra.toNumber();
-			stats[3] += tmp.g.buyables[12].extra.toNumber();
-			statPoint0 = 50 - Math.max(stats[0] / max * 45 - 0.5, 0);
-			statPoint2 = 50 + Math.max(stats[2] / max * 45 - 0.5, 0);
+			stats[0] = stats[0].add(tmp.g.buyables[11].extra);
+			stats[1] = stats[1].add(tmp.g.buyables[13].extra);
+			stats[2] = stats[2].add(tmp.g.buyables[14].extra);
+			stats[3] = stats[3].add(tmp.g.buyables[12].extra);
+			statPoint0 = 50 - Math.max(stats[0].div(max).toNumber() * 45 - 0.5, 0);
+			statPoint2 = 50 + Math.max(stats[2].div(max).toNumber() * 45 - 0.5, 0);
 		};
-		statText += "<polyline points='" + statPoint0 + "," + statPoint0 + " " + (50 + Math.max(stats[1] / max * 45 - 0.5, 0)) + "," + (50 - Math.max(stats[1] / max * 45 - 0.5, 0)) + " " + statPoint2 + "," + statPoint2 + " " + (50 - Math.max(stats[3] / max * 45 - 0.5, 0)) + "," + (50 + Math.max(stats[3] / max * 45 - 0.5, 0)) + " " + statPoint0 + "," + statPoint0 + "' fill='#ffffff40' stroke='#ffffff' stroke-linejoin='round' stroke-linecap='round'/>";
+		statText += "<polyline points='" + statPoint0 + "," + statPoint0 + " " + (50 + Math.max(stats[1].div(max).toNumber() * 45 - 0.5, 0)) + "," + (50 - Math.max(stats[1].div(max).toNumber() * 45 - 0.5, 0)) + " " + statPoint2 + "," + statPoint2 + " " + (50 - Math.max(stats[3].div(max).toNumber() * 45 - 0.5, 0)) + "," + (50 + Math.max(stats[3].div(max).toNumber() * 45 - 0.5, 0)) + " " + statPoint0 + "," + statPoint0 + "' fill='#ffffff40' stroke='#ffffff' stroke-linejoin='round' stroke-linecap='round'/>";
 		// buyable columns
 		let cols = [];
 		cols[1] = [
