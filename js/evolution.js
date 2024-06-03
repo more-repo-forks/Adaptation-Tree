@@ -387,7 +387,8 @@ addLayer("e", {
 	},
 	update(diff) {
 		if (hasMilestone("g", 24) && !player.e.challengesUnlocked) player.e.challengesUnlocked = true;
-		if (hasMilestone("a", 54) && tmp.e.challenges[21].completionLimit > player.e.challenges[21]) player.e.challenges[21]++;
+		if (hasMilestone("d", 22) && tmp.e.challenges[21].completionLimit > player.e.challenges[21]) player.e.challenges[21] = tmp.e.challenges[21].completionLimit;
+		else if (hasMilestone("a", 54) && tmp.e.challenges[21].completionLimit > player.e.challenges[21]) player.e.challenges[21]++;
 		player.e.challenges[21] = Math.floor(player.e.challenges[21]);
 	},
 	componentStyles: {

@@ -65,22 +65,22 @@ addLayer("a", {
 		let amt = player.a.population;
 		amt = amt.mul(buyableEffect("a", 14));
 		// multiply
-		let mult = [1, 1, 1];
-		if (hasMilestone("a", 3)) mult[2] *= milestoneEffect("a", 3);
-		if (hasMilestone("a", 11)) mult[1] *= milestoneEffect("a", 11);
-		if (hasMilestone("a", 17)) mult[2] *= milestoneEffect("a", 17);
+		let mult = [new Decimal(1), new Decimal(1), new Decimal(1)];
+		if (hasChallenge("e", 18)) mult[2] = mult[2].mul(challengeEffect("e", 18));
+		if (hasChallenge("e", 19)) mult[0] = mult[0].mul(100);
+		if (hasMilestone("a", 3)) mult[2] = mult[2].mul(milestoneEffect("a", 3));
+		if (hasMilestone("a", 11)) mult[1] = mult[1].mul(milestoneEffect("a", 11));
+		if (hasMilestone("a", 17)) mult[2] = mult[2].mul(milestoneEffect("a", 17));
 		if (hasMilestone("a", 25)) {
-			mult[1] *= milestoneEffect("a", 25);
-			mult[2] *= milestoneEffect("a", 25);
+			mult[1] = mult[1].mul(milestoneEffect("a", 25));
+			mult[2] = mult[2].mul(milestoneEffect("a", 25));
 		};
-		if (hasMilestone("a", 31)) mult[0] *= milestoneEffect("a", 31);
-		if (hasMilestone("a", 40)) mult[0] *= milestoneEffect("a", 40);
-		if (hasMilestone("a", 41)) mult[2] *= milestoneEffect("a", 41);
-		if (hasMilestone("a", 45)) mult[0] *= milestoneEffect("a", 45);
-		if (hasMilestone("a", 51)) mult[2] *= milestoneEffect("a", 51);
-		if (hasChallenge("e", 18)) mult[2] *= challengeEffect("e", 18);
-		if (hasChallenge("e", 19)) mult[0] *= 100;
-		if (hasMilestone("a", 52)) mult[0] *= clickableEffect("cb", 14);
+		if (hasMilestone("a", 31)) mult[0] = mult[0].mul(milestoneEffect("a", 31));
+		if (hasMilestone("a", 40)) mult[0] = mult[0].mul(milestoneEffect("a", 40));
+		if (hasMilestone("a", 41)) mult[2] = mult[2].mul(milestoneEffect("a", 41));
+		if (hasMilestone("a", 45)) mult[0] = mult[0].mul(milestoneEffect("a", 45));
+		if (hasMilestone("a", 51)) mult[2] = mult[2].mul(milestoneEffect("a", 51));
+		if (hasMilestone("a", 52)) mult[0] = mult[0].mul(clickableEffect("cb", 14));
 		// exponent
 		let exp1 = 0.1;
 		if (hasMilestone("a", 34)) exp1 += milestoneEffect("a", 34);
@@ -99,6 +99,8 @@ addLayer("a", {
 		return eff;
 	},
 	effectDescription() {return "of which " + formatWhole(player[this.layer].points.sub(player[this.layer].spent)) + " are unspent"},
+	resetsNothing() {return player.ex.unlocked},
+	autoPrestige() {return player.ex.unlocked},
 	tabFormat() {
 		// top text
 		let topText = "<div style='height: 25px; padding-top: ";
@@ -203,7 +205,8 @@ addLayer("a", {
 	}],
 	doReset(resettingLayer) {
 		let keep = ["autoCRA", "autoFER", "autoANA", "autoSOV"];
-		if (resettingLayer == "d" && player.d.unlocked) keep.push("milestones", "lastMilestone");
+		if (player.ex.unlocked) keep.push("milestones", "lastMilestone");
+		else if (resettingLayer == "d" && player.d.unlocked) keep.push("milestones", "lastMilestone");
 		if (layers[resettingLayer].row > this.row) layerDataReset("a", keep);
 		player.a.populationTime = 0;
 	},
@@ -272,7 +275,7 @@ addLayer("a", {
 			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && !inChallenge("sp", 11)},
 			buy() {
 				if (!hasMilestone("r", 2)) player[this.layer].spent = player[this.layer].spent.add(this.cost());
-				addBuyables(this.layer, this.id, 1);
+				addBuyables(this.layer, this.id, getStatBulk());
 			},
 			extra() {
 				let extra = new Decimal(0);
@@ -282,6 +285,7 @@ addLayer("a", {
 				if (hasMilestone("a", 24)) extra = extra.add(milestoneEffect("a", 24));
 				if (hasMilestone("a", 43)) extra = extra.add(milestoneEffect("a", 43));
 				if (hasMilestone("a", 67)) extra = extra.add(milestoneEffect("a", 67));
+				if (tmp.ex.effect[2]) extra = extra.add(tmp.ex.effect[2]);
 				return extra.floor();
 			},
 		},
@@ -307,7 +311,7 @@ addLayer("a", {
 			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && !inChallenge("sp", 11)},
 			buy() {
 				if (!hasMilestone("r", 2)) player[this.layer].spent = player[this.layer].spent.add(this.cost());
-				addBuyables(this.layer, this.id, 1);
+				addBuyables(this.layer, this.id, getStatBulk());
 			},
 			extra() {
 				let extra = new Decimal(0);
@@ -318,6 +322,7 @@ addLayer("a", {
 				if (hasMilestone("a", 22)) extra = extra.add(milestoneEffect("a", 22));
 				if (hasMilestone("a", 43)) extra = extra.add(milestoneEffect("a", 43));
 				if (hasMilestone("a", 67)) extra = extra.add(milestoneEffect("a", 67));
+				if (tmp.ex.effect[2]) extra = extra.add(tmp.ex.effect[2]);
 				return extra.floor();
 			},
 		},
@@ -347,7 +352,7 @@ addLayer("a", {
 			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && !inChallenge("sp", 12)},
 			buy() {
 				if (!hasMilestone("r", 2)) player[this.layer].spent = player[this.layer].spent.add(this.cost());
-				addBuyables(this.layer, this.id, 1);
+				addBuyables(this.layer, this.id, getStatBulk());
 			},
 			extra() {
 				let extra = new Decimal(0);
@@ -356,6 +361,7 @@ addLayer("a", {
 				if (hasMilestone("a", 24)) extra = extra.add(milestoneEffect("a", 24));
 				if (hasMilestone("a", 43)) extra = extra.add(milestoneEffect("a", 43));
 				if (hasMilestone("a", 67)) extra = extra.add(milestoneEffect("a", 67));
+				if (tmp.ex.effect[2]) extra = extra.add(tmp.ex.effect[2]);
 				return extra.floor();
 			},
 		},
@@ -384,7 +390,7 @@ addLayer("a", {
 			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && !inChallenge("sp", 11)},
 			buy() {
 				if (!hasMilestone("r", 2)) player[this.layer].spent = player[this.layer].spent.add(this.cost());
-				addBuyables(this.layer, this.id, 1);
+				addBuyables(this.layer, this.id, getStatBulk());
 			},
 			extra() {
 				let extra = new Decimal(0);
@@ -394,6 +400,7 @@ addLayer("a", {
 				if (hasMilestone("a", 24)) extra = extra.add(milestoneEffect("a", 24));
 				if (hasMilestone("a", 43)) extra = extra.add(milestoneEffect("a", 43));
 				if (hasMilestone("a", 67)) extra = extra.add(milestoneEffect("a", 67));
+				if (tmp.ex.effect[2]) extra = extra.add(tmp.ex.effect[2]);
 				return extra.floor();
 			},
 		},
@@ -1066,7 +1073,7 @@ addLayer("a", {
 			requirementDescription: "FER enhancement IX",
 			popupTitle: "Enhancement Acquired!",
 			effect() {return getBuyableAmount("a", 12).div(hasMilestone("a", 74) ? 2 : 15).floor()},
-			effectDescription() {return "every 15 base levels of FER give an extra level to CRA, FER, ANA, and SOV<br>Effect: +" + formatWhole(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
+			effectDescription() {return "every " + (hasMilestone("a", 74) ? 2 : 15) + " base levels of FER give an extra level to CRA, FER, ANA, and SOV<br>Effect: +" + formatWhole(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " acclimation points"},
 			done() {return player.a.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("a", this.id - 1) || player.ec.unlocked},
 		},

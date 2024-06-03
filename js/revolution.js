@@ -13,7 +13,7 @@ addLayer("r", {
 		change: new Decimal(0),
 	}},
 	color: "#EE7770",
-	nodeStyle: {"background": "border-box linear-gradient(to right, #55B020, #EE7770, #B3478F)"},
+	nodeStyle() {if (tmp.r.canReset || player.r.unlocked) return {"background": "border-box linear-gradient(to right, #55B020, #EE7770, #B3478F)"}},
 	resource: "revolutions",
 	row: 4,
 	baseResource: "evolutions",
@@ -22,7 +22,7 @@ addLayer("r", {
 	type: "static",
 	base() {
 		let base = 5;
-		if (challengeCompletions("ec", 11) >= 3) base -= tmp.ec.challenges[11].rewardEffect[2];
+		if (challengeCompletions("ec", 11) >= 3 && challengeEffect("ec", 11)[2]) base -= challengeEffect("ec", 11)[2];
 		return base;
 	},
 	exponent: 1,
@@ -43,9 +43,11 @@ addLayer("r", {
 			new Decimal(10).pow(player.r.change.pow(0.5)),
 			(hasMilestone("r", 0) ? player.r.change.add(1).pow(0.5).log10().add(1) : new Decimal(1)),
 			(hasMilestone("r", 1) ? player.r.change.add(1).pow(0.05).log10().add(1) : new Decimal(1)),
-			(hasMilestone("r", 4) ? new Decimal(100).pow(player.r.change.pow(0.2)) : new Decimal(1)),
+			(hasMilestone("r", 4) ? new Decimal(222).pow(player.r.change.pow(0.2)) : new Decimal(1)),
 		];
+		if (hasMilestone("r", 5)) eff[3] = eff[3].mul(milestoneEffect("r", 5));
 		if (eff[4].gte("1e5555")) eff[4] = eff[4].div("1e5555").pow(0.1).mul("1e5555");
+		if (eff[4].gte("1e200000")) eff[4] = eff[4].div("1e200000").log10().pow(2000).mul("1e200000");
 		return eff;
 	},
 	effectDescription() {return "which are dividing the species requirement by /" + format(tmp.r.effect[0]) + ", dividing conscious being requirement by /" + format(tmp.r.effect[1]) + ", multiplying the completion limit of the 10th retrogression by " + format(tmp.r.effect[2]) + "x (rounded down), and generating " + format(tmp.r.effect[3]) + " change per second (with a limit of " + format(getMaxChange()) + ")"},
@@ -57,8 +59,8 @@ addLayer("r", {
 			let text = "After revolutionizing 1 time, you can bulk complete the 10th hybridization.<br><br>The above extra effect will not go away even if this layer is reset.";
 			if (player.r.points.gte(2)) text += "<br><br>After revolutionizing 3 times, you keep hybridization completions on all resets.";
 			if (player.r.points.gte(5)) text += "<br>After revolutionizing 6 times, you keep growth enhancements on all resets.";
+			if (player.r.points.gte(8)) text += "<br>After revolutionizing 9 times, you bulk 10x stats from rows 3 and below.";
 			text += "<br><br>You have <h2 style='color: #EE7770; text-shadow: #EE7770 0px 0px 10px'>" + format(player.r.change) + "</h2> change, which divides the evolution requirement by /" + format(tmp.r.effect[4]);
-			if (tmp.r.effect[4].gte("1e5555")) text += " (softcapped at 1e5555)";
 			if (hasMilestone("r", 4)) text += ", divides the domination requirement by /" + format(tmp.r.effect[5]) + ", divides the ecosystem requirement by /" + format(tmp.r.effect[6]) + ", and divides the acclimation requirement by /" + format(tmp.r.effect[7]);
 			else if (hasMilestone("r", 1)) text += ", divides the domination requirement by /" + format(tmp.r.effect[5]) + " and divides the ecosystem requirement by /" + format(tmp.r.effect[6]);
 			else if (hasMilestone("r", 0)) text += " and divides the domination requirement by /" + format(tmp.r.effect[5]);
@@ -81,7 +83,7 @@ addLayer("r", {
 		player.r.change = player.r.change.add(tmp.r.effect[3].mul(diff)).min(getMaxChange());
 	},
 	componentStyles: {
-		"prestige-button"() {if (tmp.r.canReset) return layers.r.nodeStyle},
+		"prestige-button"() {if (tmp.r.canReset && tmp.r.nodeStyle) return tmp.r.nodeStyle},
 	},
 	milestones: {
 		0: {
@@ -123,25 +125,14 @@ addLayer("r", {
 			done() {return player.r.change.gte(this.requirement)},
 			unlocked() {return hasMilestone("r", this.id - 1)},
 		},
+		5: {
+			requirement: 1e13,
+			requirementDescription: "6th innovation",
+			popupTitle: "Innovation Acquired!",
+			effect() {return player.ec.points.add(1)},
+			effectDescription() {return "change gain and limit is multiplied based on ecosystems<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
 	},
-});
-
-addNode("blank1", {
-	symbol: "EX",
-	branches: ["cb", "a", "d"],
-	position: 2,
-	nodeStyle: {"margin": "0 10px 0 10px", "border-radius": "50%"},
-	tooltipLocked() {return "Reach 20,000 acclimation points to unlock (You have " + formatWhole(player.a.points) + " acclimation points)"},
-	row: 4,
-	layerShown() {return challengeCompletions("ec", 11) >= 2},
-});
-
-addNode("blank2", {
-	symbol: "W",
-	branches: ["d"],
-	position: 3,
-	nodeStyle: {"margin": "0 10px 0 10px", "border-radius": "50%"},
-	tooltipLocked: "coming soon!",
-	row: 4,
-	layerShown() {return challengeCompletions("ec", 11) >= 2},
 });

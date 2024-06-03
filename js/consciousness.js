@@ -25,7 +25,7 @@ addLayer("cb", {
 		focusUnlocked: false,
 	}},
 	color: "#E6B45A",
-	nodeStyle: {"background": "border-box linear-gradient(to right, #EE7770, #E6B45A, #B3478F)"},
+	nodeStyle() {if (tmp.cb.canReset || player.cb.unlocked) return {"background": "border-box linear-gradient(to right, #EE7770, #E6B45A, #B3478F)"}},
 	resource: "conscious beings",
 	row: 3,
 	baseResource: "growth points",
@@ -44,6 +44,7 @@ addLayer("cb", {
 		let mult = new Decimal(1);
 		if (hasChallenge("sp", 21) && challengeEffect("sp", 21)[2]) mult = mult.div(challengeEffect("sp", 21)[2]);
 		if (tmp.r.effect[1]) mult = mult.div(tmp.r.effect[1]);
+		if (tmp.ex.effect[0]) mult = mult.div(tmp.ex.effect[0]);
 		return mult;
 	},
 	effect() {
@@ -132,7 +133,7 @@ addLayer("cb", {
 		if (player.cb.focusUnlocked && (getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0) < tmp.cb.effect[3] && !inChallenge("sp", 16) && !hasChallenge("sp", 17)) return true;
 	},
 	componentStyles: {
-		"prestige-button"() {if (tmp.cb.canReset) return layers.cb.nodeStyle},
+		"prestige-button"() {if (tmp.cb.canReset && tmp.cb.nodeStyle) return tmp.cb.nodeStyle},
 		"clickable"() {return {"min-height": "58px", "border": "solid 4px #E6B45A", "border-radius": "0px", "color": "#DFDFDF", "transform": "none"}},
 	},
 	clickables: {

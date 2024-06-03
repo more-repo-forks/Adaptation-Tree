@@ -233,7 +233,7 @@ addLayer("g", {
 			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit()) && !inChallenge("e", 12) && !inChallenge("e", 16)},
 			buy() {
 				if (!inChallenge("e", 21)) player[this.layer].spent = player[this.layer].spent.add(this.cost());
-				addBuyables(this.layer, this.id, 1);
+				addBuyables(this.layer, this.id, getStatBulk());
 			},
 			extra() {
 				let extra = new Decimal(0);
@@ -282,7 +282,7 @@ addLayer("g", {
 			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit()) && !inChallenge("e", 12) && !inChallenge("e", 16)},
 			buy() {
 				if (!inChallenge("e", 21)) player[this.layer].spent = player[this.layer].spent.add(this.cost());
-				addBuyables(this.layer, this.id, 1);
+				addBuyables(this.layer, this.id, getStatBulk());
 			},
 			extra() {
 				let extra = new Decimal(0);
@@ -335,7 +335,7 @@ addLayer("g", {
 			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit()) && !inChallenge("e", 12) && !inChallenge("e", 16)},
 			buy() {
 				if (!inChallenge("e", 21)) player[this.layer].spent = player[this.layer].spent.add(this.cost());
-				addBuyables(this.layer, this.id, 1);
+				addBuyables(this.layer, this.id, getStatBulk());
 			},
 			extra() {
 				let extra = new Decimal(0);
@@ -412,7 +412,7 @@ addLayer("g", {
 			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit()) && !inChallenge("e", 11) && !inChallenge("e", 16)},
 			buy() {
 				if (!inChallenge("e", 21)) player[this.layer].spent = player[this.layer].spent.add(this.cost());
-				addBuyables(this.layer, this.id, 1);
+				addBuyables(this.layer, this.id, getStatBulk());
 			},
 			extra() {
 				let extra = new Decimal(0);

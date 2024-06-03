@@ -34,6 +34,7 @@ addLayer("d", {
 		if (hasChallenge("sp", 21) && challengeEffect("sp", 21)[4]) mult = mult.div(challengeEffect("sp", 21)[4]);
 		if (player.d.unlocks[3]) mult = mult.div(buyableEffect("d", 14));
 		if (tmp.r.effect[5]) mult = mult.div(tmp.r.effect[5]);
+		if (tmp.ex.effect[1]) mult = mult.div(tmp.ex.effect[1]);
 		return mult;
 	},
 	effect() {return player.points.add(1).pow(0.025)},
@@ -121,6 +122,7 @@ addLayer("d", {
 				let eff = 0.15;
 				if (hasMilestone("d", 7)) eff += milestoneEffect("d", 7);
 				if (hasMilestone("d", 10)) eff += milestoneEffect("d", 10);
+				if (hasMilestone("d", 22)) eff += milestoneEffect("d", 22);
 				return eff;
 			},
 			title: "DOMINATE (FOC)US",
@@ -172,6 +174,7 @@ addLayer("d", {
 				if (hasMilestone("d", 1)) base = base.mul(milestoneEffect("d", 1));
 				if (hasMilestone("d", 6)) base = base.mul(milestoneEffect("d", 6));
 				if (hasMilestone("d", 13)) base = base.mul(milestoneEffect("d", 13));
+				if (hasMilestone("d", 21)) base = base.mul(milestoneEffect("d", 21));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id))},
@@ -196,6 +199,7 @@ addLayer("d", {
 				if (hasMilestone("d", 2)) base = base.mul(milestoneEffect("d", 2));
 				if (hasMilestone("d", 8)) base = base.mul(milestoneEffect("d", 8));
 				if (hasMilestone("d", 12)) base = base.mul(milestoneEffect("d", 12));
+				if (hasMilestone("d", 20)) base = base.mul(milestoneEffect("d", 20));
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id))},
@@ -400,6 +404,33 @@ addLayer("d", {
 			popupTitle: "Enhancement Acquired!",
 			effect() {return new Decimal(1e25).pow(getBuyableAmount("d", 11).add(getBuyableAmount("d", 12)).add(getBuyableAmount("d", 13)).add(getBuyableAmount("d", 14)).add(1))},
 			effectDescription() {return "divide the acclimation requirement based on FOC, SPE, CLI, and DOM<br>Effect: /" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		20: {
+			requirement: 77,
+			requirementDescription: "DOM enhancement IV",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.d.points.add(1).pow(0.055)},
+			effectDescription() {return "multiply the base effect of DOM based on domination points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		21: {
+			requirement: 84,
+			requirementDescription: "CLI enhancement IV",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.d.points.add(1).pow(46.6)},
+			effectDescription() {return "multiply the base effect of CLI based on domination points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		22: {
+			requirement: 97,
+			requirementDescription: "FOC enhancement IV",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.14},
+			effectDescription() {return "increase the complete domination effect of FOC by 0.14<br>and the 10th retrogression is auto-maxed<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("d", this.id - 1)},
 		},
