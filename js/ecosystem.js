@@ -59,7 +59,7 @@ addLayer("ec", {
 		if (player.ec.unlocked && tmp.ec.challenges[11].enterable && player.ec.chronoTime !== 0) html += " class='can' style='position: absolute; top: 430px; left: 430px; width: 70px; height: 70px; border: none; border-radius: 50%; background-color: #116022; color: #FFFFFF; transform: none; box-shadow: none'>SYNC OFF</button>";
 		else html += " class='locked' style='position: absolute; top: 430px; left: 430px; width: 70px; height: 70px; border: 5px solid #116022; border-radius: 50%; background-color: var(--locked); color: #116022; transform: none; box-shadow: none'>SYNC ON</button>";
 		// tab format
-		let layout = [
+		let arr = [
 			"main-display",
 			"prestige-button",
 			"resource-display",
@@ -76,10 +76,10 @@ addLayer("ec", {
 				let reward = layers.ec.challenges[11].rewards[index];
 				rewards += layers.ec.challenges[11].name(index) + " reward: " + (typeof reward == "function" ? reward() : reward);
 			};
-			layout.push(["display-text", rewards], "blank");
+			arr.push(["display-text", rewards], "blank");
 		};
 		// return
-		return layout;
+		return arr;
 	},
 	layerShown() {return hasChallenge("sp", 19) || player.ec.unlocked},
 	hotkeys: [{
@@ -104,7 +104,7 @@ addLayer("ec", {
 				if (challengeCompletions("sp", 21) >= 18 || hasChallenge("ec", 11)) return "Entering any ANACHRONISM does a species reset.<br><br>While in " + tmp.ec.challenges[11].name + ", the evolution and acclimation<br>requirement bases are multipled by " + formatWhole(tmp.ec.challenges[11].penalty) + ".<br><br>While in any ANACHRONISM, you are trapped in<br>the 10th retrogression and hybridization.<br><br>Goal: " + formatWhole(tmp.ec.challenges[11].goal) + " growth points<br><br>Completed: " + formatWhole(challengeCompletions("ec", 11)) + "/" + formatWhole(tmp.ec.challenges[11].completionLimit);
 				return "You need 18 completions of the 10th hybridization<br>to unlock ANACHRONISM.";
 			},
-			rewardEffect() {return [0.1, 3, 3, 0.125, 0.05, 3]},
+			rewardEffect() {return [0.1, null, 3, 0.125, 0.05, 3, null]},
 			rewards: [
 				"domination requirement base is decreased by 0.1",
 				() => "three new layers are unlocked" + (player.r.unlocked ? " (" + (player.ex.unlocked ? 2 : 1) + "/3 already unlocked)" : ""),
@@ -112,7 +112,7 @@ addLayer("ec", {
 				"acclimation requirement base is decreased by 0.125",
 				"ecosystem requirement base is decreased by 0.05",
 				"expansion requirement base is decreased by 3",
-				"coming soon!",
+				() => "something new is unlocked for expansion" + (player.ex.influenceUnlocked ? " (already unlocked)" : ""),
 			],
 			goal() {return [167098, 155454, 155040, 869153600, 2.874e9, 7.992e9, 3.082e11][challengeCompletions("ec", 11)] || Infinity},
 			canComplete() {return player.g.points.gte(this.goal())},

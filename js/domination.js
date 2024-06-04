@@ -35,6 +35,7 @@ addLayer("d", {
 		if (player.d.unlocks[3]) mult = mult.div(buyableEffect("d", 14));
 		if (tmp.r.effect[5]) mult = mult.div(tmp.r.effect[5]);
 		if (tmp.ex.effect[1]) mult = mult.div(tmp.ex.effect[1]);
+		if (tmp.ex.effect[4]) mult = mult.div(tmp.ex.effect[4]);
 		return mult;
 	},
 	effect() {return player.points.add(1).pow(0.025)},
@@ -107,7 +108,7 @@ addLayer("d", {
 		if (!player.d.unlocks[3] && player.cb.points.gte(12) && player.sp.points.gte(16) && player.a.points.gte(325) && player.d.points.gte(1)) player.d.unlocks[3] = true;
 	},
 	componentStyles: {
-		"buyable"() {return {'width': '210px', 'height': '110px'}},
+		"buyable"() {return {"width": "210px", "height": "110px"}},
 	},
 	buyables: {
 		11: {

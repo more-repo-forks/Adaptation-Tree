@@ -245,7 +245,7 @@ function versionCheck() {
 		player.version = 0;
 	};
 	if (setVersion) {
-		if (player.versionType == modInfo.id && VERSION.num >= player.version) {
+		if (player.versionType == modInfo.id) {
 			player.keepGoing = false;
 			if (fixOldSave) fixOldSave(player.version);
 		};

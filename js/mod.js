@@ -77,12 +77,12 @@ let displayThings = [
 		if (tmp.other.oompsMag != 0 && options.showOOMs) return "(" + format(tmp.other.oomps) + " OOM" + (tmp.other.oompsMag < 0 ? "^OOM" : (tmp.other.oompsMag > 1 ? "^" + tmp.other.oompsMag : "")) + "s/sec)";
 		return "(" + format(getPointPotential()) + " max power)";
 	},
-	() => "<br>current endgame is at 7 " + (player.ec.unlocked ? "ANACHRONISM completions" : "???"),
+	() => "<br>current endgame is at 110 " + (player.d.unlocked ? "domination points" : "???"),
 ];
 
 // Determines when the game "ends"
 function isEndgame() {
-	return challengeCompletions("ec", 11) >= 7;
+	return player.d.points.gte(110);
 };
 
 // Style for the background, can be a function
@@ -95,4 +95,10 @@ function maxTickLength() {
 
 // Use this if you need to undo inflation from an older version. If the version is older than the version that fixed the issue,
 // you can cap their current resources with this.
-function fixOldSave(oldVersion) {};
+function fixOldSave(oldVersion) {
+	for (const key in layers.ex.buyables) {
+		if (Object.hasOwnProperty.call(layers.ex.buyables, key) && key < 20) {
+			player.ex.extra[key - 11] = new Decimal(player.ex.extra[key - 11] || 0);
+		};
+	};
+};

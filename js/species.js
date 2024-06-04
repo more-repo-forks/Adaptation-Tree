@@ -119,7 +119,7 @@ addLayer("sp", {
 		12: {
 			name: "2nd Hybridization",
 			fullDisplay() {
-				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does a species reset.<br>While in this hybridization, you cannot buy ANA.<br><br>Goal: " + formatWhole(this.goal) + " evolutions<br><br>Rewards: The extra STR, WIS, and AGI from evolutions is multiplied by 10, the base of the first species effect is multiplied based on hybridizations completed (" + (this.rewardEffect().gte(10) ? "maxed at 10" : "currently&nbsp;" + formatWhole(this.rewardEffect())) + "x), and something new is unlocked in the consciousness layer" + (player.cb.focusUnlocked ? " (already unlocked)" : "");
+				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does a species reset.<br>While in this hybridization, you cannot buy ANA.<br><br>Goal: " + formatWhole(this.goal) + " evolutions<br><br>Rewards: The extra STR, WIS, and AGI from evolutions is multiplied by 10, the base of the first species effect is multiplied based on hybridizations completed (" + (this.rewardEffect().gte(10) ? "maxed at 10" : "currently&nbsp;" + formatWhole(this.rewardEffect())) + "x), and something new is unlocked for consciousness" + (player.cb.focusUnlocked ? " (already unlocked)" : "");
 				return "You need " + formatWhole(this.unlockReq) + " species to unlock this hybridization.";
 			},
 			rewardEffect() {

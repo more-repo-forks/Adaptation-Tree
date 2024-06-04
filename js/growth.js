@@ -192,7 +192,7 @@ addLayer("g", {
 		};
 	},
 	componentStyles: {
-		"buyable"() {return {'width': '210px', 'height': '110px'}},
+		"buyable"() {return {"width": "210px", "height": "110px"}},
 		"clickable"() {return {'min-height': '30px', 'transform': 'none'}},
 	},
 	buyables: {

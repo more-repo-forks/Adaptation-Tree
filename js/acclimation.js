@@ -58,6 +58,7 @@ addLayer("a", {
 		if (hasMilestone("d", 19)) mult = mult.div(milestoneEffect("d", 19));
 		if (tmp.cb.effect[1]) mult = mult.div(tmp.cb.effect[1]);
 		if (tmp.r.effect[7]) mult = mult.div(tmp.r.effect[7]);
+		if (tmp.ex.effect[3]) mult = mult.div(tmp.ex.effect[3]);
 		return mult;
 	},
 	effect() {
@@ -246,7 +247,7 @@ addLayer("a", {
 		};
 	},
 	componentStyles: {
-		"buyable"() {return {'width': '210px', 'height': '110px'}},
+		"buyable"() {return {"width": "210px", "height": "110px"}},
 		"clickable"() {return {'min-height': '30px', 'transform': 'none'}},
 	},
 	buyables: {
