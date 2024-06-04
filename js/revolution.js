@@ -38,19 +38,20 @@ addLayer("r", {
 		let eff = [
 			new Decimal(2).pow(player.r.points),
 			new Decimal(5).pow(player.r.points),
-			player.r.points.div(10).add(1),
+			player.r.points.div(10).add(1).min(2),
 			player.r.points.pow(2).mul(new Decimal(10).pow(player.r.points.sub(1))).mul((player.r.milestones.length + 1) ** 2),
 			new Decimal(10).pow(player.r.change.pow(0.5)),
-			(hasMilestone("r", 0) ? player.r.change.add(1).pow(0.5).log10().add(1) : new Decimal(1)),
-			(hasMilestone("r", 1) ? player.r.change.add(1).pow(0.05).log10().add(1) : new Decimal(1)),
+			(hasMilestone("r", 0) ? player.r.change.add(1).pow(hasMilestone("r", 6) ? 1.28 : 0.5).log10().add(1) : new Decimal(1)),
+			(hasMilestone("r", 1) ? player.r.change.add(1).pow(hasMilestone("r", 7) ? 0.122 : 0.05).log10().add(1) : new Decimal(1)),
 			(hasMilestone("r", 4) ? new Decimal(222).pow(player.r.change.pow(0.2)) : new Decimal(1)),
 		];
 		if (hasMilestone("r", 5)) eff[3] = eff[3].mul(milestoneEffect("r", 5));
 		if (eff[4].gte("1e5555")) eff[4] = eff[4].div("1e5555").pow(0.1).mul("1e5555");
 		if (eff[4].gte("1e200000")) eff[4] = eff[4].div("1e200000").log10().pow(2000).mul("1e200000");
+		if (eff[7].gte("1e3333")) eff[7] = eff[7].div("1e3333").pow(1/3).mul("1e3333");
 		return eff;
 	},
-	effectDescription() {return "which are dividing the species requirement by /" + format(tmp.r.effect[0]) + ", dividing conscious being requirement by /" + format(tmp.r.effect[1]) + ", multiplying the completion limit of the 10th retrogression by " + format(tmp.r.effect[2]) + "x (rounded down), and generating " + format(tmp.r.effect[3]) + " change per second (with a limit of " + format(getMaxChange()) + ")"},
+	effectDescription() {return "which are dividing the species requirement by /" + format(tmp.r.effect[0]) + ", dividing conscious being requirement by /" + format(tmp.r.effect[1]) + ", multiplying the completion limit of the 10th retrogression by " + format(tmp.r.effect[2]) + "x (" + (tmp.r.effect[2].gte(2) ? "maxed" : "rounded down") + "), and generating " + format(tmp.r.effect[3]) + " change per second (with a limit of " + format(getMaxChange()) + ")"},
 	tabFormat: [
 		"main-display",
 		"prestige-button",
@@ -131,6 +132,22 @@ addLayer("r", {
 			popupTitle: "Innovation Acquired!",
 			effect() {return player.ec.points.add(1)},
 			effectDescription() {return "change gain and limit is multiplied based on ecosystems<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		6: {
+			requirement: 1e16,
+			requirementDescription: "7th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "the second change effect is improved<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		7: {
+			requirement: 5e17,
+			requirementDescription: "8th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "the third change effect is improved<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
 			unlocked() {return hasMilestone("r", this.id - 1)},
 		},

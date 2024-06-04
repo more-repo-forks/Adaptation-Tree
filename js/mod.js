@@ -63,6 +63,7 @@ function getPoints() {
 function getStatBulk() {
 	let bulk = 1;
 	if (player.r.points.gte(9)) bulk *= 10;
+	if (player.ex.points.gte(6)) bulk *= 10;
 	return bulk;
 };
 
@@ -77,12 +78,12 @@ let displayThings = [
 		if (tmp.other.oompsMag != 0 && options.showOOMs) return "(" + format(tmp.other.oomps) + " OOM" + (tmp.other.oompsMag < 0 ? "^OOM" : (tmp.other.oompsMag > 1 ? "^" + tmp.other.oompsMag : "")) + "s/sec)";
 		return "(" + format(getPointPotential()) + " max power)";
 	},
-	() => "<br>current endgame is at 110 " + (player.d.unlocked ? "domination points" : "???"),
+	() => "<br>current endgame is at 9 " + (player.ec.unlocked ? "ANACHRONISM completions" : "???"),
 ];
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.d.points.gte(110);
+	return challengeCompletions("ec", 11) >= 9;
 };
 
 // Style for the background, can be a function

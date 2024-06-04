@@ -179,9 +179,15 @@ addLayer("d", {
 				return base;
 			},
 			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id))},
+			completionEffect() {
+				let eff = 0.3;
+				if (hasMilestone("d", 24)) eff += milestoneEffect("d", 24);
+				return eff;
+			},
 			title: "DOMINATE (CLI)MATE",
 			display() {
 				if (!player.d.unlocks[2]) return "<br>requires 270 acclimation points to unlock";
+				if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return "Normal effect: divides acclimation requirement by " + format(this.effect()) + "<br><br>Complete domination effect: decreases the expansion requirement base by " + format(this.completionEffect()) + "<br><br>Progress: " + format(100) + "%";
 				return "divide acclimation requirement by " + format(this.effectBase()) + "<br><br>Effect: /" + format(this.effect()) + "<br><br>Cost: " + formatWhole(this.cost()) + " domination points<br><br>Progress: " + format(getBuyableAmount(this.layer, this.id) * 20 / 3) + "%";
 			},
 			purchaseLimit: 15,
@@ -432,6 +438,33 @@ addLayer("d", {
 			popupTitle: "Enhancement Acquired!",
 			effect() {return 0.14},
 			effectDescription() {return "increase the complete domination effect of FOC by 0.14<br>and the 10th retrogression is auto-maxed<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		23: {
+			requirement: 110,
+			requirementDescription: "Species enhancement III",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.033},
+			effectDescription() {return "decrease species requirement base by 0.033<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		24: {
+			requirement: 128,
+			requirementDescription: "CLI enhancement V",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.09},
+			effectDescription() {return "increase the complete domination effect of CLI by 0.09<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		25: {
+			requirement: 140,
+			requirementDescription: "D-CB synergy enhancement",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return getBuyableAmount("d", 11).add(getBuyableAmount("d", 12)).add(getBuyableAmount("d", 13)).add(getBuyableAmount("d", 14)).div(3)},
+			effectDescription() {return "increase the exponent of the last conscious being effect based on FOC, SPE, CLI, and DOM<br>Effect: +" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("d", this.id - 1)},
 		},
