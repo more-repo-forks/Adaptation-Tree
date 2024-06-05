@@ -32,7 +32,7 @@ addLayer("ec", {
 	effect() { return [
 		new Decimal(player.ec.points.gte(9) ? 20 : 5).pow(player.ec.points),
 		player.ec.points.mul(5),
-		new Decimal(100).pow(player.ec.points).min(1e300),
+		(player.ec.points.gt(0) ? new Decimal(100).pow(player.ec.points).min(1e300) : new Decimal(0)),
 	]},
 	effectDescription() {return "which are dividing the species requirement by /" + format(tmp.ec.effect[0]) + ", increasing the completion limit of the 10th hybridization by +" + formatWhole(tmp.ec.effect[1]) + ", and generating +" + format(tmp.ec.effect[2]) + "% of potential stimulations per second"},
 	tabFormat() {

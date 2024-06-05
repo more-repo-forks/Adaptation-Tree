@@ -392,7 +392,7 @@ layer_tab: `<div v-bind:style="[
 		: {}
 ]" class="noBackground">
 	<div v-if="back">
-		<button v-bind:class="back == 'big' ? 'other-back' : 'back'" v-on:click="goBack(layer)">←</button>
+		<button v-bind:class="back == 'big' ? 'other-back' : 'back'" v-on:click="goBack(layer)">&#8592;</button>
 	</div>
 	<div v-if="!tmp[layer].tabFormat">
 		<div v-if="spacing" v-bind:style="{height: spacing}" :key="this.$vnode.key + '-spacing'"></div>

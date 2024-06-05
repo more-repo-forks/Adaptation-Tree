@@ -63,7 +63,7 @@ function format(decimal, precision = 2, small = true) {
 		val = exponentialFormat(decimal, precision);
 		return val.replace(/([^(?:e|F)]*)$/, '-$1');
 	};
-	return format(decimal, precision) + "⁻¹";
+	return format(decimal, precision) + "&#8315;&#185;";
 };
 
 function formatWhole(decimal) {

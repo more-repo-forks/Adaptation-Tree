@@ -4,6 +4,7 @@
 
 <head>
 	<!-- styling -->
+	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Inconsolata">
 	<link rel="stylesheet" type="text/css" href="css/system-style.css"/>
 	<link rel="stylesheet" type="text/css" href="css/bars.css"/>
 	<link rel="stylesheet" type="text/css" href="css/components.css"/>
@@ -12,8 +13,6 @@
 	<link rel="stylesheet" type="text/css" href="css/other-tabs.css"/>
 	<link rel="stylesheet" type="text/css" href="css/popup.css"/>
 	<link rel="stylesheet" type="text/css" href="css/tree-node.css"/>
-	<!-- fonts -->
-	<link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
 	<!-- setup stuff -->
 	<script src="js/technical/vue.js"></script>
 	<script src="html/components.html"></script>
@@ -64,7 +63,7 @@
 			left: player.tab != 'none' && player.navTab != 'none',
 		}" :style="{'margin-top': !readData(layoutInfo.showTree) && player.tab == 'info-tab' ? '50px' : ''}">
 			<div id="version" onclick="showTab('changelog-tab')" class="overlayThing" style="margin-right: 13px">{{VERSION.withoutName}}</div>
-			<button v-if="((player.navTab == 'none' && (tmp[player.tab].row == 'side' || tmp[player.tab].row == 'otherside' || player[player.tab].prevTab)) || player[player.navTab]?.prevTab)" class="other-back overlayThing" onclick="goBack(player.navTab == 'none' ? player.tab : player.navTab)">←</button>
+			<button v-if="((player.navTab == 'none' && (tmp[player.tab].row == 'side' || tmp[player.tab].row == 'otherside' || player[player.tab].prevTab)) || player[player.navTab]?.prevTab)" class="other-back overlayThing" onclick="goBack(player.navTab == 'none' ? player.tab : player.navTab)">&#8592;</button>
 			<img id="optionWheel" class="overlayThing" v-if="player.tab != 'options-tab'" src="images/options_wheel.png" onclick="showTab('options-tab')">
 			<div id="info" v-if="player.tab != 'info-tab'" class="overlayThing" onclick="showTab('info-tab')"><br>i</div>
 			<div id="discord" class="overlayThing">
