@@ -20,6 +20,7 @@ addLayer("d", {
 		let base = 2;
 		if (hasChallenge("sp", 19)) base -= 0.16;
 		if (challengeCompletions("ec", 11) >= 1 && challengeEffect("ec", 11)[0]) base -= challengeEffect("ec", 11)[0];
+		if (challengeCompletions("ec", 11) >= 10 && challengeEffect("ec", 11)[9]) base -= challengeEffect("ec", 11)[9];
 		return base;
 	},
 	exponent: 1,
@@ -118,12 +119,13 @@ addLayer("d", {
 				if (hasMilestone("d", 0)) base = base.mul(milestoneEffect("d", 0));
 				return base;
 			},
-			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id))},
+			effect() {return getBuyableAmount(this.layer, this.id).pow_base(this.effectBase())},
 			completionEffect() {
 				let eff = 0.15;
 				if (hasMilestone("d", 7)) eff += milestoneEffect("d", 7);
 				if (hasMilestone("d", 10)) eff += milestoneEffect("d", 10);
 				if (hasMilestone("d", 22)) eff += milestoneEffect("d", 22);
+				if (hasMilestone("d", 27)) eff += milestoneEffect("d", 27);
 				return eff;
 			},
 			title: "DOMINATE (FOC)US",
@@ -149,9 +151,10 @@ addLayer("d", {
 				if (hasMilestone("d", 5)) base = base.mul(milestoneEffect("d", 5));
 				if (hasMilestone("d", 11)) base = base.mul(milestoneEffect("d", 11));
 				if (hasMilestone("d", 16)) base = base.mul(milestoneEffect("d", 16));
+				if (hasMilestone("d", 26)) base = base.mul(milestoneEffect("d", 26));
 				return base;
 			},
-			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id))},
+			effect() {return getBuyableAmount(this.layer, this.id).pow_base(this.effectBase())},
 			completionEffect() {return 0.064},
 			title: "DOMINATE (SPE)CIES",
 			display() {
@@ -178,7 +181,7 @@ addLayer("d", {
 				if (hasMilestone("d", 21)) base = base.mul(milestoneEffect("d", 21));
 				return base;
 			},
-			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id))},
+			effect() {return getBuyableAmount(this.layer, this.id).pow_base(this.effectBase())},
 			completionEffect() {
 				let eff = 0.3;
 				if (hasMilestone("d", 24)) eff += milestoneEffect("d", 24);
@@ -207,9 +210,10 @@ addLayer("d", {
 				if (hasMilestone("d", 8)) base = base.mul(milestoneEffect("d", 8));
 				if (hasMilestone("d", 12)) base = base.mul(milestoneEffect("d", 12));
 				if (hasMilestone("d", 20)) base = base.mul(milestoneEffect("d", 20));
+				if (hasMilestone("d", 29)) base = base.mul(milestoneEffect("d", 29));
 				return base;
 			},
-			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id))},
+			effect() {return getBuyableAmount(this.layer, this.id).pow_base(this.effectBase())},
 			title: "TOTAL (DOM)INATION",
 			display() {
 				if (!player.d.unlocks[3]) return "<br>requires 12 conscious beings, 16 species, 325 acclimation points, and 1 domination point to unlock";
@@ -465,6 +469,41 @@ addLayer("d", {
 			popupTitle: "Enhancement Acquired!",
 			effect() {return getBuyableAmount("d", 11).add(getBuyableAmount("d", 12)).add(getBuyableAmount("d", 13)).add(getBuyableAmount("d", 14)).div(3)},
 			effectDescription() {return "increase the exponent of the last conscious being effect based on FOC, SPE, CLI, and DOM<br>Effect: +" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		26: {
+			requirement: 156,
+			requirementDescription: "SPE enhancement V",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.d.points.add(1).pow(0.2)},
+			effectDescription() {return "multiply the base effect of SPE based on domination points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		27: {
+			requirement: 160,
+			requirementDescription: "FOC enhancement V",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.025},
+			effectDescription() {return "increase the complete domination effect of FOC by 0.025<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		28: {
+			requirement: 180,
+			requirementDescription: "Hybridization enhancement III",
+			popupTitle: "Enhancement Acquired!",
+			effectDescription() {return "improve the 10th hybridization's second to last effect<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		29: {
+			requirement: 193,
+			requirementDescription: "DOM enhancement V",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.d.points.add(1).pow(0.032)},
+			effectDescription() {return "multiply the base effect of DOM based on domination points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("d", this.id - 1)},
 		},

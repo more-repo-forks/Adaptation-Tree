@@ -93,7 +93,9 @@ addLayer("a", {
 			amt.pow(exp1).mul(mult[1]),
 			amt.log10().mul(mult[2]).floor(),
 		];
-		if (!hasMilestone("a", 6)) {
+		if (hasMilestone("a", 6)) {
+			if (eff[0].gt("e1e10000")) eff[0] = eff[0].layeradd10(-1).div("1e10000").pow(0.5).mul("1e10000").layeradd10(1);
+		} else {
 			if (eff[0].gt("e750000")) eff[0] = eff[0].div("e750000").pow(0.1).mul("e750000");
 			if (eff[0].gt("e1500000")) eff[0] = eff[0].div("e1500000").log10().pow(15000).mul("e1500000");
 		};
@@ -270,7 +272,7 @@ addLayer("a", {
 				if (hasMilestone("a", 73)) base = base.mul(milestoneEffect("a", 73));
 				return base;
 			},
-			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
+			effect() {return getBuyableAmount(this.layer, this.id).add(this.extra()).pow_base(this.effectBase())},
 			title: "(CRA)FTSMANSHIP",
 			display() {return "multiply population maximum by " + format(this.effectBase()) + (this.effectBase().gte(1000000) ? "" : "<br>(population max also influences gain)") + "<br><br>Effect: " + format(this.effect()) + "x<br><br>Cost: " + formatWhole(this.cost()) + " acclimation points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id)) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
 			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && !inChallenge("sp", 11)},
@@ -306,7 +308,7 @@ addLayer("a", {
 				if (hasMilestone("a", 55)) base = base.mul(milestoneEffect("a", 55));
 				return base;
 			},
-			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
+			effect() {return getBuyableAmount(this.layer, this.id).add(this.extra()).pow_base(this.effectBase())},
 			title: "(FER)TILITY",
 			display() {return "multiply population gain by " + format(this.effectBase()) + "<br><br>Effect: " + format(this.effect()) + "x<br><br>Cost: " + formatWhole(this.cost()) + " acclimation points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id)) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
 			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && !inChallenge("sp", 11)},
@@ -347,7 +349,7 @@ addLayer("a", {
 				if (hasMilestone("a", 70)) base = base.add(milestoneEffect("a", 70));
 				return base;
 			},
-			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
+			effect() {return getBuyableAmount(this.layer, this.id).add(this.extra()).pow_base(this.effectBase())},
 			title: "(ANA)LYTICITY",
 			display() {return "divide acclimation requirement by " + format(this.effectBase()) + "<br><br>Effect: /" + format(this.effect()) + "<br><br>Cost: " + formatWhole(this.cost()) + " acclimation points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id)) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
 			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && !inChallenge("sp", 12)},
@@ -385,7 +387,7 @@ addLayer("a", {
 				if (hasMilestone("a", 72)) base = base.mul(milestoneEffect("a", 72));
 				return base;
 			},
-			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
+			effect() {return getBuyableAmount(this.layer, this.id).add(this.extra()).pow_base(this.effectBase())},
 			title: "(SOV)EREIGNTY",
 			display() {return "multiply population amount in population effects by " + format(this.effectBase()) + "<br><br>Effect: " + format(this.effect()) + "x<br><br>Cost: " + formatWhole(this.cost()) + " acclimation points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id)) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
 			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && !inChallenge("sp", 11)},

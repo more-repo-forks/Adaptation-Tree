@@ -220,7 +220,7 @@ addLayer("g", {
 				if (hasMilestone("g", 66)) base = base.mul(milestoneEffect("g", 66));
 				return base;
 			},
-			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
+			effect() {return getBuyableAmount(this.layer, this.id).add(this.extra()).pow_base(this.effectBase())},
 			title: "(STR)ENGTH",
 			display() {return "multiply power gain by " + format(this.effectBase()) + "<br><br>Effect: " + format(this.effect()) + "x<br><br>Cost: " + formatWhole(this.cost()) + " growth points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id)) + "/" + formatWhole(this.purchaseLimit()) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
 			purchaseLimit() {
@@ -269,7 +269,7 @@ addLayer("g", {
 				if (hasMilestone("g", 71)) base = base.mul(milestoneEffect("g", 71));
 				return base;
 			},
-			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
+			effect() {return getBuyableAmount(this.layer, this.id).add(this.extra()).pow_base(this.effectBase())},
 			title: "(WIS)DOM",
 			display() {return "multiply stimulation gain by " + format(this.effectBase()) + "<br><br>Effect: " + format(this.effect()) + "x<br><br>Cost: " + formatWhole(this.cost()) + " growth points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id)) + "/" + formatWhole(this.purchaseLimit()) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
 			purchaseLimit() {
@@ -320,7 +320,7 @@ addLayer("g", {
 				if (hasMilestone("g", 30)) base = base.add(milestoneEffect("g", 30));
 				return base;
 			},
-			effect() {return new Decimal(this.effectBase()).pow(getBuyableAmount(this.layer, this.id).add(this.extra()))},
+			effect() {return getBuyableAmount(this.layer, this.id).add(this.extra()).pow_base(this.effectBase())},
 			title: "(AGI)LITY",
 			display() {
 				if (hasMilestone("g", 46)) return "divide growth point<br>requirement by " + formatWhole(this.effectBase()) + "<br><br>Effect: /" + format(this.effect()) + "<br><br>Cost: " + formatWhole(this.cost()) + " growth points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id)) + "/" + formatWhole(this.purchaseLimit()) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()));
@@ -386,7 +386,7 @@ addLayer("g", {
 					if (eff.gt(0.375)) eff = eff.sub(0.375).div(2.5).add(0.375);
 					return eff.min(this.maxEffect());
 				} else if (hasMilestone("g", 3)) return getBuyableAmount(this.layer, this.id).add(this.extra()).mul(this.effectBase()).min(this.maxEffect());
-				else return new Decimal(5).pow(getBuyableAmount(this.layer, this.id).add(this.extra()));
+				else return getBuyableAmount(this.layer, this.id).add(this.extra()).pow_base(this.effectBase());
 			},
 			title: "(INT)ELLECT",
 			display() {

@@ -95,7 +95,7 @@
 	top: .6em;
 	left: -1em;
 	border-right: 1em solid transparent;
-	border-bottom: 0.7em solid #ffcc00;
+	border-bottom: inherit;
 	border-left: 1em solid transparent;
 	transform: rotate(-35deg);
 }

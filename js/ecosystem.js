@@ -58,6 +58,7 @@ addLayer("ec", {
 		html += "<button onclick='if (player.ec.unlocked && tmp.ec.challenges[11].enterable && player.ec.chronoTime !== 0) player.ec.chronoTime = 0'";
 		if (player.ec.unlocked && tmp.ec.challenges[11].enterable && player.ec.chronoTime !== 0) html += " class='can' style='position: absolute; top: 430px; left: 430px; width: 70px; height: 70px; border: none; border-radius: 50%; background-color: #116022; color: #FFFFFF; transform: none; box-shadow: none'>SYNC OFF</button>";
 		else html += " class='locked' style='position: absolute; top: 430px; left: 430px; width: 70px; height: 70px; border: 5px solid #116022; border-radius: 50%; background-color: var(--locked); color: #116022; transform: none; box-shadow: none'>SYNC ON</button>";
+		if (tmp.ec.challenges[11].marked) html += "<div class='star' style='position: absolute; left: 20px; top: 20px; border-bottom-color: #116022; transform: scale(2, 2)'></div>";
 		// tab format
 		let arr = [
 			"main-display",
@@ -99,12 +100,12 @@ addLayer("ec", {
 	},
 	challenges: {
 		11: {
-			name(x = challengeCompletions("ec", 11)) {return "ANACHRONISM " + (["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI"][x] || "XII")},
+			name(x = challengeCompletions("ec", 11)) {return "ANACHRONISM " + (["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"][Math.min(x, tmp.ec.challenges[11].completionLimit - 1)])},
 			fullDisplay() {
 				if (challengeCompletions("sp", 21) >= 18 || hasChallenge("ec", 11)) return "Entering any ANACHRONISM does a species reset.<br><br>While in " + tmp.ec.challenges[11].name + ", the evolution and acclimation<br>requirement bases are multipled by " + formatWhole(tmp.ec.challenges[11].penalty) + ".<br><br>While in any ANACHRONISM, you are trapped in<br>the 10th retrogression and hybridization.<br><br>Goal: " + formatWhole(tmp.ec.challenges[11].goal) + " growth points<br><br>Completed: " + formatWhole(challengeCompletions("ec", 11)) + "/" + formatWhole(tmp.ec.challenges[11].completionLimit);
 				return "You need 18 completions of the 10th hybridization<br>to unlock ANACHRONISM.";
 			},
-			rewardEffect() {return [0.1, null, 3, 0.125, 0.05, 3, null, null, null]},
+			rewardEffect() {return [0.1, null, 3, 0.125, 0.05, 3, null, null, null, 0.03]},
 			rewards: [
 				"domination requirement base is decreased by 0.1",
 				() => "three new layers are unlocked" + (player.r.unlocked ? " (" + (player.ex.unlocked ? 2 : 1) + "/3 already unlocked)" : ""),
@@ -114,17 +115,18 @@ addLayer("ec", {
 				"expansion requirement base is decreased by 3",
 				() => "something new is unlocked for expansion" + (player.ex.influenceUnlocked ? " (already unlocked)" : ""),
 				"influence generator and tickspeed costs are reduced",
-				"coming soon",
+				"the first and last revolution effects are improved",
+				"domination requirement base is decreased by 0.03",
 			],
-			goal() {return [167098, 155454, 155040, 869153600, 2.874e9, 7.992e9, 3.082e11, 4.73e11, 1.228e12][challengeCompletions("ec", 11)] || Infinity},
+			goal() {return [167098, 155454, 155040, 869153600, 2.874e9, 7.992e9, 3.082e11, 4.73e11, 1.228e12, 7.191e12][Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1)] || Infinity},
 			canComplete() {return player.g.points.gte(this.goal())},
 			unlockReq: 21,
 			enterable() {return challengeCompletions("sp", 21) >= 18 || hasChallenge("ec", 11)},
 			doReset: false,
-			completionLimit: 12,
+			completionLimit: 10,
 			onEnter() {doReset("sp", true, true); player.ec.chronoTime = Date.now() / 500 - player.ec.chronoTime},
 			onExit() {doReset("sp", true, true); player.ec.chronoTime = Date.now() / 500 - player.ec.chronoTime},
-			penalty() {return 10 ** (Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit) ** 2 + 1)},
+			penalty() {return 10 ** (Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1) ** 2 + 1)},
 		},
 	},
 });
