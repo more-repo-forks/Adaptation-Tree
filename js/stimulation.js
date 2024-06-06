@@ -8,7 +8,7 @@ addLayer("s", {
 		best: new Decimal(0),
 		total: new Decimal(0),
 	}},
-	color: "#71EBB0",
+	color: "#70EBB0",
 	resource: "stimulations",
 	row: 0,
 	baseResource: modInfo.pointsName,

@@ -34,6 +34,7 @@ addLayer("d", {
 		if (hasChallenge("sp", 17)) mult = mult.div(challengeEffect("sp", 17));
 		if (hasChallenge("sp", 21) && challengeEffect("sp", 21)[4]) mult = mult.div(challengeEffect("sp", 21)[4]);
 		if (player.d.unlocks[3]) mult = mult.div(buyableEffect("d", 14));
+		if (getGridData("w", 101)) mult = mult.div(gridEffect("w", 101));
 		if (tmp.r.effect[5]) mult = mult.div(tmp.r.effect[5]);
 		if (tmp.ex.effect[1]) mult = mult.div(tmp.ex.effect[1]);
 		if (tmp.ex.effect[4]) mult = mult.div(tmp.ex.effect[4]);
@@ -100,6 +101,7 @@ addLayer("d", {
 	}],
 	doReset(resettingLayer) {
 		let keep = [];
+		if (resettingLayer == "w") keep.push("milestones", "lastMilestone");
 		if (layers[resettingLayer].row > this.row) layerDataReset("d", keep);
 	},
 	update(diff) {
@@ -155,7 +157,11 @@ addLayer("d", {
 				return base;
 			},
 			effect() {return getBuyableAmount(this.layer, this.id).pow_base(this.effectBase())},
-			completionEffect() {return 0.064},
+			completionEffect() {
+				let eff = 0.064;
+				if (hasMilestone("d", 30)) eff += milestoneEffect("d", 30);
+				return eff;
+			},
 			title: "DOMINATE (SPE)CIES",
 			display() {
 				if (!player.d.unlocks[1]) return "<br>requires 14 species to unlock";
@@ -214,9 +220,19 @@ addLayer("d", {
 				return base;
 			},
 			effect() {return getBuyableAmount(this.layer, this.id).pow_base(this.effectBase())},
+			completionEffect() {
+				let maxed = 0;
+				for (const key in player.d.buyables) {
+					if (Object.hasOwnProperty.call(player.d.buyables, key) && player.d.buyables[key] >= tmp.d.buyables[key].purchaseLimit) {
+						maxed++;
+					};
+				};
+				return new Decimal(1.88).pow(maxed);
+			},
 			title: "TOTAL (DOM)INATION",
 			display() {
 				if (!player.d.unlocks[3]) return "<br>requires 12 conscious beings, 16 species, 325 acclimation points, and 1 domination point to unlock";
+				if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return "Normal effect: divides domination requirement by " + format(this.effect()) + "<br><br>Complete domination effect: divides the war requirement based on stats at 100% (currently&nbsp;/" + format(this.completionEffect()) + ")<br><br>Progress: " + format(100) + "%";
 				return "divide domination requirement by " + format(this.effectBase()) + "<br><br>Effect: /" + format(this.effect()) + "<br><br>Cost: " + formatWhole(this.cost()) + " domination points<br><br>Progress: " + format(getBuyableAmount(this.layer, this.id) * 5) + "%";
 			},
 			purchaseLimit: 20,
@@ -502,8 +518,26 @@ addLayer("d", {
 			requirement: 193,
 			requirementDescription: "DOM enhancement V",
 			popupTitle: "Enhancement Acquired!",
-			effect() {return player.d.points.add(1).pow(0.032)},
+			effect() {return player.d.points.add(1).pow(0.0363)},
 			effectDescription() {return "multiply the base effect of DOM based on domination points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		30: {
+			requirement: 202,
+			requirementDescription: "SPE enhancement VI",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.076},
+			effectDescription() {return "increase the complete domination effect of SPE by 0.076<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		31: {
+			requirement: 229,
+			requirementDescription: "ANACHRONISM enhancement",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 2},
+			effectDescription() {return "unlock 2 more tiers of ANACHRONISM<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("d", this.id - 1)},
 		},

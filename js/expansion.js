@@ -10,8 +10,8 @@ addLayer("ex", {
 		influence: new Decimal(0),
 		extra: [],
 	}},
-	color: "#B3478F",
-	nodeStyle() {if (tmp.ex.canReset || player.ex.unlocked) return {"background": "border-box linear-gradient(to right, #EE7770, #B3478F, #E03330)"}},
+	color: "#B44990",
+	nodeStyle() {if (tmp.ex.canReset || player.ex.unlocked) return {"background": "border-box linear-gradient(to right, #EE7770, #B44990, #E03330)"}},
 	resource: "expansion points",
 	row: 4,
 	baseResource: "acclimation points",
@@ -30,6 +30,7 @@ addLayer("ex", {
 	resetDescription: "Expand your influence for ",
 	gainMult() {
 		let mult = new Decimal(1);
+		if (getGridData("w", 102)) mult = mult.div(gridEffect("w", 102));
 		return mult;
 	},
 	effect() {
@@ -50,13 +51,13 @@ addLayer("ex", {
 		if (eff[3].gte("1e88888")) eff[3] = eff[3].div("1e88888").pow(8/9).mul("1e88888");
 		return eff;
 	},
-	effectDescription() {return "which are dividing the conscious being requirement by /" + format(tmp.ex.effect[0]) + ", dividing domination requirement by /" + format(tmp.ex.effect[1]) + ", and giving " + formatWhole(tmp.ex.effect[2]) + " extra CRA, FER, ANA, and SOV"},
+	effectDescription() {return "which are dividing the conscious being requirement by /" + format(tmp.ex.effect[0]) + ", dividing the domination requirement by /" + format(tmp.ex.effect[1]) + ", and giving " + formatWhole(tmp.ex.effect[2]) + " extra CRA, FER, ANA, and SOV"},
 	tabFormat() {
 		let text = "After expanding 1 time, you keep acclimation enhancements on all resets,<br>acclimation resets (without respec) no longer reset anything,<br>and you automatically claim potential acclimation points.<br><br>The above extra effects will not go away even if this layer is reset.";
 		if (player.ex.points.gte(2)) text += "<br><br>After expanding 3 times, the last expansion effect is improved.";
 		if (player.ex.points.gte(5)) text += "<br>After expanding 6 times, you bulk 10x stats from rows 3 and below.";
 		if (player.ex.points.gte(8)) text += "<br>After expanding 9 times, you bulk 10x more stats from rows 3 and below.";
-		if (player.ex.influenceUnlocked) text += "<br><br>You have <h2 style='color: #B3478F; text-shadow: #B3478F 0px 0px 10px'>" + format(player.ex.influence) + "</h2> influence, which divides the acclimation requirement by /" + format(tmp.ex.effect[3]) + " and divides the conscious being and domination requirements by /" + format(tmp.ex.effect[4]);
+		if (player.ex.influenceUnlocked) text += "<br><br>You have <h2 style='color: #B44990; text-shadow: #B44990 0px 0px 10px'>" + format(player.ex.influence) + "</h2> influence, which divides the acclimation requirement by /" + format(tmp.ex.effect[3]) + " and divides the conscious being and domination requirements by /" + format(tmp.ex.effect[4]);
 		let arr = [
 			"main-display",
 			"prestige-button",
@@ -218,14 +219,4 @@ addLayer("ex", {
 			},
 		},
 	},
-});
-
-addNode("blank", {
-	symbol: "W",
-	branches: ["d"],
-	position: 3,
-	nodeStyle: {"margin": "0 10px 0 10px", "border-radius": "50%"},
-	tooltipLocked() {return "Reach 200 domination points to unlock (You have " + formatWhole(player.d.points) + " domination points)"},
-	row: 4,
-	layerShown() {return challengeCompletions("ec", 11) >= 2},
 });

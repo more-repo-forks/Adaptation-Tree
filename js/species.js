@@ -287,6 +287,7 @@ addLayer("sp", {
 			completionLimit() {
 				let limit = 5;
 				if (tmp.ec.effect[1]) limit += tmp.ec.effect[1].toNumber();
+				if (getGridData("w", 201)) limit += gridEffect("w", 201).toNumber();
 				return limit;
 			},
 			countsAs: [11, 12, 13, 14, 15, 16, 17, 18, 19],

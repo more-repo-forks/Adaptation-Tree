@@ -12,7 +12,7 @@ addLayer("g", {
 		autoAGI: false,
 		autoINT: false,
 	}},
-	color: "#E6B45A",
+	color: "#E5B55A",
 	resource: "growth points",
 	row: 1,
 	baseResource: "stimulations",

@@ -15,7 +15,7 @@ addLayer("a", {
 		autoANA: false,
 		autoSOV: false,
 	}},
-	color: "#B3478F",
+	color: "#B44990",
 	resource: "acclimation points",
 	row: 2,
 	baseResource: "growth points",
@@ -190,7 +190,7 @@ addLayer("a", {
 			"main-display",
 			"prestige-button",
 			"resource-display",
-			["display-text", "Your population is currently <h2 style='color: #B3478F; text-shadow: #B3478F 0px 0px 10px'>" + formatWhole(player.a.population) + "</h2>, which is dividing growth requirement by /" + format(tmp.a.effect[0]) + "; dividing evolution requirement by /" + format(tmp.a.effect[1]) + "; and giving " + formatWhole(tmp.a.effect[2]) + " extra STR, WIS, AGI, and INT." + (hasMilestone("r", 3) ? "" : "<br>(" + formatWhole(player.a.populationMax) + " max population)")],
+			["display-text", "Your population is currently <h2 style='color: #B44990; text-shadow: #B44990 0px 0px 10px'>" + formatWhole(player.a.population) + "</h2>, which is dividing growth requirement by /" + format(tmp.a.effect[0]) + "; dividing evolution requirement by /" + format(tmp.a.effect[1]) + "; and giving " + formatWhole(tmp.a.effect[2]) + " extra STR, WIS, AGI, and INT." + (hasMilestone("r", 3) ? "" : "<br>(" + formatWhole(player.a.populationMax) + " max population)")],
 			"blank",
 			["row", [
 				["column", cols[0]], ["column", cols[1]], ["column", cols[2]],
@@ -209,7 +209,7 @@ addLayer("a", {
 	doReset(resettingLayer) {
 		let keep = ["autoCRA", "autoFER", "autoANA", "autoSOV"];
 		if (player.ex.unlocked) keep.push("milestones", "lastMilestone");
-		else if (resettingLayer == "d" && player.d.unlocked) keep.push("milestones", "lastMilestone");
+		else if (resettingLayer == "d") keep.push("milestones", "lastMilestone");
 		if (layers[resettingLayer].row > this.row) layerDataReset("a", keep);
 		player.a.populationTime = 0;
 	},
