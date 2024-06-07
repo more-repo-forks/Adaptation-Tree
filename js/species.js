@@ -37,6 +37,7 @@ addLayer("sp", {
 		if (hasChallenge("sp", 21) && challengeEffect("sp", 21)[5]) mult = mult.div(challengeEffect("sp", 21)[5]);
 		if (hasMilestone("d", 4)) mult = mult.div(milestoneEffect("d", 4));
 		if (player.d.unlocks[1]) mult = mult.div(buyableEffect("d", 12));
+		if (getGridData("w", 103)) mult = mult.div(gridEffect("w", 103));
 		if (tmp.ec.effect[0]) mult = mult.div(tmp.ec.effect[0]);
 		if (tmp.r.effect[0]) mult = mult.div(tmp.r.effect[0]);
 		return mult;

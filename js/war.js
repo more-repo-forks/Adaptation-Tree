@@ -1,17 +1,17 @@
 const warUpgrades = [
 	[
-		{title: "Display of Power", desc() {return "divides domination requirement based on wars (currently&nbsp;/" + format(this.effect()) + ")"}, effect() {return player.w.points.add(2)}, cost: 1},
-		{title: "Violent Expansion", desc() {return "divides expansion requirement based on wars (currently&nbsp;/" + format(this.effect()) + ")"}, effect() {return player.w.points.div(2).add(1)}, cost: 2},
-		{title: "Coming Soon!", desc: "coming soon", cost: 3},
+		{title: "Display of Power", desc() {return "divides domination requirement based on wars<br>(currently /" + format(this.effect()) + ")"}, effect() {return player.w.points.add(2)}, cost: 1},
+		{title: "Violent Expansion", desc() {return "divides expansion requirement based on wars<br>(currently /" + format(this.effect()) + ")"}, effect() {return player.w.points.div(2).add(1)}, cost: 2},
+		{title: "Wilderness Exploration", desc() {return "divides species requirement based on wars<br>(currently /" + format(this.effect()) + ")"}, effect() {return player.w.points.pow_base(1e5)}, cost: 4},
 	], [
-		{title: "Forced Migration", desc() {return "increases the 10th hybridization's completion limit based on wars (currently&nbsp;+" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points.mul(2)}, cost: 2},
-		{title: "Coming Soon!", desc: "coming soon", cost: 3},
-		{title: "Coming Soon!", desc: "coming soon", cost: 4},
+		{title: "Forced Migration", desc() {return "increases the 10th hybridization's completion limit based on wars<br>(currently +" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points.mul(2)}, cost: 2},
+		{title: "Out of Place, Out of Time", desc: "unlocks another ANACHRONISM tier", effect: 1, cost: 4},
+		{title: "Displaced Chronology", desc: "unlocks another ANACHRONISM tier", effect: 1, cost: 8},
 	],
 	[
-		{title: "Coming Soon!", desc: "coming soon", cost: 3},
-		{title: "Coming Soon!", desc: "coming soon", cost: 4},
-		{title: "Coming Soon!", desc: "coming soon", cost: 5},
+		{title: "Enroaching Influence", desc: "unlocks another influence generator", cost: 4},
+		{title: "Greater Empowerment", desc: "reduces <b>Influence empowerment</b>'s cost", cost: 8},
+		{title: "???", desc: "coming soon!", cost: 16},
 	],
 ];
 
@@ -32,7 +32,11 @@ addLayer("w", {
 	baseAmount() {return player.d.points},
 	requires: new Decimal(200),
 	type: "static",
-	base: 2,
+	base() {
+		let base = 2;
+		if (challengeCompletions("ec", 11) >= 11 && challengeEffect("ec", 11)[10]) base -= challengeEffect("ec", 11)[10];
+		return base;
+	},
 	exponent: 1,
 	roundUpCost: true,
 	canBuyMax() {return false},
@@ -48,7 +52,12 @@ addLayer("w", {
 		"main-display",
 		"prestige-button",
 		"resource-display",
-		["display-text", "You keep all domination enhancements on war resets.<br><br>After declaring war 1 time, consciousness resets no longer reset anything<br>and you automatically claim potential conscious beings.<br><br>The above extra effects will not go away even if this layer is reset."],
+		["display-text", () => {
+			let text = "You keep all domination enhancements on war resets.<br><br>After declaring war 1 time, consciousness resets no longer reset anything<br>and you automatically claim potential conscious beings.<br><br>The above extra effects will not go away even if this layer is reset.";
+			if (player.w.points.gte(2)) text += "<br><br>After declaring war 3 times, you keep domination enhancements on all resets.";
+			if (player.w.points.gte(5)) text += "<br>After declaring war 6 times, you bulk 10x stats from rows 3 and below.";
+			return text;
+		}],
 		"blank",
 		"grid",
 		"blank",
@@ -66,7 +75,7 @@ addLayer("w", {
 		if (layers[resettingLayer].row > this.row) layerDataReset("w", keep);
 	},
 	componentStyles: {
-		"gridable"() {return {"width": "110px", "height": "110px", "border-radius": "0px"}},
+		"gridable"() {return {"width": "120px", "height": "120px", "border-radius": "0px"}},
 	},
 	grid: {
 		rows: 3,

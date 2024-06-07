@@ -101,7 +101,8 @@ addLayer("d", {
 	}],
 	doReset(resettingLayer) {
 		let keep = [];
-		if (resettingLayer == "w") keep.push("milestones", "lastMilestone");
+		if (player.w.points.gte(3)) keep.push("milestones", "lastMilestone");
+		else if (resettingLayer == "w") keep.push("milestones", "lastMilestone");
 		if (layers[resettingLayer].row > this.row) layerDataReset("d", keep);
 	},
 	update(diff) {
@@ -227,7 +228,9 @@ addLayer("d", {
 						maxed++;
 					};
 				};
-				return new Decimal(1.88).pow(maxed);
+				let base = new Decimal(1.88);
+				if (hasMilestone("d", 32)) base = base.add(milestoneEffect("d", 32));
+				return base.pow(maxed);
 			},
 			title: "TOTAL (DOM)INATION",
 			display() {
@@ -536,8 +539,33 @@ addLayer("d", {
 			requirement: 229,
 			requirementDescription: "ANACHRONISM enhancement",
 			popupTitle: "Enhancement Acquired!",
-			effect() {return 2},
-			effectDescription() {return "unlock 2 more tiers of ANACHRONISM<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			effect() {return 1},
+			effectDescription() {return "unlock another tier of ANACHRONISM<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		32: {
+			requirement: 246,
+			requirementDescription: "DOM enhancement VI",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.62},
+			effectDescription() {return "increase the base complete domination effect of DOM by 0.62<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		33: {
+			requirement: 257,
+			requirementDescription: "Influence enhancement I",
+			popupTitle: "Enhancement Acquired!",
+			effectDescription() {return "improve influence's second effect<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		34: {
+			requirement: 297,
+			requirementDescription: "Influence enhancement II",
+			popupTitle: "Enhancement Acquired!",
+			effectDescription() {return "unlock an additional effect for influence<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("d", this.id - 1)},
 		},

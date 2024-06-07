@@ -100,12 +100,21 @@ addLayer("ec", {
 	},
 	challenges: {
 		11: {
-			name(x = challengeCompletions("ec", 11)) {return "ANACHRONISM " + (["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"][Math.min(x, tmp.ec.challenges[11].completionLimit - 1)])},
+			name(x = Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1)) {return "ANACHRONISM " + (["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII"][x])},
 			fullDisplay() {
-				if (challengeCompletions("sp", 21) >= 18 || hasChallenge("ec", 11)) return "Entering any ANACHRONISM does a species reset.<br><br>While in " + tmp.ec.challenges[11].name + ", the evolution and acclimation<br>requirement bases are multipled by " + formatWhole(tmp.ec.challenges[11].penalty) + ".<br><br>While in any ANACHRONISM, you are trapped in<br>the 10th retrogression and hybridization.<br><br>Goal: " + formatWhole(tmp.ec.challenges[11].goal) + " growth points<br><br>Completed: " + formatWhole(challengeCompletions("ec", 11)) + "/" + formatWhole(tmp.ec.challenges[11].completionLimit);
+				if (challengeCompletions("sp", 21) >= 18 || hasChallenge("ec", 11)) {
+					let text = "";
+					if (challengeCompletions("ec", 11) >= 12 && tmp.ec.challenges[11].completionLimit > 12) text += "Entering any ANACHRONISM past XII does an ecosystem reset.";
+					else text += "Entering any ANACHRONISM does a species reset.";
+					text += "<br><br>While in " + tmp.ec.challenges[11].name + ", the evolution and acclimation<br>requirement bases are multipled by " + formatWhole(tmp.ec.challenges[11].penalty) + "."
+					text += "<br><br>While in any ANACHRONISM, you are trapped in<br>the 10th retrogression and hybridization.";
+					text += "<br><br>Goal: " + formatWhole(tmp.ec.challenges[11].goal) + " growth points";
+					text += "<br><br>Completed: " + formatWhole(challengeCompletions("ec", 11)) + "/" + formatWhole(tmp.ec.challenges[11].completionLimit);
+					return text;
+				};
 				return "You need 18 completions of the 10th hybridization<br>to unlock ANACHRONISM.";
 			},
-			rewardEffect() {return [0.1, null, 3, 0.125, 0.05, 3, null, null, null, 0.03, null]},
+			rewardEffect() {return [0.1, null, 3, 0.125, 0.05, 3, null, null, null, 0.03, 0.45, 0.1, null]},
 			rewards: [
 				"domination requirement base is decreased by 0.1",
 				() => "three new layers are unlocked" + (player.r.unlocked ? " (" + (player.w.unlocked ? "" : (player.ex.unlocked ? 2 : 1) + "/3 ") + "already unlocked)" : ""),
@@ -117,9 +126,11 @@ addLayer("ec", {
 				"influence generator and tickspeed costs are reduced",
 				"the first and last revolution effects are improved",
 				"domination requirement base is decreased by 0.03",
+				"war requirement base is decreased by 0.45",
+				"revolution requirement base is decreased by 0.1",
 				"coming soon!",
 			],
-			goal() {return [167098, 155454, 155040, 869153600, 2.874e9, 7.992e9, 3.082e11, 4.73e11, 1.228e12, 7.191e12, 9.733e12][Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1)] || Infinity},
+			goal() {return [167098, 155454, 155040, 869153600, 2.874e9, 7.992e9, 3.082e11, 4.73e11, 1.228e12, 7.191e12, 9.733e12, 1.359e13, 5.222e13][Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1)] || Infinity},
 			canComplete() {return player.g.points.gte(this.goal())},
 			unlockReq: 21,
 			enterable() {return challengeCompletions("sp", 21) >= 18 || hasChallenge("ec", 11)},
@@ -127,10 +138,20 @@ addLayer("ec", {
 			completionLimit() {
 				let limit = 10;
 				if (hasMilestone("d", 31)) limit += milestoneEffect("d", 31);
+				if (getGridData("w", 202)) limit += gridEffect("w", 202);
+				if (getGridData("w", 203)) limit += gridEffect("w", 203);
+				if (player.ec.activeChallenge == 11 && typeof tmp.ec.challenges[11].completionLimit == "number" && limit > tmp.ec.challenges[11].completionLimit) {
+					Vue.set(player.ec, "activeChallenge", null);
+					this.onExit();
+				};
 				return limit;
 			},
-			onEnter() {doReset("sp", true, true); player.ec.chronoTime = Date.now() / 500 - player.ec.chronoTime},
-			onExit() {doReset("sp", true, true); player.ec.chronoTime = Date.now() / 500 - player.ec.chronoTime},
+			onEnter() {
+				if (challengeCompletions("ec", 11) >= 12 && tmp.ec.challenges[11].completionLimit > 12) doReset("ec", true, true);
+				else doReset("sp", true, true);
+				player.ec.chronoTime = Date.now() / 500 - player.ec.chronoTime;
+			},
+			onExit() {this.onEnter()},
 			penalty() {return 10 ** (Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1) ** 2 + 1)},
 		},
 	},

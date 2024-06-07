@@ -23,6 +23,7 @@ addLayer("r", {
 	base() {
 		let base = 5;
 		if (challengeCompletions("ec", 11) >= 3 && challengeEffect("ec", 11)[2]) base -= challengeEffect("ec", 11)[2];
+		if (challengeCompletions("ec", 11) >= 12 && challengeEffect("ec", 11)[11]) base -= challengeEffect("ec", 11)[11];
 		return base;
 	},
 	exponent: 1,
@@ -32,23 +33,30 @@ addLayer("r", {
 	gainMult() {
 		let mult = new Decimal(1);
 		if (hasMilestone("d", 17)) mult = mult.div(milestoneEffect("d", 17));
+		if (tmp.ex.effect[5]) mult = mult.div(tmp.ex.effect[5]);
 		return mult;
 	},
 	effect() {
 		let eff = [
-			new Decimal(challengeCompletions("ec", 11) >= 9 ? 10 : 2).pow(player.r.points),
+			new Decimal(challengeCompletions("ec", 11) >= 9 ? 10 : 2).pow(player.r.points.pow(hasMilestone("r", 12) ? 1.5 : 1)),
 			new Decimal(5).pow(player.r.points),
 			player.r.points.div(10).add(1).min(2),
 			player.r.points.pow(2).mul(new Decimal(10).pow(player.r.points.sub(1))).mul((player.r.milestones.length + 1) ** (challengeCompletions("ec", 11) >= 9 ? 5 : 2)),
-			new Decimal(10).pow(player.r.change.pow(0.5)),
+			new Decimal(10).pow(player.r.change.pow(hasMilestone("r", 11) ? 0.25 : 0.5)),
 			(hasMilestone("r", 0) ? player.r.change.add(1).pow(hasMilestone("r", 6) ? 1.28 : 0.5).log10().add(1) : new Decimal(1)),
-			(hasMilestone("r", 1) ? player.r.change.add(1).pow(hasMilestone("r", 7) ? 0.122 : 0.05).log10().add(1) : new Decimal(1)),
+			(hasMilestone("r", 1) ? player.r.change.add(1).pow(hasMilestone("r", 11) ? 0.1454 : hasMilestone("r", 7) ? 0.122 : 0.05).log10().add(1) : new Decimal(1)),
 			(hasMilestone("r", 4) ? new Decimal(222).pow(player.r.change.pow(0.2)) : new Decimal(1)),
 		];
 		if (hasMilestone("r", 5)) eff[3] = eff[3].mul(milestoneEffect("r", 5));
-		if (eff[4].gte("1e5555")) eff[4] = eff[4].div("1e5555").pow(0.1).mul("1e5555");
-		if (eff[4].gte("1e200000")) eff[4] = eff[4].div("1e200000").log10().pow(2000).mul("1e200000");
+		if (hasMilestone("r", 10)) eff[3] = eff[3].mul(milestoneEffect("r", 10));
+		if (hasMilestone("r", 11)) {
+			if (eff[4].gte("1e10000000")) eff[4] = eff[4].div("1e10000000").pow(0.1).mul("1e10000000");
+		} else {
+			if (eff[4].gte("1e5555")) eff[4] = eff[4].div("1e5555").pow(0.1).mul("1e5555");
+			if (eff[4].gte("1e200000")) eff[4] = eff[4].div("1e200000").log10().pow(2000).mul("1e200000");
+		};
 		if (eff[7].gte("1e3333")) eff[7] = eff[7].div("1e3333").pow(1/3).mul("1e3333");
+		if (eff[7].gte("1e100000")) eff[7] = eff[7].div("1e100000").pow(0.1).mul("1e100000");
 		return eff;
 	},
 	effectDescription() {return "which are dividing the species requirement by /" + format(tmp.r.effect[0]) + ", dividing conscious being requirement by /" + format(tmp.r.effect[1]) + ", multiplying the completion limit of the 10th retrogression by " + format(tmp.r.effect[2]) + "x (" + (tmp.r.effect[2].gte(2) ? "maxed" : "rounded down") + "), and generating " + format(tmp.r.effect[3]) + " change per second (with a limit of " + format(getMaxChange()) + ")"},
@@ -106,7 +114,7 @@ addLayer("r", {
 			requirement: 100000000,
 			requirementDescription: "3rd innovation",
 			popupTitle: "Innovation Acquired!",
-			effectDescription() {return "buying CRA, FER, ANA, and SOV no longer spends any<br>acclimation points, but their costs are multipled by 50<br>Req: " + formatWhole(this.requirement) + " change"},
+			effectDescription() {return "make buying CRA, FER, ANA, and SOV not spend any<br>acclimation points, but multiply their costs by 50<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
 			unlocked() {return hasMilestone("r", this.id - 1)},
 		},
@@ -114,7 +122,7 @@ addLayer("r", {
 			requirement: 5e9,
 			requirementDescription: "4th innovation",
 			popupTitle: "Innovation Acquired!",
-			effectDescription() {return "population amount is always set to its maximum<br>Req: " + formatWhole(this.requirement) + " change"},
+			effectDescription() {return "make population amount always set to its maximum<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
 			unlocked() {return hasMilestone("r", this.id - 1)},
 		},
@@ -131,7 +139,7 @@ addLayer("r", {
 			requirementDescription: "6th innovation",
 			popupTitle: "Innovation Acquired!",
 			effect() {return player.ec.points.add(1)},
-			effectDescription() {return "change gain and limit is multiplied based on ecosystems<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " change"},
+			effectDescription() {return "multiply change gain and limit based on ecosystems<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
 			unlocked() {return hasMilestone("r", this.id - 1)},
 		},
@@ -139,7 +147,7 @@ addLayer("r", {
 			requirement: 1e16,
 			requirementDescription: "7th innovation",
 			popupTitle: "Innovation Acquired!",
-			effectDescription() {return "the second change effect is improved<br>Req: " + formatWhole(this.requirement) + " change"},
+			effectDescription() {return "improve the second change effect<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
 			unlocked() {return hasMilestone("r", this.id - 1)},
 		},
@@ -147,7 +155,7 @@ addLayer("r", {
 			requirement: 5e17,
 			requirementDescription: "8th innovation",
 			popupTitle: "Innovation Acquired!",
-			effectDescription() {return "the third change effect is improved<br>Req: " + formatWhole(this.requirement) + " change"},
+			effectDescription() {return "improve the third change effect<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
 			unlocked() {return hasMilestone("r", this.id - 1)},
 		},
@@ -163,7 +171,32 @@ addLayer("r", {
 			requirement: 1e22,
 			requirementDescription: "10th innovation",
 			popupTitle: "Innovation Acquired!",
-			effectDescription() {return "unlock the 4th influence generator<br>Req: " + formatWhole(this.requirement) + " change"},
+			effectDescription() {return "unlock another influence generator<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		10: {
+			requirement: 1e25,
+			requirementDescription: "11th innovation",
+			popupTitle: "Innovation Acquired!",
+			effect() {return player.ex.points.add(1).mul(player.w.points.add(1))},
+			effectDescription() {return "multiply change gain and limit based on expansion points and wars<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		11: {
+			requirement: 5e27,
+			requirementDescription: "12th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "improve the first and third change effects<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		12: {
+			requirement: 1e31,
+			requirementDescription: "13th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "improve the first revolution effect<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
 			unlocked() {return hasMilestone("r", this.id - 1)},
 		},
