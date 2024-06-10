@@ -126,7 +126,7 @@ function updateMouse(event) {
 function getOpacity(particle) {
 	if (particle.time < particle.fadeOutTime && particle.fadeOutTime)
 		return particle.time / particle.fadeOutTime;
-	if (particle.fadeInTimer > 0) 
+	if (particle.fadeInTimer > 0)
 		return 1 - (particle.fadeInTimer / particle.fadeInTime);
 	return 1
 };

@@ -188,7 +188,7 @@ function setupLayer(layer) {
 	let position = (layers[layer].position !== undefined ? layers[layer].position : layer);
 	if (!isNaN(displayRow) || displayRow < 0) TREE_LAYERS[displayRow].push({layer: layer, position: position});
 	else OTHER_LAYERS[displayRow].push({layer: layer, position: position});
-	if (maxRow < layers[layer].displayRow) maxRow = layers[layer].displayRow;  
+	if (maxRow < layers[layer].displayRow) maxRow = layers[layer].displayRow;
 };
 
 function addLayer(layerName, layerData, tabLayers = null) { // Call this to add layers from a different file!

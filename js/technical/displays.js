@@ -109,25 +109,22 @@ function constructBarStyle(layer, id) {
 };
 
 function constructTabFormat(layer, id, family) {
-	let tabTemp, tabLayer, tabFunc, location, key;
+	let tabTemp, tabLayer, tabFunc, location;
 	if (id === undefined) {
 		tabTemp = tmp[layer].tabFormat;
 		tabLayer = layers[layer].tabFormat;
 		tabFunc = funcs[layer].tabFormat;
 		location = tmp[layer];
-		key = "tabFormat";
 	} else if (family === undefined) {
 		tabTemp = tmp[layer].tabFormat[id].content;
 		tabLayer = layers[layer].tabFormat[id].content;
 		tabFunc = funcs[layer].tabFormat[id].content;
 		location = tmp[layer].tabFormat[id];
-		key = "content";
 	} else {
 		tabTemp = tmp[layer].microtabs[family][id].content;
 		tabLayer = layers[layer].microtabs[family][id].content;
 		tabFunc = funcs[layer].microtabs[family][id].content;
 		location = tmp[layer].microtabs[family][id];
-		key = "tabFormat";
 	};
 	if (typeof tabLayer == "function") return tabLayer.bind(location)();
 	updateTempData(tabLayer, tabTemp, tabFunc, {layer, id, family});

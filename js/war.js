@@ -28,7 +28,7 @@ addLayer("w", {
 	name: "War",
 	symbol: "W",
 	position: 3,
-	branches: ["d"],
+	branches: [["cb", 2], "d"],
 	startData() { return {
 		unlocked: false,
 		points: new Decimal(0),
@@ -134,4 +134,14 @@ addLayer("w", {
 		},
 		respecText: "respec battles",
 	},
+});
+
+addNode("blank", {
+	symbol: "L",
+	branches: [["ec", 2], "r", "cb", "ex", ["w", 2]],
+	position: 1,
+	nodeStyle: {"margin": "0 10px 0 10px", "border-radius": "50%"},
+	tooltipLocked() {return "Reach 250,000 conscious beings to unlock (You have " + formatWhole(player.cb.points) + " conscious beings)"},
+	row: 5,
+	layerShown() {return hasMilestone("d", 39)},
 });

@@ -107,7 +107,7 @@ function clickClickable(layer, id) {
 };
 
 function clickGrid(layer, id) {
-	if (!player[layer].unlocked  || tmp[layer].deactivated) return;
+	if (!player[layer].unlocked || tmp[layer].deactivated) return;
 	if (!run(layers[layer].grid.getUnlocked, layers[layer].grid, id)) return;
 	if (!gridRun(layer, "getCanClick", player[layer].grid[id], id)) return;
 	gridRun(layer, "onClick", player[layer].grid[id], id);
@@ -194,12 +194,12 @@ function notifyLayer(name) {
 };
 
 function subtabShouldNotify(layer, family, id) {
-    let subtab = {};
-    if (family == "mainTabs") subtab = tmp[layer].tabFormat[id];
-    else subtab = tmp[layer].microtabs[family][id];
+	let subtab = {};
+	if (family == "mainTabs") subtab = tmp[layer].tabFormat[id];
+	else subtab = tmp[layer].microtabs[family][id];
 	if (!subtab.unlocked) return false;
-    if (subtab.embedLayer) return tmp[subtab.embedLayer].notify;
-    else return subtab.shouldNotify;
+	if (subtab.embedLayer) return tmp[subtab.embedLayer].notify;
+	else return subtab.shouldNotify;
 };
 
 function subtabResetNotify(layer, family, id) {
@@ -325,7 +325,7 @@ function toValue(value, oldValue) {
 		if (checkDecimalNaN(value)) return decimalZero;
 		return value;
 	};
-	if (!isNaN(oldValue)) 
+	if (!isNaN(oldValue))
 		return parseFloat(value) || 0;
 	return value;
 };

@@ -2,7 +2,7 @@ addLayer("ec", {
 	name: "Ecosystem",
 	symbol: "EC",
 	position: 0,
-	branches: ["sp"],
+	branches: ["sp", ["cb", 2]],
 	startData() { return {
 		unlocked: false,
 		points: new Decimal(0),

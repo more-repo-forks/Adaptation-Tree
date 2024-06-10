@@ -134,7 +134,7 @@ function loadVue() {
 			stop() {
 				clearInterval(this.interval);
 				this.interval = false;
-			  	this.time = 0;
+				this.time = 0;
 			},
 		},
 	});
@@ -166,7 +166,7 @@ function loadVue() {
 			stop() {
 				clearInterval(this.interval);
 				this.interval = false;
-			  	this.time = 0;
+				this.time = 0;
 			},
 		},
 	});
@@ -205,7 +205,7 @@ function loadVue() {
 			stop() {
 				clearInterval(this.interval);
 				this.interval = false;
-			  	this.time = 0;
+				this.time = 0;
 			},
 		},
 	});
