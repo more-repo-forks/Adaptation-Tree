@@ -25,6 +25,7 @@ addLayer("sp", {
 		if (hasMilestone("d", 14)) base -= milestoneEffect("d", 14);
 		if (hasMilestone("d", 23)) base -= milestoneEffect("d", 23);
 		if (getBuyableAmount("d", 12).gte(tmp.d.buyables[12].purchaseLimit)) base -= tmp.d.buyables[12].completionEffect;
+		if (getGridData("w", 404)) base -= gridEffect("w", 404);
 		return base;
 	},
 	exponent: 1,

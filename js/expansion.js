@@ -16,7 +16,7 @@ function getGeneratorCost(id) {
 	return amt.pow_base(GENERATOR_COST_BASES[id - 11]).round();
 };
 
-const GENERATOR_IMPROVEMENTS = ["(b + x) * b<sup>2</sup>", "(b + x) * b<sup>3</sup> * 2<sup>b</sup>", "(b + x) * b<sup>5</sup> * 3<sup>b</sup>", "(10b + x) * b<sup>12</sup> * 5<sup>b</sup>", "(b * EX + x) * b<sup>EX</sup> * 10<sup>b</sup>"];
+const GENERATOR_IMPROVEMENTS = ["(b + x) * b<sup>2</sup>", "(b + x) * b<sup>3</sup> * 2<sup>b</sup>", "(b + x) * b<sup>5</sup> * 3<sup>b</sup>", "(10b + x) * b<sup>12</sup> * 5<sup>b</sup>", "(b * EX + x) * b<sup>EX</sup> * 10<sup>b</sup>", "(b + x) * b<sup>55</sup> * EX<sup>b</sup>", "(b + x) * b<sup>EX</sup> * EX<sup>6.6b</sup>"];
 
 function getGeneratorEffect(id) {
 	let level = getBuyableAmount("ex", 31).toNumber();
@@ -28,6 +28,8 @@ function getGeneratorEffect(id) {
 		b.add(x).mul(b.pow(5)).mul(b.pow_base(3)),
 		b.mul(10).add(x).mul(b.pow(12)).mul(b.pow_base(5)),
 		b.mul(player.ex.points).add(x).mul(b.pow(player.ex.points)).mul(b.pow_base(10)),
+		b.add(x).mul(b.pow(55)).mul(b.pow_base(player.ex.points)),
+		b.add(x).mul(b.pow(player.ex.points)).mul(b.mul(6.6).pow_base(player.ex.points)),
 	][level];
 	if (hasBuyable("ex", 21)) eff = eff.mul(buyableEffect("ex", 21));
 	if (tmp.l.effect[3]) eff = eff.mul(tmp.l.effect[3]);
@@ -76,7 +78,7 @@ addLayer("ex", {
 			new Decimal(10).pow(player.ex.points),
 			player.ex.points.mul(player.ex.points.gte(3) ? 300 : 100),
 			new Decimal(1e25).pow(player.ex.influence.pow(0.25)),
-			player.ex.influence.add(1).log10().add(1).pow(hasMilestone("d", 33) ? 4.255 : 1),
+			(hasMilestone("d", 40) ? player.ex.influence.add(1).pow(0.05) : player.ex.influence.add(1).log10().add(1).pow(hasMilestone("d", 33) ? 4.255 : 1)),
 			(hasMilestone("d", 34) ? player.ex.influence.add(1).log10().add(1).pow(hasMilestone("d", 35) ? 0.5 : 0.2) : new Decimal(1)),
 		];
 		if (eff[3].gte("1e11111")) eff[3] = eff[3].div("1e11111").pow(1/9).mul("1e11111");
@@ -90,6 +92,7 @@ addLayer("ex", {
 		if (eff[3].gte("1e200000")) eff[3] = eff[3].div("1e200000").pow(0.0055).mul("1e200000");
 		if (eff[3].gte("1e500000")) eff[3] = eff[3].div("1e500000").pow(0.01).mul("1e500000");
 		if (eff[3].gte("1e1000000")) eff[3] = eff[3].div("1e1000000").log10().pow(10000).mul("1e1000000");
+		if (eff[3].gte("1e5555555")) eff[3] = eff[3].div("1e5555555").pow(5/9).mul("1e5555555");
 		return eff;
 	},
 	effectDescription() {return "which are dividing the conscious being requirement by /" + format(tmp.ex.effect[0]) + ", dividing the domination requirement by /" + format(tmp.ex.effect[1]) + ", and giving " + formatWhole(tmp.ex.effect[2]) + " extra CRA, FER, ANA, and SOV"},
@@ -257,7 +260,7 @@ addLayer("ex", {
 			},
 		},
 		31: {
-			cost() {return new Decimal([7.7e77, 1.11e111, 2.02e202, "3.45e345"][getBuyableAmount(this.layer, this.id)] || Infinity)},
+			cost() {return new Decimal([7.7e77, 1.11e111, 2.02e202, "3.45e345", "6.6e660", "1.055e1055"][getBuyableAmount(this.layer, this.id)] || Infinity)},
 			effect() {return getBuyableAmount(this.layer, this.id).toNumber() + 1},
 			title: "Generator improvement",
 			display() {

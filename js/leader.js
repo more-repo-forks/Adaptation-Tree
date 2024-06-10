@@ -37,6 +37,7 @@ addLayer("l", {
 		"resource-display",
 		["display-text", () => {
 			let text = "After leading 1 time, more automation for domination is always unlocked,<br>species resets (that are not in hybridizations) no longer reset anything,<br>and you automatically claim potential species.<br><br>The above extra effects will not go away even if this layer is reset.";
+			if (player.l.points.gte(1)) text += "<br><br>After leading 2 times, you keep retrogression completions on all resets,<br>domination resets (without respec) no longer reset anything,<br>and you automatically claim potential domination points.";
 			return text;
 		}],
 		"blank",

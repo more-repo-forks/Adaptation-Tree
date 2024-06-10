@@ -48,6 +48,8 @@ addLayer("d", {
 	},
 	effect() {return player.points.add(1).pow(0.025)},
 	effectDescription() {return "of which " + formatWhole(player[this.layer].points.sub(player[this.layer].spent)) + " are unspent"},
+	resetsNothing() {return player.l.points.gte(2)},
+	autoPrestige() {return player.l.points.gte(2)},
 	tabFormat() {
 		// top text
 		let topText = "<div style='height: 25px; padding-top: ";
@@ -686,6 +688,14 @@ addLayer("d", {
 			effectDescription() {return "divide conscious being requirement based on domination points<br>and unlock something new..." + (player.l.unlocked ? " (already unlocked)" : "") + "<br>Effect: /" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("d", this.id - 1) || player.l.unlocked},
+		},
+		40: {
+			requirement: 958,
+			requirementDescription: "Influence enhancement IV",
+			popupTitle: "Enhancement Acquired!",
+			effectDescription() {return "improve influence's second effect<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
 		},
 	},
 });

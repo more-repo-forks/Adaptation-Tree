@@ -18,7 +18,7 @@ const warUpgrades = [
 		{title: "Conflict Escalation", desc: "decreases war requirement base by 0.025", effect: 0.025, cost: 25},
 		{title: "Battle Domination", desc: "decreases domination requirement base by 0.313", effect: 0.313, cost: 30},
 		{title: "Revolutionary Armaments", desc: "decreases revolution requirement base by 0.1", effect: 0.1, cost: 40},
-		{title: "???", desc: "coming soon!", cost: 55},
+		{title: "New Frontiers", desc: "decreases species requirement base by 0.075", effect: 0.075, cost: 55},
 	],
 ];
 
@@ -57,7 +57,12 @@ addLayer("w", {
 		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
 		return mult;
 	},
-	effect() {return player.w.points.pow(player.ex.points.gte(9) ? 1.6 : 1.5).round()},
+	effect() {
+		let exp = 1.5;
+		if (player.ex.points.gte(9)) exp += 0.1;
+		if (hasMilestone("r", 16)) exp += 0.15;
+		return player.w.points.pow(exp).round();
+	},
 	effectDescription() {return "which are giving " + formatWhole(tmp.w.effect) + " battles, of which " + formatWhole(tmp.w.effect.sub(player.w.spent)) + " are unspent"},
 	tabFormat: [
 		"main-display",
