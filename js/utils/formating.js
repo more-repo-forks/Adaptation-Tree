@@ -27,20 +27,10 @@ function regularFormat(num, precision, small) {
 	return num.toStringWithDecimalPlaces(precision);
 };
 
-function fixValue(x, y = 0) {
-	return x || new Decimal(y);
-};
-
-function sumValues(x) {
-	x = Object.values(x);
-	if (!x[0]) return decimalZero;
-	return x.reduce((a, b) => Decimal.add(a, b));
-};
-
 function format(decimal, precision = 2, small = true) {
 	if (options.extendplaces && precision > 0) precision++;
 	decimal = new Decimal(decimal);
-	if (isNaN(decimal.sign) || isNaN(decimal.layer) || isNaN(decimal.mag)) {
+	if (Decimal.isNaN(decimal)) {
 		player.hasNaN = true;
 		return "NaN";
 	};
@@ -58,18 +48,14 @@ function format(decimal, precision = 2, small = true) {
 	if (decimal.gte(0.0001) || !small) return regularFormat(decimal, precision, small);
 	if (decimal.eq(0)) return (0).toFixed(precision);
 	decimal = invertOOM(decimal);
-	let val = "";
-	if (decimal.lt("1e1000")) {
-		val = exponentialFormat(decimal, precision);
-		return val.replace(/([^(?:e|F)]*)$/, '-$1');
-	};
+	if (decimal.lt("1e1000")) return exponentialFormat(decimal, precision).replace(/([^(?:e|F)]*)$/, '-$1');
 	return format(decimal, precision) + "&#8315;&#185;";
 };
 
 function formatWhole(decimal) {
 	decimal = new Decimal(decimal);
 	if (decimal.gte(1e9)) return format(decimal, 2);
-	if (decimal.lte(0.99) && !decimal.eq(0)) return format(decimal, 2);
+	if (decimal.lte(options.extendplaces ? 0.999 : 0.99) && !decimal.eq(0)) return format(decimal, 2);
 	return format(decimal, 0);
 };
 
@@ -82,15 +68,9 @@ function formatTime(s) {
 };
 
 function toPlaces(x, precision, maxAccepted) {
-	x = new Decimal(x);
-	let result = x.toStringWithDecimalPlaces(precision);
+	let result = new Decimal(x).toStringWithDecimalPlaces(precision);
 	if (new Decimal(result).gte(maxAccepted)) result = new Decimal(maxAccepted - Math.pow(0.1, precision)).toStringWithDecimalPlaces(precision);
 	return result;
-};
-
-// Will also display very small numbers
-function formatSmall(x, precision = 2) {
-	return format(x, precision, true);
 };
 
 function invertOOM(x) {

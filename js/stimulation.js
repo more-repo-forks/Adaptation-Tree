@@ -81,15 +81,15 @@ addLayer("s", {
 		else if (layers[resettingLayer].row == 2 && player.e.points.gte(20)) keep.push("upgrades");
 		else if (resettingLayer == "g" && ((hasMilestone("g", 8) && hasChallenge("e", 11)) || inChallenge("e", 21))) keep.push("upgrades");
 		if (layers[resettingLayer].row > this.row) {
-			let keepUpg = [];
-			if (resettingLayer == "g" && ((hasMilestone("g", 8) && player.e.unlocked) || (!hasMilestone("g", 8) && hasChallenge("e", 11)))) {
-				for (let index = 0; index < player.s.upgrades.length; index++) {
-					if (player.s.upgrades[index] < 40) keepUpg.push(player.s.upgrades[index]);
-				};
-			};
-			layerDataReset("s", keep);
-			if (!keep.includes("upgrades")) {
+			if (!keep.includes("upgrades") && resettingLayer == "g" && ((hasMilestone("g", 8) && player.e.unlocked) || hasChallenge("e", 11))) {
+				let keepUpg = [];
+				if (resettingLayer == "g" && ((hasMilestone("g", 8) && player.e.unlocked) || (!hasMilestone("g", 8) && hasChallenge("e", 11))))
+					for (let index = 0; index < player.s.upgrades.length; index++)
+						if (player.s.upgrades[index] < 40) keepUpg.push(player.s.upgrades[index]);
+				layerDataReset("s", keep);
 				player.s.upgrades = keepUpg;
+			} else {
+				layerDataReset("s", keep);
 			};
 		};
 	},

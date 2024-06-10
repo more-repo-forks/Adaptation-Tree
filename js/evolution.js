@@ -484,11 +484,9 @@ addLayer("e", {
 			},
 			rewardEffect() {
 				let retrogressions = 0;
-				for (const id in player.e.challenges) {
-					if (Object.hasOwnProperty.call(player.e.challenges, id)) {
+				for (const id in player.e.challenges)
+					if (Object.hasOwnProperty.call(player.e.challenges, id))
 						retrogressions += player.e.challenges[id];
-					};
-				};
 				let base = new Decimal(1.1);
 				if (hasMilestone("a", 16)) base = base.add(milestoneEffect("a", 16));
 				let mult = new Decimal(1);
@@ -511,11 +509,9 @@ addLayer("e", {
 			},
 			rewardEffect() {
 				let retrogressions = 0;
-				for (const id in player.e.challenges) {
-					if (Object.hasOwnProperty.call(player.e.challenges, id)) {
+				for (const id in player.e.challenges)
+					if (Object.hasOwnProperty.call(player.e.challenges, id))
 						retrogressions += player.e.challenges[id];
-					};
-				};
 				let exp = new Decimal(0.25);
 				if (hasMilestone("a", 21)) exp = exp.add(milestoneEffect("a", 21));
 				let mult = new Decimal(1);

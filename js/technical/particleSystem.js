@@ -18,9 +18,7 @@ function makeParticles(data, amount = 1, type = "normal") {
 					particle[thing] = run(data[thing], data, x);
 			};
 		};
-		if (data.dir === undefined) {
-			particle.dir = particle.angle;
-		};
+		if (data.dir === undefined) particle.dir = particle.angle;
 		particle.dir = particle.dir + (particle.spread * (x - amount / 2 + 0.5));
 		if (particle.offset) {
 			particle.x += particle.offset * sin(particle.dir);
@@ -153,11 +151,9 @@ function constructParticleStyle(particle) {
 
 function clearParticles(check) {
 	if (!check) check = true;
-	for (p in particles) {
-		if (run(check, particles[p], particles[p])) {
+	for (p in particles)
+		if (run(check, particles[p], particles[p]))
 			Vue.delete(particles, p);
-		};
-	};
 };
 
 // Trig with degrees

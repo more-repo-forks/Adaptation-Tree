@@ -124,11 +124,9 @@ addLayer("w", {
 	},
 	buyables: {
 		respec() {
-			for (const key in player.w.grid) {
-				if (Object.hasOwnProperty.call(player.w.grid, key)) {
+			for (const key in player.w.grid)
+				if (Object.hasOwnProperty.call(player.w.grid, key))
 					player.w.grid[key] = tmp.w.grid.getStartData;
-				};
-			};
 			player.w.spent = new Decimal(0);
 			doReset("w", true, true);
 		},

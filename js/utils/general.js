@@ -26,14 +26,12 @@ function canBuyBuyable(layer, id) {
 function canAffordPurchase(layer, thing, cost) {
 	if (thing.currencyInternalName) {
 		let name = thing.currencyInternalName;
-		if (thing.currencyLocation) {
+		if (thing.currencyLocation)
 			return thing.currencyLocation[name].gte(cost);
-		} else if (thing.currencyLayer) {
-			let lr = thing.currencyLayer;
-			return player[lr][name].gte(cost);
-		} else {
+		else if (thing.currencyLayer)
+			return player[thing.currencyLayer][name].gte(cost);
+		else
 			return player[name].gte(cost);
-		};
 	} else {
 		return player[layer].points.gte(cost);
 	};
@@ -75,33 +73,25 @@ function buyUpg(layer, id) {
 	};
 	player[layer].upgrades.push(id);
 	if (upg.onPurchase != undefined) run(upg.onPurchase, upg);
-	if (typeof player.adaptationTime != "undefined") {
+	if (typeof player.adaptationTime != "undefined")
 		player.adaptationTime = 0;
-	};
 	needCanvasUpdate = true;
 };
 
 function buyMaxBuyable(layer, id) {
-	if (!player[layer].unlocked) return;
-	if (!tmp[layer].buyables[id].unlocked) return;
-	if (!tmp[layer].buyables[id].canBuy) return;
-	if (!layers[layer].buyables[id].buyMax) return;
+	if (!player[layer].unlocked || tmp[layer].deactivated || !tmp[layer].buyables[id].unlocked || !tmp[layer].buyables[id].canBuy || !layers[layer].buyables[id].buyMax) return;
 	run(layers[layer].buyables[id].buyMax, layers[layer].buyables[id]);
 	updateBuyableTemp(layer);
 };
 
 function buyBuyable(layer, id) {
-	if (!player[layer].unlocked) return;
-	if (!tmp[layer].buyables[id].unlocked) return;
-	if (!tmp[layer].buyables[id].canBuy) return;
+	if (!player[layer].unlocked || tmp[layer].deactivated || !tmp[layer].buyables[id].unlocked || !tmp[layer].buyables[id].canBuy) return;
 	run(layers[layer].buyables[id].buy, layers[layer].buyables[id]);
 	updateBuyableTemp(layer);
 };
 
 function clickClickable(layer, id) {
-	if (!player[layer].unlocked || tmp[layer].deactivated) return;
-	if (!tmp[layer].clickables[id].unlocked) return;
-	if (!tmp[layer].clickables[id].canClick) return;
+	if (!player[layer].unlocked || tmp[layer].deactivated || !tmp[layer].clickables[id].unlocked || !tmp[layer].clickables[id].canClick) return;
 	run(layers[layer].clickables[id].onClick, layers[layer].clickables[id]);
 	updateClickableTemp(layer);
 };
@@ -117,10 +107,9 @@ function clickGrid(layer, id) {
 function inChallenge(layer, id) {
 	let challenge = player[layer].activeChallenge;
 	if (!challenge) return false;
-	id = toNumber(id);
 	if (challenge == id) return true;
 	if (layers[layer].challenges[challenge].countsAs)
-		return tmp[layer].challenges[challenge].countsAs.includes(id) || false;
+		return tmp[layer].challenges[challenge].countsAs.includes(+id) || false;
 	return false;
 };
 
@@ -130,10 +119,9 @@ let onTreeTab = true;
 
 function showTab(name) {
 	if (LAYERS.includes(name) && !layerunlocked(name)) return;
-	if (player.tab !== name) clearParticles(function(p) {return p.layer === player.tab});
-	if (tmp[name] && player.tab === name && isPlainObject(tmp[name].tabFormat)) {
+	if (player.tab !== name) clearParticles(p => p.layer === player.tab);
+	if (tmp[name] && player.tab === name && isPlainObject(tmp[name].tabFormat))
 		player.subtabs[name].mainTabs = Object.keys(layers[name].tabFormat)[0];
-	};
 	player.tab = name;
 	if (tmp[name] && (tmp[name].row !== "side") && (tmp[name].row !== "otherside")) player.lastSafeTab = name;
 	updateTabFormats();
@@ -144,7 +132,7 @@ function showTab(name) {
 function showNavTab(name, prev) {
 	console.log(prev);
 	if (LAYERS.includes(name) && !layerunlocked(name)) return;
-	if (player.navTab !== name) clearParticles(function(p) {return p.layer === player.navTab});
+	if (player.navTab !== name) clearParticles(p => p.layer === player.navTab);
 	if (tmp[name] && tmp[name].previousTab !== undefined) prev = tmp[name].previousTab;
 	console.log(name, prev);
 	if (name !== "none" && prev && !tmp[prev]?.leftTab === !tmp[name]?.leftTab) player[name].prevTab = prev;
@@ -172,16 +160,12 @@ function layOver(obj1, obj2) {
 
 function prestigeNotify(layer) {
 	if (layers[layer].prestigeNotify) return layers[layer].prestigeNotify();
-	if (isPlainObject(tmp[layer].tabFormat)) {
-		for (subtab in tmp[layer].tabFormat) {
+	if (isPlainObject(tmp[layer].tabFormat))
+		for (subtab in tmp[layer].tabFormat)
 			if (subtabResetNotify(layer, "mainTabs", subtab)) return true;
-		};
-	};
-	for (family in tmp[layer].microtabs) {
-		for (subtab in tmp[layer].microtabs[family]) {
+	for (family in tmp[layer].microtabs)
+		for (subtab in tmp[layer].microtabs[family])
 			if (subtabResetNotify(layer, family, subtab)) return true;
-		};
-	};
 	if (tmp[layer].autoPrestige || tmp[layer].passiveGeneration) return false;
 	else if (tmp[layer].type == "static") return tmp[layer].canReset;
 	else if (tmp[layer].type == "normal") return (tmp[layer].canReset && (tmp[layer].resetGain.gte(player[layer].points.div(10))));
@@ -217,11 +201,6 @@ function nodeShown(layer) {
 function layerunlocked(layer) {
 	if (tmp[layer] && tmp[layer].type == "none") return (player[layer].unlocked);
 	return LAYERS.includes(layer) && (player[layer].unlocked || (tmp[layer].canReset && tmp[layer].layerShown));
-};
-
-function keepGoing() {
-	player.keepGoing = true;
-	needCanvasUpdate = true;
 };
 
 function toNumber(x) {
@@ -271,17 +250,11 @@ function addTime(diff, layer) {
 		data = data[layer];
 		time = data.time;
 	};
-	// I am not that good to perfectly fix that leak. ~ DB Aarex
-	if (time + 0 !== time) {
-		console.log("Memory leak detected. Trying to fix...");
-		time = toNumber(time);
-		if (isNaN(time) || time == 0) {
-			console.log("Couldn't fix! Resetting...");
-			time = layer ? player.timePlayed : 0;
-			if (!layer) player.timePlayedReset = true;
-		};
+	if (typeof time != "number") {
+		time = (layer ? player.timePlayed : 0);
+		if (!layer) player.timePlayedReset = true;
 	};
-	time += toNumber(diff);
+	time += diff;
 	if (layer) data.time = time;
 	else data.timePlayed = time;
 };
@@ -313,7 +286,7 @@ document.onkeyup = e => {
 };
 
 function isPlainObject(obj) {
-	return (!!obj) && (obj.constructor === Object);
+	return !!obj && obj.constructor === Object;
 };
 
 document.title = modInfo.name;
@@ -359,9 +332,8 @@ function doPopup(type = "none", text = "This is a test popup.", title = "", time
 function adjustPopupTime(diff) {
 	for (popup in activePopups) {
 		activePopups[popup].time -= diff;
-		if (activePopups[popup].time < 0) {
+		if (activePopups[popup].time < 0)
 			activePopups.splice(popup, 1); // Remove popup when time hits 0
-		};
 	};
 };
 

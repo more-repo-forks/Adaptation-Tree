@@ -1,4 +1,3 @@
-// ************ Themes ************
 let themes = ["default", "aqua"];
 
 let colors = {

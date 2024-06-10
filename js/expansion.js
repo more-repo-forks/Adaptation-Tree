@@ -109,11 +109,9 @@ addLayer("ex", {
 		];
 		if (player.ex.influenceUnlocked) {
 			arr.push(["buyables", "2"], "blank");
-			for (const key in tmp.ex.buyables) {
-				if (Object.hasOwnProperty.call(tmp.ex.buyables, key) && key < 20 && tmp.ex.buyables[key].unlocked) {
+			for (const key in tmp.ex.buyables)
+				if (Object.hasOwnProperty.call(tmp.ex.buyables, key) && key < 20 && tmp.ex.buyables[key].unlocked)
 					arr.push(["buyable", +key], "blank");
-				};
-			};
 			arr.push(["buyables", "3"], "blank");
 		};
 		return arr;
@@ -142,11 +140,9 @@ addLayer("ex", {
 		};
 	},
 	shouldNotify() {
-		if (player.ex.influenceUnlocked) {
-			for (const key in tmp.ex.buyables) {
+		if (player.ex.influenceUnlocked)
+			for (const key in tmp.ex.buyables)
 				if (tmp.ex.buyables[key]?.unlocked && tmp.ex.buyables[key]?.canAfford) return true;
-			};
-		};
 	},
 	componentStyles: {
 		"prestige-button"() {if (tmp.ex.canReset && tmp.ex.nodeStyle) return tmp.ex.nodeStyle},
@@ -263,11 +259,9 @@ addLayer("ex", {
 			canAfford() {return player.ex.influenceUnlocked && player.ex.influence.gte(this.cost())},
 			buy() {
 				player.ex.influence = new Decimal(0);
-				for (const key in layers.ex.buyables) {
-					if (Object.hasOwnProperty.call(layers.ex.buyables, key) && key < 20) {
+				for (const key in layers.ex.buyables)
+					if (Object.hasOwnProperty.call(layers.ex.buyables, key) && key < 20)
 						player.ex.extra[key - 11] = new Decimal(0);
-					};
-				};
 				addBuyables(this.layer, this.id, 1);
 			},
 			style() {

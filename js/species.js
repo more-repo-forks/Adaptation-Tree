@@ -132,11 +132,9 @@ addLayer("sp", {
 			},
 			rewardEffect() {
 				let hybridizations = 0;
-				for (const id in player.sp.challenges) {
-					if (Object.hasOwnProperty.call(player.sp.challenges, id)) {
+				for (const id in player.sp.challenges)
+					if (Object.hasOwnProperty.call(player.sp.challenges, id))
 						hybridizations += player.sp.challenges[id];
-					};
-				};
 				return new Decimal(hybridizations).add(1).min(10);
 			},
 			goal: 1095,
@@ -220,11 +218,9 @@ addLayer("sp", {
 			},
 			rewardEffect() {
 				let hybridizations = 0;
-				for (const id in player.sp.challenges) {
-					if (Object.hasOwnProperty.call(player.sp.challenges, id)) {
+				for (const id in player.sp.challenges)
+					if (Object.hasOwnProperty.call(player.sp.challenges, id))
 						hybridizations += player.sp.challenges[id];
-					};
-				};
 				if (hasChallenge("sp", 18)) return new Decimal(hybridizations).div(100).add(1).pow(12.88888888888889);
 				return new Decimal(hybridizations).div(100).add(1).pow(6.555555555555555);
 			},

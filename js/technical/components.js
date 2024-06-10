@@ -1,11 +1,9 @@
 let app;
 
 function loadVue() {
-	for (const key in components) {
-		if (Object.hasOwnProperty.call(components, key)) {
-			components[key] = ("" + components[key]).replace(/[\n\t]/g, "");
-		};
-	};
+	for (const key in components)
+		if (Object.hasOwnProperty.call(components, key))
+			components[key] = ("" + components[key]).replace(/\n|\t/g, "");
 	// data = a function returning the content (actually HTML)
 	Vue.component("display-text", {
 		props: ["layer", "data"],
@@ -195,9 +193,8 @@ function loadVue() {
 			start() {
 				if (!this.interval && layers[this.layer].grid.onHold) {
 					this.interval = setInterval((function() {
-						if (this.time >= 5 && gridRun(this.layer, "getCanClick", player[this.layer].grid[this.data], this.data)) {
+						if (this.time >= 5 && gridRun(this.layer, "getCanClick", player[this.layer].grid[this.data], this.data))
 							gridRun(this.layer, "onHold", player[this.layer].grid[this.data], this.data);
-						};
 						this.time = this.time + 1;
 					}).bind(this), 50);
 				};
@@ -333,7 +330,6 @@ function loadVue() {
 			format,
 			formatWhole,
 			formatTime,
-			formatSmall,
 			getThemeName,
 			layerunlocked,
 			doReset,
@@ -341,7 +337,6 @@ function loadVue() {
 			buyUpgrade,
 			startChallenge,
 			milestoneShown,
-			keepGoing,
 			hasUpgrade,
 			hasMilestone,
 			hasAchievement,

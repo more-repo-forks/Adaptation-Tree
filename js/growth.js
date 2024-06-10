@@ -64,11 +64,8 @@ addLayer("g", {
 	tabFormat() {
 		// top text
 		let topText = "<div style='height: 25px; padding-top: ";
-		if (player.e.points.gte(30) || player.sp.unlocked) {
-			topText += "20px'>";
-		} else {
-			topText += "5px'>";
-		};
+		if (player.e.points.gte(30) || player.sp.unlocked) topText += "20px'>";
+		else topText += "5px'>";
 		if (getClickableState("g", 14)) {
 			topText += "Only extra levels";
 		} else if (getClickableState("g", 11)) {
@@ -81,21 +78,15 @@ addLayer("g", {
 		// stat svg display
 		const reduction = (+getClickableState("g", 11)) * 50;
 		let max = new Decimal(1);
-		if (getClickableState("g", 13)) {
-			max = max.add(getBuyableAmount("g", 11).max(getBuyableAmount("g", 12)).max(getBuyableAmount("g", 13)).max(getBuyableAmount("g", 14))).sub(reduction);
-		} else if (getClickableState("g", 14)) {
-			max = max.add(tmp.g.buyables[11].extra.max(tmp.g.buyables[12].extra).max(tmp.g.buyables[13].extra).max(tmp.g.buyables[14].extra));
-		} else {
-			max = max.add(getBuyableAmount("g", 11).add(tmp.g.buyables[11].extra).max(getBuyableAmount("g", 12).add(tmp.g.buyables[12].extra)).max(getBuyableAmount("g", 13).add(tmp.g.buyables[13].extra)).max(getBuyableAmount("g", 14).add(tmp.g.buyables[14].extra))).sub(reduction);
-		};
+		if (getClickableState("g", 13)) max = max.add(getBuyableAmount("g", 11).max(getBuyableAmount("g", 12)).max(getBuyableAmount("g", 13)).max(getBuyableAmount("g", 14))).sub(reduction);
+		else if (getClickableState("g", 14)) max = max.add(tmp.g.buyables[11].extra.max(tmp.g.buyables[12].extra).max(tmp.g.buyables[13].extra).max(tmp.g.buyables[14].extra));
+		else max = max.add(getBuyableAmount("g", 11).add(tmp.g.buyables[11].extra).max(getBuyableAmount("g", 12).add(tmp.g.buyables[12].extra)).max(getBuyableAmount("g", 13).add(tmp.g.buyables[13].extra)).max(getBuyableAmount("g", 14).add(tmp.g.buyables[14].extra))).sub(reduction);
 		if (max.lt(2)) max = new Decimal(2);
 		let statText = "<svg viewBox='0 0 100 100' style='width: 200px; height: 200px'>";
 		statText += "<line x1='6' y1='6' x2='94' y2='94' fill='none' stroke='#404040'/>";
 		statText += "<line x1='6' y1='94' x2='94' y2='6' fill='none' stroke='#404040'/>";
 		let rectMax = max.toNumber();
-		if (rectMax >= 16) {
-			rectMax = max.div(new Decimal(2).pow(max.log2().sub(3).floor())).toNumber();
-		};
+		if (rectMax >= 16) rectMax = max.div(new Decimal(2).pow(max.log2().sub(3).floor())).toNumber();
 		for (let index = 0; index < rectMax; index++) {
 			let low = Math.min((index / rectMax * 45) + 5.5, 50);
 			let high = Math.max(((rectMax - index) / rectMax * 90) - 1, 0);
@@ -173,11 +164,9 @@ addLayer("g", {
 				let keepMileNum = 0;
 				if (resettingLayer == "e" && hasChallenge("e", 12)) keepMileNum = 16;
 				if (layers[resettingLayer].row == 2 && player.e.points.gte(36)) keepMileNum = 41;
-				if (keepMileNum > 0) {
-					for (let index = 0; index < player.g.milestones.length; index++) {
+				if (keepMileNum > 0)
+					for (let index = 0; index < player.g.milestones.length; index++)
 						if (player.g.milestones[index] < keepMileNum) keepMile.push(player.g.milestones[index]);
-					};
-				};
 				layerDataReset("g", keep);
 				player.g.milestones = keepMile;
 			};

@@ -50,35 +50,22 @@ addLayer("d", {
 	tabFormat() {
 		// top text
 		let topText = "<div style='height: 25px; padding-top: ";
-		if (hasMilestone("r", 14)) {
-			topText += "20px'>";
-		} else {
-			topText += "5px'>";
-		};
-		if (getClickableState("d", 14)) {
-			topText += "Only extra levels";
-		} else if (getClickableState("d", 13)) {
-			topText += "Only base levels";
-		} else {
-			topText += "All levels";
-		};
+		if (hasMilestone("r", 14)) topText += "20px'>";
+		else topText += "5px'>";
+		if (getClickableState("d", 14)) topText += "Only extra levels";
+		else if (getClickableState("d", 13)) topText += "Only base levels";
+		else topText += "All levels";
 		// stat svg display
 		let max = 1;
-		if (getClickableState("d", 13)) {
-			max += getBuyableAmount("d", 11).max(getBuyableAmount("d", 12)).max(getBuyableAmount("d", 13)).max(getBuyableAmount("d", 14)).toNumber();
-		} else if (getClickableState("d", 14)) {
-			max += tmp.d.buyables[11].extra.max(tmp.d.buyables[12].extra).max(tmp.d.buyables[13].extra).max(tmp.d.buyables[14].extra).toNumber();
-		} else {
-			max += getBuyableAmount("d", 11).add(tmp.d.buyables[11].extra).max(getBuyableAmount("d", 12).add(tmp.d.buyables[12].extra)).max(getBuyableAmount("d", 13).add(tmp.d.buyables[13].extra)).max(getBuyableAmount("d", 14).add(tmp.d.buyables[14].extra)).toNumber();
-		};
+		if (getClickableState("d", 13)) max += getBuyableAmount("d", 11).max(getBuyableAmount("d", 12)).max(getBuyableAmount("d", 13)).max(getBuyableAmount("d", 14)).toNumber();
+		else if (getClickableState("d", 14)) max += tmp.d.buyables[11].extra.max(tmp.d.buyables[12].extra).max(tmp.d.buyables[13].extra).max(tmp.d.buyables[14].extra).toNumber();
+		else max += getBuyableAmount("d", 11).add(tmp.d.buyables[11].extra).max(getBuyableAmount("d", 12).add(tmp.d.buyables[12].extra)).max(getBuyableAmount("d", 13).add(tmp.d.buyables[13].extra)).max(getBuyableAmount("d", 14).add(tmp.d.buyables[14].extra)).toNumber();
 		if (max < 2) max = 2;
 		let statText = "<svg viewBox='0 0 100 100' style='width: 200px; height: 200px'>";
 		statText += "<line x1='6' y1='6' x2='94' y2='94' fill='none' stroke='#404040'/>";
 		statText += "<line x1='6' y1='94' x2='94' y2='6' fill='none' stroke='#404040'/>";
 		let rectMax = max;
-		if (rectMax >= 16) {
-			rectMax = max / (2 ** Math.floor(Math.log2(max) - 3));
-		};
+		if (rectMax >= 16) rectMax = max / (2 ** Math.floor(Math.log2(max) - 3));
 		for (let index = 0; index < rectMax; index++) {
 			let low = Math.min((index / rectMax * 45) + 5.5, 50);
 			let high = Math.max(((rectMax - index) / rectMax * 90) - 1, 0);
@@ -289,11 +276,8 @@ addLayer("d", {
 			effect() {return getBuyableAmount(this.layer, this.id).add(this.extra()).pow_base(this.effectBase())},
 			completionEffect() {
 				let maxed = 0;
-				for (const key in player.d.buyables) {
-					if (Object.hasOwnProperty.call(player.d.buyables, key) && player.d.buyables[key] >= tmp.d.buyables[key].purchaseLimit) {
-						maxed++;
-					};
-				};
+				for (const key in player.d.buyables)
+					if (Object.hasOwnProperty.call(player.d.buyables, key) && player.d.buyables[key] >= tmp.d.buyables[key].purchaseLimit) maxed++;
 				let base = new Decimal(1.88);
 				if (hasMilestone("d", 32)) base = base.add(milestoneEffect("d", 32));
 				return base.pow(maxed);

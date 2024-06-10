@@ -40,21 +40,16 @@ function drawTree() {
 		drawComponentBranches(layer, tmp[layer].buyables, "buyable-");
 		drawComponentBranches(layer, tmp[layer].clickables, "clickable-");
 	};
-	for (let priority = 0; priority < queuedBranches.length; priority++) {
-		for (let index = 0; index < queuedBranches[priority].length; index++) {
+	for (let priority = 0; priority < queuedBranches.length; priority++)
+		for (let index = 0; index < queuedBranches[priority].length; index++)
 			drawTreeBranch(...queuedBranches[priority][index]);
-		};
-	};
 };
 
 function drawComponentBranches(layer, data, prefix) {
-	for (id in data) {
-		if (data[id].branches) {
-			for (branch in data[id].branches) {
+	for (id in data)
+		if (data[id].branches)
+			for (branch in data[id].branches)
 				drawTreeBranch(id, data[id].branches[branch], prefix + layer + "-");
-			};
-		};
-	};
 };
 
 function drawTreeBranch(num1, data, prefix) { // taken from Antimatter Dimensions & adjusted slightly

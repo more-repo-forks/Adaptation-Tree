@@ -3,7 +3,6 @@ let layers = {};
 const decimalZero = new Decimal(0);
 const decimalOne = new Decimal(1);
 const decimalNaN = new Decimal(NaN);
-
 const defaultGlow = "#ff0000";
 
 function layerShown(layer) {
@@ -39,9 +38,8 @@ function updateLayers() {
 	ROW_LAYERS = {};
 	TREE_LAYERS = {};
 	OTHER_LAYERS = {};
-	for (layer in layers) {
+	for (layer in layers)
 		setupLayer(layer);
-	};
 	for (row in OTHER_LAYERS) {
 		OTHER_LAYERS[row].sort((a, b) => a.position > b.position ? 1 : -1);
 		for (layer in OTHER_LAYERS[row])
@@ -52,11 +50,10 @@ function updateLayers() {
 		for (layer in TREE_LAYERS[row])
 			TREE_LAYERS[row][layer] = TREE_LAYERS[row][layer].layer;
 	};
-	let treeLayers2 = [];
-	for (x = 0; x < maxRow + 1; x++) {
-		if (TREE_LAYERS[x]) treeLayers2.push(TREE_LAYERS[x]);
-	};
-	TREE_LAYERS = treeLayers2;
+	let treeLayers = [];
+	for (x = 0; x < maxRow + 1; x++)
+		if (TREE_LAYERS[x]) treeLayers.push(TREE_LAYERS[x]);
+	TREE_LAYERS = treeLayers;
 	updateHotkeys();
 };
 

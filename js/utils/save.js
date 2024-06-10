@@ -1,4 +1,3 @@
-// ************ Save stuff ************
 function save(force) {
 	NaNcheck(player);
 	if (NaNalert && !force) return;
@@ -6,23 +5,21 @@ function save(force) {
 	localStorage.setItem(modInfo.id + "_options", btoa(unescape(encodeURIComponent(JSON.stringify(options)))));
 };
 
-function startPlayerBase() {
-	return {
-		tab: layoutInfo.startTab,
-		navTab: (layoutInfo.showTree ? layoutInfo.startNavTab : "none"),
-		time: Date.now(),
-		notify: {},
-		versionType: modInfo.id,
-		version: VERSION.num,
-		beta: VERSION.beta,
-		timePlayed: 0,
-		keepGoing: false,
-		hasNaN: false,
-		points: modInfo.initialStartPoints,
-		subtabs: {},
-		lastSafeTab: (readData(layoutInfo.showTree) ? "none" : layoutInfo.startTab),
-	};
-};
+function startPlayerBase() { return {
+	tab: layoutInfo.startTab,
+	navTab: (layoutInfo.showTree ? layoutInfo.startNavTab : "none"),
+	time: Date.now(),
+	notify: {},
+	versionType: modInfo.id,
+	version: VERSION.num,
+	beta: VERSION.beta,
+	timePlayed: 0,
+	keepGoing: false,
+	hasNaN: false,
+	points: modInfo.initialStartPoints,
+	subtabs: {},
+	lastSafeTab: (readData(layoutInfo.showTree) ? "none" : layoutInfo.startTab),
+}};
 
 function getStartPlayer() {
 	playerdata = startPlayerBase();
@@ -106,11 +103,9 @@ function getStartGrid(layer) {
 	if (!layers[layer].grid) return data;
 	if (layers[layer].grid.maxRows === undefined) layers[layer].grid.maxRows = layers[layer].grid.rows;
 	if (layers[layer].grid.maxCols === undefined) layers[layer].grid.maxCols = layers[layer].grid.cols;
-	for (let y = 1; y <= layers[layer].grid.maxRows; y++) {
-		for (let x = 1; x <= layers[layer].grid.maxCols; x++) {
+	for (let y = 1; y <= layers[layer].grid.maxRows; y++)
+		for (let x = 1; x <= layers[layer].grid.maxCols; x++)
 			data[100 * y + x] = layers[layer].grid.getStartData(100 * y + x);
-		};
-	};
 	return data;
 };
 
@@ -121,15 +116,13 @@ function fixSave() {
 	for (layer in layers) {
 		if (player[layer].best !== undefined) player[layer].best = new Decimal(player[layer].best);
 		if (player[layer].total !== undefined) player[layer].total = new Decimal(player[layer].total);
-		if (layers[layer].tabFormat && !Array.isArray(layers[layer].tabFormat)) {
+		if (layers[layer].tabFormat && !Array.isArray(layers[layer].tabFormat))
 			if (!Object.keys(layers[layer].tabFormat).includes(player.subtabs[layer].mainTabs))
 				player.subtabs[layer].mainTabs = Object.keys(layers[layer].tabFormat)[0];
-		};
-		if (layers[layer].microtabs) {
+		if (layers[layer].microtabs)
 			for (item in layers[layer].microtabs)
 				if (!Object.keys(layers[layer].microtabs[item]).includes(player.subtabs[layer][item]))
 					player.subtabs[layer][item] = Object.keys(layers[layer].microtabs[item])[0];
-		};
 	};
 };
 
@@ -260,6 +253,4 @@ let saveInterval = setInterval(() => {
 	if (options.autosave) save();
 }, 5000);
 
-window.onbeforeunload = () => {
-	if (player.autosave) save();
-};
+window.onbeforeunload = () => {if (player.autosave) save()};

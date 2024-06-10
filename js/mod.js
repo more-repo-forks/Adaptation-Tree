@@ -25,7 +25,7 @@ function canGenPoints() {
 function getPointPotential() {
 	// retrogression overrides
 	if (inChallenge("e", 15)) return new Decimal(1e10).pow(player.g.milestones.length - 16).max(1);
-	if (inChallenge("e", 14)) return new Decimal(1);
+	if (inChallenge("e", 14)) return decimalOne;
 	// start
 	let gain = new Decimal(1);
 	// increase base power gain
@@ -99,9 +99,7 @@ function maxTickLength() {
 // Use this if you need to undo inflation from an older version. If the version is older than the version that fixed the issue,
 // you can cap their current resources with this.
 function fixOldSave(oldVersion) {
-	for (const key in layers.ex.buyables) {
-		if (Object.hasOwnProperty.call(layers.ex.buyables, key) && key < 20) {
+	for (const key in layers.ex.buyables)
+		if (Object.hasOwnProperty.call(layers.ex.buyables, key) && key < 20)
 			player.ex.extra[key - 11] = new Decimal(player.ex.extra[key - 11] || 0);
-		};
-	};
 };
