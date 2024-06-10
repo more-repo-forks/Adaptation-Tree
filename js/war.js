@@ -9,14 +9,12 @@ const warUpgrades = [
 		{title: "Out of Place, Out of Time", desc: "unlocks another ANACHRONISM tier", effect: 1, cost: 4},
 		{title: "Displaced Chronology", desc: "unlocks another ANACHRONISM tier", effect: 1, cost: 8},
 		{title: "Decreased Habitable Area", desc() {return "increases the 10th hybridization's completion limit based on wars<br>(currently +" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points.mul(3)}, cost: 30},
-	],
-	[
+	], [
 		{title: "Enroaching Influence", desc: "unlocks another influence generator", cost: 4},
 		{title: "Greater Empowerment", desc: "reduces <b>Influence empowerment</b>'s cost", cost: 8},
 		{title: "Overarching Influence", desc: "unlocks another influence generator", cost: 16},
 		{title: "Generator Recycling", desc: "reduces the costs of influence generators", cost: 40},
-	],
-	[
+	], [
 		{title: "Conflict Escalation", desc: "decreases war requirement base by 0.025", effect: 0.025, cost: 25},
 		{title: "Battle Domination", desc: "decreases domination requirement base by 0.313", effect: 0.313, cost: 30},
 		{title: "Revolutionary Armaments", desc: "decreases revolution requirement base by 0.1", effect: 0.1, cost: 40},
@@ -28,7 +26,7 @@ addLayer("w", {
 	name: "War",
 	symbol: "W",
 	position: 3,
-	branches: ["d"],
+	branches: [["cb", 2], "d"],
 	startData() { return {
 		unlocked: false,
 		points: new Decimal(0),
@@ -45,6 +43,7 @@ addLayer("w", {
 		let base = 2;
 		if (challengeCompletions("ec", 11) >= 11 && challengeEffect("ec", 11)[10]) base -= challengeEffect("ec", 11)[10];
 		if (challengeCompletions("ec", 11) >= 13 && challengeEffect("ec", 11)[12]) base -= challengeEffect("ec", 11)[12];
+		if (challengeCompletions("ec", 11) >= 14 && challengeEffect("ec", 11)[13]) base -= challengeEffect("ec", 11)[13];
 		if (getGridData("w", 401)) base -= gridEffect("w", 401);
 		return base;
 	},
@@ -55,6 +54,7 @@ addLayer("w", {
 	gainMult() {
 		let mult = new Decimal(1);
 		if (getBuyableAmount("d", 14).gte(tmp.d.buyables[14].purchaseLimit)) mult = mult.div(tmp.d.buyables[14].completionEffect);
+		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
 		return mult;
 	},
 	effect() {return player.w.points.pow(player.ex.points.gte(9) ? 1.6 : 1.5).round()},
@@ -83,8 +83,9 @@ addLayer("w", {
 		onPress() {if (player.w.unlocked) doReset("w")},
 	}],
 	doReset(resettingLayer) {
+		if (layers[resettingLayer].row <= this.row) return;
 		let keep = [];
-		if (layers[resettingLayer].row > this.row) layerDataReset("w", keep);
+		layerDataReset("w", keep);
 	},
 	componentStyles: {
 		"contained-grid"() {return {"border": "2px solid #C77055", "padding": "16px"}},
@@ -124,11 +125,9 @@ addLayer("w", {
 	},
 	buyables: {
 		respec() {
-			for (const key in player.w.grid) {
-				if (Object.hasOwnProperty.call(player.w.grid, key)) {
+			for (const key in player.w.grid)
+				if (Object.hasOwnProperty.call(player.w.grid, key))
 					player.w.grid[key] = tmp.w.grid.getStartData;
-				};
-			};
 			player.w.spent = new Decimal(0);
 			doReset("w", true, true);
 		},

@@ -33,8 +33,9 @@ addLayer("cb", {
 	requires: new Decimal(1e15),
 	type: "static",
 	base() {
-		if (hasChallenge("sp", 19)) return 8;
-		return 10;
+		let base = 10;
+		if (hasChallenge("sp", 19)) base -= 2;
+		return base;
 	},
 	exponent: 1,
 	roundUpCost: true,
@@ -47,6 +48,12 @@ addLayer("cb", {
 		if (tmp.r.effect[1]) mult = mult.div(tmp.r.effect[1]);
 		if (tmp.ex.effect[0]) mult = mult.div(tmp.ex.effect[0]);
 		if (tmp.ex.effect[4]) mult = mult.div(tmp.ex.effect[4]);
+		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
+		return mult;
+	},
+	directMult() {
+		let mult = new Decimal(1);
+		if (tmp.l.effect[2]) mult = mult.mul(tmp.l.effect[2]);
 		return mult;
 	},
 	effect() {
@@ -124,8 +131,9 @@ addLayer("cb", {
 		onPress() {if (player.cb.unlocked) doReset("cb")},
 	}],
 	doReset(resettingLayer) {
+		if (layers[resettingLayer].row <= this.row) return;
 		let keep = [];
-		if (layers[resettingLayer].row > this.row) layerDataReset("cb", keep);
+		layerDataReset("cb", keep);
 	},
 	update(diff) {
 		if (hasChallenge("sp", 12) && !player.cb.focusUnlocked) player.cb.focusUnlocked = true;
@@ -146,7 +154,7 @@ addLayer("cb", {
 			title: "Focus on evolution",
 			effect() {
 				if (inChallenge("sp", 16)) return 0;
-				return (getClickableState("cb", 11) || 0);
+				return getClickableState("cb", 11) || 0;
 			},
 			canClick() {return (getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0) < tmp.cb.effect[3]},
 			onClick() {setClickableState("cb", 11, (getClickableState("cb", 11) || 0) + 1)},

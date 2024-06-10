@@ -244,6 +244,7 @@ addLayer("e", {
 		if (tmp.sp.effect[0]) mult = mult.div(tmp.sp.effect[0]);
 		if (tmp.cb.effect[0]) mult = mult.div(tmp.cb.effect[0]);
 		if (tmp.r.effect[4]) mult = mult.div(tmp.r.effect[4]);
+		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
 		if (inChallenge("sp", 21)) mult = mult.div(new Decimal(5).pow(player.a.points.add(player.a.milestones.length).add(player.sp.points).add(player.cb.points).add(tmp.cb.effect[3]).add(player.d.points)));
 		return mult;
 	},
@@ -379,11 +380,13 @@ addLayer("e", {
 		onPress() {if (player.e.unlocked) doReset("e")},
 	}],
 	doReset(resettingLayer) {
+		if (layers[resettingLayer].row <= this.row) return;
 		let keep = [];
-		if (player.ec.points.gte(3)) keep.push("challenges");
-		else if (layers[resettingLayer].row == 3 && player.cb.points.gte(6)) keep.push("challenges");
-		else if (resettingLayer == "sp") keep.push("challenges");
-		if (layers[resettingLayer].row > this.row) layerDataReset("e", keep);
+		if (player.ec.points.gte(3)
+			|| (layers[resettingLayer].row == 3 && player.cb.points.gte(6))
+			|| resettingLayer == "sp"
+		) keep.push("challenges");
+		layerDataReset("e", keep);
 	},
 	update(diff) {
 		if (hasMilestone("g", 24) && !player.e.challengesUnlocked) player.e.challengesUnlocked = true;
@@ -484,11 +487,9 @@ addLayer("e", {
 			},
 			rewardEffect() {
 				let retrogressions = 0;
-				for (const id in player.e.challenges) {
-					if (Object.hasOwnProperty.call(player.e.challenges, id)) {
+				for (const id in player.e.challenges)
+					if (Object.hasOwnProperty.call(player.e.challenges, id))
 						retrogressions += player.e.challenges[id];
-					};
-				};
 				let base = new Decimal(1.1);
 				if (hasMilestone("a", 16)) base = base.add(milestoneEffect("a", 16));
 				let mult = new Decimal(1);
@@ -511,11 +512,9 @@ addLayer("e", {
 			},
 			rewardEffect() {
 				let retrogressions = 0;
-				for (const id in player.e.challenges) {
-					if (Object.hasOwnProperty.call(player.e.challenges, id)) {
+				for (const id in player.e.challenges)
+					if (Object.hasOwnProperty.call(player.e.challenges, id))
 						retrogressions += player.e.challenges[id];
-					};
-				};
 				let exp = new Decimal(0.25);
 				if (hasMilestone("a", 21)) exp = exp.add(milestoneEffect("a", 21));
 				let mult = new Decimal(1);
@@ -591,6 +590,7 @@ addLayer("e", {
 			enterable() {return player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)},
 			overrideResetsNothing: true,
 			onEnter() {if (!player.e.points.gte(1547)) player.g.milestones = []},
+			onExit() {this.onEnter()},
 			completionLimit() {
 				let limit = 22;
 				if (hasMilestone("a", 42)) limit += milestoneEffect("a", 42);

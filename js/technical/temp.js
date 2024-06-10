@@ -39,7 +39,7 @@ function setupTemp() {
 	tmp.other = {
 		screenWidth: 0,
 		screenHeight: 0,
-    };
+	};
 	updateWidth();
 	temp = tmp;
 };

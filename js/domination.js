@@ -43,6 +43,7 @@ addLayer("d", {
 		if (tmp.r.effect[5]) mult = mult.div(tmp.r.effect[5]);
 		if (tmp.ex.effect[1]) mult = mult.div(tmp.ex.effect[1]);
 		if (tmp.ex.effect[4]) mult = mult.div(tmp.ex.effect[4]);
+		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
 		return mult;
 	},
 	effect() {return player.points.add(1).pow(0.025)},
@@ -50,35 +51,22 @@ addLayer("d", {
 	tabFormat() {
 		// top text
 		let topText = "<div style='height: 25px; padding-top: ";
-		if (hasMilestone("r", 14)) {
-			topText += "20px'>";
-		} else {
-			topText += "5px'>";
-		};
-		if (getClickableState("d", 14)) {
-			topText += "Only extra levels";
-		} else if (getClickableState("d", 13)) {
-			topText += "Only base levels";
-		} else {
-			topText += "All levels";
-		};
+		if (hasMilestone("r", 14) || player.l.unlocked) topText += "20px'>";
+		else topText += "5px'>";
+		if (getClickableState("d", 14)) topText += "Only extra levels";
+		else if (getClickableState("d", 13)) topText += "Only base levels";
+		else topText += "All levels";
 		// stat svg display
 		let max = 1;
-		if (getClickableState("d", 13)) {
-			max += getBuyableAmount("d", 11).max(getBuyableAmount("d", 12)).max(getBuyableAmount("d", 13)).max(getBuyableAmount("d", 14)).toNumber();
-		} else if (getClickableState("d", 14)) {
-			max += tmp.d.buyables[11].extra.max(tmp.d.buyables[12].extra).max(tmp.d.buyables[13].extra).max(tmp.d.buyables[14].extra).toNumber();
-		} else {
-			max += getBuyableAmount("d", 11).add(tmp.d.buyables[11].extra).max(getBuyableAmount("d", 12).add(tmp.d.buyables[12].extra)).max(getBuyableAmount("d", 13).add(tmp.d.buyables[13].extra)).max(getBuyableAmount("d", 14).add(tmp.d.buyables[14].extra)).toNumber();
-		};
+		if (getClickableState("d", 13)) max += getBuyableAmount("d", 11).max(getBuyableAmount("d", 12)).max(getBuyableAmount("d", 13)).max(getBuyableAmount("d", 14)).toNumber();
+		else if (getClickableState("d", 14)) max += tmp.d.buyables[11].extra.max(tmp.d.buyables[12].extra).max(tmp.d.buyables[13].extra).max(tmp.d.buyables[14].extra).toNumber();
+		else max += getBuyableAmount("d", 11).add(tmp.d.buyables[11].extra).max(getBuyableAmount("d", 12).add(tmp.d.buyables[12].extra)).max(getBuyableAmount("d", 13).add(tmp.d.buyables[13].extra)).max(getBuyableAmount("d", 14).add(tmp.d.buyables[14].extra)).toNumber();
 		if (max < 2) max = 2;
 		let statText = "<svg viewBox='0 0 100 100' style='width: 200px; height: 200px'>";
 		statText += "<line x1='6' y1='6' x2='94' y2='94' fill='none' stroke='#404040'/>";
 		statText += "<line x1='6' y1='94' x2='94' y2='6' fill='none' stroke='#404040'/>";
 		let rectMax = max;
-		if (rectMax >= 16) {
-			rectMax = max / (2 ** Math.floor(Math.log2(max) - 3));
-		};
+		if (rectMax >= 16) rectMax = max / (2 ** Math.floor(Math.log2(max) - 3));
 		for (let index = 0; index < rectMax; index++) {
 			let low = Math.min((index / rectMax * 45) + 5.5, 50);
 			let high = Math.max(((rectMax - index) / rectMax * 90) - 1, 0);
@@ -114,7 +102,7 @@ addLayer("d", {
 				["clickable", 14],
 			]],
 		];
-		if (hasMilestone("r", 14)) {
+		if (hasMilestone("r", 14) || player.l.unlocked) {
 			cols[0] = [["buyable", 11], ["blank", "10px"], ["toggle", ["d", "autoFOC"]], ["blank", "25px"], ["buyable", 12], ["blank", "10px"], ["toggle", ["d", "autoSPE"]]];
 			cols[2] = [["buyable", 13], ["blank", "10px"], ["toggle", ["d", "autoCLI"]], ["blank", "25px"], ["buyable", 14], ["blank", "10px"], ["toggle", ["d", "autoDOM"]]];
 			cols[1].push(["blank", "15px"], "respec-button");
@@ -132,7 +120,7 @@ addLayer("d", {
 			["row", [
 				["column", cols[0]], ["column", cols[1]], ["column", cols[2]],
 			]],
-			(hasMilestone("r", 14) ? undefined : "respec-button"),
+			(hasMilestone("r", 14) || player.l.unlocked ? undefined : "respec-button"),
 			"blank",
 			"milestones",
 		];
@@ -144,10 +132,10 @@ addLayer("d", {
 		onPress() {if (player.d.unlocked) doReset("d")},
 	}],
 	doReset(resettingLayer) {
+		if (layers[resettingLayer].row <= this.row) return;
 		let keep = ["autoFOC", "autoSPE", "autoCLI", "autoDOM"];
-		if (player.w.points.gte(3)) keep.push("milestones", "lastMilestone");
-		else if (resettingLayer == "w") keep.push("milestones", "lastMilestone");
-		if (layers[resettingLayer].row > this.row) layerDataReset("d", keep);
+		if (player.w.points.gte(3) || resettingLayer == "w") keep.push("milestones", "lastMilestone");
+		layerDataReset("d", keep);
 	},
 	update(diff) {
 		if (!player.d.unlocks[0] && player.cb.points.gte(11)) player.d.unlocks[0] = true;
@@ -156,7 +144,7 @@ addLayer("d", {
 		if (!player.d.unlocks[3] && player.cb.points.gte(12) && player.sp.points.gte(16) && player.a.points.gte(325) && player.d.points.gte(1)) player.d.unlocks[3] = true;
 	},
 	automate() {
-		if (hasMilestone("r", 14)) {
+		if (hasMilestone("r", 14) || player.l.unlocked) {
 			if (player.d.autoFOC && layers.d.buyables[11].canAfford()) layers.d.buyables[11].buy();
 			if (player.d.autoSPE && layers.d.buyables[12].canAfford()) layers.d.buyables[12].buy();
 			if (player.d.autoCLI && layers.d.buyables[13].canAfford()) layers.d.buyables[13].buy();
@@ -165,7 +153,7 @@ addLayer("d", {
 	},
 	componentStyles: {
 		"buyable"() {return {"width": "210px", "height": "110px"}},
-		"clickable"() {return {'min-height': '30px', 'transform': 'none'}},
+		"clickable"() {return {"min-height": "30px", "transform": "none"}},
 	},
 	buyables: {
 		11: {
@@ -289,11 +277,8 @@ addLayer("d", {
 			effect() {return getBuyableAmount(this.layer, this.id).add(this.extra()).pow_base(this.effectBase())},
 			completionEffect() {
 				let maxed = 0;
-				for (const key in player.d.buyables) {
-					if (Object.hasOwnProperty.call(player.d.buyables, key) && player.d.buyables[key] >= tmp.d.buyables[key].purchaseLimit) {
-						maxed++;
-					};
-				};
+				for (const key in player.d.buyables)
+					if (Object.hasOwnProperty.call(player.d.buyables, key) && player.d.buyables[key] >= tmp.d.buyables[key].purchaseLimit) maxed++;
 				let base = new Decimal(1.88);
 				if (hasMilestone("d", 32)) base = base.add(milestoneEffect("d", 32));
 				return base.pow(maxed);
@@ -623,7 +608,7 @@ addLayer("d", {
 			effect() {return 0.076},
 			effectDescription() {return "increase the complete domination effect of SPE by 0.076<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.l.unlocked},
 		},
 		31: {
 			requirement: 229,
@@ -632,7 +617,7 @@ addLayer("d", {
 			effect() {return 1},
 			effectDescription() {return "unlock another tier of ANACHRONISM<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.l.unlocked},
 		},
 		32: {
 			requirement: 246,
@@ -641,7 +626,7 @@ addLayer("d", {
 			effect() {return 0.62},
 			effectDescription() {return "increase the base complete domination effect of DOM by 0.62<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.l.unlocked},
 		},
 		33: {
 			requirement: 257,
@@ -649,7 +634,7 @@ addLayer("d", {
 			popupTitle: "Enhancement Acquired!",
 			effectDescription() {return "improve influence's second effect<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.l.unlocked},
 		},
 		34: {
 			requirement: 297,
@@ -657,7 +642,7 @@ addLayer("d", {
 			popupTitle: "Enhancement Acquired!",
 			effectDescription() {return "unlock an additional effect for influence<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.l.unlocked},
 		},
 		35: {
 			requirement: 313,
@@ -665,7 +650,7 @@ addLayer("d", {
 			popupTitle: "Enhancement Acquired!",
 			effectDescription() {return "improve influence's third effect<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.l.unlocked},
 		},
 		36: {
 			requirement: 340,
@@ -674,7 +659,7 @@ addLayer("d", {
 			effect() {return 0.11},
 			effectDescription() {return "increase the complete domination effect of CLI by 0.11<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.l.unlocked},
 		},
 		37: {
 			requirement: 359,
@@ -683,7 +668,7 @@ addLayer("d", {
 			effect() {return getBuyableAmount("d", 11).mul(2)},
 			effectDescription() {return "every base level of FOC gives two extra levels to FOC, SPE, CLI, and DOM<br>Effect: +" + formatWhole(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.l.unlocked},
 		},
 		38: {
 			requirement: 393,
@@ -691,16 +676,16 @@ addLayer("d", {
 			popupTitle: "Enhancement Acquired!",
 			effectDescription() {return "improve the 10th hybridization's second to last effect<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.l.unlocked},
 		},
 		39: {
 			requirement: 777,
 			requirementDescription: "The lucky enhancement",
 			popupTitle: "Enhancement Acquired!",
 			effect() {return player.d.points.pow_base(479250)},
-			effectDescription() {return "divide conscious being requirement based on domination points<br>Effect: /" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			effectDescription() {return "divide conscious being requirement based on domination points<br>and unlock something new..." + (player.l.unlocked ? " (already unlocked)" : "") + "<br>Effect: /" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.l.unlocked},
 		},
 	},
 });

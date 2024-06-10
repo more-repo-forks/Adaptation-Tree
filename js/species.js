@@ -40,6 +40,7 @@ addLayer("sp", {
 		if (getGridData("w", 103)) mult = mult.div(gridEffect("w", 103));
 		if (tmp.ec.effect[0]) mult = mult.div(tmp.ec.effect[0]);
 		if (tmp.r.effect[0]) mult = mult.div(tmp.r.effect[0]);
+		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
 		return mult;
 	},
 	effect() {
@@ -77,6 +78,8 @@ addLayer("sp", {
 		];
 	},
 	effectDescription() {return "which are dividing the evolution requirement by /" + format(tmp.sp.effect[0]) + ", multiplying the extra STR, WIS, AGI, and INT from evolutions by " + format(tmp.sp.effect[1]) + "x, and exponentiating evolution amount in the last evolution effect by ^" + format(tmp.sp.effect[2])},
+	resetsNothing() {return player.l.unlocked},
+	autoPrestige() {return player.l.unlocked},
 	tabFormat: [
 		"main-display",
 		"prestige-button",
@@ -98,10 +101,10 @@ addLayer("sp", {
 		onPress() {if (player.sp.unlocked) doReset("sp")},
 	}],
 	doReset(resettingLayer) {
+		if (layers[resettingLayer].row <= this.row) return;
 		let keep = [];
-		if (player.r.points.gte(3)) keep.push("challenges");
-		else if (resettingLayer == "ec") keep.push("challenges");
-		if (layers[resettingLayer].row > this.row) layerDataReset("sp", keep);
+		if (player.r.points.gte(3) || resettingLayer == "ec") keep.push("challenges");
+		layerDataReset("sp", keep);
 	},
 	update(diff) {
 		if (player.r.unlocked && canCompleteChallenge("sp", 21) && player.sp.challenges[21] < tmp.sp.challenges[21].completionLimit) player.sp.challenges[21]++;
@@ -132,11 +135,9 @@ addLayer("sp", {
 			},
 			rewardEffect() {
 				let hybridizations = 0;
-				for (const id in player.sp.challenges) {
-					if (Object.hasOwnProperty.call(player.sp.challenges, id)) {
+				for (const id in player.sp.challenges)
+					if (Object.hasOwnProperty.call(player.sp.challenges, id))
 						hybridizations += player.sp.challenges[id];
-					};
-				};
 				return new Decimal(hybridizations).add(1).min(10);
 			},
 			goal: 1095,
@@ -168,11 +169,7 @@ addLayer("sp", {
 				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does a species reset.<br>While in this hybridization, the original acclimation requirement base is set to 10.<br><br>Goal: " + formatWhole(this.goal) + " evolutions<br><br>Rewards: The base of the first species effect is multiplied by 2, the last conscious being effect is powered to 1.5, and species requirement is divided based on acclimation points past 200 (currently&nbsp;/" + format(this.rewardEffect()) + ")";
 				return "You need " + formatWhole(this.unlockReq) + " species to unlock this hybridization.";
 			},
-			rewardEffect() {
-				if (hasChallenge("sp", 19)) return new Decimal(1.04).pow(player.a.points.sub(200).pow(0.5)).max(1);
-				if (hasChallenge("sp", 16)) return new Decimal(1.02).pow(player.a.points.sub(200).pow(0.5)).max(1);
-				return new Decimal(1.01).pow(player.a.points.sub(200).pow(0.5)).max(1);
-			},
+			rewardEffect() {return new Decimal(hasChallenge("sp", 19) ? 1.04 : (hasChallenge("sp", 16) ? 1.02 : 1.01)).pow(player.a.points.sub(200).max(0).pow(0.5))},
 			goal: 1096,
 			canComplete() {return player.e.points.gte(this.goal)},
 			unlocked() {return hasChallenge("sp", this.id - 1) || hasChallenge("sp", this.id)},
@@ -220,11 +217,9 @@ addLayer("sp", {
 			},
 			rewardEffect() {
 				let hybridizations = 0;
-				for (const id in player.sp.challenges) {
-					if (Object.hasOwnProperty.call(player.sp.challenges, id)) {
+				for (const id in player.sp.challenges)
+					if (Object.hasOwnProperty.call(player.sp.challenges, id))
 						hybridizations += player.sp.challenges[id];
-					};
-				};
 				if (hasChallenge("sp", 18)) return new Decimal(hybridizations).div(100).add(1).pow(12.88888888888889);
 				return new Decimal(hybridizations).div(100).add(1).pow(6.555555555555555);
 			},

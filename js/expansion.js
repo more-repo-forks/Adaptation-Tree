@@ -22,13 +22,16 @@ function getGeneratorEffect(id) {
 	let level = getBuyableAmount("ex", 31).toNumber();
 	let b = getBuyableAmount("ex", id);
 	let x = player.ex.extra[id - 11].floor();
-	return [
+	let eff = [
 		b.add(x).mul(b.pow(2)),
 		b.add(x).mul(b.pow(3)).mul(b.pow_base(2)),
 		b.add(x).mul(b.pow(5)).mul(b.pow_base(3)),
 		b.mul(10).add(x).mul(b.pow(12)).mul(b.pow_base(5)),
 		b.mul(player.ex.points).add(x).mul(b.pow(player.ex.points)).mul(b.pow_base(10)),
-	][level].mul(buyableEffect("ex", 21));
+	][level];
+	if (hasBuyable("ex", 21)) eff = eff.mul(buyableEffect("ex", 21));
+	if (tmp.l.effect[3]) eff = eff.mul(tmp.l.effect[3]);
+	return eff;
 };
 
 addLayer("ex", {
@@ -64,6 +67,7 @@ addLayer("ex", {
 	gainMult() {
 		let mult = new Decimal(1);
 		if (getGridData("w", 102)) mult = mult.div(gridEffect("w", 102));
+		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
 		return mult;
 	},
 	effect() {
@@ -109,11 +113,9 @@ addLayer("ex", {
 		];
 		if (player.ex.influenceUnlocked) {
 			arr.push(["buyables", "2"], "blank");
-			for (const key in tmp.ex.buyables) {
-				if (Object.hasOwnProperty.call(tmp.ex.buyables, key) && key < 20 && tmp.ex.buyables[key].unlocked) {
+			for (const key in tmp.ex.buyables)
+				if (Object.hasOwnProperty.call(tmp.ex.buyables, key) && key < 20 && tmp.ex.buyables[key].unlocked)
 					arr.push(["buyable", +key], "blank");
-				};
-			};
 			arr.push(["buyables", "3"], "blank");
 		};
 		return arr;
@@ -125,8 +127,12 @@ addLayer("ex", {
 		onPress() {if (player.ex.unlocked) doReset("ex")},
 	}],
 	doReset(resettingLayer) {
+		if (layers[resettingLayer].row <= this.row) return;
 		let keep = [];
-		if (layers[resettingLayer].row > this.row) layerDataReset("ex", keep);
+		layerDataReset("ex", keep);
+		for (const key in layers.ex.buyables)
+			if (Object.hasOwnProperty.call(layers.ex.buyables, key) && key < 20)
+				player.ex.extra[key - 11] = new Decimal(0);
 	},
 	update(diff) {
 		if (challengeCompletions("ec", 11) >= 7 && !player.ex.influenceUnlocked) player.ex.influenceUnlocked = true;
@@ -142,11 +148,9 @@ addLayer("ex", {
 		};
 	},
 	shouldNotify() {
-		if (player.ex.influenceUnlocked) {
-			for (const key in tmp.ex.buyables) {
+		if (player.ex.influenceUnlocked)
+			for (const key in tmp.ex.buyables)
 				if (tmp.ex.buyables[key]?.unlocked && tmp.ex.buyables[key]?.canAfford) return true;
-			};
-		};
 	},
 	componentStyles: {
 		"prestige-button"() {if (tmp.ex.canReset && tmp.ex.nodeStyle) return tmp.ex.nodeStyle},
@@ -263,11 +267,9 @@ addLayer("ex", {
 			canAfford() {return player.ex.influenceUnlocked && player.ex.influence.gte(this.cost())},
 			buy() {
 				player.ex.influence = new Decimal(0);
-				for (const key in layers.ex.buyables) {
-					if (Object.hasOwnProperty.call(layers.ex.buyables, key) && key < 20) {
+				for (const key in layers.ex.buyables)
+					if (Object.hasOwnProperty.call(layers.ex.buyables, key) && key < 20)
 						player.ex.extra[key - 11] = new Decimal(0);
-					};
-				};
 				addBuyables(this.layer, this.id, 1);
 			},
 			style() {

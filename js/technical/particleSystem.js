@@ -18,9 +18,7 @@ function makeParticles(data, amount = 1, type = "normal") {
 					particle[thing] = run(data[thing], data, x);
 			};
 		};
-		if (data.dir === undefined) {
-			particle.dir = particle.angle;
-		};
+		if (data.dir === undefined) particle.dir = particle.angle;
 		particle.dir = particle.dir + (particle.spread * (x - amount / 2 + 0.5));
 		if (particle.offset) {
 			particle.x += particle.offset * sin(particle.dir);
@@ -126,7 +124,7 @@ function updateMouse(event) {
 function getOpacity(particle) {
 	if (particle.time < particle.fadeOutTime && particle.fadeOutTime)
 		return particle.time / particle.fadeOutTime;
-	if (particle.fadeInTimer > 0) 
+	if (particle.fadeInTimer > 0)
 		return 1 - (particle.fadeInTimer / particle.fadeInTime);
 	return 1
 };
@@ -153,11 +151,9 @@ function constructParticleStyle(particle) {
 
 function clearParticles(check) {
 	if (!check) check = true;
-	for (p in particles) {
-		if (run(check, particles[p], particles[p])) {
+	for (p in particles)
+		if (run(check, particles[p], particles[p]))
 			Vue.delete(particles, p);
-		};
-	};
 };
 
 // Trig with degrees

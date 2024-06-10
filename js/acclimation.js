@@ -59,6 +59,7 @@ addLayer("a", {
 		if (tmp.cb.effect[1]) mult = mult.div(tmp.cb.effect[1]);
 		if (tmp.r.effect[7]) mult = mult.div(tmp.r.effect[7]);
 		if (tmp.ex.effect[3]) mult = mult.div(tmp.ex.effect[3]);
+		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
 		return mult;
 	},
 	effect() {
@@ -108,11 +109,8 @@ addLayer("a", {
 	tabFormat() {
 		// top text
 		let topText = "<div style='height: 25px; padding-top: ";
-		if (player.ec.unlocked) {
-			topText += "20px'>";
-		} else {
-			topText += "5px'>";
-		};
+		if (player.ec.unlocked) topText += "20px'>";
+		else topText += "5px'>";
 		if (getClickableState("a", 14)) {
 			topText += "Only extra levels";
 		} else if (getClickableState("a", 11)) {
@@ -125,21 +123,15 @@ addLayer("a", {
 		// stat svg display
 		const reduction = (+getClickableState("a", 11)) * 4;
 		let max = 1;
-		if (getClickableState("a", 13)) {
-			max += getBuyableAmount("a", 11).max(getBuyableAmount("a", 12)).max(getBuyableAmount("a", 13)).max(getBuyableAmount("a", 14)).toNumber() - reduction;
-		} else if (getClickableState("a", 14)) {
-			max += tmp.a.buyables[11].extra.max(tmp.a.buyables[12].extra).max(tmp.a.buyables[13].extra).max(tmp.a.buyables[14].extra).toNumber();
-		} else {
-			max += getBuyableAmount("a", 11).add(tmp.a.buyables[11].extra).max(getBuyableAmount("a", 12).add(tmp.a.buyables[12].extra)).max(getBuyableAmount("a", 13).add(tmp.a.buyables[13].extra)).max(getBuyableAmount("a", 14).add(tmp.a.buyables[14].extra)).toNumber() - reduction;
-		};
+		if (getClickableState("a", 13)) max += getBuyableAmount("a", 11).max(getBuyableAmount("a", 12)).max(getBuyableAmount("a", 13)).max(getBuyableAmount("a", 14)).toNumber() - reduction;
+		else if (getClickableState("a", 14)) max += tmp.a.buyables[11].extra.max(tmp.a.buyables[12].extra).max(tmp.a.buyables[13].extra).max(tmp.a.buyables[14].extra).toNumber();
+		else max += getBuyableAmount("a", 11).add(tmp.a.buyables[11].extra).max(getBuyableAmount("a", 12).add(tmp.a.buyables[12].extra)).max(getBuyableAmount("a", 13).add(tmp.a.buyables[13].extra)).max(getBuyableAmount("a", 14).add(tmp.a.buyables[14].extra)).toNumber() - reduction;
 		if (max < 2) max = 2;
 		let statText = "<svg viewBox='0 0 100 100' style='width: 200px; height: 200px'>";
 		statText += "<line x1='6' y1='6' x2='94' y2='94' fill='none' stroke='#404040'/>";
 		statText += "<line x1='6' y1='94' x2='94' y2='6' fill='none' stroke='#404040'/>";
 		let rectMax = max;
-		if (rectMax >= 16) {
-			rectMax = max / (2 ** Math.floor(Math.log2(max) - 3));
-		};
+		if (rectMax >= 16) rectMax = max / (2 ** Math.floor(Math.log2(max) - 3));
 		for (let index = 0; index < rectMax; index++) {
 			let low = Math.min((index / rectMax * 45) + 5.5, 50);
 			let high = Math.max(((rectMax - index) / rectMax * 90) - 1, 0);
@@ -208,11 +200,11 @@ addLayer("a", {
 		onPress() {if (player.a.unlocked) doReset("a")},
 	}],
 	doReset(resettingLayer) {
+		if (layers[resettingLayer].row >= this.row) player.a.populationTime = 0;
+		if (layers[resettingLayer].row <= this.row) return;
 		let keep = ["autoCRA", "autoFER", "autoANA", "autoSOV"];
-		if (player.ex.unlocked) keep.push("milestones", "lastMilestone");
-		else if (resettingLayer == "d") keep.push("milestones", "lastMilestone");
-		if (layers[resettingLayer].row > this.row) layerDataReset("a", keep);
-		player.a.populationTime = 0;
+		if (player.ex.unlocked || resettingLayer == "d") keep.push("milestones", "lastMilestone");
+		layerDataReset("a", keep);
 	},
 	update(diff) {
 		// add time
@@ -251,7 +243,7 @@ addLayer("a", {
 	},
 	componentStyles: {
 		"buyable"() {return {"width": "210px", "height": "110px"}},
-		"clickable"() {return {'min-height': '30px', 'transform': 'none'}},
+		"clickable"() {return {"min-height": "30px", "transform": "none"}},
 	},
 	buyables: {
 		11: {

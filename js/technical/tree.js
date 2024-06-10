@@ -3,6 +3,7 @@ let layoutInfo = {
 	startNavTab: "tree-tab",
 	showTree: true,
 	treeLayout: "",
+	orderBranches: true,
 };
 
 addLayer("tree-tab", {

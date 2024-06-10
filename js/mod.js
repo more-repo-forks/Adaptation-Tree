@@ -3,14 +3,14 @@ const modInfo = {
 	id: "adaptation-tree-yrahcaz7",
 	author: "Yrahcaz7",
 	pointsName: "power",
-	modFiles: ["stimulation.js", "growth.js", "evolution.js", "acclimation.js", "species.js", "consciousness.js", "domination.js", "ecosystem.js", "revolution.js", "expansion.js", "war.js", "technical/tree.js"],
+	modFiles: ["stimulation.js", "growth.js", "evolution.js", "acclimation.js", "species.js", "consciousness.js", "domination.js", "ecosystem.js", "revolution.js", "expansion.js", "war.js", "leader.js", "technical/tree.js"],
 	initialStartPoints: new Decimal(0),
 	offlineLimit: 1, // in hours
 }
 
 const VERSION = {
-	num: "2.3",
-	name: "Declaration of War",
+	num: "2.4",
+	name: "The Era of Leaders",
 };
 
 const winText = "Congratulations!<br>You have reached the end and beaten this game (for now),<br>but there is more content coming soon...";
@@ -25,7 +25,7 @@ function canGenPoints() {
 function getPointPotential() {
 	// retrogression overrides
 	if (inChallenge("e", 15)) return new Decimal(1e10).pow(player.g.milestones.length - 16).max(1);
-	if (inChallenge("e", 14)) return new Decimal(1);
+	if (inChallenge("e", 14)) return decimalOne;
 	// start
 	let gain = new Decimal(1);
 	// increase base power gain
@@ -35,7 +35,6 @@ function getPointPotential() {
 	if (hasUpgrade("s", 14)) gain = gain.add(upgradeEffect("s", 14));
 	if (hasUpgrade("s", 15)) gain = gain.add(upgradeEffect("s", 15));
 	// multiply power gain
-	if (player.s.unlocked) gain = gain.mul(tmp.s.effect);
 	if (hasUpgrade("s", 31)) gain = gain.mul(upgradeEffect("s", 31));
 	if (hasUpgrade("s", 32)) gain = gain.mul(upgradeEffect("s", 32));
 	if (hasUpgrade("s", 33)) gain = gain.mul(upgradeEffect("s", 33));
@@ -48,6 +47,8 @@ function getPointPotential() {
 	if (hasUpgrade("s", 81)) gain = gain.mul(upgradeEffect("s", 81));
 	if (player.g.unlocked) gain = gain.mul(buyableEffect("g", 11));
 	if (hasChallenge("e", 21) && challengeEffect("e", 21)[3]) gain = gain.mul(challengeEffect("e", 21)[3]);
+	gain = gain.mul(tmp.s.effect);
+	if (tmp.l.effect[0]) gain = gain.mul(tmp.l.effect[0]);
 	// exponentiate power gain
 	if (hasChallenge("e", 19)) gain = gain.pow(1.02);
 	// special effects
@@ -80,12 +81,12 @@ let displayThings = [
 		if (tmp.other.oompsMag != 0 && options.showOOMs) return "(" + format(tmp.other.oomps) + " OOM" + (tmp.other.oompsMag < 0 ? "^OOM" : (tmp.other.oompsMag > 1 ? "^" + tmp.other.oompsMag : "")) + "s/sec)";
 		return "(" + format(getPointPotential()) + " max power)";
 	},
-	() => "<br>current endgame is at 250,000 " + (player.cb.unlocked ? "conscious beings" : "???"),
+	() => "<br>current endgame is at 20 " + (player.w.unlocked ? "wars" : "???"),
 ];
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.cb.points.gte(250000);
+	return player.w.points.gte(20);
 };
 
 // Style for the background, can be a function
@@ -99,9 +100,7 @@ function maxTickLength() {
 // Use this if you need to undo inflation from an older version. If the version is older than the version that fixed the issue,
 // you can cap their current resources with this.
 function fixOldSave(oldVersion) {
-	for (const key in layers.ex.buyables) {
-		if (Object.hasOwnProperty.call(layers.ex.buyables, key) && key < 20) {
+	for (const key in layers.ex.buyables)
+		if (Object.hasOwnProperty.call(layers.ex.buyables, key) && key < 20)
 			player.ex.extra[key - 11] = new Decimal(player.ex.extra[key - 11] || 0);
-		};
-	};
 };

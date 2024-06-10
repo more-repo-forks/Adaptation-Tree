@@ -13,7 +13,7 @@ function getResetGain(layer, useType = null) {
 		if (layers[layer].getResetGain !== undefined)
 			return layers[layer].getResetGain();
 	};
-	if (tmp[layer].type == "none") return new Decimal(0);
+	if (tmp[layer].type == "none") return decimalZero;
 	if (tmp[layer].gainExp.eq(0)) return decimalZero;
 	if (type == "static") {
 		if ((!tmp[layer].canBuyMax) || tmp[layer].baseAmount.lt(tmp[layer].requires)) return decimalOne;
@@ -69,11 +69,8 @@ function softcap(value, cap, power = 0.5) {
 
 // Return true if the layer should be highlighted. By default checks for upgrades only.
 function shouldNotify(layer) {
-	for (id in tmp[layer].upgrades) {
-		if (isPlainObject(layers[layer].upgrades[id])) {
-			if (canAffordUpgrade(layer, id) && !hasUpgrade(layer, id) && tmp[layer].upgrades[id].unlocked) return true;
-		};
-	};
+	for (id in tmp[layer].upgrades)
+		if (isPlainObject(layers[layer].upgrades[id]) && canAffordUpgrade(layer, id) && !hasUpgrade(layer, id) && tmp[layer].upgrades[id].unlocked) return true;
 	if (player[layer].activeChallenge && canCompleteChallenge(layer, player[layer].activeChallenge)) return true;
 	if (tmp[layer].shouldNotify) return true;
 	if (isPlainObject(tmp[layer].tabFormat)) {
@@ -115,9 +112,9 @@ function rowReset(row, layer) {
 
 function layerDataReset(layer, keep = []) {
 	let storedData = {unlocked: player[layer].unlocked, forceTooltip: player[layer].forceTooltip, noRespecConfirm: player[layer].noRespecConfirm, prevTab: player[layer].prevTab} // Always keep these
-	for (thing in keep) {
-		if (player[layer][keep[thing]] !== undefined) storedData[keep[thing]] = player[layer][keep[thing]];
-	};
+	for (thing in keep)
+		if (player[layer][keep[thing]] !== undefined)
+			storedData[keep[thing]] = player[layer][keep[thing]];
 	Vue.set(player[layer], "buyables", getStartBuyables(layer));
 	Vue.set(player[layer], "clickables", getStartClickables(layer));
 	Vue.set(player[layer], "challenges", getStartChallenges(layer));
@@ -126,9 +123,8 @@ function layerDataReset(layer, keep = []) {
 	player[layer].upgrades = [];
 	player[layer].milestones = [];
 	player[layer].achievements = [];
-	for (thing in storedData) {
+	for (thing in storedData)
 		player[layer][thing] = storedData[thing];
-	};
 };
 
 function addPoints(layer, gain) {
@@ -169,16 +165,14 @@ function doReset(layer, force = false, overrideResetsNothing = false) {
 	};
 	if (!overrideResetsNothing && run(layers[layer].resetsNothing, layers[layer])) return;
 	tmp[layer].baseAmount = decimalZero; // quick fix
-	for (layerResetting in layers) {
+	for (layerResetting in layers)
 		if (row >= layers[layerResetting].row && (!force || layerResetting != layer)) completeChallenge(layerResetting);
-	};
 	player.points = (row == 0 ? decimalZero : modInfo.initialStartPoints);
 	if (typeof player.adaptationTime != "undefined")
 		player.adaptationTime = 0;
 	for (let x = row; x >= 0; x--) rowReset(x, layer);
-	for (r in OTHER_LAYERS) {
+	for (r in OTHER_LAYERS)
 		rowReset(r, layer);
-	};
 	player[layer].resetTime = 0;
 	if (challenge && tmp[layer].challenges[challenge].noAutoExit) Vue.set(player[layer], "activeChallenge", challenge);
 	updateTemp();
@@ -211,14 +205,12 @@ function canCompleteChallenge(layer, x) {
 	if (challenge.canComplete !== undefined) return challenge.canComplete;
 	if (challenge.currencyInternalName) {
 		let name = challenge.currencyInternalName;
-		if (challenge.currencyLocation) {
+		if (challenge.currencyLocation)
 			return challenge.currencyLocation[name].gte(challenge.goal);
-		} else if (challenge.currencyLayer) {
-			let lr = challenge.currencyLayer;
-			return player[lr][name].gte(challenge.goal);
-		} else {
+		else if (challenge.currencyLayer)
+			return player[challenge.currencyLayer][name].gte(challenge.goal);
+		else
 			return player[name].gte(challenge.goal);
-		};
 	} else {
 		return player.points.gte(challenge.goal);
 	};
@@ -249,7 +241,7 @@ VERSION.withName = VERSION.withoutName + (VERSION.name ? ": " + VERSION.name : "
 function autobuyUpgrades(layer) {
 	if (!tmp[layer].upgrades) return;
 	for (id in tmp[layer].upgrades)
-		if (isPlainObject(tmp[layer].upgrades[id]) && (layers[layer].upgrades[id].canAfford === undefined || layers[layer].upgrades[id].canAfford() === true)) buyUpg(layer, id);
+		if (isPlainObject(tmp[layer].upgrades[id]) && (layers[layer].upgrades[id].canAfford === undefined || layers[layer].upgrades[id].canAfford() === true)) buyUpgrade(layer, id);
 };
 
 function gameLoop(diff) {
@@ -268,9 +260,8 @@ function gameLoop(diff) {
 	};
 	addTime(diff);
 	player.points = getPoints();
-	if (typeof player.adaptationTime != "undefined" && typeof diff == "number" && diff === diff) {
-		player.adaptationTime = player.adaptationTime + diff;
-	};
+	if (typeof player.adaptationTime != "undefined")
+		player.adaptationTime += diff;
 	for (let x = 0; x <= maxRow; x++) {
 		for (item in TREE_LAYERS[x]) {
 			let layer = TREE_LAYERS[x][item];
@@ -353,4 +344,4 @@ let interval = setInterval(() => {
 	ticking = false;
 }, 50);
 
-setInterval(() => {needCanvasUpdate = true}, 500);
+setInterval(() => needCanvasUpdate = true, 500);

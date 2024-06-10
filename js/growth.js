@@ -56,6 +56,7 @@ addLayer("g", {
 		if (player.g.unlocked) mult = mult.div(buyableEffect("g", 13));
 		if (hasChallenge("e", 13) && tmp.e.effect[5]) mult = mult.div(tmp.e.effect[5]);
 		if (tmp.a.effect[0]) mult = mult.div(tmp.a.effect[0]);
+		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
 		return mult;
 	},
 	resetsNothing() {return hasMilestone("g", 36)},
@@ -64,11 +65,8 @@ addLayer("g", {
 	tabFormat() {
 		// top text
 		let topText = "<div style='height: 25px; padding-top: ";
-		if (player.e.points.gte(30) || player.sp.unlocked) {
-			topText += "20px'>";
-		} else {
-			topText += "5px'>";
-		};
+		if (player.e.points.gte(30) || player.sp.unlocked) topText += "20px'>";
+		else topText += "5px'>";
 		if (getClickableState("g", 14)) {
 			topText += "Only extra levels";
 		} else if (getClickableState("g", 11)) {
@@ -81,21 +79,15 @@ addLayer("g", {
 		// stat svg display
 		const reduction = (+getClickableState("g", 11)) * 50;
 		let max = new Decimal(1);
-		if (getClickableState("g", 13)) {
-			max = max.add(getBuyableAmount("g", 11).max(getBuyableAmount("g", 12)).max(getBuyableAmount("g", 13)).max(getBuyableAmount("g", 14))).sub(reduction);
-		} else if (getClickableState("g", 14)) {
-			max = max.add(tmp.g.buyables[11].extra.max(tmp.g.buyables[12].extra).max(tmp.g.buyables[13].extra).max(tmp.g.buyables[14].extra));
-		} else {
-			max = max.add(getBuyableAmount("g", 11).add(tmp.g.buyables[11].extra).max(getBuyableAmount("g", 12).add(tmp.g.buyables[12].extra)).max(getBuyableAmount("g", 13).add(tmp.g.buyables[13].extra)).max(getBuyableAmount("g", 14).add(tmp.g.buyables[14].extra))).sub(reduction);
-		};
+		if (getClickableState("g", 13)) max = max.add(getBuyableAmount("g", 11).max(getBuyableAmount("g", 12)).max(getBuyableAmount("g", 13)).max(getBuyableAmount("g", 14))).sub(reduction);
+		else if (getClickableState("g", 14)) max = max.add(tmp.g.buyables[11].extra.max(tmp.g.buyables[12].extra).max(tmp.g.buyables[13].extra).max(tmp.g.buyables[14].extra));
+		else max = max.add(getBuyableAmount("g", 11).add(tmp.g.buyables[11].extra).max(getBuyableAmount("g", 12).add(tmp.g.buyables[12].extra)).max(getBuyableAmount("g", 13).add(tmp.g.buyables[13].extra)).max(getBuyableAmount("g", 14).add(tmp.g.buyables[14].extra))).sub(reduction);
 		if (max.lt(2)) max = new Decimal(2);
 		let statText = "<svg viewBox='0 0 100 100' style='width: 200px; height: 200px'>";
 		statText += "<line x1='6' y1='6' x2='94' y2='94' fill='none' stroke='#404040'/>";
 		statText += "<line x1='6' y1='94' x2='94' y2='6' fill='none' stroke='#404040'/>";
 		let rectMax = max.toNumber();
-		if (rectMax >= 16) {
-			rectMax = max.div(new Decimal(2).pow(max.log2().sub(3).floor())).toNumber();
-		};
+		if (rectMax >= 16) rectMax = max.div(new Decimal(2).pow(max.log2().sub(3).floor())).toNumber();
 		for (let index = 0; index < rectMax; index++) {
 			let low = Math.min((index / rectMax * 45) + 5.5, 50);
 			let high = Math.max(((rectMax - index) / rectMax * 90) - 1, 0);
@@ -162,25 +154,22 @@ addLayer("g", {
 		onPress() {if (player.g.unlocked) doReset("g")},
 	}],
 	doReset(resettingLayer) {
+		if (layers[resettingLayer].row <= this.row) return;
 		let keep = ["autoSTR", "autoWIS", "autoAGI", "autoINT"];
-		if (player.r.points.gte(6)) keep.push("milestones", "lastMilestone");
-		else if (layers[resettingLayer].row <= 3 && player.cb.unlocked) keep.push("milestones", "lastMilestone");
-		if (layers[resettingLayer].row > this.row) {
-			if (keep.includes("milestones")) {
-				layerDataReset("g", keep);
-			} else {
-				let keepMile = [];
-				let keepMileNum = 0;
-				if (resettingLayer == "e" && hasChallenge("e", 12)) keepMileNum = 16;
-				if (layers[resettingLayer].row == 2 && player.e.points.gte(36)) keepMileNum = 41;
-				if (keepMileNum > 0) {
-					for (let index = 0; index < player.g.milestones.length; index++) {
-						if (player.g.milestones[index] < keepMileNum) keepMile.push(player.g.milestones[index]);
-					};
-				};
-				layerDataReset("g", keep);
-				player.g.milestones = keepMile;
-			};
+		if (player.r.points.gte(6) || (layers[resettingLayer].row <= 3 && player.cb.unlocked))
+			keep.push("milestones", "lastMilestone");
+		if (keep.includes("milestones")) {
+			layerDataReset("g", keep);
+		} else {
+			let keepMile = [], keepMileNum = 0;
+			if (resettingLayer == "e" && hasChallenge("e", 12)) keepMileNum = 16;
+			if (layers[resettingLayer].row == 2 && player.e.points.gte(36)) keepMileNum = 41;
+			if (keepMileNum > 0)
+				for (let index = 0; index < player.g.milestones.length; index++)
+					if (player.g.milestones[index] < keepMileNum)
+						keepMile.push(player.g.milestones[index]);
+			layerDataReset("g", keep);
+			player.g.milestones = keepMile;
 		};
 	},
 	automate() {
@@ -193,7 +182,7 @@ addLayer("g", {
 	},
 	componentStyles: {
 		"buyable"() {return {"width": "210px", "height": "110px"}},
-		"clickable"() {return {'min-height': '30px', 'transform': 'none'}},
+		"clickable"() {return {"min-height": "30px", "transform": "none"}},
 	},
 	buyables: {
 		11: {
