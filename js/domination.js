@@ -132,10 +132,10 @@ addLayer("d", {
 		onPress() {if (player.d.unlocked) doReset("d")},
 	}],
 	doReset(resettingLayer) {
+		if (layers[resettingLayer].row <= this.row) return;
 		let keep = ["autoFOC", "autoSPE", "autoCLI", "autoDOM"];
-		if (player.w.points.gte(3)) keep.push("milestones", "lastMilestone");
-		else if (resettingLayer == "w") keep.push("milestones", "lastMilestone");
-		if (layers[resettingLayer].row > this.row) layerDataReset("d", keep);
+		if (player.w.points.gte(3) || resettingLayer == "w") keep.push("milestones", "lastMilestone");
+		layerDataReset("d", keep);
 	},
 	update(diff) {
 		if (!player.d.unlocks[0] && player.cb.points.gte(11)) player.d.unlocks[0] = true;
@@ -153,7 +153,7 @@ addLayer("d", {
 	},
 	componentStyles: {
 		"buyable"() {return {"width": "210px", "height": "110px"}},
-		"clickable"() {return {'min-height': '30px', 'transform': 'none'}},
+		"clickable"() {return {"min-height": "30px", "transform": "none"}},
 	},
 	buyables: {
 		11: {
@@ -608,7 +608,7 @@ addLayer("d", {
 			effect() {return 0.076},
 			effectDescription() {return "increase the complete domination effect of SPE by 0.076<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.l.unlocked},
 		},
 		31: {
 			requirement: 229,
@@ -617,7 +617,7 @@ addLayer("d", {
 			effect() {return 1},
 			effectDescription() {return "unlock another tier of ANACHRONISM<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.l.unlocked},
 		},
 		32: {
 			requirement: 246,
@@ -626,7 +626,7 @@ addLayer("d", {
 			effect() {return 0.62},
 			effectDescription() {return "increase the base complete domination effect of DOM by 0.62<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.l.unlocked},
 		},
 		33: {
 			requirement: 257,
@@ -634,7 +634,7 @@ addLayer("d", {
 			popupTitle: "Enhancement Acquired!",
 			effectDescription() {return "improve influence's second effect<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.l.unlocked},
 		},
 		34: {
 			requirement: 297,
@@ -642,7 +642,7 @@ addLayer("d", {
 			popupTitle: "Enhancement Acquired!",
 			effectDescription() {return "unlock an additional effect for influence<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.l.unlocked},
 		},
 		35: {
 			requirement: 313,
@@ -650,7 +650,7 @@ addLayer("d", {
 			popupTitle: "Enhancement Acquired!",
 			effectDescription() {return "improve influence's third effect<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.l.unlocked},
 		},
 		36: {
 			requirement: 340,
@@ -659,7 +659,7 @@ addLayer("d", {
 			effect() {return 0.11},
 			effectDescription() {return "increase the complete domination effect of CLI by 0.11<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.l.unlocked},
 		},
 		37: {
 			requirement: 359,
@@ -668,7 +668,7 @@ addLayer("d", {
 			effect() {return getBuyableAmount("d", 11).mul(2)},
 			effectDescription() {return "every base level of FOC gives two extra levels to FOC, SPE, CLI, and DOM<br>Effect: +" + formatWhole(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.l.unlocked},
 		},
 		38: {
 			requirement: 393,
@@ -676,7 +676,7 @@ addLayer("d", {
 			popupTitle: "Enhancement Acquired!",
 			effectDescription() {return "improve the 10th hybridization's second to last effect<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.l.unlocked},
 		},
 		39: {
 			requirement: 777,
@@ -685,7 +685,7 @@ addLayer("d", {
 			effect() {return player.d.points.pow_base(479250)},
 			effectDescription() {return "divide conscious being requirement based on domination points<br>and unlock something new..." + (false ? " (already unlocked)" : "") + "<br>Effect: /" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.l.unlocked},
 		},
 	},
 });

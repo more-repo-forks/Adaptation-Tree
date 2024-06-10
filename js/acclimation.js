@@ -200,11 +200,11 @@ addLayer("a", {
 		onPress() {if (player.a.unlocked) doReset("a")},
 	}],
 	doReset(resettingLayer) {
+		if (layers[resettingLayer].row >= this.row) player.a.populationTime = 0;
+		if (layers[resettingLayer].row <= this.row) return;
 		let keep = ["autoCRA", "autoFER", "autoANA", "autoSOV"];
-		if (player.ex.unlocked) keep.push("milestones", "lastMilestone");
-		else if (resettingLayer == "d") keep.push("milestones", "lastMilestone");
-		if (layers[resettingLayer].row > this.row) layerDataReset("a", keep);
-		player.a.populationTime = 0;
+		if (player.ex.unlocked || resettingLayer == "d") keep.push("milestones", "lastMilestone");
+		layerDataReset("a", keep);
 	},
 	update(diff) {
 		// add time
@@ -243,7 +243,7 @@ addLayer("a", {
 	},
 	componentStyles: {
 		"buyable"() {return {"width": "210px", "height": "110px"}},
-		"clickable"() {return {'min-height': '30px', 'transform': 'none'}},
+		"clickable"() {return {"min-height": "30px", "transform": "none"}},
 	},
 	buyables: {
 		11: {

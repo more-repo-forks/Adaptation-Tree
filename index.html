@@ -40,11 +40,11 @@
 	<div id="app">
 		<!-- canvas -->
 		<canvas id="treeCanvas" class="canvas" v-if="!(tmp.gameEnded && !player.keepGoing)"></canvas>
+		<div class="vl" v-if="player.navTab != 'none' && tmp.other.splitScreen && player.tab != 'none' && !(tmp.gameEnded && !player.keepGoing)"></div>
 		<!-- loading screen -->
 		<div v-if="false" class="fullWidth" style="display: flex; flex-direction: column; justify-content: center; background-color: black; z-index: 999999999999999">
 			<div><h1>Loading...</h1><br><h2>If this takes too long it means there was a serious error!</h2></div>
 		</div>
-		<div class="vl" v-if="player.navTab != 'none' && tmp.other.splitScreen && player.tab != 'none' && !(tmp.gameEnded && !player.keepGoing)"></div>
 		<!-- game end screen -->
 		<div v-if="tmp.gameEnded && !player.keepGoing" class="fullWidth">
 			<br><h2>{{modInfo.name}} {{VERSION.withoutName}}</h2><br><br>

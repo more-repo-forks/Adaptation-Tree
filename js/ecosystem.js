@@ -91,8 +91,9 @@ addLayer("ec", {
 		onPress() {if (player.ec.unlocked) doReset("ec")},
 	}],
 	doReset(resettingLayer) {
+		if (layers[resettingLayer].row <= this.row) return;
 		let keep = [];
-		if (layers[resettingLayer].row > this.row) layerDataReset("ec", keep);
+		layerDataReset("ec", keep);
 	},
 	update(diff) {
 		if (inChallenge("ec", 11)) {

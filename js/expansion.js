@@ -124,8 +124,9 @@ addLayer("ex", {
 		onPress() {if (player.ex.unlocked) doReset("ex")},
 	}],
 	doReset(resettingLayer) {
+		if (layers[resettingLayer].row <= this.row) return;
 		let keep = [];
-		if (layers[resettingLayer].row > this.row) layerDataReset("ex", keep);
+		layerDataReset("ex", keep);
 	},
 	update(diff) {
 		if (challengeCompletions("ec", 11) >= 7 && !player.ex.influenceUnlocked) player.ex.influenceUnlocked = true;

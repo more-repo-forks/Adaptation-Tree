@@ -76,22 +76,23 @@ addLayer("s", {
 		onPress() {if (player.s.unlocked) doReset("s")},
 	}],
 	doReset(resettingLayer) {
+		if (layers[resettingLayer].row <= this.row) return;
 		let keep = [];
-		if (player.ec.points.gte(6)) keep.push("upgrades");
-		else if (layers[resettingLayer].row <= 3 && player.cb.unlocked) keep.push("upgrades");
-		else if (layers[resettingLayer].row == 2 && player.e.points.gte(20)) keep.push("upgrades");
-		else if (resettingLayer == "g" && ((hasMilestone("g", 8) && hasChallenge("e", 11)) || inChallenge("e", 21))) keep.push("upgrades");
-		if (layers[resettingLayer].row > this.row) {
-			if (!keep.includes("upgrades") && resettingLayer == "g" && ((hasMilestone("g", 8) && player.e.unlocked) || hasChallenge("e", 11))) {
-				let keepUpg = [];
-				if (resettingLayer == "g" && ((hasMilestone("g", 8) && player.e.unlocked) || (!hasMilestone("g", 8) && hasChallenge("e", 11))))
-					for (let index = 0; index < player.s.upgrades.length; index++)
-						if (player.s.upgrades[index] < 40) keepUpg.push(player.s.upgrades[index]);
-				layerDataReset("s", keep);
-				player.s.upgrades = keepUpg;
-			} else {
-				layerDataReset("s", keep);
-			};
+		if (player.ec.points.gte(6)
+			|| (layers[resettingLayer].row <= 3 && player.cb.unlocked)
+			|| (layers[resettingLayer].row == 2 && player.e.points.gte(20))
+			|| (resettingLayer == "g" && inChallenge("e", 21))
+			|| (resettingLayer == "g" && hasMilestone("g", 8) && hasChallenge("e", 11))
+		) keep.push("upgrades");
+		if (!keep.includes("upgrades") && resettingLayer == "g" && ((hasMilestone("g", 8) && player.e.unlocked) || hasChallenge("e", 11))) {
+			let keepUpg = [];
+			if (resettingLayer == "g" && ((hasMilestone("g", 8) && player.e.unlocked) || (!hasMilestone("g", 8) && hasChallenge("e", 11))))
+				for (let index = 0; index < player.s.upgrades.length; index++)
+					if (player.s.upgrades[index] < 40) keepUpg.push(player.s.upgrades[index]);
+			layerDataReset("s", keep);
+			player.s.upgrades = keepUpg;
+		} else {
+			layerDataReset("s", keep);
 		};
 	},
 	upgrades: {

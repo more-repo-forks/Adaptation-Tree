@@ -380,11 +380,13 @@ addLayer("e", {
 		onPress() {if (player.e.unlocked) doReset("e")},
 	}],
 	doReset(resettingLayer) {
+		if (layers[resettingLayer].row <= this.row) return;
 		let keep = [];
-		if (player.ec.points.gte(3)) keep.push("challenges");
-		else if (layers[resettingLayer].row == 3 && player.cb.points.gte(6)) keep.push("challenges");
-		else if (resettingLayer == "sp") keep.push("challenges");
-		if (layers[resettingLayer].row > this.row) layerDataReset("e", keep);
+		if (player.ec.points.gte(3)
+			|| (layers[resettingLayer].row == 3 && player.cb.points.gte(6))
+			|| resettingLayer == "sp"
+		) keep.push("challenges");
+		layerDataReset("e", keep);
 	},
 	update(diff) {
 		if (hasMilestone("g", 24) && !player.e.challengesUnlocked) player.e.challengesUnlocked = true;
@@ -588,6 +590,7 @@ addLayer("e", {
 			enterable() {return player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)},
 			overrideResetsNothing: true,
 			onEnter() {if (!player.e.points.gte(1547)) player.g.milestones = []},
+			onExit() {this.onEnter()},
 			completionLimit() {
 				let limit = 22;
 				if (hasMilestone("a", 42)) limit += milestoneEffect("a", 42);

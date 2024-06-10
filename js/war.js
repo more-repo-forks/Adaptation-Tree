@@ -82,8 +82,9 @@ addLayer("w", {
 		onPress() {if (player.w.unlocked) doReset("w")},
 	}],
 	doReset(resettingLayer) {
+		if (layers[resettingLayer].row <= this.row) return;
 		let keep = [];
-		if (layers[resettingLayer].row > this.row) layerDataReset("w", keep);
+		layerDataReset("w", keep);
 	},
 	componentStyles: {
 		"contained-grid"() {return {"border": "2px solid #C77055", "padding": "16px"}},

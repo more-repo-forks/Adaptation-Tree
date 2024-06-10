@@ -47,8 +47,9 @@ addLayer("l", {
 		onPress() {if (player.l.unlocked) doReset("l")},
 	}],
 	doReset(resettingLayer) {
+		if (layers[resettingLayer].row <= this.row) return;
 		let keep = [];
-		if (layers[resettingLayer].row > this.row) layerDataReset("l", keep);
+		layerDataReset("l", keep);
 	},
 	componentStyles: {
 		"prestige-button"() {if (tmp.l.canReset && tmp.l.nodeStyle) return tmp.l.nodeStyle},

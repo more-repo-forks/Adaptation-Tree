@@ -101,10 +101,10 @@ addLayer("sp", {
 		onPress() {if (player.sp.unlocked) doReset("sp")},
 	}],
 	doReset(resettingLayer) {
+		if (layers[resettingLayer].row <= this.row) return;
 		let keep = [];
-		if (player.r.points.gte(3)) keep.push("challenges");
-		else if (resettingLayer == "ec") keep.push("challenges");
-		if (layers[resettingLayer].row > this.row) layerDataReset("sp", keep);
+		if (player.r.points.gte(3) || resettingLayer == "ec") keep.push("challenges");
+		layerDataReset("sp", keep);
 	},
 	update(diff) {
 		if (player.r.unlocked && canCompleteChallenge("sp", 21) && player.sp.challenges[21] < tmp.sp.challenges[21].completionLimit) player.sp.challenges[21]++;
