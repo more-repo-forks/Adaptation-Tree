@@ -43,6 +43,7 @@ addLayer("w", {
 		let base = 2;
 		if (challengeCompletions("ec", 11) >= 11 && challengeEffect("ec", 11)[10]) base -= challengeEffect("ec", 11)[10];
 		if (challengeCompletions("ec", 11) >= 13 && challengeEffect("ec", 11)[12]) base -= challengeEffect("ec", 11)[12];
+		if (challengeCompletions("ec", 11) >= 14 && challengeEffect("ec", 11)[13]) base -= challengeEffect("ec", 11)[13];
 		if (getGridData("w", 401)) base -= gridEffect("w", 401);
 		return base;
 	},

@@ -33,8 +33,9 @@ addLayer("cb", {
 	requires: new Decimal(1e15),
 	type: "static",
 	base() {
-		if (hasChallenge("sp", 19)) return 8;
-		return 10;
+		let base = 10;
+		if (hasChallenge("sp", 19)) base -= 2;
+		return base;
 	},
 	exponent: 1,
 	roundUpCost: true,
@@ -91,8 +92,8 @@ addLayer("cb", {
 		if (player.cb.focusUnlocked) {
 			let svg = "<svg viewBox='0 0 500 50' style='width: 500px; height: 50px'>";
 			let maximum = (hasChallenge("sp", 17) ?
-				Math.max((+getClickableState("cb", 11)) + (+getClickableState("cb", 12)), tmp.cb.effect[3] * 2)
-				: Math.max((+getClickableState("cb", 11)) + (+getClickableState("cb", 12)), tmp.cb.effect[3])
+				Math.max((getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0), tmp.cb.effect[3] * 2)
+				: Math.max((getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0), tmp.cb.effect[3])
 			);
 			if (maximum > 0) {
 				let right = (500 * getClickableState("cb", 12) / maximum);
@@ -142,7 +143,7 @@ addLayer("cb", {
 		};
 	},
 	shouldNotify() {
-		if (player.cb.focusUnlocked && (+getClickableState("cb", 11)) + (+getClickableState("cb", 12)) < tmp.cb.effect[3] && !inChallenge("sp", 16) && !hasChallenge("sp", 17)) return true;
+		if (player.cb.focusUnlocked && (getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0) < tmp.cb.effect[3] && !inChallenge("sp", 16) && !hasChallenge("sp", 17)) return true;
 	},
 	componentStyles: {
 		"prestige-button"() {if (tmp.cb.canReset && tmp.cb.nodeStyle) return tmp.cb.nodeStyle},
@@ -153,51 +154,51 @@ addLayer("cb", {
 			title: "Focus on evolution",
 			effect() {
 				if (inChallenge("sp", 16)) return 0;
-				return +getClickableState("cb", 11);
+				return getClickableState("cb", 11) || 0;
 			},
-			canClick() {return (+getClickableState("cb", 11)) + (+getClickableState("cb", 12)) < tmp.cb.effect[3]},
-			onClick() {setClickableState("cb", 11, (+getClickableState("cb", 11)) + 1)},
-			onHold() {setClickableState("cb", 11, (+getClickableState("cb", 11)) + 1)},
+			canClick() {return (getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0) < tmp.cb.effect[3]},
+			onClick() {setClickableState("cb", 11, (getClickableState("cb", 11) || 0) + 1)},
+			onHold() {setClickableState("cb", 11, (getClickableState("cb", 11) || 0) + 1)},
 			style: {"background-color": "#EE7770"},
 		},
 		12: {
 			title: "Focus on acclimation",
 			effect() {
 				if (inChallenge("sp", 16)) return new Decimal(1);
-				if (hasMilestone("a", 68)) return new Decimal(100).pow(+getClickableState("cb", 12));
-				return new Decimal(10).pow(+getClickableState("cb", 12));
+				if (hasMilestone("a", 68)) return new Decimal(100).pow(getClickableState("cb", 12) || 0);
+				return new Decimal(10).pow(getClickableState("cb", 12) || 0);
 			},
-			canClick() {return (+getClickableState("cb", 11)) + (+getClickableState("cb", 12)) < tmp.cb.effect[3]},
-			onClick() {setClickableState("cb", 12, (+getClickableState("cb", 12)) + 1)},
-			onHold() {setClickableState("cb", 12, (+getClickableState("cb", 12)) + 1)},
+			canClick() {return (getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0) < tmp.cb.effect[3]},
+			onClick() {setClickableState("cb", 12, (getClickableState("cb", 12) || 0) + 1)},
+			onHold() {setClickableState("cb", 12, (getClickableState("cb", 12) || 0) + 1)},
 			style: {"background-color": "#B44990"},
 		},
 		13: {
 			title: "MAX E",
 			effect() {
 				if (inChallenge("sp", 16)) return new Decimal(1);
-				if (hasMilestone("a", 61)) return new Decimal(88).pow(+getClickableState("cb", 11));
-				if (hasMilestone("a", 52)) return new Decimal(5).pow(+getClickableState("cb", 11));
+				if (hasMilestone("a", 61)) return new Decimal(88).pow(getClickableState("cb", 11) || 0);
+				if (hasMilestone("a", 52)) return new Decimal(5).pow(getClickableState("cb", 11) || 0);
 			},
-			canClick() {return (+getClickableState("cb", 11)) + (+getClickableState("cb", 12)) < tmp.cb.effect[3]},
-			onClick() {setClickableState("cb", 11, tmp.cb.effect[3] - (+getClickableState("cb", 12)))},
+			canClick() {return (getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0) < tmp.cb.effect[3]},
+			onClick() {setClickableState("cb", 11, tmp.cb.effect[3] - (getClickableState("cb", 12) || 0))},
 			style: {"width": "74px", "background-color": "#EE7770"},
 		},
 		14: {
 			title: "MAX A",
 			effect() {
 				if (inChallenge("sp", 16)) return 1;
-				if (hasMilestone("a", 68)) return ((+getClickableState("cb", 12)) * 4 + 1) ** 4;
-				if (hasMilestone("a", 57)) return ((+getClickableState("cb", 12)) * 2 + 1) ** 2;
-				if (hasMilestone("a", 52)) return ((+getClickableState("cb", 12)) + 1) ** 0.5;
+				if (hasMilestone("a", 68)) return ((getClickableState("cb", 12) || 0) * 4 + 1) ** 4;
+				if (hasMilestone("a", 57)) return ((getClickableState("cb", 12) || 0) * 2 + 1) ** 2;
+				if (hasMilestone("a", 52)) return ((getClickableState("cb", 12) || 0) + 1) ** 0.5;
 			},
-			canClick() {return (+getClickableState("cb", 11)) + (+getClickableState("cb", 12)) < tmp.cb.effect[3]},
-			onClick() {setClickableState("cb", 12, tmp.cb.effect[3] - (+getClickableState("cb", 11)))},
+			canClick() {return (getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0) < tmp.cb.effect[3]},
+			onClick() {setClickableState("cb", 12, tmp.cb.effect[3] - (getClickableState("cb", 11) || 0))},
 			style: {"width": "74px", "background-color": "#B44990"},
 		},
 		15: {
 			title: "Reset Focus",
-			canClick() {return (+getClickableState("cb", 11)) + (+getClickableState("cb", 12)) > 0},
+			canClick() {return (getClickableState("cb", 11) || 0) + (getClickableState("cb", 12) || 0) > 0},
 			onClick() {
 				setClickableState("cb", 11, 0);
 				setClickableState("cb", 12, 0);

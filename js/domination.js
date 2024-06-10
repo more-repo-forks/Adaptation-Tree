@@ -683,7 +683,7 @@ addLayer("d", {
 			requirementDescription: "The lucky enhancement",
 			popupTitle: "Enhancement Acquired!",
 			effect() {return player.d.points.pow_base(479250)},
-			effectDescription() {return "divide conscious being requirement based on domination points<br>and unlock something new..." + (false ? " (already unlocked)" : "") + "<br>Effect: /" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			effectDescription() {return "divide conscious being requirement based on domination points<br>and unlock something new..." + (player.l.unlocked ? " (already unlocked)" : "") + "<br>Effect: /" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("d", this.id - 1) || player.l.unlocked},
 		},

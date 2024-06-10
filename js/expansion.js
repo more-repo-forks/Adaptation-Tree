@@ -22,13 +22,16 @@ function getGeneratorEffect(id) {
 	let level = getBuyableAmount("ex", 31).toNumber();
 	let b = getBuyableAmount("ex", id);
 	let x = player.ex.extra[id - 11].floor();
-	return [
+	let eff = [
 		b.add(x).mul(b.pow(2)),
 		b.add(x).mul(b.pow(3)).mul(b.pow_base(2)),
 		b.add(x).mul(b.pow(5)).mul(b.pow_base(3)),
 		b.mul(10).add(x).mul(b.pow(12)).mul(b.pow_base(5)),
 		b.mul(player.ex.points).add(x).mul(b.pow(player.ex.points)).mul(b.pow_base(10)),
-	][level].mul(buyableEffect("ex", 21));
+	][level];
+	if (hasBuyable("ex", 21)) eff = eff.mul(buyableEffect("ex", 21));
+	if (tmp.l.effect[3]) eff = eff.mul(tmp.l.effect[3]);
+	return eff;
 };
 
 addLayer("ex", {
@@ -127,6 +130,9 @@ addLayer("ex", {
 		if (layers[resettingLayer].row <= this.row) return;
 		let keep = [];
 		layerDataReset("ex", keep);
+		for (const key in layers.ex.buyables)
+			if (Object.hasOwnProperty.call(layers.ex.buyables, key) && key < 20)
+				player.ex.extra[key - 11] = new Decimal(0);
 	},
 	update(diff) {
 		if (challengeCompletions("ec", 11) >= 7 && !player.ex.influenceUnlocked) player.ex.influenceUnlocked = true;

@@ -27,9 +27,10 @@ addLayer("l", {
 	effect() { return [
 		new Decimal(2).pow(player.l.points),
 		new Decimal(2).pow(player.l.points),
-		player.l.points.div(10).add(1),
+		player.l.points.div(4).add(1),
+		player.l.points.add(1),
 	]},
-	effectDescription() {return "which are multiplying power and stimulation gain by " + format(tmp.l.effect[0]) + "x, dividing the requirements of all resources from rows 2-5 by /" + format(tmp.l.effect[1]) + ", and multiplying conscious being gain (after all other modifiers) by " + format(tmp.l.effect[2]) + "x"},
+	effectDescription() {return "which are multiplying power and stimulation gain by " + format(tmp.l.effect[0]) + "x; dividing the requirements of all resources from rows 2-5 by /" + format(tmp.l.effect[1]) + "; directly multiplying conscious being gain by " + format(tmp.l.effect[2]) + "x; and multiplying focus gain, focus limit, and influence generator production by " + format(tmp.l.effect[3]) + "x"},
 	tabFormat: [
 		"main-display",
 		"prestige-button",

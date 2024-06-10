@@ -169,11 +169,7 @@ addLayer("sp", {
 				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does a species reset.<br>While in this hybridization, the original acclimation requirement base is set to 10.<br><br>Goal: " + formatWhole(this.goal) + " evolutions<br><br>Rewards: The base of the first species effect is multiplied by 2, the last conscious being effect is powered to 1.5, and species requirement is divided based on acclimation points past 200 (currently&nbsp;/" + format(this.rewardEffect()) + ")";
 				return "You need " + formatWhole(this.unlockReq) + " species to unlock this hybridization.";
 			},
-			rewardEffect() {
-				if (hasChallenge("sp", 19)) return new Decimal(1.04).pow(player.a.points.sub(200).pow(0.5)).max(1);
-				if (hasChallenge("sp", 16)) return new Decimal(1.02).pow(player.a.points.sub(200).pow(0.5)).max(1);
-				return new Decimal(1.01).pow(player.a.points.sub(200).pow(0.5)).max(1);
-			},
+			rewardEffect() {return new Decimal(hasChallenge("sp", 19) ? 1.04 : (hasChallenge("sp", 16) ? 1.02 : 1.01)).pow(player.a.points.sub(200).max(0).pow(0.5))},
 			goal: 1096,
 			canComplete() {return player.e.points.gte(this.goal)},
 			unlocked() {return hasChallenge("sp", this.id - 1) || hasChallenge("sp", this.id)},
