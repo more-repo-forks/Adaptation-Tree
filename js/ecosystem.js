@@ -28,6 +28,7 @@ addLayer("ec", {
 		let mult = new Decimal(1);
 		if (getGridData("w", 104)) mult = mult.div(gridEffect("w", 104));
 		if (tmp.r.effect[6]) mult = mult.div(tmp.r.effect[6]);
+		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
 		return mult;
 	},
 	effect() { return [

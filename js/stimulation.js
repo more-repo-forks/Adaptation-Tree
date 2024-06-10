@@ -31,6 +31,7 @@ addLayer("s", {
 		if (hasUpgrade("s", 65)) mult = mult.mul(upgradeEffect("s", 65));
 		if (hasUpgrade("s", 82)) mult = mult.mul(upgradeEffect("s", 82));
 		if (player.g.unlocked) mult = mult.mul(buyableEffect("g", 12));
+		if (tmp.l.effect[0]) mult = mult.mul(tmp.l.effect[0]);
 		return mult;
 	},
 	effect() {

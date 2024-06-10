@@ -244,6 +244,7 @@ addLayer("e", {
 		if (tmp.sp.effect[0]) mult = mult.div(tmp.sp.effect[0]);
 		if (tmp.cb.effect[0]) mult = mult.div(tmp.cb.effect[0]);
 		if (tmp.r.effect[4]) mult = mult.div(tmp.r.effect[4]);
+		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
 		if (inChallenge("sp", 21)) mult = mult.div(new Decimal(5).pow(player.a.points.add(player.a.milestones.length).add(player.sp.points).add(player.cb.points).add(tmp.cb.effect[3]).add(player.d.points)));
 		return mult;
 	},

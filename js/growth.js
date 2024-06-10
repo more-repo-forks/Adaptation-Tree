@@ -56,6 +56,7 @@ addLayer("g", {
 		if (player.g.unlocked) mult = mult.div(buyableEffect("g", 13));
 		if (hasChallenge("e", 13) && tmp.e.effect[5]) mult = mult.div(tmp.e.effect[5]);
 		if (tmp.a.effect[0]) mult = mult.div(tmp.a.effect[0]);
+		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
 		return mult;
 	},
 	resetsNothing() {return hasMilestone("g", 36)},

@@ -35,6 +35,7 @@ addLayer("r", {
 		let mult = new Decimal(1);
 		if (hasMilestone("d", 17)) mult = mult.div(milestoneEffect("d", 17));
 		if (tmp.ex.effect[5]) mult = mult.div(tmp.ex.effect[5]);
+		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
 		return mult;
 	},
 	effect() {

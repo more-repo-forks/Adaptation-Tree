@@ -40,6 +40,7 @@ addLayer("sp", {
 		if (getGridData("w", 103)) mult = mult.div(gridEffect("w", 103));
 		if (tmp.ec.effect[0]) mult = mult.div(tmp.ec.effect[0]);
 		if (tmp.r.effect[0]) mult = mult.div(tmp.r.effect[0]);
+		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
 		return mult;
 	},
 	effect() {
@@ -77,6 +78,8 @@ addLayer("sp", {
 		];
 	},
 	effectDescription() {return "which are dividing the evolution requirement by /" + format(tmp.sp.effect[0]) + ", multiplying the extra STR, WIS, AGI, and INT from evolutions by " + format(tmp.sp.effect[1]) + "x, and exponentiating evolution amount in the last evolution effect by ^" + format(tmp.sp.effect[2])},
+	resetsNothing() {return player.l.unlocked},
+	autoPrestige() {return player.l.unlocked},
 	tabFormat: [
 		"main-display",
 		"prestige-button",

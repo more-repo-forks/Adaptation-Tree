@@ -47,6 +47,12 @@ addLayer("cb", {
 		if (tmp.r.effect[1]) mult = mult.div(tmp.r.effect[1]);
 		if (tmp.ex.effect[0]) mult = mult.div(tmp.ex.effect[0]);
 		if (tmp.ex.effect[4]) mult = mult.div(tmp.ex.effect[4]);
+		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
+		return mult;
+	},
+	directMult() {
+		let mult = new Decimal(1);
+		if (tmp.l.effect[2]) mult = mult.mul(tmp.l.effect[2]);
 		return mult;
 	},
 	effect() {

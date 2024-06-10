@@ -64,6 +64,7 @@ addLayer("ex", {
 	gainMult() {
 		let mult = new Decimal(1);
 		if (getGridData("w", 102)) mult = mult.div(gridEffect("w", 102));
+		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
 		return mult;
 	},
 	effect() {

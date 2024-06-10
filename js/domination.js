@@ -43,6 +43,7 @@ addLayer("d", {
 		if (tmp.r.effect[5]) mult = mult.div(tmp.r.effect[5]);
 		if (tmp.ex.effect[1]) mult = mult.div(tmp.ex.effect[1]);
 		if (tmp.ex.effect[4]) mult = mult.div(tmp.ex.effect[4]);
+		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
 		return mult;
 	},
 	effect() {return player.points.add(1).pow(0.025)},
@@ -50,7 +51,7 @@ addLayer("d", {
 	tabFormat() {
 		// top text
 		let topText = "<div style='height: 25px; padding-top: ";
-		if (hasMilestone("r", 14)) topText += "20px'>";
+		if (hasMilestone("r", 14) || player.l.unlocked) topText += "20px'>";
 		else topText += "5px'>";
 		if (getClickableState("d", 14)) topText += "Only extra levels";
 		else if (getClickableState("d", 13)) topText += "Only base levels";
@@ -101,7 +102,7 @@ addLayer("d", {
 				["clickable", 14],
 			]],
 		];
-		if (hasMilestone("r", 14)) {
+		if (hasMilestone("r", 14) || player.l.unlocked) {
 			cols[0] = [["buyable", 11], ["blank", "10px"], ["toggle", ["d", "autoFOC"]], ["blank", "25px"], ["buyable", 12], ["blank", "10px"], ["toggle", ["d", "autoSPE"]]];
 			cols[2] = [["buyable", 13], ["blank", "10px"], ["toggle", ["d", "autoCLI"]], ["blank", "25px"], ["buyable", 14], ["blank", "10px"], ["toggle", ["d", "autoDOM"]]];
 			cols[1].push(["blank", "15px"], "respec-button");
@@ -119,7 +120,7 @@ addLayer("d", {
 			["row", [
 				["column", cols[0]], ["column", cols[1]], ["column", cols[2]],
 			]],
-			(hasMilestone("r", 14) ? undefined : "respec-button"),
+			(hasMilestone("r", 14) || player.l.unlocked ? undefined : "respec-button"),
 			"blank",
 			"milestones",
 		];
@@ -143,7 +144,7 @@ addLayer("d", {
 		if (!player.d.unlocks[3] && player.cb.points.gte(12) && player.sp.points.gte(16) && player.a.points.gte(325) && player.d.points.gte(1)) player.d.unlocks[3] = true;
 	},
 	automate() {
-		if (hasMilestone("r", 14)) {
+		if (hasMilestone("r", 14) || player.l.unlocked) {
 			if (player.d.autoFOC && layers.d.buyables[11].canAfford()) layers.d.buyables[11].buy();
 			if (player.d.autoSPE && layers.d.buyables[12].canAfford()) layers.d.buyables[12].buy();
 			if (player.d.autoCLI && layers.d.buyables[13].canAfford()) layers.d.buyables[13].buy();

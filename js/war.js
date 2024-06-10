@@ -9,14 +9,12 @@ const warUpgrades = [
 		{title: "Out of Place, Out of Time", desc: "unlocks another ANACHRONISM tier", effect: 1, cost: 4},
 		{title: "Displaced Chronology", desc: "unlocks another ANACHRONISM tier", effect: 1, cost: 8},
 		{title: "Decreased Habitable Area", desc() {return "increases the 10th hybridization's completion limit based on wars<br>(currently +" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points.mul(3)}, cost: 30},
-	],
-	[
+	], [
 		{title: "Enroaching Influence", desc: "unlocks another influence generator", cost: 4},
 		{title: "Greater Empowerment", desc: "reduces <b>Influence empowerment</b>'s cost", cost: 8},
 		{title: "Overarching Influence", desc: "unlocks another influence generator", cost: 16},
 		{title: "Generator Recycling", desc: "reduces the costs of influence generators", cost: 40},
-	],
-	[
+	], [
 		{title: "Conflict Escalation", desc: "decreases war requirement base by 0.025", effect: 0.025, cost: 25},
 		{title: "Battle Domination", desc: "decreases domination requirement base by 0.313", effect: 0.313, cost: 30},
 		{title: "Revolutionary Armaments", desc: "decreases revolution requirement base by 0.1", effect: 0.1, cost: 40},
@@ -55,6 +53,7 @@ addLayer("w", {
 	gainMult() {
 		let mult = new Decimal(1);
 		if (getBuyableAmount("d", 14).gte(tmp.d.buyables[14].purchaseLimit)) mult = mult.div(tmp.d.buyables[14].completionEffect);
+		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
 		return mult;
 	},
 	effect() {return player.w.points.pow(player.ex.points.gte(9) ? 1.6 : 1.5).round()},
@@ -132,14 +131,4 @@ addLayer("w", {
 		},
 		respecText: "respec battles",
 	},
-});
-
-addNode("blank", {
-	symbol: "L",
-	branches: [["ec", 2], "r", "cb", "ex", ["w", 2]],
-	position: 1,
-	nodeStyle: {"margin": "0 10px 0 10px", "border-radius": "50%"},
-	tooltipLocked() {return "Reach 250,000 conscious beings to unlock (You have " + formatWhole(player.cb.points) + " conscious beings)"},
-	row: 5,
-	layerShown() {return hasMilestone("d", 39)},
 });

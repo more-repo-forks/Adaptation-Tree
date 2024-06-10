@@ -3,14 +3,14 @@ const modInfo = {
 	id: "adaptation-tree-yrahcaz7",
 	author: "Yrahcaz7",
 	pointsName: "power",
-	modFiles: ["stimulation.js", "growth.js", "evolution.js", "acclimation.js", "species.js", "consciousness.js", "domination.js", "ecosystem.js", "revolution.js", "expansion.js", "war.js", "technical/tree.js"],
+	modFiles: ["stimulation.js", "growth.js", "evolution.js", "acclimation.js", "species.js", "consciousness.js", "domination.js", "ecosystem.js", "revolution.js", "expansion.js", "war.js", "leader.js", "technical/tree.js"],
 	initialStartPoints: new Decimal(0),
 	offlineLimit: 1, // in hours
 }
 
 const VERSION = {
-	num: "2.3",
-	name: "Declaration of War",
+	num: "2.4",
+	name: "The Era of Leaders",
 };
 
 const winText = "Congratulations!<br>You have reached the end and beaten this game (for now),<br>but there is more content coming soon...";
@@ -35,7 +35,6 @@ function getPointPotential() {
 	if (hasUpgrade("s", 14)) gain = gain.add(upgradeEffect("s", 14));
 	if (hasUpgrade("s", 15)) gain = gain.add(upgradeEffect("s", 15));
 	// multiply power gain
-	if (player.s.unlocked) gain = gain.mul(tmp.s.effect);
 	if (hasUpgrade("s", 31)) gain = gain.mul(upgradeEffect("s", 31));
 	if (hasUpgrade("s", 32)) gain = gain.mul(upgradeEffect("s", 32));
 	if (hasUpgrade("s", 33)) gain = gain.mul(upgradeEffect("s", 33));
@@ -48,6 +47,8 @@ function getPointPotential() {
 	if (hasUpgrade("s", 81)) gain = gain.mul(upgradeEffect("s", 81));
 	if (player.g.unlocked) gain = gain.mul(buyableEffect("g", 11));
 	if (hasChallenge("e", 21) && challengeEffect("e", 21)[3]) gain = gain.mul(challengeEffect("e", 21)[3]);
+	gain = gain.mul(tmp.s.effect);
+	if (tmp.l.effect[0]) gain = gain.mul(tmp.l.effect[0]);
 	// exponentiate power gain
 	if (hasChallenge("e", 19)) gain = gain.pow(1.02);
 	// special effects
@@ -80,12 +81,12 @@ let displayThings = [
 		if (tmp.other.oompsMag != 0 && options.showOOMs) return "(" + format(tmp.other.oomps) + " OOM" + (tmp.other.oompsMag < 0 ? "^OOM" : (tmp.other.oompsMag > 1 ? "^" + tmp.other.oompsMag : "")) + "s/sec)";
 		return "(" + format(getPointPotential()) + " max power)";
 	},
-	() => "<br>current endgame is at 250,000 " + (player.cb.unlocked ? "conscious beings" : "???"),
+	() => "<br>current endgame is at 300,000 " + (player.cb.unlocked ? "conscious beings" : "???"),
 ];
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.cb.points.gte(250000);
+	return player.cb.points.gte(300000);
 };
 
 // Style for the background, can be a function

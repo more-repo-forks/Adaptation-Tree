@@ -59,6 +59,7 @@ addLayer("a", {
 		if (tmp.cb.effect[1]) mult = mult.div(tmp.cb.effect[1]);
 		if (tmp.r.effect[7]) mult = mult.div(tmp.r.effect[7]);
 		if (tmp.ex.effect[3]) mult = mult.div(tmp.ex.effect[3]);
+		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
 		return mult;
 	},
 	effect() {
