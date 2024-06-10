@@ -253,7 +253,7 @@ addLayer("sp", {
 		19: {
 			name: "9th Hybridization",
 			fullDisplay() {
-				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does a species reset.<br>While in this hybridization, all previous in hybridization effects are applied.<br><br>Goal: " + formatWhole(this.goal) + " evolutions<br><br>Rewards: The 4th hybridization's last effect is improved again; the base consciousness and domination requirements are decreased by 2 and 0.16 respectively; and a new layer is unlocked" + (player.ec.unlocked ? " (already unlocked)" : "");
+				if (player.sp.points.gte(this.unlockReq) || hasChallenge("sp", this.id)) return "Entering this hybridization does a species reset.<br>While in this hybridization, all previous in hybridization effects are applied.<br><br>Goal: " + formatWhole(this.goal) + " evolutions<br><br>Rewards: The 4th hybridization's last effect is improved again; the base conscious being and domination requirements are decreased by 2 and 0.16 respectively; and a new layer is unlocked" + (player.ec.unlocked ? " (already unlocked)" : "");
 				return "You need " + formatWhole(this.unlockReq) + " species to unlock this hybridization.";
 			},
 			goal: 301,
@@ -276,7 +276,7 @@ addLayer("sp", {
 				new Decimal(1e10).pow(challengeCompletions("sp", this.id)),
 				new Decimal(2).pow(challengeCompletions("sp", this.id)),
 				new Decimal(100).pow(challengeCompletions("sp", this.id)),
-				new Decimal(hasMilestone("d", 28) ? 1.45 : 1.353).pow(challengeCompletions("sp", this.id)),
+				new Decimal(hasMilestone("d", 38) ? 1.484 : hasMilestone("d", 28) ? 1.45 : 1.353).pow(challengeCompletions("sp", this.id)),
 				(hasMilestone("d", 9) ? new Decimal(hasMilestone("d", 18) ? 1.85 : 1.25).pow(challengeCompletions("sp", this.id)) : new Decimal(1)),
 			]},
 			goal() {return [166, 237, 288, 340, 436, 555, 617, 755, 932, 1001, 1110, 1183, 1317, 1446, 1510, 1589, 1665, 1737, 1875, 2024, 2115, 2440][challengeCompletions("sp", this.id)] || (challengeCompletions("sp", this.id) - 16) * 500},
@@ -289,6 +289,7 @@ addLayer("sp", {
 				let limit = 5;
 				if (tmp.ec.effect[1]) limit += tmp.ec.effect[1].toNumber();
 				if (getGridData("w", 201)) limit += gridEffect("w", 201).toNumber();
+				if (getGridData("w", 204)) limit += gridEffect("w", 204).toNumber();
 				return limit;
 			},
 			countsAs: [11, 12, 13, 14, 15, 16, 17, 18, 19],

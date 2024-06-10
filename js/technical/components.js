@@ -180,6 +180,11 @@ function loadVue() {
 		props: ["layer", "data"],
 		template: components.grid,
 	});
+	// data = the max width of the grid or [max width, array of rows]
+	Vue.component("contained-grid", {
+		props: ["layer", "data"],
+		template: components.contained_grid,
+	});
 	// data = id
 	Vue.component("gridable", {
 		props: ["layer", "data"],

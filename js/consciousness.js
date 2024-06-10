@@ -43,6 +43,7 @@ addLayer("cb", {
 	gainMult() {
 		let mult = new Decimal(1);
 		if (hasChallenge("sp", 21) && challengeEffect("sp", 21)[2]) mult = mult.div(challengeEffect("sp", 21)[2]);
+		if (hasMilestone("d", 39)) mult = mult.div(milestoneEffect("d", 39));
 		if (tmp.r.effect[1]) mult = mult.div(tmp.r.effect[1]);
 		if (tmp.ex.effect[0]) mult = mult.div(tmp.ex.effect[0]);
 		if (tmp.ex.effect[4]) mult = mult.div(tmp.ex.effect[4]);

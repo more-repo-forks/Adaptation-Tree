@@ -3,15 +3,24 @@ const warUpgrades = [
 		{title: "Display of Power", desc() {return "divides domination requirement based on wars<br>(currently /" + format(this.effect()) + ")"}, effect() {return player.w.points.add(2)}, cost: 1},
 		{title: "Violent Expansion", desc() {return "divides expansion requirement based on wars<br>(currently /" + format(this.effect()) + ")"}, effect() {return player.w.points.div(2).add(1)}, cost: 2},
 		{title: "Wilderness Exploration", desc() {return "divides species requirement based on wars<br>(currently /" + format(this.effect()) + ")"}, effect() {return player.w.points.pow_base(1e5)}, cost: 4},
+		{title: "Nature Investigation", desc() {return "divides ecosystem requirement based on wars<br>(currently /" + format(this.effect()) + ")"}, effect() {return player.w.points.div(3).add(1)}, cost: 25},
 	], [
 		{title: "Forced Migration", desc() {return "increases the 10th hybridization's completion limit based on wars<br>(currently +" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points.mul(2)}, cost: 2},
 		{title: "Out of Place, Out of Time", desc: "unlocks another ANACHRONISM tier", effect: 1, cost: 4},
 		{title: "Displaced Chronology", desc: "unlocks another ANACHRONISM tier", effect: 1, cost: 8},
+		{title: "Decreased Habitable Area", desc() {return "increases the 10th hybridization's completion limit based on wars<br>(currently +" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points.mul(3)}, cost: 30},
 	],
 	[
 		{title: "Enroaching Influence", desc: "unlocks another influence generator", cost: 4},
 		{title: "Greater Empowerment", desc: "reduces <b>Influence empowerment</b>'s cost", cost: 8},
-		{title: "???", desc: "coming soon!", cost: 16},
+		{title: "Overarching Influence", desc: "unlocks another influence generator", cost: 16},
+		{title: "Generator Recycling", desc: "reduces the costs of influence generators", cost: 40},
+	],
+	[
+		{title: "Conflict Escalation", desc: "decreases war requirement base by 0.025", effect: 0.025, cost: 25},
+		{title: "Battle Domination", desc: "decreases domination requirement base by 0.313", effect: 0.313, cost: 30},
+		{title: "Revolutionary Armaments", desc: "decreases revolution requirement base by 0.1", effect: 0.1, cost: 40},
+		{title: "???", desc: "coming soon!", cost: 55},
 	],
 ];
 
@@ -35,6 +44,8 @@ addLayer("w", {
 	base() {
 		let base = 2;
 		if (challengeCompletions("ec", 11) >= 11 && challengeEffect("ec", 11)[10]) base -= challengeEffect("ec", 11)[10];
+		if (challengeCompletions("ec", 11) >= 13 && challengeEffect("ec", 11)[12]) base -= challengeEffect("ec", 11)[12];
+		if (getGridData("w", 401)) base -= gridEffect("w", 401);
 		return base;
 	},
 	exponent: 1,
@@ -46,7 +57,7 @@ addLayer("w", {
 		if (getBuyableAmount("d", 14).gte(tmp.d.buyables[14].purchaseLimit)) mult = mult.div(tmp.d.buyables[14].completionEffect);
 		return mult;
 	},
-	effect() {return player.w.points.pow(1.5).round()},
+	effect() {return player.w.points.pow(player.ex.points.gte(9) ? 1.6 : 1.5).round()},
 	effectDescription() {return "which are giving " + formatWhole(tmp.w.effect) + " battles, of which " + formatWhole(tmp.w.effect.sub(player.w.spent)) + " are unspent"},
 	tabFormat: [
 		"main-display",
@@ -56,10 +67,11 @@ addLayer("w", {
 			let text = "You keep all domination enhancements on war resets.<br><br>After declaring war 1 time, consciousness resets no longer reset anything<br>and you automatically claim potential conscious beings.<br><br>The above extra effects will not go away even if this layer is reset.";
 			if (player.w.points.gte(2)) text += "<br><br>After declaring war 3 times, you keep domination enhancements on all resets.";
 			if (player.w.points.gte(5)) text += "<br>After declaring war 6 times, you bulk 10x stats from rows 3 and below.";
+			if (player.w.points.gte(8)) text += "<br>After declaring war 9 times, the first war effect is improved.";
 			return text;
 		}],
 		"blank",
-		"grid",
+		["contained-grid", "488px"],
 		"blank",
 		"respec-button",
 		"blank",
@@ -75,11 +87,18 @@ addLayer("w", {
 		if (layers[resettingLayer].row > this.row) layerDataReset("w", keep);
 	},
 	componentStyles: {
+		"contained-grid"() {return {"border": "2px solid #C77055", "padding": "16px"}},
 		"gridable"() {return {"width": "120px", "height": "120px", "border-radius": "0px"}},
 	},
 	grid: {
-		rows: 3,
-		cols: 3,
+		rows() {
+			let size = 3;
+			if (hasMilestone("r", 13)) size++;
+			return size;
+		},
+		cols() {return this.rows()},
+		maxRows: 4,
+		maxCols: 4,
 		getStartData(id) {return 0},
 		getCanClick(data, id) {return data == 0 && tmp[this.layer].effect.sub(player[this.layer].spent).gte(warUpgrades[Math.floor(id / 100) - 1][id % 100 - 1].cost) && (id == 101 || getGridData(this.layer, id - 1) || getGridData(this.layer, id + 1) || getGridData(this.layer, id - 100) || getGridData(this.layer, id + 100))},
 		onClick(data, id) {

@@ -26,6 +26,7 @@ addLayer("ec", {
 	resetDescription: "Ecologically succeed for ",
 	gainMult() {
 		let mult = new Decimal(1);
+		if (getGridData("w", 104)) mult = mult.div(gridEffect("w", 104));
 		if (tmp.r.effect[6]) mult = mult.div(tmp.r.effect[6]);
 		return mult;
 	},
@@ -114,7 +115,7 @@ addLayer("ec", {
 				};
 				return "You need 18 completions of the 10th hybridization<br>to unlock ANACHRONISM.";
 			},
-			rewardEffect() {return [0.1, null, 3, 0.125, 0.05, 3, null, null, null, 0.03, 0.45, 0.1, null]},
+			rewardEffect() {return [0.1, null, 3, 0.125, 0.05, 3, null, null, null, 0.03, 0.45, 0.1, 0.1]},
 			rewards: [
 				"domination requirement base is decreased by 0.1",
 				() => "three new layers are unlocked" + (player.r.unlocked ? " (" + (player.w.unlocked ? "" : (player.ex.unlocked ? 2 : 1) + "/3 ") + "already unlocked)" : ""),
@@ -128,7 +129,7 @@ addLayer("ec", {
 				"domination requirement base is decreased by 0.03",
 				"war requirement base is decreased by 0.45",
 				"revolution requirement base is decreased by 0.1",
-				"coming soon!",
+				"war requirement base is decreased by 0.1",
 			],
 			goal() {return [167098, 155454, 155040, 869153600, 2.874e9, 7.992e9, 3.082e11, 4.73e11, 1.228e12, 7.191e12, 9.733e12, 1.359e13, 5.222e13][Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1)] || Infinity},
 			canComplete() {return player.g.points.gte(this.goal())},

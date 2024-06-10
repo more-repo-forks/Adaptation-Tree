@@ -24,6 +24,7 @@ addLayer("r", {
 		let base = 5;
 		if (challengeCompletions("ec", 11) >= 3 && challengeEffect("ec", 11)[2]) base -= challengeEffect("ec", 11)[2];
 		if (challengeCompletions("ec", 11) >= 12 && challengeEffect("ec", 11)[11]) base -= challengeEffect("ec", 11)[11];
+		if (getGridData("w", 403)) base -= gridEffect("w", 403);
 		return base;
 	},
 	exponent: 1,
@@ -51,12 +52,14 @@ addLayer("r", {
 		if (hasMilestone("r", 10)) eff[3] = eff[3].mul(milestoneEffect("r", 10));
 		if (hasMilestone("r", 11)) {
 			if (eff[4].gte("1e10000000")) eff[4] = eff[4].div("1e10000000").pow(0.1).mul("1e10000000");
+			if (eff[4].gte("1e100000000")) eff[4] = eff[4].div("1e100000000").pow(0.1).mul("1e100000000");
 		} else {
 			if (eff[4].gte("1e5555")) eff[4] = eff[4].div("1e5555").pow(0.1).mul("1e5555");
 			if (eff[4].gte("1e200000")) eff[4] = eff[4].div("1e200000").log10().pow(2000).mul("1e200000");
 		};
 		if (eff[7].gte("1e3333")) eff[7] = eff[7].div("1e3333").pow(1/3).mul("1e3333");
 		if (eff[7].gte("1e100000")) eff[7] = eff[7].div("1e100000").pow(0.1).mul("1e100000");
+		if (eff[7].gte("1e1000000")) eff[7] = eff[7].div("1e1000000").pow(0.1).mul("1e1000000");
 		return eff;
 	},
 	effectDescription() {return "which are dividing the species requirement by /" + format(tmp.r.effect[0]) + ", dividing conscious being requirement by /" + format(tmp.r.effect[1]) + ", multiplying the completion limit of the 10th retrogression by " + format(tmp.r.effect[2]) + "x (" + (tmp.r.effect[2].gte(2) ? "maxed" : "rounded down") + "), and generating " + format(tmp.r.effect[3]) + " change per second (with a limit of " + format(getMaxChange()) + ")"},
@@ -197,6 +200,22 @@ addLayer("r", {
 			requirementDescription: "13th innovation",
 			popupTitle: "Innovation Acquired!",
 			effectDescription() {return "improve the first revolution effect<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		13: {
+			requirement: 5e35,
+			requirementDescription: "14th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "expand the battle grid<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		14: {
+			requirement: 1e39,
+			requirementDescription: "15th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "unlock more automation for domination<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
 			unlocked() {return hasMilestone("r", this.id - 1)},
 		},
