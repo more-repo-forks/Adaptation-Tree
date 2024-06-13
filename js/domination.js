@@ -189,7 +189,9 @@ addLayer("d", {
 			extra() {
 				let extra = new Decimal(0);
 				if (hasMilestone("d", 37)) extra = extra.add(milestoneEffect("d", 37));
-				return extra;
+				if (getGridData("w", 501)) extra = extra.add(gridEffect("w", 501));
+				if (getGridData("w", 503)) extra = extra.add(gridEffect("w", 503));
+				return extra.floor();
 			},
 			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return {"border-color": "#E03330"}},
 		},
@@ -225,7 +227,9 @@ addLayer("d", {
 			extra() {
 				let extra = new Decimal(0);
 				if (hasMilestone("d", 37)) extra = extra.add(milestoneEffect("d", 37));
-				return extra;
+				if (getGridData("w", 501)) extra = extra.add(gridEffect("w", 501));
+				if (getGridData("w", 503)) extra = extra.add(gridEffect("w", 503));
+				return extra.floor();
 			},
 			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return {"border-color": "#E03330"}},
 		},
@@ -261,7 +265,9 @@ addLayer("d", {
 			extra() {
 				let extra = new Decimal(0);
 				if (hasMilestone("d", 37)) extra = extra.add(milestoneEffect("d", 37));
-				return extra;
+				if (getGridData("w", 501)) extra = extra.add(gridEffect("w", 501));
+				if (getGridData("w", 503)) extra = extra.add(gridEffect("w", 503));
+				return extra.floor();
 			},
 			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return {"border-color": "#E03330"}},
 		},
@@ -300,7 +306,9 @@ addLayer("d", {
 			extra() {
 				let extra = new Decimal(0);
 				if (hasMilestone("d", 37)) extra = extra.add(milestoneEffect("d", 37));
-				return extra;
+				if (getGridData("w", 501)) extra = extra.add(gridEffect("w", 501));
+				if (getGridData("w", 503)) extra = extra.add(gridEffect("w", 503));
+				return extra.floor();
 			},
 			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return {"border-color": "#E03330"}},
 		},
@@ -694,6 +702,23 @@ addLayer("d", {
 			requirementDescription: "Influence enhancement IV",
 			popupTitle: "Enhancement Acquired!",
 			effectDescription() {return "improve influence's second effect<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		41: {
+			requirement: 1605,
+			requirementDescription: "Battle enhancement I",
+			popupTitle: "Enhancement Acquired!",
+			effectDescription() {return "expand the battle grid<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		42: {
+			requirement: 2699,
+			requirementDescription: "Influence enhancement V",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return getBuyableAmount("ex", 22)},
+			effectDescription() {return "make each <b>Influence empowerment</b> give an extra level to <b>Influence tickspeed</b><br>Effect: +" + formatWhole(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("d", this.id - 1)},
 		},

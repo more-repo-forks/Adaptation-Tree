@@ -195,12 +195,12 @@ function addLayer(layerName, layerData, tabLayers = null) { // Call this to add 
 		let format = {};
 		for (id in tabLayers) {
 			layer = tabLayers[id];
-			format[(layers[layer].name ? layers[layer].name : layer)] = {
+			format[layers[layer].name ? layers[layer].name : layer] = {
 				embedLayer: layer,
 				buttonStyle() {
-					if (!tmp[this.embedLayer].nodeStyle)
+					if (!tmp[this.embedLayer].nodeStyle) {
 						return {"border-color": tmp[this.embedLayer].color};
-					else {
+					} else {
 						style = tmp[this.embedLayer].nodeStyle;
 						if (style["border-color"] === undefined)
 							style["border-color"] = tmp[this.embedLayer].color;

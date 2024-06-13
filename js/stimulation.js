@@ -78,7 +78,8 @@ addLayer("s", {
 	doReset(resettingLayer) {
 		if (layers[resettingLayer].row <= this.row) return;
 		let keep = [];
-		if (player.ec.points.gte(6)
+		if (player.l.points.gte(3)
+			|| player.ec.points.gte(6)
 			|| (layers[resettingLayer].row <= 3 && player.cb.unlocked)
 			|| (layers[resettingLayer].row == 2 && player.e.points.gte(20))
 			|| (resettingLayer == "g" && inChallenge("e", 21))

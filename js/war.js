@@ -4,21 +4,31 @@ const warUpgrades = [
 		{title: "Violent Expansion", desc() {return "divides expansion requirement based on wars<br>(currently /" + format(this.effect()) + ")"}, effect() {return player.w.points.div(2).add(1)}, cost: 2},
 		{title: "Wilderness Exploration", desc() {return "divides species requirement based on wars<br>(currently /" + format(this.effect()) + ")"}, effect() {return player.w.points.pow_base(1e5)}, cost: 4},
 		{title: "Nature Investigation", desc() {return "divides ecosystem requirement based on wars<br>(currently /" + format(this.effect()) + ")"}, effect() {return player.w.points.div(3).add(1)}, cost: 25},
+		{title: "Solace Seeking", desc() {return "divides conscious being requirement based on wars<br>(currently /" + format(this.effect()) + ")"}, effect() {return player.w.points.pow_base("1e5000")}, cost: 150},
 	], [
 		{title: "Forced Migration", desc() {return "increases the 10th hybridization's completion limit based on wars<br>(currently +" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points.mul(2)}, cost: 2},
 		{title: "Out of Place, Out of Time", desc: "unlocks another ANACHRONISM tier", effect: 1, cost: 4},
 		{title: "Displaced Chronology", desc: "unlocks another ANACHRONISM tier", effect: 1, cost: 8},
 		{title: "Decreased Habitable Area", desc() {return "increases the 10th hybridization's completion limit based on wars<br>(currently +" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points.mul(3)}, cost: 30},
+		{title: "Ancient Tactics", desc: "unlocks another ANACHRONISM tier", effect: 1, cost: 200},
 	], [
 		{title: "Enroaching Influence", desc: "unlocks another influence generator", cost: 4},
 		{title: "Greater Empowerment", desc: "reduces <b>Influence empowerment</b>'s cost", cost: 8},
-		{title: "Overarching Influence", desc: "unlocks another influence generator", cost: 16},
+		{title: "Surrounding Influence", desc: "unlocks another influence generator", cost: 16},
 		{title: "Generator Recycling", desc: "reduces the costs of influence generators", cost: 40},
+		{title: "Overarching Influence", desc: "unlocks another influence generator", cost: 250},
 	], [
 		{title: "Conflict Escalation", desc: "decreases war requirement base by 0.025", effect: 0.025, cost: 25},
 		{title: "Battle Domination", desc: "decreases domination requirement base by 0.313", effect: 0.313, cost: 30},
 		{title: "Revolutionary Armaments", desc: "decreases revolution requirement base by 0.1", effect: 0.1, cost: 40},
 		{title: "New Frontiers", desc: "decreases species requirement base by 0.075", effect: 0.075, cost: 55},
+		{title: "???", desc: "coming soon!", cost: 300},
+	], [
+		{title: "Further Domination", desc() {return "gives extra FOC, SPE, CLI, and DOM based on wars<br>(currently +" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points}, cost: 150},
+		{title: "Further Acclimation", desc() {return "gives extra CRA, FER, ANA, and SOV based on wars<br>(currently +" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points.mul(75000).floor()}, cost: 200},
+		{title: "Military Domination", desc() {return "gives extra FOC, SPE, CLI, and DOM based on wars<br>(currently +" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points.mul(2)}, cost: 250},
+		{title: "???", desc: "coming soon!", cost: 300},
+		{title: "???", desc: "coming soon!", cost: 350},
 	],
 ];
 
@@ -44,12 +54,13 @@ addLayer("w", {
 		if (challengeCompletions("ec", 11) >= 11 && challengeEffect("ec", 11)[10]) base -= challengeEffect("ec", 11)[10];
 		if (challengeCompletions("ec", 11) >= 13 && challengeEffect("ec", 11)[12]) base -= challengeEffect("ec", 11)[12];
 		if (challengeCompletions("ec", 11) >= 14 && challengeEffect("ec", 11)[13]) base -= challengeEffect("ec", 11)[13];
+		if (hasMilestone("r", 17)) base -= milestoneEffect("r", 17);
 		if (getGridData("w", 401)) base -= gridEffect("w", 401);
 		return base;
 	},
 	exponent: 1,
 	roundUpCost: true,
-	canBuyMax() {return false},
+	canBuyMax() {return player.l.points.gte(3)},
 	resetDescription: "Declare war for ",
 	gainMult() {
 		let mult = new Decimal(1);
@@ -76,7 +87,7 @@ addLayer("w", {
 			return text;
 		}],
 		"blank",
-		["contained-grid", "488px"],
+		["contained-grid", "calc(100% - 34px)"],
 		"blank",
 		"respec-button",
 		"blank",
@@ -93,18 +104,19 @@ addLayer("w", {
 		layerDataReset("w", keep);
 	},
 	componentStyles: {
-		"contained-grid"() {return {"border": "2px solid #C77055", "padding": "16px"}},
+		"contained-grid"() {return {"box-sizing": "border-box", "border": "2px solid #C77055", "padding": "16px"}},
 		"gridable"() {return {"width": "120px", "height": "120px", "border-radius": "0px"}},
 	},
 	grid: {
 		rows() {
 			let size = 3;
+			if (hasMilestone("d", 41)) size++;
 			if (hasMilestone("r", 13)) size++;
 			return size;
 		},
 		cols() {return this.rows()},
-		maxRows: 4,
-		maxCols: 4,
+		maxRows: warUpgrades.length,
+		maxCols: warUpgrades[0].length,
 		getStartData(id) {return 0},
 		getCanClick(data, id) {return data == 0 && tmp[this.layer].effect.sub(player[this.layer].spent).gte(warUpgrades[Math.floor(id / 100) - 1][id % 100 - 1].cost) && (id == 101 || getGridData(this.layer, id - 1) || getGridData(this.layer, id + 1) || getGridData(this.layer, id - 100) || getGridData(this.layer, id + 100))},
 		onClick(data, id) {

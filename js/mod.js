@@ -81,12 +81,12 @@ let displayThings = [
 		if (tmp.other.oompsMag != 0 && options.showOOMs) return "(" + format(tmp.other.oomps) + " OOM" + (tmp.other.oompsMag < 0 ? "^OOM" : (tmp.other.oompsMag > 1 ? "^" + tmp.other.oompsMag : "")) + "s/sec)";
 		return "(" + format(getPointPotential()) + " max power)";
 	},
-	() => "<br>current endgame is at 1,605 " + (player.d.unlocked ? "wars" : "???"),
+	() => "<br>current endgame is at 15 " + (player.ec.unlocked ? "ANACHRONISM completions" : "???"),
 ];
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.d.points.gte(1605);
+	return challengeCompletions("ec", 11) >= 15;
 };
 
 // Style for the background, can be a function

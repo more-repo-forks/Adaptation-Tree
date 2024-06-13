@@ -281,6 +281,7 @@ addLayer("a", {
 				if (hasMilestone("a", 24)) extra = extra.add(milestoneEffect("a", 24));
 				if (hasMilestone("a", 43)) extra = extra.add(milestoneEffect("a", 43));
 				if (hasMilestone("a", 67)) extra = extra.add(milestoneEffect("a", 67));
+				if (getGridData("w", 502)) extra = extra.add(gridEffect("w", 502));
 				if (tmp.ex.effect[2]) extra = extra.add(tmp.ex.effect[2]);
 				return extra.floor();
 			},
@@ -318,6 +319,7 @@ addLayer("a", {
 				if (hasMilestone("a", 22)) extra = extra.add(milestoneEffect("a", 22));
 				if (hasMilestone("a", 43)) extra = extra.add(milestoneEffect("a", 43));
 				if (hasMilestone("a", 67)) extra = extra.add(milestoneEffect("a", 67));
+				if (getGridData("w", 502)) extra = extra.add(gridEffect("w", 502));
 				if (tmp.ex.effect[2]) extra = extra.add(tmp.ex.effect[2]);
 				return extra.floor();
 			},
@@ -357,6 +359,7 @@ addLayer("a", {
 				if (hasMilestone("a", 24)) extra = extra.add(milestoneEffect("a", 24));
 				if (hasMilestone("a", 43)) extra = extra.add(milestoneEffect("a", 43));
 				if (hasMilestone("a", 67)) extra = extra.add(milestoneEffect("a", 67));
+				if (getGridData("w", 502)) extra = extra.add(gridEffect("w", 502));
 				if (tmp.ex.effect[2]) extra = extra.add(tmp.ex.effect[2]);
 				return extra.floor();
 			},
@@ -396,6 +399,7 @@ addLayer("a", {
 				if (hasMilestone("a", 24)) extra = extra.add(milestoneEffect("a", 24));
 				if (hasMilestone("a", 43)) extra = extra.add(milestoneEffect("a", 43));
 				if (hasMilestone("a", 67)) extra = extra.add(milestoneEffect("a", 67));
+				if (getGridData("w", 502)) extra = extra.add(gridEffect("w", 502));
 				if (tmp.ex.effect[2]) extra = extra.add(tmp.ex.effect[2]);
 				return extra.floor();
 			},

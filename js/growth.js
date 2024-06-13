@@ -60,7 +60,7 @@ addLayer("g", {
 		return mult;
 	},
 	resetsNothing() {return hasMilestone("g", 36)},
-	autoPrestige() {return hasMilestone("g", 36) && player.e.points.gte(60) && player.sp.unlocked},
+	autoPrestige() {return (hasMilestone("g", 36) && player.e.points.gte(60) && player.sp.unlocked) || player.l.points.gte(3)},
 	effectDescription() {return "of which " + formatWhole(player[this.layer].points.sub(player[this.layer].spent)) + " are unspent"},
 	tabFormat() {
 		// top text

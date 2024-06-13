@@ -29,7 +29,7 @@ addLayer("r", {
 	},
 	exponent: 1,
 	roundUpCost: true,
-	canBuyMax() {return false},
+	canBuyMax() {return player.l.points.gte(3)},
 	resetDescription: "Revolutionize for ",
 	gainMult() {
 		let mult = new Decimal(1);
@@ -56,14 +56,16 @@ addLayer("r", {
 			if (eff[4].gte("e10000000")) eff[4] = eff[4].div("e10000000").pow(0.1).mul("e10000000");
 			if (eff[4].gte("e100000000")) eff[4] = eff[4].div("e100000000").pow(0.1).mul("e100000000");
 			if (eff[4].gte("e500000000")) eff[4] = eff[4].div("e500000000").pow(0.05).mul("e500000000");
+			if (eff[4].gte("e2e9")) eff[4] = eff[4].div("e2e9").pow(0.2).mul("e2e9");
 		} else {
 			if (eff[4].gte("1e5555")) eff[4] = eff[4].div("1e5555").pow(0.1).mul("1e5555");
 			if (eff[4].gte("1e200000")) eff[4] = eff[4].div("1e200000").log10().pow(2000).mul("1e200000");
 		};
 		if (eff[7].gte("1e3333")) eff[7] = eff[7].div("1e3333").pow(1/3).mul("1e3333");
 		if (eff[7].gte("1e100000")) eff[7] = eff[7].div("1e100000").pow(0.1).mul("1e100000");
-		if (eff[7].gte("1e1000000")) eff[7] = eff[7].div("1e1000000").pow(0.1).mul("1e1000000");
-		if (eff[7].gte("1e2500000")) eff[7] = eff[7].div("1e2500000").pow(0.025).mul("1e2500000");
+		if (eff[7].gte("e1000000")) eff[7] = eff[7].div("e1000000").pow(0.1).mul("e1000000");
+		if (eff[7].gte("e2500000")) eff[7] = eff[7].div("e2500000").pow(0.025).mul("e2500000");
+		if (eff[7].gte("e5000000")) eff[7] = eff[7].div("e5000000").pow(0.05).mul("e5000000");
 		return eff;
 	},
 	effectDescription() {return "which are dividing the species requirement by /" + format(tmp.r.effect[0]) + ", dividing conscious being requirement by /" + format(tmp.r.effect[1]) + ", multiplying the completion limit of the 10th retrogression by " + format(tmp.r.effect[2]) + "x (" + (tmp.r.effect[2].gte(2) ? "maxed" : "rounded down") + "), and generating " + format(tmp.r.effect[3]) + " change per second (with a limit of " + format(getMaxChange()) + ")"},
@@ -238,6 +240,15 @@ addLayer("r", {
 			requirementDescription: "17th innovation",
 			popupTitle: "Innovation Acquired!",
 			effectDescription() {return "improve the first war effect<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		17: {
+			requirement: 1e52,
+			requirementDescription: "18th innovation",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 0.03},
+			effectDescription() {return "decrease the war requirement base by 0.03<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
 			unlocked() {return hasMilestone("r", this.id - 1)},
 		},
