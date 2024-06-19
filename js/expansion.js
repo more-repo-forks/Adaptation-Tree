@@ -63,6 +63,7 @@ addLayer("ex", {
 		let base = 5;
 		if (getBuyableAmount("d", 13).gte(tmp.d.buyables[13].purchaseLimit)) base -= tmp.d.buyables[13].completionEffect;
 		if (challengeCompletions("ec", 11) >= 6 && challengeEffect("ec", 11)[5]) base -= challengeEffect("ec", 11)[5];
+		if (getGridData("w", 405)) base -= gridEffect("w", 405);
 		return base;
 	},
 	exponent: 1,

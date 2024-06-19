@@ -136,7 +136,7 @@ addLayer("d", {
 	doReset(resettingLayer) {
 		if (layers[resettingLayer].row <= this.row) return;
 		let keep = ["autoFOC", "autoSPE", "autoCLI", "autoDOM"];
-		if (player.w.points.gte(3) || resettingLayer == "w") keep.push("milestones", "lastMilestone");
+		if (player.l.points.gte(4) || player.w.points.gte(3) || resettingLayer == "w") keep.push("milestones", "lastMilestone");
 		layerDataReset("d", keep);
 	},
 	update(diff) {
@@ -191,6 +191,7 @@ addLayer("d", {
 				if (hasMilestone("d", 37)) extra = extra.add(milestoneEffect("d", 37));
 				if (getGridData("w", 501)) extra = extra.add(gridEffect("w", 501));
 				if (getGridData("w", 503)) extra = extra.add(gridEffect("w", 503));
+				if (player.l.focusUnlocked) extra = extra.add(clickableEffect("l", 12));
 				return extra.floor();
 			},
 			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return {"border-color": "#E03330"}},
@@ -229,6 +230,7 @@ addLayer("d", {
 				if (hasMilestone("d", 37)) extra = extra.add(milestoneEffect("d", 37));
 				if (getGridData("w", 501)) extra = extra.add(gridEffect("w", 501));
 				if (getGridData("w", 503)) extra = extra.add(gridEffect("w", 503));
+				if (player.l.focusUnlocked) extra = extra.add(clickableEffect("l", 12));
 				return extra.floor();
 			},
 			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return {"border-color": "#E03330"}},
@@ -267,6 +269,7 @@ addLayer("d", {
 				if (hasMilestone("d", 37)) extra = extra.add(milestoneEffect("d", 37));
 				if (getGridData("w", 501)) extra = extra.add(gridEffect("w", 501));
 				if (getGridData("w", 503)) extra = extra.add(gridEffect("w", 503));
+				if (player.l.focusUnlocked) extra = extra.add(clickableEffect("l", 12));
 				return extra.floor();
 			},
 			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return {"border-color": "#E03330"}},
@@ -289,6 +292,7 @@ addLayer("d", {
 					if (Object.hasOwnProperty.call(player.d.buyables, key) && player.d.buyables[key] >= tmp.d.buyables[key].purchaseLimit) maxed++;
 				let base = new Decimal(1.88);
 				if (hasMilestone("d", 32)) base = base.add(milestoneEffect("d", 32));
+				if (hasMilestone("d", 43)) base = base.add(milestoneEffect("d", 43));
 				return base.pow(maxed);
 			},
 			title: "TOTAL (DOM)INATION",
@@ -308,6 +312,7 @@ addLayer("d", {
 				if (hasMilestone("d", 37)) extra = extra.add(milestoneEffect("d", 37));
 				if (getGridData("w", 501)) extra = extra.add(gridEffect("w", 501));
 				if (getGridData("w", 503)) extra = extra.add(gridEffect("w", 503));
+				if (player.l.focusUnlocked) extra = extra.add(clickableEffect("l", 12));
 				return extra.floor();
 			},
 			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return {"border-color": "#E03330"}},
@@ -483,7 +488,7 @@ addLayer("d", {
 			requirementDescription: "D-E synergy enhancement",
 			popupTitle: "Enhancement Acquired!",
 			effect() {return new Decimal(1e100).pow(getBuyableAmount("d", 11).add(getBuyableAmount("d", 12)).add(getBuyableAmount("d", 13)).add(getBuyableAmount("d", 14)))},
-			effectDescription() {return "divide the evolution requirement based on FOC, SPE, CLI, and DOM<br>Effect: /" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			effectDescription() {return "divide the evolution requirement based on base FOC, SPE, CLI, and DOM levels<br>Effect: /" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("d", this.id - 1) || player.ex.unlocked},
 		},
@@ -501,7 +506,7 @@ addLayer("d", {
 			requirementDescription: "D-R synergy enhancement",
 			popupTitle: "Enhancement Acquired!",
 			effect() {return getBuyableAmount("d", 11).add(getBuyableAmount("d", 12)).add(getBuyableAmount("d", 13)).add(getBuyableAmount("d", 14)).add(1).pow(0.164)},
-			effectDescription() {return "divide the revolution requirement based on FOC, SPE, CLI, and DOM<br>Effect: /" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			effectDescription() {return "divide the revolution requirement based on base FOC, SPE, CLI, and DOM levels<br>Effect: /" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("d", this.id - 1) || player.ex.unlocked},
 		},
@@ -518,7 +523,7 @@ addLayer("d", {
 			requirementDescription: "D-A synergy enhancement",
 			popupTitle: "Enhancement Acquired!",
 			effect() {return new Decimal(1e25).pow(getBuyableAmount("d", 11).add(getBuyableAmount("d", 12)).add(getBuyableAmount("d", 13)).add(getBuyableAmount("d", 14)).add(1))},
-			effectDescription() {return "divide the acclimation requirement based on FOC, SPE, CLI, and DOM<br>Effect: /" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			effectDescription() {return "divide the acclimation requirement based on base FOC, SPE, CLI, and DOM levels<br>Effect: /" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("d", this.id - 1) || player.ex.unlocked},
 		},
@@ -572,7 +577,7 @@ addLayer("d", {
 			requirementDescription: "D-CB synergy enhancement",
 			popupTitle: "Enhancement Acquired!",
 			effect() {return getBuyableAmount("d", 11).add(getBuyableAmount("d", 12)).add(getBuyableAmount("d", 13)).add(getBuyableAmount("d", 14)).div(3)},
-			effectDescription() {return "increase the exponent of the last conscious being effect based on FOC, SPE, CLI, and DOM<br>Effect: +" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			effectDescription() {return "increase the exponent of the last conscious being effect<br>based on base FOC, SPE, CLI, and DOM levels<br>Effect: +" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("d", this.id - 1) || player.w.unlocked},
 		},
@@ -719,6 +724,24 @@ addLayer("d", {
 			popupTitle: "Enhancement Acquired!",
 			effect() {return getBuyableAmount("ex", 22)},
 			effectDescription() {return "make each <b>Influence empowerment</b> give an extra level to <b>Influence tickspeed</b><br>Effect: +" + formatWhole(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		43: {
+			requirement: 4500,
+			requirementDescription: "DOM enhancement V",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.6},
+			effectDescription() {return "increase the base complete domination effect of DOM by 0.6<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		44: {
+			requirement: 4955,
+			requirementDescription: "D-L synergy enhancement",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return getBuyableAmount("d", 11).add(getBuyableAmount("d", 12)).add(getBuyableAmount("d", 13)).add(getBuyableAmount("d", 14)).div(50).add(1)},
+			effectDescription() {return "divide leader requirement based on base FOC, SPE, CLI, and DOM levels<br>Effect: /" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("d", this.id - 1)},
 		},

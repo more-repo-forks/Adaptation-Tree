@@ -6,6 +6,7 @@ addLayer("l", {
 	startData() { return {
 		unlocked: false,
 		points: new Decimal(0),
+		focusUnlocked: false,
 	}},
 	color: "#E5B55A",
 	nodeStyle() {if (tmp.l.canReset || player.l.unlocked) return {"background": "border-box linear-gradient(to right, #55B020, #E5B55A, #E03330)"}},
@@ -22,27 +23,68 @@ addLayer("l", {
 	resetDescription: "Lead for ",
 	gainMult() {
 		let mult = new Decimal(1);
+		if (hasMilestone("d", 44)) mult = mult.div(milestoneEffect("d", 44));
 		return mult;
 	},
-	effect() { return [
-		new Decimal(2).pow(player.l.points),
-		new Decimal(2).pow(player.l.points),
-		player.l.points.div(4).add(1),
-		player.l.points.add(1),
-	]},
-	effectDescription() {return "which are multiplying power and stimulation gain by " + format(tmp.l.effect[0]) + "x; dividing the requirements of all resources from rows 2-5 by /" + format(tmp.l.effect[1]) + "; directly multiplying conscious being gain by " + format(tmp.l.effect[2]) + "x; and multiplying focus gain, focus limit, and influence generator production by " + format(tmp.l.effect[3]) + "x"},
-	tabFormat: [
-		"main-display",
-		"prestige-button",
-		"resource-display",
-		["display-text", () => {
-			let text = "After leading 1 time, more automation for domination is always unlocked,<br>species resets (that are not in hybridizations) no longer reset anything,<br>and you automatically claim potential species.<br><br>The above extra effects will not go away even if this layer is reset.";
-			if (player.l.points.gte(1)) text += "<br><br>After leading 2 times, you keep retrogression completions on all resets,<br>domination resets (without respec) no longer reset anything,<br>and you automatically claim potential domination points.";
-			if (player.l.points.gte(2)) text += "<br><br>After leading 3 times, you keep stimulation upgrades on all resets;<br>you can bulk ecosystems, revolutions, expansion points, and wars;<br>and potential growth points are always automatically claimed.";
-			return text;
-		}],
-		"blank",
-	],
+	effect() {
+		let eff = [
+			new Decimal(2).pow(player.l.points),
+			new Decimal(2).pow(player.l.points),
+			player.l.points.div(4).add(1),
+			player.l.points.add(1),
+		];
+		if (player.l.focusUnlocked) eff[4] = Math.floor((tmp.cb.effect[3] / 1000000) ** 0.8);
+		else eff[4] = 0;
+		return eff;
+	},
+	effectDescription() {return "which are multiplying power and stimulation gain by " + format(tmp.l.effect[0]) + "x; dividing the requirements of all resources from rows 2-5 by /" + format(tmp.l.effect[1]) + "; directly multiplying conscious being gain by " + format(tmp.l.effect[2]) + "x; and multiplying change gain, change limit, and influence generator production by " + format(tmp.l.effect[3]) + "x"},
+	tabFormat() {
+		let text = "After leading 1 time, more automation for domination is always unlocked,<br>species resets (that are not in hybridizations) no longer reset anything,<br>and you automatically claim potential species.<br><br>The above extra effects will not go away even if this layer is reset.";
+		if (player.l.points.gte(1)) text += "<br><br>After leading 2 times, you keep retrogression completions on all resets,<br>domination resets (without respec) no longer reset anything,<br>and you automatically claim potential domination points.";
+		if (player.l.points.gte(2)) text += "<br><br>After leading 3 times, you keep stimulation upgrades on all resets;<br>you can bulk ecosystems, revolutions, expansion points, and wars;<br>and potential growth points are always automatically claimed.";
+		if (player.l.points.gte(3)) text += "<br><br>After leading 4 times, you bulk 10x stats from rows 3 and below,<br>you keep hybridization completions on leader resets,<br>and you keep domination enhancements on all resets.";
+		if (player.l.points.gte(4)) text += "<br><br>After leading 5 times, another tier of ANACHRONISM is unlocked,<br>you keep ANACHRONISM completions on all resets,<br>and you keep growth enhancements on all resets.";
+		let arr = [
+			"main-display",
+			"prestige-button",
+			"resource-display",
+			["display-text", text],
+			"blank",
+		];
+		if (player.l.focusUnlocked) {
+			let svg = "<svg viewBox='0 0 500 50' style='width: 500px; height: 50px'>";
+			let maximum = (false ?
+				Math.max((getClickableState("l", 11) || 0) + (getClickableState("l", 12) || 0), tmp.l.effect[4] * 2)
+				: Math.max((getClickableState("l", 11) || 0) + (getClickableState("l", 12) || 0), tmp.l.effect[4])
+			);
+			if (maximum > 0) {
+				let right = (500 * getClickableState("l", 12) / maximum);
+				svg += "<rect x='0' y='0' width='" + (500 * getClickableState("l", 11) / maximum) + "' height='50' fill='#55B020'/>";
+				svg += "<rect x='" + (500 - right) + "' y='0' width='" + right + "' height='50' fill='#E03330'/>";
+				let div = (2 ** Math.floor(Math.log2(maximum) - 5));
+				if (div > 1) maximum /= div;
+				if (!false) {
+					for (let index = (maximum % 1) / 2; index < maximum; index++) {
+						if (index == 0) continue;
+						let x = (500 * index / maximum);
+						svg += "<line x1='" + x + "' y1='0' x2='" + x + "' y2='50' stroke='#E5B55A'/>";
+					};
+				};
+			};
+			svg += "</svg>";
+			svg += "<div style='position: relative; float: left; margin: -54px 0px 0px 7.5px; font-size: 48px; color: #DFDFDF'>SP</div>";
+			svg += "<div style='position: relative; float: right; margin: -54px 9px 0px 0px; font-size: 48px; color: #DFDFDF'>D</div>";
+			arr.push(["display-text", svg, {"display": "inline-block", "width": "500px", "height": "50px", "border": "solid 4px #E5B55A"}]);
+			if (!false) arr.push(["row", [["clickable", 13], ["clickable", 11], ["clickable", 15], ["clickable", 12], ["clickable", 14]]]);
+			arr.push("blank");
+			let next = Math.ceil(1000000 * (tmp.l.effect[4] + 1) ** 1.25);
+			arr.push(["display-text", "You have " + formatWhole(tmp.cb.effect[3]) + " maximum focus points,<br>making the maximum focus+ points be " + formatWhole(tmp.l.effect[4]) + ".<br><br>The next point can be gained at " + (next > 1 ? formatWhole(next) + " focus points." : "1 focus point.")]);
+			arr.push("blank");
+			arr.push(["display-text", "<div style='display: inline-block; vertical-align: top; width: 50%'>You have <h2 style='color: #55B020; text-shadow: #55B020 0px 0px 10px'>" + formatWhole(getClickableState("l", 11)) + "</h2> focus+ points allocated to speciation, which are increasing the completion limit of the 10th hybridization by " + formatWhole(clickableEffect("l", 11)) + "</div><div style='display: inline-block; vertical-align: top; width: 50%'>You have <h2 style='color: #E03330; text-shadow: #E03330 0px 0px 10px'>" + formatWhole(getClickableState("l", 12)) + "</h2> focus+ points allocated to domination, which are giving " + formatWhole(clickableEffect("l", 12)) + " extra FOC, SPE, CLI, and DOM<div>"]);
+			arr.push("blank");
+		};
+		return arr;
+	},
 	layerShown() {return hasMilestone("d", 39) || player.l.unlocked},
 	hotkeys: [{
 		key: "l",
@@ -54,7 +96,54 @@ addLayer("l", {
 		let keep = [];
 		layerDataReset("l", keep);
 	},
+	update(diff) {
+		if (challengeCompletions("ec", 11) >= 15 && !player.l.focusUnlocked) player.l.focusUnlocked = true;
+		if (false) {
+			setClickableState("l", 11, tmp.l.effect[4]);
+			setClickableState("l", 12, tmp.l.effect[4]);
+		};
+	},
 	componentStyles: {
 		"prestige-button"() {if (tmp.l.canReset && tmp.l.nodeStyle) return tmp.l.nodeStyle},
+		"clickable"() {return {"min-height": "58px", "border": "solid 4px #E5B55A", "border-radius": "0px", "color": "#DFDFDF", "transform": "none"}},
+	},
+	clickables: {
+		11: {
+			title: "Focus on speciation",
+			effect() {return (getClickableState("l", 11) || 0) * 75},
+			canClick() {return (getClickableState("l", 11) || 0) + (getClickableState("l", 12) || 0) < tmp.l.effect[4]},
+			onClick() {setClickableState("l", 11, (getClickableState("l", 11) || 0) + 1)},
+			onHold() {setClickableState("l", 11, (getClickableState("l", 11) || 0) + 1)},
+			style: {"background-color": "#55B020"},
+		},
+		12: {
+			title: "Focus on domination",
+			effect() {return (getClickableState("l", 12) || 0) * 25},
+			canClick() {return (getClickableState("l", 11) || 0) + (getClickableState("l", 12) || 0) < tmp.l.effect[4]},
+			onClick() {setClickableState("l", 12, (getClickableState("l", 12) || 0) + 1)},
+			onHold() {setClickableState("l", 12, (getClickableState("l", 12) || 0) + 1)},
+			style: {"background-color": "#E03330"},
+		},
+		13: {
+			title: "MAX SP",
+			canClick() {return (getClickableState("l", 11) || 0) + (getClickableState("l", 12) || 0) < tmp.l.effect[4]},
+			onClick() {setClickableState("l", 11, tmp.l.effect[4] - (getClickableState("l", 12) || 0))},
+			style: {"width": "84px", "background-color": "#55B020"},
+		},
+		14: {
+			title: "MAX D",
+			canClick() {return (getClickableState("l", 11) || 0) + (getClickableState("l", 12) || 0) < tmp.l.effect[4]},
+			onClick() {setClickableState("l", 12, tmp.l.effect[4] - (getClickableState("l", 11) || 0))},
+			style: {"width": "84px", "background-color": "#E03330"},
+		},
+		15: {
+			title: "Reset Focus+",
+			canClick() {return (getClickableState("l", 11) || 0) + (getClickableState("l", 12) || 0) > 0},
+			onClick() {
+				setClickableState("l", 11, 0);
+				setClickableState("l", 12, 0);
+			},
+			style: {"width": "100px", "background-color": "#000"},
+		},
 	},
 });

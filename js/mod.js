@@ -67,6 +67,7 @@ function getStatBulk() {
 	if (player.ex.points.gte(6)) bulk *= 10;
 	if (player.ex.points.gte(9)) bulk *= 10;
 	if (player.w.points.gte(6)) bulk *= 10;
+	if (player.l.points.gte(4)) bulk *= 10;
 	return bulk;
 };
 
@@ -81,12 +82,12 @@ let displayThings = [
 		if (tmp.other.oompsMag != 0 && options.showOOMs) return "(" + format(tmp.other.oomps) + " OOM" + (tmp.other.oompsMag < 0 ? "^OOM" : (tmp.other.oompsMag > 1 ? "^" + tmp.other.oompsMag : "")) + "s/sec)";
 		return "(" + format(getPointPotential()) + " max power)";
 	},
-	() => "<br>current endgame is at 15 " + (player.ec.unlocked ? "ANACHRONISM completions" : "???"),
+	() => "<br>current endgame is at 16 " + (player.ec.unlocked ? "ANACHRONISM completions" : "???"),
 ];
 
 // Determines when the game "ends"
 function isEndgame() {
-	return challengeCompletions("ec", 11) >= 15;
+	return challengeCompletions("ec", 11) >= 16;
 };
 
 // Style for the background, can be a function

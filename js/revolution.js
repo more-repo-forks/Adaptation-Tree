@@ -57,6 +57,10 @@ addLayer("r", {
 			if (eff[4].gte("e100000000")) eff[4] = eff[4].div("e100000000").pow(0.1).mul("e100000000");
 			if (eff[4].gte("e500000000")) eff[4] = eff[4].div("e500000000").pow(0.05).mul("e500000000");
 			if (eff[4].gte("e2e9")) eff[4] = eff[4].div("e2e9").pow(0.2).mul("e2e9");
+			if (eff[4].gte("e4e9")) eff[4] = eff[4].div("e4e9").pow(0.4).mul("e4e9");
+			if (eff[4].gte("e6e9")) eff[4] = eff[4].div("e6e9").pow(0.6).mul("e6e9");
+			if (eff[4].gte("e8e9")) eff[4] = eff[4].div("e8e9").pow(0.8).mul("e8e9");
+			if (eff[4].gte("e1e10")) eff[4] = eff[4].div("e1e10").pow(0.01).mul("e1e10");
 		} else {
 			if (eff[4].gte("1e5555")) eff[4] = eff[4].div("1e5555").pow(0.1).mul("1e5555");
 			if (eff[4].gte("1e200000")) eff[4] = eff[4].div("1e200000").log10().pow(2000).mul("1e200000");
@@ -66,6 +70,7 @@ addLayer("r", {
 		if (eff[7].gte("e1000000")) eff[7] = eff[7].div("e1000000").pow(0.1).mul("e1000000");
 		if (eff[7].gte("e2500000")) eff[7] = eff[7].div("e2500000").pow(0.025).mul("e2500000");
 		if (eff[7].gte("e5000000")) eff[7] = eff[7].div("e5000000").pow(0.05).mul("e5000000");
+		if (eff[7].gte("e7500000")) eff[7] = eff[7].div("e7500000").pow(0.075).mul("e7500000");
 		return eff;
 	},
 	effectDescription() {return "which are dividing the species requirement by /" + format(tmp.r.effect[0]) + ", dividing conscious being requirement by /" + format(tmp.r.effect[1]) + ", multiplying the completion limit of the 10th retrogression by " + format(tmp.r.effect[2]) + "x (" + (tmp.r.effect[2].gte(2) ? "maxed" : "rounded down") + "), and generating " + format(tmp.r.effect[3]) + " change per second (with a limit of " + format(getMaxChange()) + ")"},
@@ -249,6 +254,23 @@ addLayer("r", {
 			popupTitle: "Innovation Acquired!",
 			effect() {return 0.03},
 			effectDescription() {return "decrease the war requirement base by 0.03<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		18: {
+			requirement: 1e55,
+			requirementDescription: "19th innovation",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 0.025},
+			effectDescription() {return "decrease the war requirement base by 0.025<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		19: {
+			requirement: 1e58,
+			requirementDescription: "20th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "improve the first ecosystem effect<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
 			unlocked() {return hasMilestone("r", this.id - 1)},
 		},

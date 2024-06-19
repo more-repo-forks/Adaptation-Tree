@@ -97,6 +97,7 @@ addLayer("a", {
 		if (hasMilestone("a", 6)) {
 			if (eff[0].gt("e1e10000")) eff[0] = eff[0].layeradd10(-1).div("1e10000").pow(0.5).mul("1e10000").layeradd10(1);
 			if (eff[0].gt("e1e100000")) eff[0] = eff[0].layeradd10(-1).div("1e100000").pow(0.5).mul("1e100000").layeradd10(1);
+			if (eff[0].gt("e1e1000000")) eff[0] = eff[0].layeradd10(-1).div("1e1000000").pow(0.5).mul("1e1000000").layeradd10(1);
 		} else {
 			if (eff[0].gt("e750000")) eff[0] = eff[0].div("e750000").pow(0.1).mul("e750000");
 			if (eff[0].gt("e1500000")) eff[0] = eff[0].div("e1500000").log10().pow(15000).mul("e1500000");
@@ -282,6 +283,7 @@ addLayer("a", {
 				if (hasMilestone("a", 43)) extra = extra.add(milestoneEffect("a", 43));
 				if (hasMilestone("a", 67)) extra = extra.add(milestoneEffect("a", 67));
 				if (getGridData("w", 502)) extra = extra.add(gridEffect("w", 502));
+				if (getGridData("w", 504)) extra = extra.add(gridEffect("w", 504));
 				if (tmp.ex.effect[2]) extra = extra.add(tmp.ex.effect[2]);
 				return extra.floor();
 			},
@@ -320,6 +322,7 @@ addLayer("a", {
 				if (hasMilestone("a", 43)) extra = extra.add(milestoneEffect("a", 43));
 				if (hasMilestone("a", 67)) extra = extra.add(milestoneEffect("a", 67));
 				if (getGridData("w", 502)) extra = extra.add(gridEffect("w", 502));
+				if (getGridData("w", 504)) extra = extra.add(gridEffect("w", 504));
 				if (tmp.ex.effect[2]) extra = extra.add(tmp.ex.effect[2]);
 				return extra.floor();
 			},
@@ -360,6 +363,7 @@ addLayer("a", {
 				if (hasMilestone("a", 43)) extra = extra.add(milestoneEffect("a", 43));
 				if (hasMilestone("a", 67)) extra = extra.add(milestoneEffect("a", 67));
 				if (getGridData("w", 502)) extra = extra.add(gridEffect("w", 502));
+				if (getGridData("w", 504)) extra = extra.add(gridEffect("w", 504));
 				if (tmp.ex.effect[2]) extra = extra.add(tmp.ex.effect[2]);
 				return extra.floor();
 			},
@@ -400,6 +404,7 @@ addLayer("a", {
 				if (hasMilestone("a", 43)) extra = extra.add(milestoneEffect("a", 43));
 				if (hasMilestone("a", 67)) extra = extra.add(milestoneEffect("a", 67));
 				if (getGridData("w", 502)) extra = extra.add(gridEffect("w", 502));
+				if (getGridData("w", 504)) extra = extra.add(gridEffect("w", 504));
 				if (tmp.ex.effect[2]) extra = extra.add(tmp.ex.effect[2]);
 				return extra.floor();
 			},

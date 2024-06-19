@@ -22,12 +22,12 @@ const warUpgrades = [
 		{title: "Battle Domination", desc: "decreases domination requirement base by 0.313", effect: 0.313, cost: 30},
 		{title: "Revolutionary Armaments", desc: "decreases revolution requirement base by 0.1", effect: 0.1, cost: 40},
 		{title: "New Frontiers", desc: "decreases species requirement base by 0.075", effect: 0.075, cost: 55},
-		{title: "???", desc: "coming soon!", cost: 300},
+		{title: "Further Exploration", desc: "decreases expansion requirement base by 0.1", effect: 0.1, cost: 300},
 	], [
 		{title: "Further Domination", desc() {return "gives extra FOC, SPE, CLI, and DOM based on wars<br>(currently +" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points}, cost: 150},
 		{title: "Further Acclimation", desc() {return "gives extra CRA, FER, ANA, and SOV based on wars<br>(currently +" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points.mul(75000).floor()}, cost: 200},
 		{title: "Military Domination", desc() {return "gives extra FOC, SPE, CLI, and DOM based on wars<br>(currently +" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points.mul(2)}, cost: 250},
-		{title: "???", desc: "coming soon!", cost: 300},
+		{title: "Forced Acclimation", desc() {return "gives extra CRA, FER, ANA, and SOV based on wars<br>(currently +" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points.mul(220000).floor()}, cost: 300},
 		{title: "???", desc: "coming soon!", cost: 350},
 	],
 ];
@@ -55,6 +55,7 @@ addLayer("w", {
 		if (challengeCompletions("ec", 11) >= 13 && challengeEffect("ec", 11)[12]) base -= challengeEffect("ec", 11)[12];
 		if (challengeCompletions("ec", 11) >= 14 && challengeEffect("ec", 11)[13]) base -= challengeEffect("ec", 11)[13];
 		if (hasMilestone("r", 17)) base -= milestoneEffect("r", 17);
+		if (hasMilestone("r", 18)) base -= milestoneEffect("r", 18);
 		if (getGridData("w", 401)) base -= gridEffect("w", 401);
 		return base;
 	},

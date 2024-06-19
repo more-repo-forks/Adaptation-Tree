@@ -31,11 +31,16 @@ addLayer("ec", {
 		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
 		return mult;
 	},
-	effect() { return [
-		new Decimal(player.ec.points.gte(9) ? 20 : 5).pow(player.ec.points),
-		player.ec.points.mul(5),
-		(player.ec.points.gt(0) ? new Decimal(100).pow(player.ec.points).min(1e300) : new Decimal(0)),
-	]},
+	effect() {
+		let base0 = new Decimal(5);
+		if (player.ec.points.gte(9)) base0 = base0.mul(4);
+		if (hasMilestone("r", 19)) base0 = base0.mul(5000000);
+		return [
+			base0.pow(player.ec.points),
+			player.ec.points.mul(5),
+			(player.ec.points.gt(0) ? new Decimal(100).pow(player.ec.points).min(1e300) : new Decimal(0)),
+		];
+	},
 	effectDescription() {return "which are dividing the species requirement by /" + format(tmp.ec.effect[0]) + ", increasing the completion limit of the 10th hybridization by +" + formatWhole(tmp.ec.effect[1]) + ", and generating +" + format(tmp.ec.effect[2]) + "% of potential stimulations per second"},
 	tabFormat() {
 		// succeession text
@@ -93,6 +98,7 @@ addLayer("ec", {
 	doReset(resettingLayer) {
 		if (layers[resettingLayer].row <= this.row) return;
 		let keep = [];
+		if (player.l.points.gte(5)) keep.push("challenges");
 		layerDataReset("ec", keep);
 	},
 	update(diff) {
@@ -103,7 +109,7 @@ addLayer("ec", {
 	},
 	challenges: {
 		11: {
-			name(x = Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1)) {return "ANACHRONISM " + (["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV"][x])},
+			name(x = Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1)) {return "ANACHRONISM " + (["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI"][x])},
 			fullDisplay() {
 				if (challengeCompletions("sp", 21) >= 18 || hasChallenge("ec", 11)) {
 					let text = "";
@@ -117,7 +123,7 @@ addLayer("ec", {
 				};
 				return "You need 18 completions of the 10th hybridization<br>to unlock ANACHRONISM.";
 			},
-			rewardEffect() {return [0.1, null, 3, 0.125, 0.05, 3, null, null, null, 0.03, 0.45, 0.1, 0.1, 0.075, null]},
+			rewardEffect() {return [0.1, null, 3, 0.125, 0.05, 3, null, null, null, 0.03, 0.45, 0.1, 0.1, 0.075, null, null]},
 			rewards: [
 				"domination requirement base is decreased by 0.1",
 				() => "three new layers are unlocked" + (player.r.unlocked ? " (" + (player.w.unlocked ? "" : (player.ex.unlocked ? 2 : 1) + "/3 ") + "already unlocked)" : ""),
@@ -133,9 +139,10 @@ addLayer("ec", {
 				"revolution requirement base is decreased by 0.1",
 				"war requirement base is decreased by 0.1",
 				"war requirement base is decreased by 0.075",
+				() => "something new is unlocked for leaders" + (player.l.focusUnlocked ? " (already unlocked)" : ""),
 				"coming soon!",
 			],
-			goal() {return [167098, 155454, 155040, 869153600, 2.874e9, 7.992e9, 3.082e11, 4.73e11, 1.228e12, 7.191e12, 9.733e12, 1.359e13, 5.222e13, 4.09e14, 3.783e15][Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1)] || Infinity},
+			goal() {return [167098, 155454, 155040, 869153600, 2.874e9, 7.992e9, 3.082e11, 4.73e11, 1.228e12, 7.191e12, 9.733e12, 1.359e13, 5.222e13, 4.09e14, 3.783e15, 1.133e18][Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1)] || Infinity},
 			canComplete() {return player.g.points.gte(this.goal())},
 			unlockReq: 21,
 			enterable() {return challengeCompletions("sp", 21) >= 18 || hasChallenge("ec", 11)},
@@ -147,6 +154,7 @@ addLayer("ec", {
 				if (getGridData("w", 202)) limit += gridEffect("w", 202);
 				if (getGridData("w", 203)) limit += gridEffect("w", 203);
 				if (getGridData("w", 205)) limit += gridEffect("w", 205);
+				if (player.l.points.gte(5)) limit++;
 				if (player.ec.activeChallenge == 11 && typeof tmp.ec.challenges[11].completionLimit == "number" && limit > tmp.ec.challenges[11].completionLimit) {
 					Vue.set(player.ec, "activeChallenge", null);
 					this.onExit();

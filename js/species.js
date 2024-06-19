@@ -104,7 +104,10 @@ addLayer("sp", {
 	doReset(resettingLayer) {
 		if (layers[resettingLayer].row <= this.row) return;
 		let keep = [];
-		if (player.r.points.gte(3) || resettingLayer == "ec") keep.push("challenges");
+		if ((resettingLayer == "l" && player.l.points.gte(4))
+			|| player.r.points.gte(3)
+			|| resettingLayer == "ec"
+		) keep.push("challenges");
 		layerDataReset("sp", keep);
 	},
 	update(diff) {
@@ -283,9 +286,10 @@ addLayer("sp", {
 			overrideResetsNothing: true,
 			completionLimit() {
 				let limit = 5;
-				if (tmp.ec.effect[1]) limit += tmp.ec.effect[1].toNumber();
 				if (getGridData("w", 201)) limit += gridEffect("w", 201).toNumber();
 				if (getGridData("w", 204)) limit += gridEffect("w", 204).toNumber();
+				if (player.l.focusUnlocked) limit += clickableEffect("l", 11);
+				if (tmp.ec.effect[1]) limit += tmp.ec.effect[1].toNumber();
 				return limit;
 			},
 			countsAs: [11, 12, 13, 14, 15, 16, 17, 18, 19],
