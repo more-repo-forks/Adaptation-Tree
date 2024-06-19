@@ -191,6 +191,7 @@ addLayer("d", {
 				if (hasMilestone("d", 37)) extra = extra.add(milestoneEffect("d", 37));
 				if (getGridData("w", 501)) extra = extra.add(gridEffect("w", 501));
 				if (getGridData("w", 503)) extra = extra.add(gridEffect("w", 503));
+				if (getGridData("w", 505)) extra = extra.add(gridEffect("w", 505));
 				if (player.l.focusUnlocked) extra = extra.add(clickableEffect("l", 12));
 				return extra.floor();
 			},
@@ -230,6 +231,7 @@ addLayer("d", {
 				if (hasMilestone("d", 37)) extra = extra.add(milestoneEffect("d", 37));
 				if (getGridData("w", 501)) extra = extra.add(gridEffect("w", 501));
 				if (getGridData("w", 503)) extra = extra.add(gridEffect("w", 503));
+				if (getGridData("w", 505)) extra = extra.add(gridEffect("w", 505));
 				if (player.l.focusUnlocked) extra = extra.add(clickableEffect("l", 12));
 				return extra.floor();
 			},
@@ -250,6 +252,7 @@ addLayer("d", {
 				let eff = 0.3;
 				if (hasMilestone("d", 24)) eff += milestoneEffect("d", 24);
 				if (hasMilestone("d", 36)) eff += milestoneEffect("d", 36);
+				if (hasMilestone("d", 45)) eff += milestoneEffect("d", 45);
 				return eff;
 			},
 			title: "DOMINATE (CLI)MATE",
@@ -269,6 +272,7 @@ addLayer("d", {
 				if (hasMilestone("d", 37)) extra = extra.add(milestoneEffect("d", 37));
 				if (getGridData("w", 501)) extra = extra.add(gridEffect("w", 501));
 				if (getGridData("w", 503)) extra = extra.add(gridEffect("w", 503));
+				if (getGridData("w", 505)) extra = extra.add(gridEffect("w", 505));
 				if (player.l.focusUnlocked) extra = extra.add(clickableEffect("l", 12));
 				return extra.floor();
 			},
@@ -312,6 +316,7 @@ addLayer("d", {
 				if (hasMilestone("d", 37)) extra = extra.add(milestoneEffect("d", 37));
 				if (getGridData("w", 501)) extra = extra.add(gridEffect("w", 501));
 				if (getGridData("w", 503)) extra = extra.add(gridEffect("w", 503));
+				if (getGridData("w", 505)) extra = extra.add(gridEffect("w", 505));
 				if (player.l.focusUnlocked) extra = extra.add(clickableEffect("l", 12));
 				return extra.floor();
 			},
@@ -708,7 +713,7 @@ addLayer("d", {
 			popupTitle: "Enhancement Acquired!",
 			effectDescription() {return "improve influence's second effect<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.co.unlocked},
 		},
 		41: {
 			requirement: 1605,
@@ -716,7 +721,7 @@ addLayer("d", {
 			popupTitle: "Enhancement Acquired!",
 			effectDescription() {return "expand the battle grid<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.co.unlocked},
 		},
 		42: {
 			requirement: 2699,
@@ -725,7 +730,7 @@ addLayer("d", {
 			effect() {return getBuyableAmount("ex", 22)},
 			effectDescription() {return "make each <b>Influence empowerment</b> give an extra level to <b>Influence tickspeed</b><br>Effect: +" + formatWhole(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.co.unlocked},
 		},
 		43: {
 			requirement: 4500,
@@ -734,7 +739,7 @@ addLayer("d", {
 			effect() {return 0.6},
 			effectDescription() {return "increase the base complete domination effect of DOM by 0.6<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.co.unlocked},
 		},
 		44: {
 			requirement: 4955,
@@ -742,6 +747,15 @@ addLayer("d", {
 			popupTitle: "Enhancement Acquired!",
 			effect() {return getBuyableAmount("d", 11).add(getBuyableAmount("d", 12)).add(getBuyableAmount("d", 13)).add(getBuyableAmount("d", 14)).div(50).add(1)},
 			effectDescription() {return "divide leader requirement based on base FOC, SPE, CLI, and DOM levels<br>Effect: /" + format(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.co.unlocked},
+		},
+		45: {
+			requirement: 8750,
+			requirementDescription: "CLI enhancement V",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.05},
+			effectDescription() {return "increase the complete domination effect of CLI by 0.05<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("d", this.id - 1)},
 		},

@@ -1,3 +1,9 @@
+function getFocusplusRequirement() {
+	let req = 1000000;
+	if (getGridData("w", 601)) req /= gridEffect("w", 601).toNumber();
+	return req;
+};
+
 addLayer("l", {
 	name: "Leader",
 	symbol: "L",
@@ -33,7 +39,7 @@ addLayer("l", {
 			player.l.points.div(4).add(1),
 			player.l.points.add(1),
 		];
-		if (player.l.focusUnlocked) eff[4] = Math.floor((tmp.cb.effect[3] / 1000000) ** 0.8);
+		if (player.l.focusUnlocked) eff[4] = Math.floor((tmp.cb.effect[3] / getFocusplusRequirement()) ** 0.8);
 		else eff[4] = 0;
 		return eff;
 	},
@@ -77,7 +83,7 @@ addLayer("l", {
 			arr.push(["display-text", svg, {"display": "inline-block", "width": "500px", "height": "50px", "border": "solid 4px #E5B55A"}]);
 			if (!false) arr.push(["row", [["clickable", 13], ["clickable", 11], ["clickable", 15], ["clickable", 12], ["clickable", 14]]]);
 			arr.push("blank");
-			let next = Math.ceil(1000000 * (tmp.l.effect[4] + 1) ** 1.25);
+			let next = Math.ceil(getFocusplusRequirement() * (tmp.l.effect[4] + 1) ** 1.25);
 			arr.push(["display-text", "You have " + formatWhole(tmp.cb.effect[3]) + " maximum focus points,<br>making the maximum focus+ points be " + formatWhole(tmp.l.effect[4]) + ".<br><br>The next point can be gained at " + (next > 1 ? formatWhole(next) + " focus points." : "1 focus point.")]);
 			arr.push("blank");
 			arr.push(["display-text", "<div style='display: inline-block; vertical-align: top; width: 50%'>You have <h2 style='color: #55B020; text-shadow: #55B020 0px 0px 10px'>" + formatWhole(getClickableState("l", 11)) + "</h2> focus+ points allocated to speciation, which are increasing the completion limit of the 10th hybridization by " + formatWhole(clickableEffect("l", 11)) + "</div><div style='display: inline-block; vertical-align: top; width: 50%'>You have <h2 style='color: #E03330; text-shadow: #E03330 0px 0px 10px'>" + formatWhole(getClickableState("l", 12)) + "</h2> focus+ points allocated to domination, which are giving " + formatWhole(clickableEffect("l", 12)) + " extra FOC, SPE, CLI, and DOM<div>"]);

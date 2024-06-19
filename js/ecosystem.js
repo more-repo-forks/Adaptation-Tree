@@ -29,6 +29,7 @@ addLayer("ec", {
 		if (getGridData("w", 104)) mult = mult.div(gridEffect("w", 104));
 		if (tmp.r.effect[6]) mult = mult.div(tmp.r.effect[6]);
 		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
+		if (tmp.co.effect[0]) mult = mult.div(tmp.co.effect[0]);
 		return mult;
 	},
 	effect() {
@@ -41,7 +42,7 @@ addLayer("ec", {
 			(player.ec.points.gt(0) ? new Decimal(100).pow(player.ec.points).min(1e300) : new Decimal(0)),
 		];
 	},
-	effectDescription() {return "which are dividing the species requirement by /" + format(tmp.ec.effect[0]) + ", increasing the completion limit of the 10th hybridization by +" + formatWhole(tmp.ec.effect[1]) + ", and generating +" + format(tmp.ec.effect[2]) + "% of potential stimulations per second"},
+	effectDescription() {return "which are dividing the species requirement by /" + format(tmp.ec.effect[0]) + ", increasing the completion limit of the 10th hybridization by +" + formatWhole(tmp.ec.effect[1]) + ", and generating +" + format(tmp.ec.effect[2]) + "% of potential stimulations per second" + (tmp.ec.effect[2].gte(1e300) ? " (maxed)" : "")},
 	tabFormat() {
 		// succeession text
 		let text = "You keep hybridization completions on ecosystem resets.<br><br>After succeeding 1 time, more automation for acclimation is always unlocked<br>and you can bulk species, conscious beings, and domination points.<br><br>The above extra effects will not go away even if this layer is reset.";
@@ -140,7 +141,7 @@ addLayer("ec", {
 				"war requirement base is decreased by 0.1",
 				"war requirement base is decreased by 0.075",
 				() => "something new is unlocked for leaders" + (player.l.focusUnlocked ? " (already unlocked)" : ""),
-				"coming soon!",
+				() => "two new layers are unlocked" + (player.co.unlocked ? " (" + (false ? "" : "1/2 ") + "already unlocked)" : ""),
 			],
 			goal() {return [167098, 155454, 155040, 869153600, 2.874e9, 7.992e9, 3.082e11, 4.73e11, 1.228e12, 7.191e12, 9.733e12, 1.359e13, 5.222e13, 4.09e14, 3.783e15, 1.133e18][Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1)] || Infinity},
 			canComplete() {return player.g.points.gte(this.goal())},

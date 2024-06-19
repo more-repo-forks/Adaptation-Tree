@@ -3,14 +3,14 @@ const modInfo = {
 	id: "adaptation-tree-yrahcaz7",
 	author: "Yrahcaz7",
 	pointsName: "power",
-	modFiles: ["stimulation.js", "growth.js", "evolution.js", "acclimation.js", "species.js", "consciousness.js", "domination.js", "ecosystem.js", "revolution.js", "expansion.js", "war.js", "leader.js", "technical/tree.js"],
+	modFiles: ["stimulation.js", "growth.js", "evolution.js", "acclimation.js", "species.js", "consciousness.js", "domination.js", "ecosystem.js", "revolution.js", "expansion.js", "war.js", "leader.js", "continent.js", "technical/tree.js"],
 	initialStartPoints: new Decimal(0),
 	offlineLimit: 1, // in hours
 }
 
 const VERSION = {
-	num: "2.4",
-	name: "The Era of Leaders",
+	num: "2.5",
+	name: "The Age of Exploration",
 };
 
 const winText = "Congratulations!<br>You have reached the end and beaten this game (for now),<br>but there is more content coming soon...";
@@ -82,12 +82,12 @@ let displayThings = [
 		if (tmp.other.oompsMag != 0 && options.showOOMs) return "(" + format(tmp.other.oomps) + " OOM" + (tmp.other.oompsMag < 0 ? "^OOM" : (tmp.other.oompsMag > 1 ? "^" + tmp.other.oompsMag : "")) + "s/sec)";
 		return "(" + format(getPointPotential()) + " max power)";
 	},
-	() => "<br>current endgame is at 16 " + (player.ec.unlocked ? "ANACHRONISM completions" : "???"),
+	() => "<br>current endgame is at 50 " + (player.w.unlocked ? "wars" : "???"),
 ];
 
 // Determines when the game "ends"
 function isEndgame() {
-	return challengeCompletions("ec", 11) >= 16;
+	return player.w.points.gte(50);
 };
 
 // Style for the background, can be a function

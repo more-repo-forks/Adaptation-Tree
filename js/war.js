@@ -5,30 +5,42 @@ const warUpgrades = [
 		{title: "Wilderness Exploration", desc() {return "divides species requirement based on wars<br>(currently /" + format(this.effect()) + ")"}, effect() {return player.w.points.pow_base(1e5)}, cost: 4},
 		{title: "Nature Investigation", desc() {return "divides ecosystem requirement based on wars<br>(currently /" + format(this.effect()) + ")"}, effect() {return player.w.points.div(3).add(1)}, cost: 25},
 		{title: "Solace Seeking", desc() {return "divides conscious being requirement based on wars<br>(currently /" + format(this.effect()) + ")"}, effect() {return player.w.points.pow_base("1e5000")}, cost: 150},
+		{title: "Revolutionary Tactics", desc() {return "divides revolution requirement based on wars<br>(currently /" + format(this.effect()) + ")"}, effect() {return player.w.points.div(10).add(1)}, cost: 1000},
 	], [
 		{title: "Forced Migration", desc() {return "increases the 10th hybridization's completion limit based on wars<br>(currently +" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points.mul(2)}, cost: 2},
 		{title: "Out of Place, Out of Time", desc: "unlocks another ANACHRONISM tier", effect: 1, cost: 4},
 		{title: "Displaced Chronology", desc: "unlocks another ANACHRONISM tier", effect: 1, cost: 8},
 		{title: "Decreased Habitable Area", desc() {return "increases the 10th hybridization's completion limit based on wars<br>(currently +" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points.mul(3)}, cost: 30},
 		{title: "Ancient Tactics", desc: "unlocks another ANACHRONISM tier", effect: 1, cost: 200},
+		{title: "???", desc: "coming soon!", cost: 1500},
 	], [
 		{title: "Enroaching Influence", desc: "unlocks another influence generator", cost: 4},
 		{title: "Greater Empowerment", desc: "reduces <b>Influence empowerment</b>'s cost", cost: 8},
 		{title: "Surrounding Influence", desc: "unlocks another influence generator", cost: 16},
 		{title: "Generator Recycling", desc: "reduces the costs of influence generators", cost: 40},
 		{title: "Overarching Influence", desc: "unlocks another influence generator", cost: 250},
+		{title: "???", desc: "coming soon!", cost: 2000},
 	], [
 		{title: "Conflict Escalation", desc: "decreases war requirement base by 0.025", effect: 0.025, cost: 25},
 		{title: "Battle Domination", desc: "decreases domination requirement base by 0.313", effect: 0.313, cost: 30},
 		{title: "Revolutionary Armaments", desc: "decreases revolution requirement base by 0.1", effect: 0.1, cost: 40},
 		{title: "New Frontiers", desc: "decreases species requirement base by 0.075", effect: 0.075, cost: 55},
 		{title: "Further Exploration", desc: "decreases expansion requirement base by 0.1", effect: 0.1, cost: 300},
+		{title: "???", desc: "coming soon!", cost: 2500},
 	], [
 		{title: "Further Domination", desc() {return "gives extra FOC, SPE, CLI, and DOM based on wars<br>(currently +" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points}, cost: 150},
-		{title: "Further Acclimation", desc() {return "gives extra CRA, FER, ANA, and SOV based on wars<br>(currently +" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points.mul(75000).floor()}, cost: 200},
+		{title: "Further Acclimation", desc() {return "gives extra CRA, FER, ANA, and SOV based on wars<br>(currently +" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points.mul(75000)}, cost: 200},
 		{title: "Military Domination", desc() {return "gives extra FOC, SPE, CLI, and DOM based on wars<br>(currently +" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points.mul(2)}, cost: 250},
-		{title: "Forced Acclimation", desc() {return "gives extra CRA, FER, ANA, and SOV based on wars<br>(currently +" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points.mul(220000).floor()}, cost: 300},
-		{title: "???", desc: "coming soon!", cost: 350},
+		{title: "Forced Acclimation", desc() {return "gives extra CRA, FER, ANA, and SOV based on wars<br>(currently +" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points.mul(220000)}, cost: 300},
+		{title: "Overpowering Presence", desc() {return "gives extra FOC, SPE, CLI, and DOM based on wars<br>(currently +" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points.mul(5)}, cost: 350},
+		{title: "???", desc: "coming soon!", cost: 3000},
+	], [
+		{title: "Honed Focus", desc() {return "divides focus+ requirement based on wars<br>(currently /" + format(this.effect()) + ")"}, effect() {return player.w.points.add(1).pow(0.1)}, cost: 1000},
+		{title: "???", desc: "coming soon!", cost: 1500},
+		{title: "???", desc: "coming soon!", cost: 2000},
+		{title: "???", desc: "coming soon!", cost: 2500},
+		{title: "???", desc: "coming soon!", cost: 3000},
+		{title: "???", desc: "coming soon!", cost: 3500},
 	],
 ];
 
@@ -73,6 +85,7 @@ addLayer("w", {
 		let exp = 1.5;
 		if (player.ex.points.gte(9)) exp += 0.1;
 		if (hasMilestone("r", 16)) exp += 0.15;
+		if (hasMilestone("r", 21)) exp += 0.15;
 		return player.w.points.pow(exp).round();
 	},
 	effectDescription() {return "which are giving " + formatWhole(tmp.w.effect) + " battles, of which " + formatWhole(tmp.w.effect.sub(player.w.spent)) + " are unspent"},
@@ -113,6 +126,7 @@ addLayer("w", {
 			let size = 3;
 			if (hasMilestone("d", 41)) size++;
 			if (hasMilestone("r", 13)) size++;
+			if (hasMilestone("r", 22)) size++;
 			return size;
 		},
 		cols() {return this.rows()},

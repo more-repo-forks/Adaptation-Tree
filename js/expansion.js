@@ -17,7 +17,7 @@ function getGeneratorCost(id) {
 	return amt.pow_base(GENERATOR_COST_BASES[id - 11]).round();
 };
 
-const GENERATOR_IMPROVEMENTS = ["(b + x) * b<sup>2</sup>", "(b + x) * b<sup>3</sup> * 2<sup>b</sup>", "(b + x) * b<sup>5</sup> * 3<sup>b</sup>", "(10b + x) * b<sup>12</sup> * 5<sup>b</sup>", "(b * EX + x) * b<sup>EX</sup> * 10<sup>b</sup>", "(b + x) * b<sup>55</sup> * EX<sup>b</sup>", "(b + x) * b<sup>EX</sup> * EX<sup>6.6b</sup>", "(b + x) * b<sup>EX</sup> * EX<sup>9b</sup>", "(b + x) * b<sup>EX</sup> * EX<sup>10b</sup>"];
+const GENERATOR_IMPROVEMENTS = ["(b + x) * b<sup>2</sup>", "(b + x) * b<sup>3</sup> * 2<sup>b</sup>", "(b + x) * b<sup>5</sup> * 3<sup>b</sup>", "(10b + x) * b<sup>12</sup> * 5<sup>b</sup>", "(b * EX + x) * b<sup>EX</sup> * 10<sup>b</sup>", "(b + x) * b<sup>55</sup> * EX<sup>b</sup>", "(b + x) * b<sup>EX</sup> * EX<sup>6.6b</sup>", "(b + x) * b<sup>EX</sup> * EX<sup>9b</sup>", "(b + x) * b<sup>EX</sup> * EX<sup>10b</sup>", "(b + x) * b<sup>EX</sup> * EX<sup>20b</sup>"];
 
 function getGeneratorEffect(id) {
 	let level = getBuyableAmount("ex", 31).toNumber();
@@ -33,6 +33,7 @@ function getGeneratorEffect(id) {
 		b.add(x).mul(b.pow(player.ex.points)).mul(b.mul(6.6).pow_base(player.ex.points)),
 		b.add(x).mul(b.pow(player.ex.points)).mul(b.mul(9).pow_base(player.ex.points)),
 		b.add(x).mul(b.pow(player.ex.points)).mul(b.mul(10).pow_base(player.ex.points)),
+		b.add(x).mul(b.pow(player.ex.points)).mul(b.mul(20).pow_base(player.ex.points)),
 	][level];
 	if (hasBuyable("ex", 21)) eff = eff.mul(buyableEffect("ex", 21));
 	if (tmp.l.effect[3]) eff = eff.mul(tmp.l.effect[3]);
@@ -50,6 +51,8 @@ addLayer("ex", {
 		influenceUnlocked: false,
 		influence: new Decimal(0),
 		extra: [],
+		autoIG: false,
+		autoTE: false,
 	}},
 	color: "#B44990",
 	nodeStyle() {if (tmp.ex.canReset || player.ex.unlocked) return {"background": "border-box linear-gradient(to right, #EE7770, #B44990, #E03330)"}},
@@ -123,7 +126,12 @@ addLayer("ex", {
 			for (const key in tmp.ex.buyables)
 				if (Object.hasOwnProperty.call(tmp.ex.buyables, key) && key < 20 && tmp.ex.buyables[key].unlocked)
 					arr.push(["buyable", +key], "blank");
-			arr.push(["buyables", "3"], "blank");
+			if (player.co.unlocked) arr.push(["row", [
+				["column", [["display-text", "auto<br>IGs"], ["blank", "7px"], ["toggle", ["ex", "autoIG"]]]],
+				["buyables", "3"],
+				["column", [["display-text", "auto<br>IT &<br>IE"], ["blank", "7px"], ["toggle", ["ex", "autoTE"]]]],
+			]], "blank");
+			else arr.push(["buyables", "3"], "blank");
 		};
 		return arr;
 	},
@@ -135,7 +143,7 @@ addLayer("ex", {
 	}],
 	doReset(resettingLayer) {
 		if (layers[resettingLayer].row <= this.row) return;
-		let keep = [];
+		let keep = ["autoIG", "autoTE"];
 		layerDataReset("ex", keep);
 		for (const key in layers.ex.buyables)
 			if (Object.hasOwnProperty.call(layers.ex.buyables, key) && key < 20)
@@ -152,6 +160,17 @@ addLayer("ex", {
 					else player.ex.extra[key - 12] = player.ex.extra[key - 12].add(eff.mul(diff)).min(eff.mul(100));
 				};
 			};
+		};
+	},
+	automate() {
+		if (player.co.unlocked && player.ex.autoIG) {
+			for (const key in layers.ex.buyables)
+				if (Object.hasOwnProperty.call(layers.ex.buyables, key) && key < 20 && tmp.ex.buyables[key].unlocked && layers.ex.buyables[key].canAfford())
+					layers.ex.buyables[key].buy();
+		};
+		if (player.co.unlocked && player.ex.autoTE) {
+			if (layers.ex.buyables[21].canAfford()) layers.ex.buyables[21].buy();
+			if (layers.ex.buyables[22].canAfford()) layers.ex.buyables[22].buy();
 		};
 	},
 	shouldNotify() {
@@ -279,7 +298,7 @@ addLayer("ex", {
 			},
 		},
 		31: {
-			cost() {return new Decimal([7.7e77, 1.11e111, 2.02e202, "3.45e345", "6.6e660", "1.055e1055", "2.211e2211", "5e5000"][getBuyableAmount(this.layer, this.id)] || Infinity)},
+			cost() {return new Decimal([7.7e77, 1.11e111, 2.02e202, "3.45e345", "6.6e660", "1.055e1055", "2.211e2211", "5e5000", "9e9000"][getBuyableAmount(this.layer, this.id)] || Infinity)},
 			effect() {return getBuyableAmount(this.layer, this.id).toNumber() + 1},
 			title: "Generator improvement",
 			display() {

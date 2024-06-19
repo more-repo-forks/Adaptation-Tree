@@ -44,6 +44,11 @@ addLayer("sp", {
 		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
 		return mult;
 	},
+	directMult() {
+		let mult = new Decimal(1);
+		if (tmp.co.effect[2]) mult = mult.mul(tmp.co.effect[2]);
+		return mult;
+	},
 	effect() {
 		// overrides
 		if (inChallenge("sp", 17)) return [1, 1, 1];
@@ -104,7 +109,8 @@ addLayer("sp", {
 	doReset(resettingLayer) {
 		if (layers[resettingLayer].row <= this.row) return;
 		let keep = [];
-		if ((resettingLayer == "l" && player.l.points.gte(4))
+		if (resettingLayer == "co"
+			|| (resettingLayer == "l" && player.l.points.gte(4))
 			|| player.r.points.gte(3)
 			|| resettingLayer == "ec"
 		) keep.push("challenges");
