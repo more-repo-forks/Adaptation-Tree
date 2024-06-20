@@ -9,7 +9,7 @@ const modInfo = {
 }
 
 const VERSION = {
-	num: "2.5",
+	num: "2.5.1",
 	name: "The Age of Exploration",
 };
 
@@ -82,12 +82,12 @@ let displayThings = [
 		if (tmp.other.oompsMag != 0 && options.showOOMs) return "(" + format(tmp.other.oomps) + " OOM" + (tmp.other.oompsMag < 0 ? "^OOM" : (tmp.other.oompsMag > 1 ? "^" + tmp.other.oompsMag : "")) + "s/sec)";
 		return "(" + format(getPointPotential()) + " max power)";
 	},
-	() => "<br>current endgame is at 50 " + (player.w.unlocked ? "wars" : "???"),
+	() => "<br>current endgame is at 17 " + (player.ec.unlocked ? "ANACHRONISM completions" : "???"),
 ];
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.w.points.gte(50);
+	return challengeCompletions("ec", 11) >= 17;
 };
 
 // Style for the background, can be a function

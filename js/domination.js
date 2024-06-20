@@ -206,6 +206,7 @@ addLayer("d", {
 				if (hasMilestone("d", 11)) base = base.mul(milestoneEffect("d", 11));
 				if (hasMilestone("d", 16)) base = base.mul(milestoneEffect("d", 16));
 				if (hasMilestone("d", 26)) base = base.mul(milestoneEffect("d", 26));
+				if (hasMilestone("d", 46)) base = base.mul(milestoneEffect("d", 46));
 				return base;
 			},
 			effect() {return getBuyableAmount(this.layer, this.id).add(this.extra()).pow_base(this.effectBase())},
@@ -756,6 +757,15 @@ addLayer("d", {
 			popupTitle: "Enhancement Acquired!",
 			effect() {return 0.05},
 			effectDescription() {return "increase the complete domination effect of CLI by 0.05<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		46: {
+			requirement: 14825,
+			requirementDescription: "SPE enhancement V",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return player.d.points.add(1).pow(0.1)},
+			effectDescription() {return "multiply the base effect of SPE based on domination points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("d", this.id - 1)},
 		},

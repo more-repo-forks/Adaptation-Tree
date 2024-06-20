@@ -98,7 +98,7 @@ addLayer("ex", {
 		if (eff[3].gte("1e88888")) eff[3] = eff[3].div("1e88888").pow(8/9).mul("1e88888");
 		if (eff[3].gte("1e200000")) eff[3] = eff[3].div("1e200000").pow(0.0055).mul("1e200000");
 		if (eff[3].gte("1e500000")) eff[3] = eff[3].div("1e500000").pow(0.01).mul("1e500000");
-		if (eff[3].gte("1e1000000")) eff[3] = eff[3].div("1e1000000").log10().pow(10000).mul("1e1000000");
+		if (eff[3].gte("1e1000000")) eff[3] = eff[3].div("1e1000000").log10().add(1).pow(10000).mul("1e1000000");
 		if (eff[3].gte("1e5555555")) eff[3] = eff[3].div("1e5555555").pow(5/9).mul("1e5555555");
 		return eff;
 	},
@@ -156,8 +156,13 @@ addLayer("ex", {
 			for (const key in layers.ex.buyables) {
 				if (Object.hasOwnProperty.call(layers.ex.buyables, key) && key < 20 && hasBuyable("ex", key) && tmp.ex.buyables[key].unlocked) {
 					let eff = buyableEffect("ex", key);
-					if (key == 11) player.ex.influence = player.ex.influence.add(eff.mul(diff)).min(eff.mul(100));
-					else player.ex.extra[key - 12] = player.ex.extra[key - 12].add(eff.mul(diff)).min(eff.mul(100));
+					if (key == 11) {
+						if (player.ex.influence.lt(eff.mul(100)))
+							player.ex.influence = player.ex.influence.add(eff.mul(diff)).min(eff.mul(100));
+					} else {
+						if (player.ex.extra[key - 12].lt(eff.mul(100)))
+							player.ex.extra[key - 12] = player.ex.extra[key - 12].add(eff.mul(diff)).min(eff.mul(100));
+					};
 				};
 			};
 		};
@@ -254,7 +259,10 @@ addLayer("ex", {
 			cost() {
 				let amt = getBuyableAmount(this.layer, this.id).add(1);
 				if (hasMilestone("r", 8)) amt = amt.sub(1);
-				return new Decimal(10).pow(amt.pow(challengeCompletions("ec", 11) >= 8 ? 1.5 : 2));
+				let exp = 2;
+				if (challengeCompletions("ec", 11) >= 8) exp -= 0.5;
+				if (getGridData("w", 306)) exp -= 0.025;
+				return new Decimal(10).pow(amt.pow(exp));
 			},
 			effectBase() {
 				let base = new Decimal(2);
@@ -303,9 +311,11 @@ addLayer("ex", {
 			title: "Generator improvement",
 			display() {
 				let amt = getBuyableAmount(this.layer, this.id).toNumber();
-				return "improve the generator formulas and time for generators goes faster, but reset influence and all non-bought generators<br><br>Next: " + GENERATOR_IMPROVEMENTS[amt] + " --> " + (GENERATOR_IMPROVEMENTS[amt + 1] || "???") + " and " + this.effect() + "x --> " + (this.effect() + 1) + "x<br><br>Cost: " + format(this.cost()) + " influence<br><br>Bought: " + formatWhole(amt);
+				if (GENERATOR_IMPROVEMENTS[amt + 1]) return "improve the generator formulas and time for generators goes faster, but reset influence and all non-bought generators<br><br>Next: " + GENERATOR_IMPROVEMENTS[amt] + " --> " + GENERATOR_IMPROVEMENTS[amt + 1] + " and " + formatWhole(this.effect()) + "x --> " + formatWhole(this.effect() + 1) + "x<br><br>Cost: " + format(this.cost()) + " influence<br><br>Bought: " + formatWhole(amt) + "/" + formatWhole(this.purchaseLimit);
+				return "improve the generator formulas and time for generators goes faster, but reset influence and all non-bought generators<br><br>Effects: " + GENERATOR_IMPROVEMENTS[0] + " --> " + GENERATOR_IMPROVEMENTS[amt] + " and 1x --> " + formatWhole(this.effect()) + "x<br><br>Bought: " + formatWhole(amt) + "/" + formatWhole(this.purchaseLimit);
 			},
-			canAfford() {return player.ex.influenceUnlocked && player.ex.influence.gte(this.cost())},
+			purchaseLimit: GENERATOR_IMPROVEMENTS.length - 1,
+			canAfford() {return player.ex.influenceUnlocked && player.ex.influence.gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit)},
 			buy() {
 				player.ex.influence = new Decimal(0);
 				for (const key in layers.ex.buyables)
@@ -315,7 +325,8 @@ addLayer("ex", {
 			},
 			style() {
 				let obj = {"width": "400px", "height": "110px", "border-radius": "25px"};
-				if (this.canAfford()) obj.background = tmp.ex.nodeStyle.background;
+				if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) obj["border-color"] = "#B44990";
+				else if (this.canAfford()) obj.background = tmp.ex.nodeStyle.background;
 				return obj;
 			},
 		},

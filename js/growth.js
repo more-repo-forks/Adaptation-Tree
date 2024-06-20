@@ -235,6 +235,7 @@ addLayer("g", {
 				if (tmp.cb.effect[2]) extra = extra.mul(tmp.cb.effect[2]);
 				return extra.floor();
 			},
+			style() {if (getBuyableAmount(this.layer, this.id).gte(1000)) return {"border-color": "#E5B55A"}},
 		},
 		12: {
 			cost() {
@@ -284,6 +285,7 @@ addLayer("g", {
 				if (tmp.cb.effect[2]) extra = extra.mul(tmp.cb.effect[2]);
 				return extra.floor();
 			},
+			style() {if (getBuyableAmount(this.layer, this.id).gte(1000)) return {"border-color": "#E5B55A"}},
 		},
 		13: {
 			cost() {
@@ -337,6 +339,7 @@ addLayer("g", {
 				if (tmp.cb.effect[2]) extra = extra.mul(tmp.cb.effect[2]);
 				return extra.floor();
 			},
+			style() {if (getBuyableAmount(this.layer, this.id).gte(1000)) return {"border-color": "#E5B55A"}},
 		},
 		14: {
 			cost() {
@@ -417,6 +420,7 @@ addLayer("g", {
 				if (tmp.cb.effect[2]) extra = extra.mul(tmp.cb.effect[2]);
 				return extra.floor();
 			},
+			style() {if (getBuyableAmount(this.layer, this.id).gte(1000)) return {"border-color": "#E5B55A"}},
 		},
 		respec() {
 			if (getBuyableAmount("g", 11).gte(100) && getBuyableAmount("g", 12).gte(100) && getBuyableAmount("g", 13).gte(100) && getBuyableAmount("g", 14).gte(100)) {

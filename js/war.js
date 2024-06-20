@@ -12,14 +12,14 @@ const warUpgrades = [
 		{title: "Displaced Chronology", desc: "unlocks another ANACHRONISM tier", effect: 1, cost: 8},
 		{title: "Decreased Habitable Area", desc() {return "increases the 10th hybridization's completion limit based on wars<br>(currently +" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points.mul(3)}, cost: 30},
 		{title: "Ancient Tactics", desc: "unlocks another ANACHRONISM tier", effect: 1, cost: 200},
-		{title: "???", desc: "coming soon!", cost: 1500},
+		{title: "Futuristic Tactics", desc: "unlocks another ANACHRONISM tier", effect: 1, cost: 1500},
 	], [
 		{title: "Enroaching Influence", desc: "unlocks another influence generator", cost: 4},
 		{title: "Greater Empowerment", desc: "reduces <b>Influence empowerment</b>'s cost", cost: 8},
 		{title: "Surrounding Influence", desc: "unlocks another influence generator", cost: 16},
 		{title: "Generator Recycling", desc: "reduces the costs of influence generators", cost: 40},
 		{title: "Overarching Influence", desc: "unlocks another influence generator", cost: 250},
-		{title: "???", desc: "coming soon!", cost: 2000},
+		{title: "Greater Tickspeed", desc: "reduces <b>Influence tickspeed</b>'s cost", cost: 2000},
 	], [
 		{title: "Conflict Escalation", desc: "decreases war requirement base by 0.025", effect: 0.025, cost: 25},
 		{title: "Battle Domination", desc: "decreases domination requirement base by 0.313", effect: 0.313, cost: 30},
@@ -36,8 +36,8 @@ const warUpgrades = [
 		{title: "???", desc: "coming soon!", cost: 3000},
 	], [
 		{title: "Honed Focus", desc() {return "divides focus+ requirement based on wars<br>(currently /" + format(this.effect()) + ")"}, effect() {return player.w.points.add(1).pow(0.1)}, cost: 1000},
-		{title: "???", desc: "coming soon!", cost: 1500},
-		{title: "???", desc: "coming soon!", cost: 2000},
+		{title: "Public Speaking", desc: "improves the last leader effect", cost: 1500},
+		{title: "Political Upheaval", desc() {return "divides leader requirement based on wars<br>(currently /" + format(this.effect()) + ")"}, effect() {return player.w.points.add(1).pow(0.2)}, cost: 2000},
 		{title: "???", desc: "coming soon!", cost: 2500},
 		{title: "???", desc: "coming soon!", cost: 3000},
 		{title: "???", desc: "coming soon!", cost: 3500},
@@ -68,6 +68,7 @@ addLayer("w", {
 		if (challengeCompletions("ec", 11) >= 14 && challengeEffect("ec", 11)[13]) base -= challengeEffect("ec", 11)[13];
 		if (hasMilestone("r", 17)) base -= milestoneEffect("r", 17);
 		if (hasMilestone("r", 18)) base -= milestoneEffect("r", 18);
+		if (hasMilestone("r", 24)) base -= milestoneEffect("r", 24);
 		if (getGridData("w", 401)) base -= gridEffect("w", 401);
 		return base;
 	},
@@ -86,6 +87,7 @@ addLayer("w", {
 		if (player.ex.points.gte(9)) exp += 0.1;
 		if (hasMilestone("r", 16)) exp += 0.15;
 		if (hasMilestone("r", 21)) exp += 0.15;
+		if (player.w.points.gte(50)) exp += 0.05;
 		return player.w.points.pow(exp).round();
 	},
 	effectDescription() {return "which are giving " + formatWhole(tmp.w.effect) + " battles, of which " + formatWhole(tmp.w.effect.sub(player.w.spent)) + " are unspent"},

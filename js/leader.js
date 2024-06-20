@@ -30,6 +30,7 @@ addLayer("l", {
 	gainMult() {
 		let mult = new Decimal(1);
 		if (hasMilestone("d", 44)) mult = mult.div(milestoneEffect("d", 44));
+		if (getGridData("w", 603)) mult = mult.div(gridEffect("w", 603));
 		return mult;
 	},
 	effect() {
@@ -37,7 +38,7 @@ addLayer("l", {
 			new Decimal(2).pow(player.l.points),
 			new Decimal(2).pow(player.l.points),
 			player.l.points.div(4).add(1),
-			player.l.points.add(1),
+			(getGridData("w", 602) ? new Decimal(3).pow(player.l.points) : player.l.points.add(1)),
 		];
 		if (player.l.focusUnlocked) eff[4] = Math.floor((tmp.cb.effect[3] / getFocusplusRequirement()) ** 0.8);
 		else eff[4] = 0;

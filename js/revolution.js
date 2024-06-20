@@ -47,7 +47,7 @@ addLayer("r", {
 			player.r.points.div(10).add(1).min(2),
 			player.r.points.pow(2).mul(new Decimal(10).pow(player.r.points.sub(1))).mul((player.r.milestones.length + 1) ** (challengeCompletions("ec", 11) >= 9 ? 5 : 2)),
 			new Decimal(10).pow(player.r.change.pow(hasMilestone("r", 11) ? 0.25 : 0.5)),
-			(hasMilestone("r", 0) ? (hasMilestone("r", 20) ? player.r.change.add(1).pow(2) : player.r.change.add(1).pow(hasMilestone("r", 6) ? 1.28 : 0.5).log10().add(1)) : new Decimal(1)),
+			(hasMilestone("r", 0) ? (hasMilestone("r", 20) ? player.r.change.add(1).pow(hasMilestone("r", 23) ? 8 : 2) : player.r.change.add(1).pow(hasMilestone("r", 6) ? 1.28 : 0.5).log10().add(1)) : new Decimal(1)),
 			(hasMilestone("r", 1) ? player.r.change.add(1).pow(hasMilestone("r", 11) ? 0.1454 : hasMilestone("r", 7) ? 0.122 : 0.05).log10().add(1) : new Decimal(1)),
 			(hasMilestone("r", 4) ? new Decimal(222).pow(player.r.change.pow(0.2)) : new Decimal(1)),
 		];
@@ -65,9 +65,12 @@ addLayer("r", {
 			if (eff[4].gte("e1e10")) eff[4] = eff[4].div("e1e10").pow(0.01).mul("e1e10");
 			if (eff[4].gte("e1.5e10")) eff[4] = eff[4].div("e1.5e10").pow(0.015).mul("e1.5e10");
 			if (eff[4].gte("e2e10")) eff[4] = eff[4].div("e2e10").pow(0.02).mul("e2e10");
+			if (eff[4].gte("e4e10")) eff[4] = eff[4].div("e4e10").pow(0.04).mul("e4e10");
+			if (eff[4].gte("e6e10")) eff[4] = eff[4].div("e6e10").pow(0.06).mul("e6e10");
+			if (eff[4].gte("e8e10")) eff[4] = eff[4].div("e8e10").pow(0.08).mul("e8e10");
 		} else {
 			if (eff[4].gte("1e5555")) eff[4] = eff[4].div("1e5555").pow(0.1).mul("1e5555");
-			if (eff[4].gte("1e200000")) eff[4] = eff[4].div("1e200000").log10().pow(2000).mul("1e200000");
+			if (eff[4].gte("1e200000")) eff[4] = eff[4].div("1e200000").log10().add(1).pow(2000).mul("1e200000");
 		};
 		if (eff[7].gte("1e3333")) eff[7] = eff[7].div("1e3333").pow(1/3).mul("1e3333");
 		if (eff[7].gte("1e100000")) eff[7] = eff[7].div("1e100000").pow(0.1).mul("1e100000");
@@ -75,7 +78,7 @@ addLayer("r", {
 		if (eff[7].gte("e2500000")) eff[7] = eff[7].div("e2500000").pow(0.025).mul("e2500000");
 		if (eff[7].gte("e5000000")) eff[7] = eff[7].div("e5000000").pow(0.05).mul("e5000000");
 		if (eff[7].gte("e7500000")) eff[7] = eff[7].div("e7500000").pow(0.075).mul("e7500000");
-		if (eff[7].gte("e10000000")) eff[7] = eff[7].div("e10000000").log10().pow(100000).mul("e10000000");
+		if (eff[7].gte("e10000000")) eff[7] = eff[7].div("e10000000").log10().add(1).pow(100000).mul("e10000000");
 		return eff;
 	},
 	effectDescription() {return "which are dividing the species requirement by /" + format(tmp.r.effect[0]) + ", dividing conscious being requirement by /" + format(tmp.r.effect[1]) + ", multiplying the completion limit of the 10th retrogression by " + format(tmp.r.effect[2]) + "x (" + (tmp.r.effect[2].gte(2) ? "maxed" : "rounded down") + "), and generating " + format(tmp.r.effect[3]) + " change per second (with a limit of " + format(getMaxChange()) + ")"},
@@ -109,7 +112,7 @@ addLayer("r", {
 		layerDataReset("r", keep);
 	},
 	update(diff) {
-		player.r.change = player.r.change.add(tmp.r.effect[3].mul(diff)).min(getMaxChange());
+		if (player.r.change.lt(getMaxChange())) player.r.change = player.r.change.add(tmp.r.effect[3].mul(diff)).min(getMaxChange());
 	},
 	componentStyles: {
 		"prestige-button"() {if (tmp.r.canReset && tmp.r.nodeStyle) return tmp.r.nodeStyle},
@@ -300,6 +303,23 @@ addLayer("r", {
 			requirementDescription: "23rd innovation",
 			popupTitle: "Innovation Acquired!",
 			effectDescription() {return "expand the battle grid<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		23: {
+			requirement: 1e79,
+			requirementDescription: "24th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "improve the second change effect<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		24: {
+			requirement: 1e84,
+			requirementDescription: "25th innovation",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 0.025},
+			effectDescription() {return "decrease the war requirement base by 0.025<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
 			unlocked() {return hasMilestone("r", this.id - 1)},
 		},
