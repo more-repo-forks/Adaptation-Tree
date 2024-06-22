@@ -35,9 +35,10 @@ addLayer("cb", {
 	base() {
 		let base = 10;
 		if (hasChallenge("sp", 19)) base -= 2;
+		if (getGridData("w", 406)) base -= gridEffect("w", 406);
 		return base;
 	},
-	exponent: 1,
+	exponent() {return inChallenge("co", 11) ? 2 : 1},
 	roundUpCost: true,
 	canBuyMax() {return player.ec.unlocked},
 	resetDescription: "Enlighten for ",

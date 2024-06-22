@@ -23,12 +23,15 @@ addLayer("d", {
 	base() {
 		let base = 2;
 		if (hasChallenge("sp", 19)) base -= 0.16;
+		if (hasMilestone("d", 47)) base -= milestoneEffect("d", 47);
+		if (hasMilestone("d", 49)) base -= milestoneEffect("d", 49);
 		if (challengeCompletions("ec", 11) >= 1 && challengeEffect("ec", 11)[0]) base -= challengeEffect("ec", 11)[0];
 		if (challengeCompletions("ec", 11) >= 10 && challengeEffect("ec", 11)[9]) base -= challengeEffect("ec", 11)[9];
+		if (hasMilestone("r", 25)) base -= milestoneEffect("r", 25);
 		if (getGridData("w", 402)) base -= gridEffect("w", 402);
 		return base;
 	},
-	exponent: 1,
+	exponent() {return inChallenge("co", 11) ? 2 : 1},
 	roundUpCost: true,
 	canBuyMax() {return player.ec.unlocked},
 	resetDescription: "Dominate for ",
@@ -230,6 +233,7 @@ addLayer("d", {
 			extra() {
 				let extra = new Decimal(0);
 				if (hasMilestone("d", 37)) extra = extra.add(milestoneEffect("d", 37));
+				if (hasMilestone("d", 48)) extra = extra.add(milestoneEffect("d", 48));
 				if (getGridData("w", 501)) extra = extra.add(gridEffect("w", 501));
 				if (getGridData("w", 503)) extra = extra.add(gridEffect("w", 503));
 				if (getGridData("w", 505)) extra = extra.add(gridEffect("w", 505));
@@ -271,6 +275,7 @@ addLayer("d", {
 			extra() {
 				let extra = new Decimal(0);
 				if (hasMilestone("d", 37)) extra = extra.add(milestoneEffect("d", 37));
+				if (hasMilestone("d", 48)) extra = extra.add(milestoneEffect("d", 48));
 				if (getGridData("w", 501)) extra = extra.add(gridEffect("w", 501));
 				if (getGridData("w", 503)) extra = extra.add(gridEffect("w", 503));
 				if (getGridData("w", 505)) extra = extra.add(gridEffect("w", 505));
@@ -315,6 +320,7 @@ addLayer("d", {
 			extra() {
 				let extra = new Decimal(0);
 				if (hasMilestone("d", 37)) extra = extra.add(milestoneEffect("d", 37));
+				if (hasMilestone("d", 48)) extra = extra.add(milestoneEffect("d", 48));
 				if (getGridData("w", 501)) extra = extra.add(gridEffect("w", 501));
 				if (getGridData("w", 503)) extra = extra.add(gridEffect("w", 503));
 				if (getGridData("w", 505)) extra = extra.add(gridEffect("w", 505));
@@ -766,6 +772,33 @@ addLayer("d", {
 			popupTitle: "Enhancement Acquired!",
 			effect() {return player.d.points.add(1).pow(0.1)},
 			effectDescription() {return "multiply the base effect of SPE based on domination points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		47: {
+			requirement: 28580,
+			requirementDescription: "The cool enhancement",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.137},
+			effectDescription() {return "decrease domination requirement base by 0.137<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		48: {
+			requirement: 54175,
+			requirementDescription: "FOC enhancement V",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return getBuyableAmount("d", 11).add(tmp.d.buyables[11].extra).div(10).floor()},
+			effectDescription() {return "every 10 levels of FOC gives an extra level to SPE, CLI, and DOM<br>Effect: +" + formatWhole(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		49: {
+			requirement: 69745,
+			requirementDescription: "The coolest enhancement",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 0.045},
+			effectDescription() {return "decrease domination requirement base by 0.045<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("d", this.id - 1)},
 		},

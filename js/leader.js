@@ -1,6 +1,7 @@
 function getFocusplusRequirement() {
 	let req = 1000000;
 	if (getGridData("w", 601)) req /= gridEffect("w", 601).toNumber();
+	if (getGridData("w", 605)) req /= gridEffect("w", 605).toNumber();
 	return req;
 };
 
@@ -36,9 +37,9 @@ addLayer("l", {
 	effect() {
 		let eff = [
 			new Decimal(2).pow(player.l.points),
-			new Decimal(2).pow(player.l.points),
+			new Decimal(getGridData("w", 604) ? 3 : 2).pow(player.l.points),
 			player.l.points.div(4).add(1),
-			(getGridData("w", 602) ? new Decimal(3).pow(player.l.points) : player.l.points.add(1)),
+			(getGridData("w", 602) ? new Decimal(getGridData("w", 606) ? 75 : 3).pow(player.l.points) : player.l.points.add(1).pow(getGridData("w", 606) ? 7 : 1)),
 		];
 		if (player.l.focusUnlocked) eff[4] = Math.floor((tmp.cb.effect[3] / getFocusplusRequirement()) ** 0.8);
 		else eff[4] = 0;

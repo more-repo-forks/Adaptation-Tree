@@ -20,7 +20,7 @@ addLayer("ec", {
 		if (challengeCompletions("ec", 11) >= 5 && challengeEffect("ec", 11)[4]) base -= challengeEffect("ec", 11)[4];
 		return base;
 	},
-	exponent: 1,
+	exponent() {return inChallenge("co", 11) ? 2 : 1},
 	roundUpCost: true,
 	canBuyMax() {return player.l.points.gte(3)},
 	resetDescription: "Ecologically succeed for ",
@@ -49,24 +49,6 @@ addLayer("ec", {
 		if (player.ec.points.gte(2)) text += "<br><br>After succeeding 3 times, you keep retrogression completions on all resets.";
 		if (player.ec.points.gte(5)) text += "<br>After succeeding 6 times, you keep stimulation upgrades on all resets.";
 		if (player.ec.points.gte(8)) text += "<br>After succeeding 9 times, the first ecosystem effect is improved.";
-		// ANACHRONISM html
-		let html = "<div class='challenge " + challengeStyle("ec", 11);
-		html += "' style='width: 500px; height: 500px; border-radius: 50%; border-color: #116022; color: #116022'>";
-		html += "<div style='height: 210px; display: flex'><h1>" + tmp.ec.challenges[11].name + "</h1></div>";
-		html += "<div style='height: 210px; display: flex; margin-top: 80px'><span>" + layers.ec.challenges[11].fullDisplay() + "</span></div><button";
-		if (tmp.ec.challenges[11].enterable) html += " class='can' style='position: absolute; top: calc(50% - 50px); left: calc(50% - 50px); width: 100px; height: 100px; border: none; border-radius: 50%; background-color: #116022; color: #FFFFFF; z-index: 1; transform: none; box-shadow: none'";
-		else html += " class='locked' style='position: absolute; top: calc(50% - 50px); left: calc(50% - 50px); width: 100px; height: 100px; border: 5px solid #116022; border-radius: 50%; background-color: var(--locked); color: #116022; z-index: 1; transform: none; box-shadow: none'";
-		html += " onclick='if (tmp.ec.challenges[11].enterable) startChallenge(\"ec\", 11)'>";
-		html += challengeButtonText("ec", 11) + "</button>";
-		let rotation = (player.ec.activeChallenge == 11 ?
-			Math.floor(player.ec.chronoTime - Date.now() / 1000) % 60 * 6
-			: Math.floor(Date.now() / 1000 - player.ec.chronoTime) % 60 * 6
-		);
-		html += "<div style='position: absolute; top: -2px; left: 247.5px; width: 5px; height: 252px; background-color: #116022C0; transform-origin: 50% 100%; transform: rotate(" + rotation + "deg)'></div>";
-		html += "<button onclick='if (player.ec.unlocked && tmp.ec.challenges[11].enterable && player.ec.chronoTime !== 0) player.ec.chronoTime = 0'";
-		if (player.ec.unlocked && tmp.ec.challenges[11].enterable && player.ec.chronoTime !== 0) html += " class='can' style='position: absolute; top: 430px; left: 430px; width: 70px; height: 70px; border: none; border-radius: 50%; background-color: #116022; color: #FFFFFF; transform: none; box-shadow: none'>SYNC OFF</button>";
-		else html += " class='locked' style='position: absolute; top: 430px; left: 430px; width: 70px; height: 70px; border: 5px solid #116022; border-radius: 50%; background-color: var(--locked); color: #116022; transform: none; box-shadow: none'>SYNC ON</button>";
-		if (tmp.ec.challenges[11].marked) html += "<div class='star' style='position: absolute; left: 20px; top: 20px; border-bottom-color: #116022; transform: scale(2, 2)'></div>";
 		// tab format
 		let arr = [
 			"main-display",
@@ -74,9 +56,30 @@ addLayer("ec", {
 			"resource-display",
 			["display-text", text],
 			"blank",
-			["raw-html", html],
-			"blank",
 		];
+		// ANACHRONISM html
+		if (options.hideChallenges && maxedChallenge("ec", 11) && !inChallenge("ec", 11)) {
+			arr.push("blank");
+		} else {
+			let html = "<div class='challenge " + challengeStyle("ec", 11);
+			html += "' style='width: 500px; height: 500px; border-radius: 50%; border-color: #116022; color: #116022'>";
+			html += "<div style='height: 210px; display: flex'><h1>" + tmp.ec.challenges[11].name + "</h1></div>";
+			html += "<div style='height: 210px; display: flex; margin-top: 80px'><span>" + layers.ec.challenges[11].fullDisplay() + "</span></div><button";
+			if (tmp.ec.challenges[11].enterable) html += " class='can' style='position: absolute; top: calc(50% - 50px); left: calc(50% - 50px); width: 100px; height: 100px; border: none; border-radius: 50%; background-color: #116022; color: #FFFFFF; z-index: 1; transform: none; box-shadow: none'";
+			else html += " class='locked' style='position: absolute; top: calc(50% - 50px); left: calc(50% - 50px); width: 100px; height: 100px; border: 5px solid #116022; border-radius: 50%; background-color: var(--locked); color: #116022; z-index: 1; transform: none; box-shadow: none'";
+			html += " onclick='if (tmp.ec.challenges[11].enterable) startChallenge(\"ec\", 11)'>";
+			html += challengeButtonText("ec", 11) + "</button>";
+			let rotation = (player.ec.activeChallenge == 11 ?
+				Math.floor(player.ec.chronoTime - Date.now() / 1000) % 60 * 6
+				: Math.floor(Date.now() / 1000 - player.ec.chronoTime) % 60 * 6
+			);
+			html += "<div style='position: absolute; top: -2px; left: 247.5px; width: 5px; height: 252px; background-color: #116022C0; transform-origin: 50% 100%; transform: rotate(" + rotation + "deg)'></div>";
+			html += "<button onclick='if (player.ec.unlocked && tmp.ec.challenges[11].enterable && player.ec.chronoTime !== 0) player.ec.chronoTime = 0'";
+			if (player.ec.unlocked && tmp.ec.challenges[11].enterable && player.ec.chronoTime !== 0) html += " class='can' style='position: absolute; top: 430px; left: 430px; width: 70px; height: 70px; border: none; border-radius: 50%; background-color: #116022; color: #FFFFFF; transform: none; box-shadow: none'>SYNC OFF</button>";
+			else html += " class='locked' style='position: absolute; top: 430px; left: 430px; width: 70px; height: 70px; border: 5px solid #116022; border-radius: 50%; background-color: var(--locked); color: #116022; transform: none; box-shadow: none'>SYNC ON</button>";
+			if (tmp.ec.challenges[11].marked) html += "<div class='star' style='position: absolute; left: 20px; top: 20px; border-bottom-color: #116022; transform: scale(2, 2)'></div>";
+			arr.push(["raw-html", html], "blank");
+		};
 		// ANACHRONISM rewards
 		if (hasChallenge("ec", 11)) {
 			let rewards = "";
@@ -142,11 +145,10 @@ addLayer("ec", {
 				"war requirement base is decreased by 0.075",
 				() => "something new is unlocked for leaders" + (player.l.focusUnlocked ? " (already unlocked)" : ""),
 				() => "two new layers are unlocked" + (player.co.unlocked ? " (" + (false ? "" : "1/2 ") + "already unlocked)" : ""),
-				"coming soon!",
+				() => "something new is unlocked for continents" + (player.co.migrationUnlocked ? " (already unlocked)" : ""),
 			],
 			goal() {return [167098, 155454, 155040, 869153600, 2.874e9, 7.992e9, 3.082e11, 4.73e11, 1.228e12, 7.191e12, 9.733e12, 1.359e13, 5.222e13, 4.09e14, 3.783e15, 1.133e18, 2.975e18][Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1)] || Infinity},
 			canComplete() {return player.g.points.gte(this.goal())},
-			unlockReq: 21,
 			enterable() {return challengeCompletions("sp", 21) >= 18 || hasChallenge("ec", 11)},
 			doReset: false,
 			completionLimit() {

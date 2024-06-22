@@ -29,10 +29,11 @@ addLayer("a", {
 		if (hasChallenge("sp", 15)) base -= challengeEffect("sp", 15);
 		if (hasChallenge("sp", 16)) base -= challengeEffect("sp", 15);
 		if (challengeCompletions("ec", 11) >= 4 && challengeEffect("ec", 11)[3]) base -= challengeEffect("ec", 11)[3];
+		if (hasMilestone("r", 29)) base -= milestoneEffect("r", 29);
 		if (inChallenge("ec", 11)) base *= tmp.ec.challenges[11].penalty;
 		return base;
 	},
-	exponent: 1,
+	exponent() {return inChallenge("co", 11) ? 2 : 1},
 	roundUpCost: true,
 	canBuyMax() {return player.cb.unlocked},
 	resetDescription: "Acclimate for ",
@@ -284,6 +285,7 @@ addLayer("a", {
 				if (hasMilestone("a", 67)) extra = extra.add(milestoneEffect("a", 67));
 				if (getGridData("w", 502)) extra = extra.add(gridEffect("w", 502));
 				if (getGridData("w", 504)) extra = extra.add(gridEffect("w", 504));
+				if (getGridData("w", 506)) extra = extra.add(gridEffect("w", 506));
 				if (tmp.ex.effect[2]) extra = extra.add(tmp.ex.effect[2]);
 				return extra.floor();
 			},
@@ -323,6 +325,7 @@ addLayer("a", {
 				if (hasMilestone("a", 67)) extra = extra.add(milestoneEffect("a", 67));
 				if (getGridData("w", 502)) extra = extra.add(gridEffect("w", 502));
 				if (getGridData("w", 504)) extra = extra.add(gridEffect("w", 504));
+				if (getGridData("w", 506)) extra = extra.add(gridEffect("w", 506));
 				if (tmp.ex.effect[2]) extra = extra.add(tmp.ex.effect[2]);
 				return extra.floor();
 			},
@@ -364,6 +367,7 @@ addLayer("a", {
 				if (hasMilestone("a", 67)) extra = extra.add(milestoneEffect("a", 67));
 				if (getGridData("w", 502)) extra = extra.add(gridEffect("w", 502));
 				if (getGridData("w", 504)) extra = extra.add(gridEffect("w", 504));
+				if (getGridData("w", 506)) extra = extra.add(gridEffect("w", 506));
 				if (tmp.ex.effect[2]) extra = extra.add(tmp.ex.effect[2]);
 				return extra.floor();
 			},
@@ -405,6 +409,7 @@ addLayer("a", {
 				if (hasMilestone("a", 67)) extra = extra.add(milestoneEffect("a", 67));
 				if (getGridData("w", 502)) extra = extra.add(gridEffect("w", 502));
 				if (getGridData("w", 504)) extra = extra.add(gridEffect("w", 504));
+				if (getGridData("w", 506)) extra = extra.add(gridEffect("w", 506));
 				if (tmp.ex.effect[2]) extra = extra.add(tmp.ex.effect[2]);
 				return extra.floor();
 			},

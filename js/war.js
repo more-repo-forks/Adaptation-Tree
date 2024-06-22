@@ -26,21 +26,21 @@ const warUpgrades = [
 		{title: "Revolutionary Armaments", desc: "decreases revolution requirement base by 0.1", effect: 0.1, cost: 40},
 		{title: "New Frontiers", desc: "decreases species requirement base by 0.075", effect: 0.075, cost: 55},
 		{title: "Further Exploration", desc: "decreases expansion requirement base by 0.1", effect: 0.1, cost: 300},
-		{title: "???", desc: "coming soon!", cost: 2500},
+		{title: "Enlightened Tactics", desc: "decreases conscious being requirement base by 1", effect: 1, cost: 2500},
 	], [
 		{title: "Further Domination", desc() {return "gives extra FOC, SPE, CLI, and DOM based on wars<br>(currently +" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points}, cost: 150},
 		{title: "Further Acclimation", desc() {return "gives extra CRA, FER, ANA, and SOV based on wars<br>(currently +" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points.mul(75000)}, cost: 200},
 		{title: "Military Domination", desc() {return "gives extra FOC, SPE, CLI, and DOM based on wars<br>(currently +" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points.mul(2)}, cost: 250},
 		{title: "Forced Acclimation", desc() {return "gives extra CRA, FER, ANA, and SOV based on wars<br>(currently +" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points.mul(220000)}, cost: 300},
 		{title: "Overpowering Presence", desc() {return "gives extra FOC, SPE, CLI, and DOM based on wars<br>(currently +" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points.mul(5)}, cost: 350},
-		{title: "???", desc: "coming soon!", cost: 3000},
+		{title: "Primal Instincts", desc() {return "gives extra CRA, FER, ANA, and SOV based on wars<br>(currently +" + formatWhole(this.effect()) + ")"}, effect() {return player.w.points.mul(500000)}, cost: 3500},
 	], [
 		{title: "Honed Focus", desc() {return "divides focus+ requirement based on wars<br>(currently /" + format(this.effect()) + ")"}, effect() {return player.w.points.add(1).pow(0.1)}, cost: 1000},
 		{title: "Public Speaking", desc: "improves the last leader effect", cost: 1500},
 		{title: "Political Upheaval", desc() {return "divides leader requirement based on wars<br>(currently /" + format(this.effect()) + ")"}, effect() {return player.w.points.add(1).pow(0.2)}, cost: 2000},
-		{title: "???", desc: "coming soon!", cost: 2500},
-		{title: "???", desc: "coming soon!", cost: 3000},
-		{title: "???", desc: "coming soon!", cost: 3500},
+		{title: "Smarter Leaders", desc: "improves the second leader effect", cost: 2500},
+		{title: "Finer Focus", desc() {return "divides focus+ requirement based on wars<br>(currently /" + format(this.effect()) + ")"}, effect() {return player.w.points.add(1).pow(0.125)}, cost: 3500},
+		{title: "Public Relations 101", desc: "improves the last leader effect", cost: 4500},
 	],
 ];
 
@@ -69,10 +69,11 @@ addLayer("w", {
 		if (hasMilestone("r", 17)) base -= milestoneEffect("r", 17);
 		if (hasMilestone("r", 18)) base -= milestoneEffect("r", 18);
 		if (hasMilestone("r", 24)) base -= milestoneEffect("r", 24);
+		if (hasMilestone("r", 28)) base -= milestoneEffect("r", 28);
 		if (getGridData("w", 401)) base -= gridEffect("w", 401);
 		return base;
 	},
-	exponent: 1,
+	exponent() {return inChallenge("co", 11) ? 2 : 1},
 	roundUpCost: true,
 	canBuyMax() {return player.l.points.gte(3)},
 	resetDescription: "Declare war for ",
@@ -87,6 +88,7 @@ addLayer("w", {
 		if (player.ex.points.gte(9)) exp += 0.1;
 		if (hasMilestone("r", 16)) exp += 0.15;
 		if (hasMilestone("r", 21)) exp += 0.15;
+		if (hasMilestone("r", 27)) exp += 0.1;
 		if (player.w.points.gte(50)) exp += 0.05;
 		return player.w.points.pow(exp).round();
 	},

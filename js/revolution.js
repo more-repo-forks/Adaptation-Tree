@@ -27,7 +27,7 @@ addLayer("r", {
 		if (getGridData("w", 403)) base -= gridEffect("w", 403);
 		return base;
 	},
-	exponent: 1,
+	exponent() {return inChallenge("co", 11) ? 2 : 1},
 	roundUpCost: true,
 	canBuyMax() {return player.l.points.gte(3)},
 	resetDescription: "Revolutionize for ",
@@ -38,6 +38,7 @@ addLayer("r", {
 		if (tmp.ex.effect[5]) mult = mult.div(tmp.ex.effect[5]);
 		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
 		if (tmp.co.effect[1]) mult = mult.div(tmp.co.effect[1]);
+		if (tmp.co.effect[3]) mult = mult.div(tmp.co.effect[3]);
 		return mult;
 	},
 	effect() {
@@ -68,6 +69,7 @@ addLayer("r", {
 			if (eff[4].gte("e4e10")) eff[4] = eff[4].div("e4e10").pow(0.04).mul("e4e10");
 			if (eff[4].gte("e6e10")) eff[4] = eff[4].div("e6e10").pow(0.06).mul("e6e10");
 			if (eff[4].gte("e8e10")) eff[4] = eff[4].div("e8e10").pow(0.08).mul("e8e10");
+			if (eff[4].gte("e1e11")) eff[4] = eff[4].div("e1e11").log10().add(1).pow(100000000).mul("e1e11");
 		} else {
 			if (eff[4].gte("1e5555")) eff[4] = eff[4].div("1e5555").pow(0.1).mul("1e5555");
 			if (eff[4].gte("1e200000")) eff[4] = eff[4].div("1e200000").log10().add(1).pow(2000).mul("1e200000");
@@ -78,7 +80,7 @@ addLayer("r", {
 		if (eff[7].gte("e2500000")) eff[7] = eff[7].div("e2500000").pow(0.025).mul("e2500000");
 		if (eff[7].gte("e5000000")) eff[7] = eff[7].div("e5000000").pow(0.05).mul("e5000000");
 		if (eff[7].gte("e7500000")) eff[7] = eff[7].div("e7500000").pow(0.075).mul("e7500000");
-		if (eff[7].gte("e10000000")) eff[7] = eff[7].div("e10000000").log10().add(1).pow(100000).mul("e10000000");
+		if (eff[7].gte("e10000000")) eff[7] = eff[7].div("e10000000").log10().add(1).pow(hasMilestone("r", 26) ? 1000000 : 100000).mul("e10000000");
 		return eff;
 	},
 	effectDescription() {return "which are dividing the species requirement by /" + format(tmp.r.effect[0]) + ", dividing conscious being requirement by /" + format(tmp.r.effect[1]) + ", multiplying the completion limit of the 10th retrogression by " + format(tmp.r.effect[2]) + "x (" + (tmp.r.effect[2].gte(2) ? "maxed" : "rounded down") + "), and generating " + format(tmp.r.effect[3]) + " change per second (with a limit of " + format(getMaxChange()) + ")"},
@@ -320,6 +322,49 @@ addLayer("r", {
 			popupTitle: "Innovation Acquired!",
 			effect() {return 0.025},
 			effectDescription() {return "decrease the war requirement base by 0.025<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		25: {
+			requirement: 1e90,
+			requirementDescription: "26th innovation",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 0.11},
+			effectDescription() {return "decrease the domination requirement base by 0.11<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		26: {
+			requirement: 1e100,
+			requirementDescription: "27th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "weaken the last softcap of the last change effect<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		27: {
+			requirement: 1e110,
+			requirementDescription: "28th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "improve the first war effect<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		28: {
+			requirement: 1e120,
+			requirementDescription: "29th innovation",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 0.022},
+			effectDescription() {return "decrease the war requirement base by 0.022<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		29: {
+			requirement: 1e130,
+			requirementDescription: "30th innovation",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 0.1},
+			effectDescription() {return "decrease the acclimation requirement base by 0.1<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
 			unlocked() {return hasMilestone("r", this.id - 1)},
 		},

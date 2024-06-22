@@ -69,7 +69,7 @@ addLayer("ex", {
 		if (getGridData("w", 405)) base -= gridEffect("w", 405);
 		return base;
 	},
-	exponent: 1,
+	exponent() {return inChallenge("co", 11) ? 2 : 1},
 	roundUpCost: true,
 	canBuyMax() {return player.l.points.gte(3)},
 	resetDescription: "Expand your influence for ",

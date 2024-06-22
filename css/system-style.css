@@ -41,6 +41,10 @@ td {
 	margin: 0 auto;
 }
 
+.upgCol {
+	width: 100%;
+}
+
 .upgAlign {
 	vertical-align: 0;
 }

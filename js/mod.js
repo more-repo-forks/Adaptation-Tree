@@ -9,7 +9,7 @@ const modInfo = {
 }
 
 const VERSION = {
-	num: "2.5.1",
+	num: "2.5.2",
 	name: "The Age of Exploration",
 };
 
@@ -53,6 +53,7 @@ function getPointPotential() {
 	if (hasChallenge("e", 19)) gain = gain.pow(1.02);
 	// special effects
 	if (player.d.unlocked) gain = gain.mul(tmp.d.effect);
+	if (inChallenge("co", 11)) gain = gain.log10().add(1);
 	// return
 	return gain;
 };
@@ -82,12 +83,12 @@ let displayThings = [
 		if (tmp.other.oompsMag != 0 && options.showOOMs) return "(" + format(tmp.other.oomps) + " OOM" + (tmp.other.oompsMag < 0 ? "^OOM" : (tmp.other.oompsMag > 1 ? "^" + tmp.other.oompsMag : "")) + "s/sec)";
 		return "(" + format(getPointPotential()) + " max power)";
 	},
-	() => "<br>current endgame is at 17 " + (player.ec.unlocked ? "ANACHRONISM completions" : "???"),
+	() => "<br>current endgame is at 100,000 " + (player.d.unlocked ? "domination points" : "???"),
 ];
 
 // Determines when the game "ends"
 function isEndgame() {
-	return challengeCompletions("ec", 11) >= 17;
+	return player.d.points.gte(100000);
 };
 
 // Style for the background, can be a function

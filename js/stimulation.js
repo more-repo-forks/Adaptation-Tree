@@ -18,6 +18,7 @@ addLayer("s", {
 	exponent: 0.5,
 	softcap: new Decimal("1e50000"),
 	softcapPower: 0.9,
+	logged() {return inChallenge("co", 11)},
 	gainMult() {
 		let mult = new Decimal(1);
 		if (hasUpgrade("s", 21)) mult = mult.mul(upgradeEffect("s", 21));
@@ -485,7 +486,7 @@ addLayer("s", {
 		},
 		84: {
 			title: "Alchemist Blood",
-			description: "decrease base growth requirement by 0.1125",
+			description: "decrease growth requirement base by 0.1125",
 			effect() {return 0.1125},
 			currencyDisplayName: modInfo.pointsName,
 			currencyInternalName: "points",

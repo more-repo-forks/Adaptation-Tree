@@ -221,7 +221,7 @@ addLayer("e", {
 		if (inChallenge("ec", 11)) base *= tmp.ec.challenges[11].penalty;
 		return base;
 	},
-	exponent: 1,
+	exponent() {return inChallenge("co", 11) ? 2 : 1},
 	roundUpCost: true,
 	canBuyMax() {return player.sp.unlocked},
 	resetDescription: "Evolve for ",
@@ -343,7 +343,7 @@ addLayer("e", {
 			let pending = false;
 			let text = "";
 			for (const key in extraEvolutionEffects) {
-				const eff = (typeof extraEvolutionEffects[+key] == "function" ? extraEvolutionEffects[+key]() : extraEvolutionEffects[+key]);
+				const eff = (typeof extraEvolutionEffects[key] == "function" ? extraEvolutionEffects[key]() : extraEvolutionEffects[key]);
 				if (Object.hasOwnProperty.call(extraEvolutionEffects, key) && eff) {
 					if (player.e.points.gte(+key)) {
 						if (+key === 26 && !hasChallenge("e", 13)) {
@@ -469,7 +469,7 @@ addLayer("e", {
 		},
 		16: {
 			name: "6th Retrogression",
-			fullDisplay() {return "Entering this retrogression does an evolution reset.<br>While in this retrogression, you cannot buy STR, WIS, AGI, or INT.<br><br>Goal: " + formatWhole(this.goal) + " growth points<br><br>Rewards: Base evolution requirement is decreased by 0.052545, the extra STR, WIS, AGI, and INT from evolutions is multiplied by 1.25, and acclimation requirement is divided based on evolutions (currently&nbsp;/" + format(this.rewardEffect()) + ")"},
+			fullDisplay() {return "Entering this retrogression does an evolution reset.<br>While in this retrogression, you cannot buy STR, WIS, AGI, or INT.<br><br>Goal: " + formatWhole(this.goal) + " growth points<br><br>Rewards: evolution requirement base is decreased by 0.052545, the extra STR, WIS, AGI, and INT from evolutions is multiplied by 1.25, and acclimation requirement is divided based on evolutions (currently&nbsp;/" + format(this.rewardEffect()) + ")"},
 			rewardEffect() {
 				let exp = new Decimal(0.439);
 				if (hasMilestone("a", 19)) exp = exp.add(milestoneEffect("a", 19));
@@ -510,7 +510,7 @@ addLayer("e", {
 		18: {
 			name: "8th Retrogression",
 			fullDisplay() {
-				if (player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)) return "Entering this retrogression does an evolution reset.<br>While in this retrogression, the growth requirement cannot be modified by effects.<br><br>Goal: " + formatWhole(this.goal) + " growth points<br><br>Rewards: Base growth requirement is decreased by 0.01, base evolution requirement is decreased by 0.02, and the last population effect is multiplied based on retrogressions completed (currently&nbsp;" + format(this.rewardEffect()) + "x)";
+				if (player.e.points.gte(this.unlockReq) || hasChallenge("e", this.id)) return "Entering this retrogression does an evolution reset.<br>While in this retrogression, the growth requirement cannot be modified by effects.<br><br>Goal: " + formatWhole(this.goal) + " growth points<br><br>Rewards: growth requirement base is decreased by 0.01, evolution requirement base is decreased by 0.02, and the last population effect is multiplied based on retrogressions completed (currently&nbsp;" + format(this.rewardEffect()) + "x)";
 				return "You need " + formatWhole(this.unlockReq) + " evolutions to unlock this retrogression.";
 			},
 			rewardEffect() {
