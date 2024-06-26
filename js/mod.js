@@ -3,14 +3,14 @@ const modInfo = {
 	id: "adaptation-tree-yrahcaz7",
 	author: "Yrahcaz7",
 	pointsName: "power",
-	modFiles: ["stimulation.js", "growth.js", "evolution.js", "acclimation.js", "species.js", "consciousness.js", "domination.js", "ecosystem.js", "revolution.js", "expansion.js", "war.js", "leader.js", "continent.js", "technical/tree.js"],
+	modFiles: ["stimulation.js", "growth.js", "evolution.js", "acclimation.js", "species.js", "consciousness.js", "domination.js", "ecosystem.js", "revolution.js", "expansion.js", "war.js", "leader.js", "continent.js", "territory.js", "technical/tree.js"],
 	initialStartPoints: new Decimal(0),
 	offlineLimit: 1, // in hours
 }
 
 const VERSION = {
-	num: "2.5.2",
-	name: "The Age of Exploration",
+	num: "2.6",
+	name: "The Start of Subjugation",
 };
 
 const winText = "Congratulations!<br>You have reached the end and beaten this game (for now),<br>but there is more content coming soon...";
@@ -69,6 +69,7 @@ function getStatBulk() {
 	if (player.ex.points.gte(9)) bulk *= 10;
 	if (player.w.points.gte(6)) bulk *= 10;
 	if (player.l.points.gte(4)) bulk *= 10;
+	if (player.t.unlocked) bulk *= 10;
 	return bulk;
 };
 
@@ -83,12 +84,12 @@ let displayThings = [
 		if (tmp.other.oompsMag != 0 && options.showOOMs) return "(" + format(tmp.other.oomps) + " OOM" + (tmp.other.oompsMag < 0 ? "^OOM" : (tmp.other.oompsMag > 1 ? "^" + tmp.other.oompsMag : "")) + "s/sec)";
 		return "(" + format(getPointPotential()) + " max power)";
 	},
-	() => "<br>current endgame is at 100,000 " + (player.d.unlocked ? "domination points" : "???"),
+	() => "<br>current endgame is at 18 " + (player.ec.unlocked ? "ANACHRONISM completions" : "???"),
 ];
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.d.points.gte(100000);
+	return challengeCompletions("ec", 11) >= 18;
 };
 
 // Style for the background, can be a function

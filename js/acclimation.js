@@ -96,9 +96,10 @@ addLayer("a", {
 			amt.log10().mul(mult[2]).floor(),
 		];
 		if (hasMilestone("a", 6)) {
-			if (eff[0].gt("e1e10000")) eff[0] = eff[0].layeradd10(-1).div("1e10000").pow(0.5).mul("1e10000").layeradd10(1);
-			if (eff[0].gt("e1e100000")) eff[0] = eff[0].layeradd10(-1).div("1e100000").pow(0.5).mul("1e100000").layeradd10(1);
-			if (eff[0].gt("e1e1000000")) eff[0] = eff[0].layeradd10(-1).div("1e1000000").pow(0.5).mul("1e1000000").layeradd10(1);
+			if (eff[0].gt("e1e10000")) eff[0] = eff[0].layeradd10(-1).div("1e10000").sqrt().mul("1e10000").layeradd10(1);
+			if (eff[0].gt("e1e100000")) eff[0] = eff[0].layeradd10(-1).div("1e100000").sqrt().mul("1e100000").layeradd10(1);
+			if (eff[0].gt("ee1000000")) eff[0] = eff[0].layeradd10(-1).div("e1000000").sqrt().mul("e1000000").layeradd10(1);
+			if (eff[0].gt("ee10000000")) eff[0] = eff[0].layeradd10(-1).div("e10000000").sqrt().mul("e10000000").layeradd10(1);
 		} else {
 			if (eff[0].gt("e750000")) eff[0] = eff[0].div("e750000").pow(0.1).mul("e750000");
 			if (eff[0].gt("e1500000")) eff[0] = eff[0].div("e1500000").log10().add(1).pow(15000).mul("e1500000");

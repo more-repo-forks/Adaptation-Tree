@@ -77,13 +77,14 @@ addLayer("ex", {
 		let mult = new Decimal(1);
 		if (getGridData("w", 102)) mult = mult.div(gridEffect("w", 102));
 		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
+		if (tmp.t.effect[0]) mult = mult.div(tmp.t.effect[0]);
 		return mult;
 	},
 	effect() {
 		let eff = [
 			new Decimal(5).pow(player.ex.points),
 			new Decimal(10).pow(player.ex.points),
-			player.ex.points.mul(player.ex.points.gte(3) ? 300 : 100),
+			player.ex.points.mul(player.ex.points.gte(3) ? 300 : 100).pow(hasMilestone("r", 30) ? 1.75 : 1).floor(),
 			new Decimal(1e25).pow(player.ex.influence.pow(0.25)),
 			(hasMilestone("d", 40) ? player.ex.influence.add(1).pow(0.05) : player.ex.influence.add(1).log10().add(1).pow(hasMilestone("d", 33) ? 4.255 : 1)),
 			(hasMilestone("d", 34) ? player.ex.influence.add(1).log10().add(1).pow(hasMilestone("d", 35) ? 0.5 : 0.2) : new Decimal(1)),

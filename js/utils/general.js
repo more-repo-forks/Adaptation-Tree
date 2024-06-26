@@ -1,9 +1,9 @@
 // ************ Big Feature related ************
 
-function respecBuyables(layer) {
+function respecBuyables(layer, ...args) {
 	if (!layers[layer].buyables || !layers[layer].buyables.respec) return;
 	if (!player[layer].noRespecConfirm && !confirm(tmp[layer].buyables.respecMessage || 'Are you sure you want to respec? This will force you to do a "' + (tmp[layer].name ? tmp[layer].name : layer) + '" reset as well!')) return;
-	run(layers[layer].buyables.respec, layers[layer].buyables);
+	run(layers[layer].buyables.respec, layers[layer].buyables, ...args);
 	updateBuyableTemp(layer);
 	document.activeElement.blur();
 };
@@ -314,10 +314,10 @@ function adjustPopupTime(diff) {
 	};
 };
 
-function run(func, target, args = null) {
+function run(func, target, ...args) {
 	if (typeof func == "function") {
 		let bound = func.bind(target);
-		return bound(args);
+		return bound(...args);
 	} else
 		return func;
 };

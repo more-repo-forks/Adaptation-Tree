@@ -109,7 +109,8 @@ addLayer("sp", {
 	doReset(resettingLayer) {
 		if (layers[resettingLayer].row <= this.row) return;
 		let keep = [];
-		if (resettingLayer == "co"
+		if (player.l.points.gte(10)
+			|| resettingLayer == "co"
 			|| (resettingLayer == "l" && player.l.points.gte(4))
 			|| player.r.points.gte(3)
 			|| resettingLayer == "ec"
@@ -286,6 +287,14 @@ addLayer("sp", {
 			]},
 			goal() {
 				let amt = challengeCompletions("sp", this.id);
+				if (amt >= 10000) return Infinity;
+				if (amt >= 9000) return (amt - 8995) * 1.52587890625e24;
+				if (amt >= 8000) return (amt - 7995) * 6.103515625e21;
+				if (amt >= 7000) return (amt - 6995) * 2.44140625e19;
+				if (amt >= 6000) return (amt - 5995) * 9.765625e16;
+				if (amt >= 5000) return (amt - 4995) * 3.90625e14;
+				if (amt >= 4000) return (amt - 3995) * 1.5625e12;
+				if (amt >= 3000) return (amt - 2995) * 6.25e9;
 				if (amt >= 2000) return (amt - 1995) * 25000000;
 				if (amt >= 1000) return (amt - 995) * 100000;
 				if (amt >= 22) return (amt - 16) * 500;

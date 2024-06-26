@@ -49,6 +49,11 @@ addLayer("d", {
 		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
 		return mult;
 	},
+	directMult() {
+		let mult = new Decimal(1);
+		if (tmp.t.effect[2]) mult = mult.mul(tmp.t.effect[2]);
+		return mult;
+	},
 	effect() {return player.points.add(1).pow(0.025)},
 	effectDescription() {return "of which " + formatWhole(player[this.layer].points.sub(player[this.layer].spent)) + " are unspent"},
 	resetsNothing() {return player.l.points.gte(2)},
@@ -764,7 +769,7 @@ addLayer("d", {
 			effect() {return 0.05},
 			effectDescription() {return "increase the complete domination effect of CLI by 0.05<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.t.unlocked},
 		},
 		46: {
 			requirement: 14825,
@@ -773,7 +778,7 @@ addLayer("d", {
 			effect() {return player.d.points.add(1).pow(0.1)},
 			effectDescription() {return "multiply the base effect of SPE based on domination points<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.t.unlocked},
 		},
 		47: {
 			requirement: 28580,
@@ -782,7 +787,7 @@ addLayer("d", {
 			effect() {return 0.137},
 			effectDescription() {return "decrease domination requirement base by 0.137<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.t.unlocked},
 		},
 		48: {
 			requirement: 54175,
@@ -791,7 +796,7 @@ addLayer("d", {
 			effect() {return getBuyableAmount("d", 11).add(tmp.d.buyables[11].extra).div(10).floor()},
 			effectDescription() {return "every 10 levels of FOC gives an extra level to SPE, CLI, and DOM<br>Effect: +" + formatWhole(this.effect()) + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.t.unlocked},
 		},
 		49: {
 			requirement: 69745,
@@ -799,6 +804,14 @@ addLayer("d", {
 			popupTitle: "Enhancement Acquired!",
 			effect() {return 0.045},
 			effectDescription() {return "decrease domination requirement base by 0.045<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.t.unlocked},
+		},
+		50: {
+			requirement: 200000,
+			requirementDescription: "Battle enhancement II",
+			popupTitle: "Enhancement Acquired!",
+			effectDescription() {return "expand the enhancable battle grid<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("d", this.id - 1)},
 		},

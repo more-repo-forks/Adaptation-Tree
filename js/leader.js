@@ -52,6 +52,7 @@ addLayer("l", {
 		if (player.l.points.gte(2)) text += "<br><br>After leading 3 times, you keep stimulation upgrades on all resets;<br>you can bulk ecosystems, revolutions, expansion points, and wars;<br>and potential growth points are always automatically claimed.";
 		if (player.l.points.gte(3)) text += "<br><br>After leading 4 times, you bulk 10x stats from rows 3 and below,<br>you keep hybridization completions on leader resets,<br>and you keep domination enhancements on all resets.";
 		if (player.l.points.gte(4)) text += "<br><br>After leading 5 times, another tier of ANACHRONISM is unlocked,<br>you keep ANACHRONISM completions on all resets,<br>and you keep growth enhancements on all resets.";
+		if (player.l.points.gte(9)) text += "<br><br>After leading 10 times, you keep hybridization completions on all resets.";
 		let arr = [
 			"main-display",
 			"prestige-button",

@@ -42,6 +42,7 @@ addLayer("co", {
 			new Decimal(1.02).pow(player.co.settlers),
 		];
 		if (eff[3].gte(500)) eff[3] = eff[3].div(500).pow(0.5).mul(500);
+		if (eff[3].gte(5000)) eff[3] = eff[3].div(5000).pow(0.5).mul(5000);
 		return eff;
 	},
 	effectDescription() {return "which are dividing the ecosystem requirement by /" + format(tmp.co.effect[0]) + ", dividing the revolution requirement by /" + format(tmp.co.effect[1]) + ", and directly multiplying species gain by " + format(tmp.co.effect[2]) + "x"},
@@ -95,14 +96,4 @@ addLayer("co", {
 			unlocked() {return player.co.migrationUnlocked},
 		},
 	},
-});
-
-addNode("blank", {
-	symbol: "T",
-	branches: ["ex", "d", "w"],
-	position: 2,
-	nodeStyle: {"margin": "0 10px 0 10px", "border-radius": "50%"},
-	tooltipLocked() {return "Reach 100,000 domination points to unlock (You have " + formatWhole(player.d.points) + " domination points)"},
-	row: 5,
-	layerShown() {return challengeCompletions("ec", 11) >= 16},
 });
