@@ -118,7 +118,8 @@ addLayer("sp", {
 		layerDataReset("sp", keep);
 	},
 	update(diff) {
-		if (player.r.unlocked && canCompleteChallenge("sp", 21) && player.sp.challenges[21] < tmp.sp.challenges[21].completionLimit) player.sp.challenges[21]++;
+		if (hasMilestone("d", 51) && tmp.sp.challenges[21].completionLimit > player.sp.challenges[21]) player.sp.challenges[21] = tmp.sp.challenges[21].completionLimit;
+		else if (player.r.unlocked && canCompleteChallenge("sp", 21) && player.sp.challenges[21] < tmp.sp.challenges[21].completionLimit) player.sp.challenges[21]++;
 	},
 	componentStyles: {
 		"challenge"() {return {"min-height": "360px", "height": "fit-content", "border-radius": "50px"}},

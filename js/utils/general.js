@@ -195,14 +195,14 @@ function updateMilestones(layer) {
 			layers[layer].milestones[id] = undefined;
 			return;
 		};
-		if (!(hasMilestone(layer, id)) && layers[layer].milestones[id].done()) {
+		if (!hasMilestone(layer, id) && layers[layer].milestones[id].done()) {
 			player[layer].milestones.push(id);
-			if (layers[layer].milestones[id].onComplete) layers[layer].milestones[id].onComplete();
 			if (layers[layer].milestones[id].color) color = layers[layer].milestones[id].color;
 			else color = tmp[layer].color;
 			let popupTitle = (typeof tmp[layer].milestones[id].popupTitle != "undefined" ? tmp[layer].milestones[id].popupTitle : "Milestone Gotten!");
 			if (tmp[layer].milestonePopups || tmp[layer].milestonePopups === undefined) doPopup("milestone", tmp[layer].milestones[id].requirementDescription, popupTitle, 3, color);
 			player[layer].lastMilestone = id;
+			if (layers[layer].milestones[id].onComplete) layers[layer].milestones[id].onComplete();
 		};
 	};
 };
@@ -210,13 +210,13 @@ function updateMilestones(layer) {
 function updateAchievements(layer) {
 	if (tmp[layer].deactivated) return;
 	for (id in layers[layer].achievements) {
-		if (isPlainObject(layers[layer].achievements[id]) && !(hasAchievement(layer, id)) && layers[layer].achievements[id].done()) {
+		if (isPlainObject(layers[layer].achievements[id]) && !hasAchievement(layer, id) && layers[layer].achievements[id].done()) {
 			player[layer].achievements.push(id);
-			if (layers[layer].achievements[id].onComplete) layers[layer].achievements[id].onComplete();
 			if (layers[layer].achievements[id].color) color = layers[layer].achievements[id].color;
 			else color = tmp[layer].color;
 			let popupTitle = (typeof tmp[layer].achievements[id].popupTitle != "undefined" ? tmp[layer].achievements[id].popupTitle : "Achievement Gotten!");
 			if (tmp[layer].achievementPopups || tmp[layer].achievementPopups === undefined) doPopup("achievement", tmp[layer].achievements[id].name, popupTitle, 3, color);
+			if (layers[layer].achievements[id].onComplete) layers[layer].achievements[id].onComplete();
 		};
 	};
 };

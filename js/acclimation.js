@@ -63,6 +63,11 @@ addLayer("a", {
 		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
 		return mult;
 	},
+	directMult() {
+		let mult = new Decimal(1);
+		if (tmp.t.effect[3]) mult = mult.mul(tmp.t.effect[3]);
+		return mult;
+	},
 	effect() {
 		// initialize
 		let amt = player.a.population;
@@ -100,10 +105,12 @@ addLayer("a", {
 			if (eff[0].gt("e1e100000")) eff[0] = eff[0].layeradd10(-1).div("1e100000").sqrt().mul("1e100000").layeradd10(1);
 			if (eff[0].gt("ee1000000")) eff[0] = eff[0].layeradd10(-1).div("e1000000").sqrt().mul("e1000000").layeradd10(1);
 			if (eff[0].gt("ee10000000")) eff[0] = eff[0].layeradd10(-1).div("e10000000").sqrt().mul("e10000000").layeradd10(1);
+			if (eff[0].gt("ee100000000")) eff[0] = eff[0].layeradd10(-1).div("e100000000").pow(0.1).mul("e100000000").layeradd10(1);
 		} else {
 			if (eff[0].gt("e750000")) eff[0] = eff[0].div("e750000").pow(0.1).mul("e750000");
 			if (eff[0].gt("e1500000")) eff[0] = eff[0].div("e1500000").log10().add(1).pow(15000).mul("e1500000");
 		};
+		if (eff[2].gt("e33333333")) eff[2] = eff[2].div("e33333333").pow(1/30).mul("e33333333");
 		return eff;
 	},
 	effectDescription() {return "of which " + formatWhole(player[this.layer].points.sub(player[this.layer].spent)) + " are unspent"},

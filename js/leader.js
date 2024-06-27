@@ -2,6 +2,7 @@ function getFocusplusRequirement() {
 	let req = 1000000;
 	if (getGridData("w", 601)) req /= gridEffect("w", 601).toNumber();
 	if (getGridData("w", 605)) req /= gridEffect("w", 605).toNumber();
+	if (tmp.co.effect[4]) req /= tmp.co.effect[4].toNumber();
 	return req;
 };
 
@@ -127,7 +128,11 @@ addLayer("l", {
 		},
 		12: {
 			title: "Focus on domination",
-			effect() {return (getClickableState("l", 12) || 0) * 25},
+			effect() {
+				let eff = (getClickableState("l", 12) || 0) * 25;
+				if (eff >= 3333) eff = ((eff / 3333) ** 0.3) * 3333;
+				return Math.round(eff);
+			},
 			canClick() {return (getClickableState("l", 11) || 0) + (getClickableState("l", 12) || 0) < tmp.l.effect[4]},
 			onClick() {setClickableState("l", 12, (getClickableState("l", 12) || 0) + 1)},
 			onHold() {setClickableState("l", 12, (getClickableState("l", 12) || 0) + 1)},

@@ -52,6 +52,7 @@ addLayer("d", {
 	directMult() {
 		let mult = new Decimal(1);
 		if (tmp.t.effect[2]) mult = mult.mul(tmp.t.effect[2]);
+		if (tmp.t.effect[4]) mult = mult.mul(tmp.t.effect[4]);
 		return mult;
 	},
 	effect() {return player.points.add(1).pow(0.025)},
@@ -812,6 +813,71 @@ addLayer("d", {
 			requirementDescription: "Battle enhancement II",
 			popupTitle: "Enhancement Acquired!",
 			effectDescription() {return "expand the enhancable battle grid<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		51: {
+			requirement: 300000,
+			requirementDescription: "Hybridization enhancement V",
+			popupTitle: "Enhancement Acquired!",
+			effectDescription() {return "the 10th hybridization is auto-maxed<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		52: {
+			requirement: 400000,
+			requirementDescription: "The bulky enhancement",
+			popupTitle: "Enhancement Acquired!",
+			effectDescription() {return "you bulk 10x stats from rows 3 and below<br>(this respecs growth and acclimation points)<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			onComplete() {
+				layers.g.buyables.respec();
+				layers.a.buyables.respec();
+			},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		53: {
+			requirement: 550000,
+			requirementDescription: "The lazy enhancement",
+			popupTitle: "Enhancement Acquired!",
+			effectDescription() {return "unlock automation for <b>Generator improvement</b><br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		54: {
+			requirement: 700000,
+			requirementDescription: "The speedy enhancement",
+			popupTitle: "Enhancement Acquired!",
+			effect() {return 10},
+			effectDescription() {return "time for control nodes goes ten times faster<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		55: {
+			requirement: 850000,
+			requirementDescription: "The bulkiest enhancement",
+			popupTitle: "Enhancement Acquired!",
+			effectDescription() {return "you bulk 10x stats from rows 3 and below<br>(this respecs growth and acclimation points)<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			onComplete() {
+				layers.g.buyables.respec();
+				layers.a.buyables.respec();
+			},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		56: {
+			requirement: 1000000,
+			requirementDescription: "The controlled enhancement",
+			popupTitle: "Enhancement Acquired!",
+			effectDescription() {return "unlock another effect for control<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		57: {
+			requirement: 1375000,
+			requirementDescription: "The enhanced enhancement",
+			popupTitle: "Enhancement Acquired!",
+			effectDescription() {return "improve the second war effect<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("d", this.id - 1)},
 		},

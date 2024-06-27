@@ -1,13 +1,13 @@
 function getUnlockedGenerators() {
 	let unlocked = 0;
-	if (hasMilestone("r", 9)) unlocked++;
-	if (getGridData("w", 301)) unlocked++;
-	if (getGridData("w", 303)) unlocked++;
-	if (getGridData("w", 305)) unlocked++;
+	if (hasMilestone("r", 9)) unlocked += milestoneEffect("r", 9);
+	if (getGridData("w", 301)) unlocked += gridEffect("w", 301);
+	if (getGridData("w", 303)) unlocked += gridEffect("w", 303);
+	if (getGridData("w", 305)) unlocked += gridEffect("w", 305);
 	return unlocked;
 };
 
-const GENERATOR_COST_BASES = [2, 3, 5, 9, 13, 17, 22];
+const GENERATOR_COST_BASES = [2, 3, 5, 9, 13, 17, 22, 100];
 
 function getGeneratorCost(id) {
 	let amt = getBuyableAmount("ex", id);
@@ -53,6 +53,7 @@ addLayer("ex", {
 		extra: [],
 		autoIG: false,
 		autoTE: false,
+		autoGI: false,
 	}},
 	color: "#B44990",
 	nodeStyle() {if (tmp.ex.canReset || player.ex.unlocked) return {"background": "border-box linear-gradient(to right, #EE7770, #B44990, #E03330)"}},
@@ -113,7 +114,7 @@ addLayer("ex", {
 			text += "<br><br>You have <h2 style='color: #B44990; text-shadow: #B44990 0px 0px 10px'>" + format(player.ex.influence) + "</h2> influence, which divides the acclimation requirement by /" + format(tmp.ex.effect[3]);
 			if (hasMilestone("d", 34)) text += ", divides the conscious being and domination requirements by /" + format(tmp.ex.effect[4]) + ", and divides the revolution requirement by /" + format(tmp.ex.effect[5]);
 			else text += " and divides the conscious being and domination requirements by /" + format(tmp.ex.effect[4]);
-			text += "<br><br>By default, influence generators max out at 100 seconds of production.";
+			text += "<br><br>By default, each influence generator maxes out at 100 seconds of production.";
 		};
 		let arr = [
 			"main-display",
@@ -128,11 +129,13 @@ addLayer("ex", {
 				if (Object.hasOwnProperty.call(tmp.ex.buyables, key) && key < 20 && tmp.ex.buyables[key].unlocked)
 					arr.push(["buyable", +key], "blank");
 			if (player.co.unlocked) arr.push(["row", [
-				["column", [["display-text", "auto<br>IGs"], ["blank", "7px"], ["toggle", ["ex", "autoIG"]]]],
+				["column", [["display-text", "auto<br>IGs"], ["blank", "10px"], ["toggle", ["ex", "autoIG"]]]],
 				["buyables", "3"],
-				["column", [["display-text", "auto<br>IT &<br>IE"], ["blank", "7px"], ["toggle", ["ex", "autoTE"]]]],
-			]], "blank");
-			else arr.push(["buyables", "3"], "blank");
+				["column", [["display-text", "auto<br>IT &<br>IE"], ["blank", "10px"], ["toggle", ["ex", "autoTE"]]]],
+			]]);
+			else arr.push(["buyables", "3"]);
+			if (hasMilestone("d", 53)) arr.push(["blank", "10px"], ["toggle", ["ex", "autoGI"]], "blank");
+			else arr.push("blank");
 		};
 		return arr;
 	},
@@ -144,7 +147,7 @@ addLayer("ex", {
 	}],
 	doReset(resettingLayer) {
 		if (layers[resettingLayer].row <= this.row) return;
-		let keep = ["autoIG", "autoTE"];
+		let keep = ["autoIG", "autoTE", "autoGI"];
 		layerDataReset("ex", keep);
 		for (const key in layers.ex.buyables)
 			if (Object.hasOwnProperty.call(layers.ex.buyables, key) && key < 20)
@@ -177,6 +180,9 @@ addLayer("ex", {
 		if (player.co.unlocked && player.ex.autoTE) {
 			if (layers.ex.buyables[21].canAfford()) layers.ex.buyables[21].buy();
 			if (layers.ex.buyables[22].canAfford()) layers.ex.buyables[22].buy();
+		};
+		if (hasMilestone("d", 53) && player.ex.autoGI) {
+			if (layers.ex.buyables[31].canAfford()) layers.ex.buyables[31].buy();
 		};
 	},
 	shouldNotify() {
@@ -256,6 +262,16 @@ addLayer("ex", {
 			style() {if (this.canAfford()) return tmp.ex.nodeStyle},
 			unlocked() {return getUnlockedGenerators() >= 4},
 		},
+		18: {
+			cost() {return getGeneratorCost(this.id)},
+			effect() {return getGeneratorEffect(this.id)},
+			title: "8th influence generator",
+			display() {return "these generators are producing " + format(this.effect()) + " 7th influence generators per second<br><br><div style='display: flex'><div>Req: " + formatWhole(this.cost()) + " expansion points</div><div>Bought: " + formatWhole(getBuyableAmount(this.layer, this.id)) + (player[this.layer].extra[this.id - 11].gte(1) ? " + " + formatWhole(player[this.layer].extra[this.id - 11].floor()) : "") + "</div></div>"},
+			canAfford() {return player.ex.influenceUnlocked && player[this.layer].points.gte(this.cost())},
+			buy() {addBuyables(this.layer, this.id, 1)},
+			style() {if (this.canAfford()) return tmp.ex.nodeStyle},
+			unlocked() {return getUnlockedGenerators() >= 5},
+		},
 		21: {
 			cost() {
 				let amt = getBuyableAmount(this.layer, this.id).add(1);
@@ -290,7 +306,7 @@ addLayer("ex", {
 			},
 		},
 		22: {
-			cost() {return new Decimal(1e12).pow(getBuyableAmount(this.layer, this.id).add(1).pow(getGridData("w", 302) ? 1.5 : 2))},
+			cost() {return new Decimal(1e12).pow(getBuyableAmount(this.layer, this.id).add(1).pow(getGridData("w", 302) ? gridEffect("w", 302) : 2))},
 			effectBase() {return 0.5},
 			effect() {return getBuyableAmount(this.layer, this.id).mul(this.effectBase())},
 			title: "Influence empowerment",

@@ -9,7 +9,7 @@ const modInfo = {
 }
 
 const VERSION = {
-	num: "2.6",
+	num: "2.6.1",
 	name: "The Start of Subjugation",
 };
 
@@ -64,6 +64,8 @@ function getPoints() {
 
 function getStatBulk() {
 	let bulk = 1;
+	if (hasMilestone("d", 52)) bulk *= 10;
+	if (hasMilestone("d", 55)) bulk *= 10;
 	if (player.r.points.gte(9)) bulk *= 10;
 	if (player.ex.points.gte(6)) bulk *= 10;
 	if (player.ex.points.gte(9)) bulk *= 10;
@@ -84,12 +86,12 @@ let displayThings = [
 		if (tmp.other.oompsMag != 0 && options.showOOMs) return "(" + format(tmp.other.oomps) + " OOM" + (tmp.other.oompsMag < 0 ? "^OOM" : (tmp.other.oompsMag > 1 ? "^" + tmp.other.oompsMag : "")) + "s/sec)";
 		return "(" + format(getPointPotential()) + " max power)";
 	},
-	() => "<br>current endgame is at 18 " + (player.ec.unlocked ? "ANACHRONISM completions" : "???"),
+	() => "<br>current endgame is at 19 " + (player.ec.unlocked ? "ANACHRONISM completions" : "???"),
 ];
 
 // Determines when the game "ends"
 function isEndgame() {
-	return challengeCompletions("ec", 11) >= 18;
+	return challengeCompletions("ec", 11) >= 19;
 };
 
 // Style for the background, can be a function
@@ -106,4 +108,7 @@ function fixOldSave(oldVersion) {
 	for (const key in layers.ex.buyables)
 		if (Object.hasOwnProperty.call(layers.ex.buyables, key) && key < 20)
 			player.ex.extra[key - 11] = new Decimal(player.ex.extra[key - 11] || 0);
+	for (let row = 1; row <= layers.t.grid.rows; row++)
+		for (let col = 1; col <= layers.t.grid.cols; col++)
+			player.t.extra[row * 100 + col] = new Decimal(player.t.extra[row * 100 + col] || 0);
 };

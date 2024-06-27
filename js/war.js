@@ -2,29 +2,30 @@ function getEnhancableGridSize() {
 	let size = 0;
 	if (hasMilestone("d", 50)) size++;
 	if (hasMilestone("r", 31)) size++;
+	if (hasMilestone("r", 33)) size++;
 	return size;
 };
 
 const warUpgrades = [[
 	{title: "Display of Power", desc() {return "divides domination requirement based on wars<br>(currently /" + format(gridEffect("w", 101)) + ")"}, effect() {return player.w.points.add(2)}, cost: 1, e: {effect() {return new Decimal(100000).pow(player.w.points)}, cost: 1}},
 	{title: "Violent Expansion", desc() {return "divides expansion requirement based on wars<br>(currently /" + format(gridEffect("w", 102)) + ")"}, effect() {return player.w.points.div(2).add(1)}, cost: 2, e: {effect() {return player.w.points.add(1).pow(1.25)}, cost: 1}},
-	{title: "Wilderness Exploration", desc() {return "divides species requirement based on wars<br>(currently /" + format(gridEffect("w", 103)) + ")"}, effect() {return player.w.points.pow_base(1e5)}, cost: 4},
+	{title: "Wilderness Exploration", desc() {return "divides species requirement based on wars<br>(currently /" + format(gridEffect("w", 103)) + ")"}, effect() {return player.w.points.pow_base(1e5)}, cost: 4, e: {effect() {return player.w.points.pow_base(1e10)}, cost: 1}},
 	{title: "Nature Investigation", desc() {return "divides ecosystem requirement based on wars<br>(currently /" + format(gridEffect("w", 104)) + ")"}, effect() {return player.w.points.div(3).add(1)}, cost: 25},
 	{title: "Solace Seeking", desc() {return "divides conscious being requirement based on wars<br>(currently /" + format(gridEffect("w", 105)) + ")"}, effect() {return player.w.points.pow_base("1e5000")}, cost: 150},
 	{title: "Revolutionary Tactics", desc() {return "divides revolution requirement based on wars<br>(currently /" + format(gridEffect("w", 106)) + ")"}, effect() {return player.w.points.div(10).add(1)}, cost: 1000},
 ], [
-	{title: "Forced Migration", desc() {return "increases the 10th hybridization's completion limit based on wars<br>(currently +" + formatWhole(gridEffect("w", 201)) + ")"}, effect() {return player.w.points.mul(2)}, cost: 2, e: {effect() {return player.w.points.mul(2)}, cost: 1}},
+	{title: "Forced Migration", desc() {return "increases the 10th hybridization's completion limit based on wars<br>(currently +" + formatWhole(gridEffect("w", 201)) + ")"}, effect() {return player.w.points.mul(2)}, cost: 2, e: {effect() {return player.w.points.mul(4)}, cost: 1}},
 	{title: "Out of Place, Out of Time", desc: "unlocks another ANACHRONISM tier", effect: 1, cost: 4, e: {desc: "unlocks two more ANACHRONISM tiers", effect: 2, cost: 1}},
-	{title: "Displaced Chronology", desc: "unlocks another ANACHRONISM tier", effect: 1, cost: 8},
+	{title: "Displaced Chronology", desc: "unlocks another ANACHRONISM tier", effect: 1, cost: 8, e: {desc: "unlocks two more ANACHRONISM tiers", effect: 2, cost: 1}},
 	{title: "Decreased Habitable Area", desc() {return "increases the 10th hybridization's completion limit based on wars<br>(currently +" + formatWhole(gridEffect("w", 204)) + ")"}, effect() {return player.w.points.mul(3)}, cost: 30},
 	{title: "Ancient Tactics", desc: "unlocks another ANACHRONISM tier", effect: 1, cost: 200},
 	{title: "Futuristic Tactics", desc: "unlocks another ANACHRONISM tier", effect: 1, cost: 1500},
 ], [
-	{title: "Enroaching Influence", desc: "unlocks another influence generator", cost: 4},
-	{title: "Greater Empowerment", desc: "reduces <b>Influence empowerment</b>'s cost", cost: 8},
-	{title: "Surrounding Influence", desc: "unlocks another influence generator", cost: 16},
+	{title: "Enroaching Influence", desc: "unlocks another influence generator", effect: 1, cost: 4, e: {desc: "unlocks two more influence generators", effect: 2, cost: 1}},
+	{title: "Greater Empowerment", desc: "reduces <b>Influence empowerment</b>'s cost", cost: 8, effect: 1.5, e: {desc: "reduces <b>Influence empowerment</b>'s cost more", effect: 1.45, cost: 1}},
+	{title: "Surrounding Influence", desc: "unlocks another influence generator", effect: 1, cost: 16, e: {desc: "unlocks two more influence generators", effect: 2, cost: 2}},
 	{title: "Generator Recycling", desc: "reduces the costs of influence generators", cost: 40},
-	{title: "Overarching Influence", desc: "unlocks another influence generator", cost: 250},
+	{title: "Overarching Influence", desc: "unlocks another influence generator", effect: 1, cost: 250},
 	{title: "Greater Tickspeed", desc: "reduces <b>Influence tickspeed</b>'s cost", cost: 2000},
 ], [
 	{title: "Conflict Escalation", desc: "decreases war requirement base by 0.025", effect: 0.025, cost: 25},
@@ -99,7 +100,7 @@ addLayer("w", {
 		if (player.w.points.gte(50)) exp += 0.05;
 		return [
 			player.w.points.pow(exp).round(),
-			player.w.points.div(100).floor(),
+			(hasMilestone("d", 57) ? player.w.points.div(50).sub(1).floor().max(0) : player.w.points.div(100).floor()),
 		];
 	},
 	effectDescription() {

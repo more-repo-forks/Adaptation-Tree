@@ -40,9 +40,11 @@ addLayer("co", {
 			new Decimal(10).pow(player.co.points),
 			player.co.points.div(4).add(1),
 			new Decimal(1.02).pow(player.co.settlers),
+			(player.co.points.gte(10) ? player.co.settlers.add(1).pow(0.0125) : new Decimal(1)),
 		];
 		if (eff[3].gte(500)) eff[3] = eff[3].div(500).pow(0.5).mul(500);
 		if (eff[3].gte(5000)) eff[3] = eff[3].div(5000).pow(0.5).mul(5000);
+		if (eff[3].gte(2000000)) eff[3] = eff[3].div(2000000).pow(0.2).mul(2000000);
 		return eff;
 	},
 	effectDescription() {return "which are dividing the ecosystem requirement by /" + format(tmp.co.effect[0]) + ", dividing the revolution requirement by /" + format(tmp.co.effect[1]) + ", and directly multiplying species gain by " + format(tmp.co.effect[2]) + "x"},
@@ -50,7 +52,11 @@ addLayer("co", {
 		"main-display",
 		"prestige-button",
 		"resource-display",
-		["display-text", "You keep hybridization completions on continent resets.<br><br>After exploring 1 time, automation for influence is unlocked.<br><br>The above extra effect will not go away even if this layer is reset."],
+		["display-text", () => {
+			let text = "You keep hybridization completions on continent resets.<br><br>After exploring 1 time, automation for influence is unlocked.<br><br>The above extra effect will not go away even if this layer is reset.";
+			if (player.co.points.gte(9)) text += "<br><br>After exploring 10 times, you unlock another effect for settlers.";
+			return text;
+		}],
 		"blank",
 		["challenge", 11],
 		"blank",
@@ -90,6 +96,7 @@ addLayer("co", {
 				text += "<br>(" + formatWhole(getSettlerGain()) + "/sec with a limit of " + formatWhole(getSettlerMax()) + ")";
 				text += "<br><br><hr style='border: 2px solid #55B020'>";
 				text += "<br>You have <h2 style='color: #55B020; text-shadow: #55B020 0px 0px 10px'>" + formatWhole(player.co.settlers) + "</h2> settlers, which are dividing the revolution requirement by /" + format(tmp.co.effect[3]);
+				if (player.co.points.gte(10)) text += " and dividing the focus+ requirement by /" + format(tmp.co.effect[4]);
 				return text;
 			},
 			canComplete() {return false},

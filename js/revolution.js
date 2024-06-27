@@ -48,8 +48,8 @@ addLayer("r", {
 			player.r.points.div(10).add(1).min(2),
 			player.r.points.pow(2).mul(new Decimal(10).pow(player.r.points.sub(1))).mul((player.r.milestones.length + 1) ** (challengeCompletions("ec", 11) >= 9 ? 5 : 2)),
 			new Decimal(10).pow(player.r.change.pow(hasMilestone("r", 11) ? 0.25 : 0.5)),
-			(hasMilestone("r", 0) ? (hasMilestone("r", 20) ? player.r.change.add(1).pow(hasMilestone("r", 23) ? 8 : 2) : player.r.change.add(1).pow(hasMilestone("r", 6) ? 1.28 : 0.5).log10().add(1)) : new Decimal(1)),
-			(hasMilestone("r", 1) ? player.r.change.add(1).pow(hasMilestone("r", 11) ? 0.1454 : hasMilestone("r", 7) ? 0.122 : 0.05).log10().add(1) : new Decimal(1)),
+			(hasMilestone("r", 0) ? (hasMilestone("r", 20) ? player.r.change.add(1).pow(hasMilestone("r", 32) ? 11 : (hasMilestone("r", 23) ? 8 : 2)) : player.r.change.add(1).pow(hasMilestone("r", 6) ? 1.28 : 0.5).log10().add(1)) : new Decimal(1)),
+			(hasMilestone("r", 1) ? player.r.change.add(1).pow(hasMilestone("r", 32) ? 100 : (hasMilestone("r", 11) ? 0.1454 : (hasMilestone("r", 7) ? 0.122 : 0.05))).log10().add(1) : new Decimal(1)),
 			(hasMilestone("r", 4) ? new Decimal(222).pow(player.r.change.pow(0.2)) : new Decimal(1)),
 		];
 		if (hasMilestone("r", 5)) eff[3] = eff[3].mul(milestoneEffect("r", 5));
@@ -69,7 +69,7 @@ addLayer("r", {
 			if (eff[4].gte("e4e10")) eff[4] = eff[4].div("e4e10").pow(0.04).mul("e4e10");
 			if (eff[4].gte("e6e10")) eff[4] = eff[4].div("e6e10").pow(0.06).mul("e6e10");
 			if (eff[4].gte("e8e10")) eff[4] = eff[4].div("e8e10").pow(0.08).mul("e8e10");
-			if (eff[4].gte("e1e11")) eff[4] = eff[4].div("e1e11").log10().add(1).pow(100000000).mul("e1e11");
+			if (eff[4].gte("e1e11")) eff[4] = eff[4].div("e1e11").log10().add(1).pow(hasMilestone("r", 32) ? 1e10 : 1e8).mul("e1e11");
 		} else {
 			if (eff[4].gte("1e5555")) eff[4] = eff[4].div("1e5555").pow(0.1).mul("1e5555");
 			if (eff[4].gte("1e200000")) eff[4] = eff[4].div("1e200000").log10().add(1).pow(2000).mul("1e200000");
@@ -111,6 +111,7 @@ addLayer("r", {
 	doReset(resettingLayer) {
 		if (layers[resettingLayer].row <= this.row) return;
 		let keep = [];
+		if (hasMilestone("r", 34) && layers[resettingLayer].row == 5) keep.push("milestones", "lastMilestone");
 		layerDataReset("r", keep);
 	},
 	update(diff) {
@@ -196,6 +197,7 @@ addLayer("r", {
 			requirement: 1e22,
 			requirementDescription: "10th innovation",
 			popupTitle: "Innovation Acquired!",
+			effect() {return 1},
 			effectDescription() {return "unlock another influence generator<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
 			unlocked() {return hasMilestone("r", this.id - 1) || player.l.unlocked},
@@ -381,6 +383,38 @@ addLayer("r", {
 			requirementDescription: "32nd innovation",
 			popupTitle: "Innovation Acquired!",
 			effectDescription() {return "expand the enhancable battle grid<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		32: {
+			requirement: 1e160,
+			requirementDescription: "33rd innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "weaken the last softcap of the first change effect<br>and improve the second and third change effects<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		33: {
+			requirement: 1e170,
+			requirementDescription: "34th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "expand the enhancable battle grid<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		34: {
+			requirement: 1e180,
+			requirementDescription: "35th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "keep innovations on row 6 resets<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		35: {
+			requirement: 1e190,
+			requirementDescription: "36th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "reduce the costs of row 2 control nodes<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
 			unlocked() {return hasMilestone("r", this.id - 1)},
 		},

@@ -113,7 +113,7 @@ addLayer("ec", {
 	},
 	challenges: {
 		11: {
-			name(x = Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1)) {return "ANACHRONISM " + (["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII"][x])},
+			name(x = Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1)) {return "ANACHRONISM " + (["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX"][x])},
 			fullDisplay() {
 				if (challengeCompletions("sp", 21) >= 18 || hasChallenge("ec", 11)) {
 					let text = "";
@@ -146,9 +146,10 @@ addLayer("ec", {
 				() => "something new is unlocked for leaders" + (player.l.focusUnlocked ? " (already unlocked)" : ""),
 				() => "two new layers are unlocked" + (player.co.unlocked ? " (" + (player.t.unlocked ? "" : "1/2 ") + "already unlocked)" : ""),
 				() => "something new is unlocked for continents" + (player.co.migrationUnlocked ? " (already unlocked)" : ""),
+				() => "something new is unlocked for territories" + (player.t.controlUnlocked ? " (already unlocked)" : ""),
 				"coming soon!",
 			],
-			goal() {return [167098, 155454, 155040, 869153600, 2.874e9, 7.992e9, 3.082e11, 4.73e11, 1.228e12, 7.191e12, 9.733e12, 1.359e13, 5.222e13, 4.09e14, 3.783e15, 1.133e18, 2.975e18, 3.206e20][Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1)] || Infinity},
+			goal() {return [167098, 155454, 155040, 869153600, 2.874e9, 7.992e9, 3.082e11, 4.73e11, 1.228e12, 7.191e12, 9.733e12, 1.359e13, 5.222e13, 4.09e14, 3.783e15, 1.133e18, 2.975e18, 3.206e20, 7.087e21][Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1)] || Infinity},
 			canComplete() {return player.g.points.gte(this.goal())},
 			enterable() {return challengeCompletions("sp", 21) >= 18 || hasChallenge("ec", 11)},
 			doReset: false,
@@ -173,7 +174,7 @@ addLayer("ec", {
 				player.ec.chronoTime = Date.now() / 500 - player.ec.chronoTime;
 			},
 			onExit() {this.onEnter()},
-			penalty() {return 10 ** (Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1) ** 2 + 1)},
+			penalty() {return Math.min(10 ** (Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1) ** 2 + 1), 1e300)},
 		},
 	},
 });
