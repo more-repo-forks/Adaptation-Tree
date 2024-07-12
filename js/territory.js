@@ -57,7 +57,7 @@ addLayer("t", {
 			new Decimal(5).pow(player.t.points),
 			player.t.points.div(4).add(1),
 			player.t.control.add(1).log10().add(1).pow(0.1),
-			(hasMilestone("d", 56) ? player.t.control.add(1).log10().div(10).add(1).pow(0.1) : new Decimal(1)),
+			(hasMilestone("d", 56) ? player.t.control.add(1).log10().div(10).add(1).pow(hasMilestone("r", 37) ? 0.2 : 0.1) : new Decimal(1)),
 		];
 		if (eff[3].gt(1.42)) eff[3] = eff[3].sub(1.42).div(10).add(1.42);
 		return eff;

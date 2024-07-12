@@ -42,18 +42,29 @@ addLayer("r", {
 		return mult;
 	},
 	effect() {
+		let changeEff2exp = 0.5;
+		if (hasMilestone("r", 6)) changeEff2exp += 0.78;
+		if (hasMilestone("r", 20)) changeEff2exp += 0.72;
+		if (hasMilestone("r", 23)) changeEff2exp += 6;
+		if (hasMilestone("r", 32)) changeEff2exp += 3;
+		if (hasMilestone("r", 36)) changeEff2exp += 9;
+		let changeEff3exp = 0.05;
+		if (hasMilestone("r", 7)) changeEff3exp += 0.072;
+		if (hasMilestone("r", 11)) changeEff3exp += 0.0234;
+		if (hasMilestone("r", 32)) changeEff3exp += 99.8546;
 		let eff = [
 			new Decimal(challengeCompletions("ec", 11) >= 9 ? 10 : 2).pow(player.r.points.pow(hasMilestone("r", 12) ? 1.5 : 1)),
 			new Decimal(5).pow(player.r.points),
 			player.r.points.div(10).add(1).min(2),
 			player.r.points.pow(2).mul(new Decimal(10).pow(player.r.points.sub(1))).mul((player.r.milestones.length + 1) ** (challengeCompletions("ec", 11) >= 9 ? 5 : 2)),
 			new Decimal(10).pow(player.r.change.pow(hasMilestone("r", 11) ? 0.25 : 0.5)),
-			(hasMilestone("r", 0) ? (hasMilestone("r", 20) ? player.r.change.add(1).pow(hasMilestone("r", 32) ? 11 : (hasMilestone("r", 23) ? 8 : 2)) : player.r.change.add(1).pow(hasMilestone("r", 6) ? 1.28 : 0.5).log10().add(1)) : new Decimal(1)),
-			(hasMilestone("r", 1) ? player.r.change.add(1).pow(hasMilestone("r", 32) ? 100 : (hasMilestone("r", 11) ? 0.1454 : (hasMilestone("r", 7) ? 0.122 : 0.05))).log10().add(1) : new Decimal(1)),
+			(hasMilestone("r", 0) ? (hasMilestone("r", 20) ? player.r.change.add(1).pow(changeEff2exp) : player.r.change.add(1).pow(changeEff2exp).log10().add(1)) : new Decimal(1)),
+			(hasMilestone("r", 1) ? player.r.change.add(1).pow(changeEff3exp).log10().add(1) : new Decimal(1)),
 			(hasMilestone("r", 4) ? new Decimal(222).pow(player.r.change.pow(0.2)) : new Decimal(1)),
 		];
 		if (hasMilestone("r", 5)) eff[3] = eff[3].mul(milestoneEffect("r", 5));
 		if (hasMilestone("r", 10)) eff[3] = eff[3].mul(milestoneEffect("r", 10));
+		if (hasMilestone("r", 38)) eff[3] = eff[3].mul(milestoneEffect("r", 38));
 		if (tmp.l.effect[3]) eff[3] = eff[3].mul(tmp.l.effect[3]);
 		if (hasMilestone("r", 11)) {
 			if (eff[4].gte("e10000000")) eff[4] = eff[4].div("e10000000").pow(0.1).mul("e10000000");
@@ -415,6 +426,39 @@ addLayer("r", {
 			requirementDescription: "36th innovation",
 			popupTitle: "Innovation Acquired!",
 			effectDescription() {return "reduce the costs of row 2 control nodes<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		36: {
+			requirement: 1e200,
+			requirementDescription: "37th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "improve the second change effect<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		37: {
+			requirement: 1e220,
+			requirementDescription: "38th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "improve the second control effect<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		38: {
+			requirement: 1e240,
+			requirementDescription: "39th innovation",
+			popupTitle: "Innovation Acquired!",
+			effect() {return player.co.points.add(1).mul(player.l.points.add(1)).mul(player.t.points.add(1)).pow(6)},
+			effectDescription() {return "multiply change gain and limit based on row 6 resources<br>Effect: " + format(this.effect()) + "x<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		39: {
+			requirement: 1e260,
+			requirementDescription: "40th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "expand the enhancable battle grid<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
 			unlocked() {return hasMilestone("r", this.id - 1)},
 		},

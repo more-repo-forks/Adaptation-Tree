@@ -36,8 +36,8 @@ addLayer("co", {
 	},
 	effect() {
 		let eff = [
-			new Decimal(5).pow(player.co.points),
-			new Decimal(10).pow(player.co.points),
+			new Decimal(challengeCompletions("ec", 11) >= 19 ? 10 : 5).pow(player.co.points),
+			new Decimal(challengeCompletions("ec", 11) >= 19 ? 30 : 10).pow(player.co.points),
 			player.co.points.div(4).add(1),
 			new Decimal(1.02).pow(player.co.settlers),
 			(player.co.points.gte(10) ? player.co.settlers.add(1).pow(0.0125) : new Decimal(1)),

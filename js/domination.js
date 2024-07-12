@@ -881,5 +881,21 @@ addLayer("d", {
 			done() {return player.d.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("d", this.id - 1)},
 		},
+		58: {
+			requirement: 2111111,
+			requirementDescription: "The enhanced battle enhancement",
+			popupTitle: "Enhancement Acquired!",
+			effectDescription() {return "expand the enhancable battle grid<br>and improve the second war effect<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		59: {
+			requirement: 3250000,
+			requirementDescription: "???",
+			popupTitle: "Enhancement Acquired!",
+			effectDescription() {return "coming soon!<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
 	},
 });

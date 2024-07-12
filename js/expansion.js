@@ -7,11 +7,11 @@ function getUnlockedGenerators() {
 	return unlocked;
 };
 
-const GENERATOR_COST_BASES = [2, 3, 5, 9, 13, 17, 22, 100];
+const GENERATOR_COST_BASES = [2, 3, 5, 9, 13, 17, 22, 100, 150];
 
 function getGeneratorCost(id) {
 	let amt = getBuyableAmount("ex", id);
-	if (getGridData("w", 304)) amt = amt.div(2);
+	if (getGridData("w", 304)) amt = amt.div(getGridData("w", 304) + 1);
 	if (id > 11) amt = amt.add(1);
 	if (challengeCompletions("ec", 11) >= 8) return amt.mul(GENERATOR_COST_BASES[id - 11]).round();
 	return amt.pow_base(GENERATOR_COST_BASES[id - 11]).round();
@@ -271,6 +271,16 @@ addLayer("ex", {
 			buy() {addBuyables(this.layer, this.id, 1)},
 			style() {if (this.canAfford()) return tmp.ex.nodeStyle},
 			unlocked() {return getUnlockedGenerators() >= 5},
+		},
+		19: {
+			cost() {return getGeneratorCost(this.id)},
+			effect() {return getGeneratorEffect(this.id)},
+			title: "9th influence generator",
+			display() {return "these generators are producing " + format(this.effect()) + " 8th influence generators per second<br><br><div style='display: flex'><div>Req: " + formatWhole(this.cost()) + " expansion points</div><div>Bought: " + formatWhole(getBuyableAmount(this.layer, this.id)) + (player[this.layer].extra[this.id - 11].gte(1) ? " + " + formatWhole(player[this.layer].extra[this.id - 11].floor()) : "") + "</div></div>"},
+			canAfford() {return player.ex.influenceUnlocked && player[this.layer].points.gte(this.cost())},
+			buy() {addBuyables(this.layer, this.id, 1)},
+			style() {if (this.canAfford()) return tmp.ex.nodeStyle},
+			unlocked() {return getUnlockedGenerators() >= 6},
 		},
 		21: {
 			cost() {

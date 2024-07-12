@@ -70,8 +70,7 @@ addLayer("a", {
 	},
 	effect() {
 		// initialize
-		let amt = player.a.population;
-		amt = amt.mul(buyableEffect("a", 14));
+		let amt = player.a.population.mul(buyableEffect("a", 14));
 		// multiply
 		let mult = [new Decimal(1), new Decimal(1), new Decimal(1)];
 		if (hasChallenge("e", 18)) mult[2] = mult[2].mul(challengeEffect("e", 18));
@@ -106,6 +105,7 @@ addLayer("a", {
 			if (eff[0].gt("ee1000000")) eff[0] = eff[0].layeradd10(-1).div("e1000000").sqrt().mul("e1000000").layeradd10(1);
 			if (eff[0].gt("ee10000000")) eff[0] = eff[0].layeradd10(-1).div("e10000000").sqrt().mul("e10000000").layeradd10(1);
 			if (eff[0].gt("ee100000000")) eff[0] = eff[0].layeradd10(-1).div("e100000000").pow(0.1).mul("e100000000").layeradd10(1);
+			if (eff[0].gt("ee120000000")) eff[0] = eff[0].layeradd10(-1).div("e120000000").pow(0.12).mul("e120000000").layeradd10(1);
 		} else {
 			if (eff[0].gt("e750000")) eff[0] = eff[0].div("e750000").pow(0.1).mul("e750000");
 			if (eff[0].gt("e1500000")) eff[0] = eff[0].div("e1500000").log10().add(1).pow(15000).mul("e1500000");
@@ -277,8 +277,9 @@ addLayer("a", {
 			},
 			effect() {return getBuyableAmount(this.layer, this.id).add(this.extra()).pow_base(this.effectBase())},
 			title: "(CRA)FTSMANSHIP",
-			display() {return "multiply population maximum by " + format(this.effectBase()) + (this.effectBase().gte(1000000) ? "" : "<br>(population max also influences gain)") + "<br><br>Effect: " + format(this.effect()) + "x<br><br>Cost: " + formatWhole(this.cost()) + " acclimation points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id)) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
-			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && !inChallenge("sp", 11)},
+			display() {return "multiply population maximum by " + format(this.effectBase()) + (this.effectBase().gte(1000000) ? "" : "<br>(population max also influences gain)") + "<br><br>Effect: " + format(this.effect()) + "x<br><br>Cost: " + formatWhole(this.cost()) + " acclimation points<br><br>Level: " + (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit) ? "1e10/1e10" : formatWhole(getBuyableAmount(this.layer, this.id))) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
+			purchaseLimit: 1e10,
+			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit) && !inChallenge("sp", 11)},
 			buy() {
 				if (!hasMilestone("r", 2)) player[this.layer].spent = player[this.layer].spent.add(this.cost());
 				addBuyables(this.layer, this.id, getStatBulk());
@@ -297,6 +298,7 @@ addLayer("a", {
 				if (tmp.ex.effect[2]) extra = extra.add(tmp.ex.effect[2]);
 				return extra.floor();
 			},
+			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return {"border-color": "#B44990"}},
 		},
 		12: {
 			cost() {
@@ -316,8 +318,9 @@ addLayer("a", {
 			},
 			effect() {return getBuyableAmount(this.layer, this.id).add(this.extra()).pow_base(this.effectBase())},
 			title: "(FER)TILITY",
-			display() {return "multiply population gain by " + format(this.effectBase()) + "<br><br>Effect: " + format(this.effect()) + "x<br><br>Cost: " + formatWhole(this.cost()) + " acclimation points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id)) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
-			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && !inChallenge("sp", 11)},
+			display() {return "multiply population gain by " + format(this.effectBase()) + "<br><br>Effect: " + format(this.effect()) + "x<br><br>Cost: " + formatWhole(this.cost()) + " acclimation points<br><br>Level: " + (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit) ? "1e10/1e10" : formatWhole(getBuyableAmount(this.layer, this.id))) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
+			purchaseLimit: 1e10,
+			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit) && !inChallenge("sp", 11)},
 			buy() {
 				if (!hasMilestone("r", 2)) player[this.layer].spent = player[this.layer].spent.add(this.cost());
 				addBuyables(this.layer, this.id, getStatBulk());
@@ -337,6 +340,7 @@ addLayer("a", {
 				if (tmp.ex.effect[2]) extra = extra.add(tmp.ex.effect[2]);
 				return extra.floor();
 			},
+			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return {"border-color": "#B44990"}},
 		},
 		13: {
 			cost() {
@@ -360,8 +364,9 @@ addLayer("a", {
 			},
 			effect() {return getBuyableAmount(this.layer, this.id).add(this.extra()).pow_base(this.effectBase())},
 			title: "(ANA)LYTICITY",
-			display() {return "divide acclimation requirement by " + format(this.effectBase()) + "<br><br>Effect: /" + format(this.effect()) + "<br><br>Cost: " + formatWhole(this.cost()) + " acclimation points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id)) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
-			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && !inChallenge("sp", 12)},
+			display() {return "divide acclimation requirement by " + format(this.effectBase()) + "<br><br>Effect: /" + format(this.effect()) + "<br><br>Cost: " + formatWhole(this.cost()) + " acclimation points<br><br>Level: " + (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit) ? "1e10/1e10" : formatWhole(getBuyableAmount(this.layer, this.id))) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
+			purchaseLimit: 1e10,
+			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit) && !inChallenge("sp", 12)},
 			buy() {
 				if (!hasMilestone("r", 2)) player[this.layer].spent = player[this.layer].spent.add(this.cost());
 				addBuyables(this.layer, this.id, getStatBulk());
@@ -379,6 +384,7 @@ addLayer("a", {
 				if (tmp.ex.effect[2]) extra = extra.add(tmp.ex.effect[2]);
 				return extra.floor();
 			},
+			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return {"border-color": "#B44990"}},
 		},
 		14: {
 			cost() {
@@ -401,8 +407,9 @@ addLayer("a", {
 			},
 			effect() {return getBuyableAmount(this.layer, this.id).add(this.extra()).pow_base(this.effectBase())},
 			title: "(SOV)EREIGNTY",
-			display() {return "multiply population amount in population effects by " + format(this.effectBase()) + "<br><br>Effect: " + format(this.effect()) + "x<br><br>Cost: " + formatWhole(this.cost()) + " acclimation points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id)) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
-			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && !inChallenge("sp", 11)},
+			display() {return "multiply population amount in population effects by " + format(this.effectBase()) + "<br><br>Effect: " + format(this.effect()) + "x<br><br>Cost: " + formatWhole(this.cost()) + " acclimation points<br><br>Level: " + (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit) ? "1e10/1e10" : formatWhole(getBuyableAmount(this.layer, this.id))) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
+			purchaseLimit: 1e10,
+			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit) && !inChallenge("sp", 11)},
 			buy() {
 				if (!hasMilestone("r", 2)) player[this.layer].spent = player[this.layer].spent.add(this.cost());
 				addBuyables(this.layer, this.id, getStatBulk());
@@ -421,6 +428,7 @@ addLayer("a", {
 				if (tmp.ex.effect[2]) extra = extra.add(tmp.ex.effect[2]);
 				return extra.floor();
 			},
+			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return {"border-color": "#B44990"}},
 		},
 		respec() {
 			setBuyableAmount("a", 11, new Decimal(0));
