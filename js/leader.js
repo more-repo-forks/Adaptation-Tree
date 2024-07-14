@@ -24,10 +24,15 @@ addLayer("l", {
 	baseAmount() {return player.cb.points},
 	requires: new Decimal(250000),
 	type: "static",
-	base: 2,
+	base() {
+		let base = 2;
+		if (hasMilestone("r", 42)) base -= milestoneEffect("r", 42);
+		if (hasMilestone("r", 45)) base -= milestoneEffect("r", 45);
+		return base;
+	},
 	exponent: 1,
 	roundUpCost: true,
-	canBuyMax() {return false},
+	canBuyMax() {return player.cy.unlocked},
 	resetDescription: "Lead for ",
 	gainMult() {
 		let mult = new Decimal(1);
@@ -36,11 +41,15 @@ addLayer("l", {
 		return mult;
 	},
 	effect() {
+		let amt = player.l.points;
+		if (tmp.cy.effect[0]) amt = amt.add(tmp.cy.effect[0]);
+		let lastEffAmt = new Decimal(amt);
+		if (getGridData("w", 602) >= 2) lastEffAmt = lastEffAmt.mul(1.6);
 		let eff = [
-			new Decimal(2).pow(player.l.points),
-			new Decimal(getGridData("w", 604) ? 3 : 2).pow(player.l.points),
-			player.l.points.div(4).add(1),
-			(getGridData("w", 602) ? new Decimal(getGridData("w", 606) ? 75 : 3).pow(player.l.points) : player.l.points.add(1).pow(getGridData("w", 606) ? 7 : 1)),
+			new Decimal(2).pow(amt),
+			new Decimal(getGridData("w", 604) ? 3 : 2).pow(amt),
+			amt.div(4).add(1),
+			(getGridData("w", 602) ? new Decimal(getGridData("w", 606) ? 75 : 3).pow(lastEffAmt) : lastEffAmt.add(1).pow(getGridData("w", 606) ? 7 : 1)),
 		];
 		if (player.l.focusUnlocked) eff[4] = Math.floor((tmp.cb.effect[3] / getFocusplusRequirement()) ** 0.8);
 		else eff[4] = 0;
@@ -49,9 +58,19 @@ addLayer("l", {
 	effectDescription() {return "which are multiplying power and stimulation gain by " + format(tmp.l.effect[0]) + "x; dividing the requirements of all resources from rows 2-5 by /" + format(tmp.l.effect[1]) + "; directly multiplying conscious being gain by " + format(tmp.l.effect[2]) + "x; and multiplying change gain, change limit, and influence generator production by " + format(tmp.l.effect[3]) + "x"},
 	tabFormat() {
 		let text = "After leading 1 time, more automation for domination is always unlocked,<br>species resets (that are not in hybridizations) no longer reset anything,<br>and you automatically claim potential species.<br><br>The above extra effects will not go away even if this layer is reset.";
-		if (player.l.points.gte(1)) text += "<br><br>After leading 2 times, you keep retrogression completions on all resets,<br>domination resets (without respec) no longer reset anything,<br>and you automatically claim potential domination points.";
-		if (player.l.points.gte(2)) text += "<br><br>After leading 3 times, you keep stimulation upgrades on all resets;<br>you can bulk ecosystems, revolutions, expansion points, and wars;<br>and potential growth points are always automatically claimed.";
-		if (player.l.points.gte(3)) text += "<br><br>After leading 4 times, you bulk 10x stats from rows 3 and below,<br>you keep hybridization completions on leader resets,<br>and you keep domination enhancements on all resets.";
+		if (player.l.points.gte(1)) {
+			if (player.cy.unlocks[0] >= 1) text += "<br><br>After leading 2 times, you keep retrogression completions on all resets.";
+			else text += "<br><br>After leading 2 times, you keep retrogression completions on all resets,<br>domination resets (without respec) no longer reset anything,<br>and you automatically claim potential domination points.";
+		};
+		if (player.l.points.gte(2)) {
+			if (player.cy.unlocks[0] >= 2) text += "<br><br>After leading 3 times, you keep stimulation upgrades on all resets.";
+			else if (player.cy.unlocked) text += "<br><br>After leading 3 times, you keep stimulation upgrades on all resets<br>and potential growth points are always automatically claimed.";
+			else text += "<br><br>After leading 3 times, you keep stimulation upgrades on all resets;<br>you can bulk ecosystems, revolutions, expansion points, and wars;<br>and potential growth points are always automatically claimed.";
+		};
+		if (player.l.points.gte(3)) {
+			if (player.l.points.gte(10)) text += "<br><br>After leading 4 times, you bulk 10x stats from rows 3 and below<br>and you keep domination enhancements on all resets.";
+			else text += "<br><br>After leading 4 times, you bulk 10x stats from rows 3 and below,<br>you keep hybridization completions on leader resets,<br>and you keep domination enhancements on all resets.";
+		};
 		if (player.l.points.gte(4)) text += "<br><br>After leading 5 times, another tier of ANACHRONISM is unlocked,<br>you keep ANACHRONISM completions on all resets,<br>and you keep growth enhancements on all resets.";
 		if (player.l.points.gte(9)) text += "<br><br>After leading 10 times, you keep hybridization completions on all resets.";
 		let arr = [
@@ -63,7 +82,7 @@ addLayer("l", {
 		];
 		if (player.l.focusUnlocked) {
 			let svg = "<svg viewBox='0 0 500 50' style='width: 500px; height: 50px'>";
-			let maximum = (false ?
+			let maximum = (player.cy.unlocks[0] >= 6 ?
 				Math.max((getClickableState("l", 11) || 0) + (getClickableState("l", 12) || 0), tmp.l.effect[4] * 2)
 				: Math.max((getClickableState("l", 11) || 0) + (getClickableState("l", 12) || 0), tmp.l.effect[4])
 			);
@@ -73,7 +92,7 @@ addLayer("l", {
 				svg += "<rect x='" + (500 - right) + "' y='0' width='" + right + "' height='50' fill='#E03330'/>";
 				let div = (2 ** Math.floor(Math.log2(maximum) - 5));
 				if (div > 1) maximum /= div;
-				if (!false) {
+				if (!(player.cy.unlocks[0] >= 6)) {
 					for (let index = (maximum % 1) / 2; index < maximum; index++) {
 						if (index == 0) continue;
 						let x = (500 * index / maximum);
@@ -85,7 +104,7 @@ addLayer("l", {
 			svg += "<div style='position: relative; float: left; margin: -54px 0px 0px 7.5px; font-size: 48px; color: #DFDFDF'>SP</div>";
 			svg += "<div style='position: relative; float: right; margin: -54px 9px 0px 0px; font-size: 48px; color: #DFDFDF'>D</div>";
 			arr.push(["display-text", svg, {"display": "inline-block", "width": "500px", "height": "50px", "border": "solid 4px #E5B55A"}]);
-			if (!false) arr.push(["row", [["clickable", 13], ["clickable", 11], ["clickable", 15], ["clickable", 12], ["clickable", 14]]]);
+			if (!(player.cy.unlocks[0] >= 6)) arr.push(["row", [["clickable", 13], ["clickable", 11], ["clickable", 15], ["clickable", 12], ["clickable", 14]]]);
 			arr.push("blank");
 			let next = Math.ceil(getFocusplusRequirement() * (tmp.l.effect[4] + 1) ** 1.25);
 			arr.push(["display-text", "You have " + formatWhole(tmp.cb.effect[3]) + " maximum focus points,<br>making the maximum focus+ points be " + formatWhole(tmp.l.effect[4]) + ".<br><br>The next point can be gained at " + (next > 1 ? formatWhole(next) + " focus points." : "1 focus point.")]);
@@ -108,7 +127,7 @@ addLayer("l", {
 	},
 	update(diff) {
 		if (challengeCompletions("ec", 11) >= 15 && !player.l.focusUnlocked) player.l.focusUnlocked = true;
-		if (false) {
+		if (player.cy.unlocks[0] >= 6) {
 			setClickableState("l", 11, tmp.l.effect[4]);
 			setClickableState("l", 12, tmp.l.effect[4]);
 		};

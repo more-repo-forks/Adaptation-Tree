@@ -5,6 +5,7 @@ function getEnhancableGridSize() {
 	if (hasMilestone("r", 31)) size++;
 	if (hasMilestone("r", 33)) size++;
 	if (hasMilestone("r", 39)) size++;
+	if (hasMilestone("r", 44)) size++;
 	return size;
 };
 
@@ -14,38 +15,38 @@ const warUpgrades = [[
 	{title: "Wilderness Exploration", desc() {return "divides species requirement based on wars<br>(currently /" + format(gridEffect("w", 103)) + ")"}, effect() {return player.w.points.pow_base(1e5)}, cost: 4, e: {effect() {return player.w.points.pow_base(1e10)}, cost: 1}},
 	{title: "Nature Investigation", desc() {return "divides ecosystem requirement based on wars<br>(currently /" + format(gridEffect("w", 104)) + ")"}, effect() {return player.w.points.div(3).add(1)}, cost: 25, e: {effect() {return player.w.points.add(1)}, cost: 2}},
 	{title: "Solace Seeking", desc() {return "divides conscious being requirement based on wars<br>(currently /" + format(gridEffect("w", 105)) + ")"}, effect() {return player.w.points.pow_base("1e5000")}, cost: 150, e: {effect() {return player.w.points.pow_base("1e100000")}, cost: 4}},
-	{title: "Revolutionary Tactics", desc() {return "divides revolution requirement based on wars<br>(currently /" + format(gridEffect("w", 106)) + ")"}, effect() {return player.w.points.div(10).add(1)}, cost: 1000},
+	{title: "Revolutionary Tactics", desc() {return "divides revolution requirement based on wars<br>(currently /" + format(gridEffect("w", 106)) + ")"}, effect() {return player.w.points.div(10).add(1)}, cost: 1000, e: {effect() {return player.w.points.add(1)}, cost: 8}},
 ], [
 	{title: "Forced Migration", desc() {return "increases the 10th hybridization's completion limit based on wars<br>(currently +" + formatWhole(gridEffect("w", 201)) + ")"}, effect() {return player.w.points.mul(2)}, cost: 2, e: {effect() {return player.w.points.mul(4)}, cost: 1}},
 	{title: "Out of Place, Out of Time", desc: "unlocks another ANACHRONISM tier", effect: 1, cost: 4, e: {desc: "unlocks two more ANACHRONISM tiers", effect: 2, cost: 1}},
 	{title: "Displaced Chronology", desc: "unlocks another ANACHRONISM tier", effect: 1, cost: 8, e: {desc: "unlocks two more ANACHRONISM tiers", effect: 2, cost: 1}},
 	{title: "Smaller Habitats", desc() {return "increases the 10th hybridization's completion limit based on wars<br>(currently +" + formatWhole(gridEffect("w", 204)) + ")"}, effect() {return player.w.points.mul(3)}, cost: 30, e: {effect() {return player.w.points.mul(6)}, cost: 2}},
 	{title: "Ancient Tactics", desc: "unlocks another ANACHRONISM tier", effect: 1, cost: 200, e: {desc: "unlocks two more ANACHRONISM tiers", effect: 2, cost: 4}},
-	{title: "Futuristic Tactics", desc: "unlocks another ANACHRONISM tier", effect: 1, cost: 1500},
+	{title: "Futuristic Tactics", desc: "unlocks another ANACHRONISM tier", effect: 1, cost: 1500, e: {desc: "unlocks two more ANACHRONISM tiers", effect: 2, cost: 8}},
 ], [
 	{title: "Enroaching Influence", desc: "unlocks another influence generator", effect: 1, cost: 4, e: {desc: "unlocks two more influence generators", effect: 2, cost: 1}},
 	{title: "Greater Empowerment", desc: "reduces <b>Influence empowerment</b>'s cost", cost: 8, effect: 1.5, e: {desc: "reduces <b>Influence empowerment</b>'s cost more", effect: 1.45, cost: 1}},
 	{title: "Surrounding Influence", desc: "unlocks another influence generator", effect: 1, cost: 16, e: {desc: "unlocks two more influence generators", effect: 2, cost: 2}},
 	{title: "Generator Recycling", desc: "reduces the costs of influence generators", cost: 40, e: {desc: "reduces the costs of influence generators more", cost: 4}},
-	{title: "Overarching Influence", desc: "unlocks another influence generator", effect: 1, cost: 250},
+	{title: "Overarching Influence", desc: "unlocks another influence generator", effect: 1, cost: 250, e: {desc: "unlocks two more influence generators", effect: 2, cost: 8}},
 	{title: "Greater Tickspeed", desc: "reduces <b>Influence tickspeed</b>'s cost", cost: 2000},
 ], [
 	{title: "Conflict Escalation", desc: "decreases war requirement base by 0.025", effect: 0.025, cost: 25, e: {desc: "decreases war requirement base by 0.03", effect: 0.03, cost: 2}},
 	{title: "Battle Domination", desc: "decreases domination requirement base by 0.313", effect: 0.313, cost: 30, e: {desc: "decreases domination requirement base by 0.33", effect: 0.33, cost: 2}},
 	{title: "Revolutionary Armaments", desc: "decreases revolution requirement base by 0.1", effect: 0.1, cost: 40, e: {desc: "decreases revolution requirement base by 0.17", effect: 0.17, cost: 4}},
-	{title: "New Frontiers", desc: "decreases species requirement base by 0.075", effect: 0.075, cost: 55},
+	{title: "New Frontiers", desc: "decreases species requirement base by 0.075", effect: 0.075, cost: 55, e: {desc: "decreases species requirement base by 0.09", effect: 0.09, cost: 8}},
 	{title: "Further Exploration", desc: "decreases expansion requirement base by 0.1", effect: 0.1, cost: 300},
 	{title: "Enlightened Tactics", desc: "decreases conscious being requirement base by 1", effect: 1, cost: 2500},
 ], [
 	{title: "Further Domination", desc() {return "gives extra FOC, SPE, CLI, and DOM based on wars<br>(currently +" + formatWhole(gridEffect("w", 501)) + ")"}, effect() {return player.w.points}, cost: 150, e: {effect() {return player.w.points.mul(10)}, cost: 4}},
 	{title: "Further Acclimation", desc() {return "gives extra CRA, FER, ANA, and SOV based on wars<br>(currently +" + formatWhole(gridEffect("w", 502)) + ")"}, effect() {return player.w.points.mul(75000)}, cost: 200, e: {effect() {return player.w.points.mul(10000000)}, cost: 4}},
-	{title: "Military Domination", desc() {return "gives extra FOC, SPE, CLI, and DOM based on wars<br>(currently +" + formatWhole(gridEffect("w", 503)) + ")"}, effect() {return player.w.points.mul(2)}, cost: 250},
+	{title: "Military Domination", desc() {return "gives extra FOC, SPE, CLI, and DOM based on wars<br>(currently +" + formatWhole(gridEffect("w", 503)) + ")"}, effect() {return player.w.points.mul(2)}, cost: 250, e: {effect() {return player.w.points.mul(25)}, cost: 8}},
 	{title: "Forced Acclimation", desc() {return "gives extra CRA, FER, ANA, and SOV based on wars<br>(currently +" + formatWhole(gridEffect("w", 504)) + ")"}, effect() {return player.w.points.mul(220000)}, cost: 300},
 	{title: "Overpowering Presence", desc() {return "gives extra FOC, SPE, CLI, and DOM based on wars<br>(currently +" + formatWhole(gridEffect("w", 505)) + ")"}, effect() {return player.w.points.mul(5)}, cost: 350},
 	{title: "Primal Instincts", desc() {return "gives extra CRA, FER, ANA, and SOV based on wars<br>(currently +" + formatWhole(gridEffect("w", 506)) + ")"}, effect() {return player.w.points.mul(500000)}, cost: 3500},
 ], [
-	{title: "Honed Focus", desc() {return "divides focus+ requirement based on wars<br>(currently /" + format(gridEffect("w", 601)) + ")"}, effect() {return player.w.points.add(1).pow(0.1)}, cost: 1000},
-	{title: "Public Speaking", desc: "improves the last leader effect", cost: 1500},
+	{title: "Honed Focus", desc() {return "divides focus+ requirement based on wars<br>(currently /" + format(gridEffect("w", 601)) + ")"}, effect() {return player.w.points.add(1).pow(0.1)}, cost: 1000, e: {effect() {return player.w.points.add(1).pow(0.15)}, cost: 8}},
+	{title: "Public Speaking", desc: "improves the last leader effect", cost: 1500, e: {desc: "improves the last leader effect more", cost: 8}},
 	{title: "Political Upheaval", desc() {return "divides leader requirement based on wars<br>(currently /" + format(gridEffect("w", 603)) + ")"}, effect() {return player.w.points.add(1).pow(0.2)}, cost: 2000},
 	{title: "Smarter Leaders", desc: "improves the second leader effect", cost: 2500},
 	{title: "Finer Focus", desc() {return "divides focus+ requirement based on wars<br>(currently /" + format(gridEffect("w", 605)) + ")"}, effect() {return player.w.points.add(1).pow(0.125)}, cost: 3500},
@@ -84,28 +85,33 @@ addLayer("w", {
 	},
 	exponent() {return inChallenge("co", 11) ? 2 : 1},
 	roundUpCost: true,
-	canBuyMax() {return player.l.points.gte(3)},
+	canBuyMax() {return player.l.points.gte(3) || player.cy.unlocked},
 	resetDescription: "Declare war for ",
 	gainMult() {
 		let mult = new Decimal(1);
 		if (getBuyableAmount("d", 14).gte(tmp.d.buyables[14].purchaseLimit)) mult = mult.div(tmp.d.buyables[14].completionEffect);
+		if (tmp.ec.effect[3]) mult = mult.div(tmp.ec.effect[3]);
 		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
 		if (tmp.t.effect[1]) mult = mult.div(tmp.t.effect[1]);
+		if (tmp.co.effect[5]) mult = mult.div(tmp.co.effect[5]);
 		return mult;
 	},
 	effect() {
 		let exp = 1.5;
 		if (player.ex.points.gte(9)) exp += 0.1;
+		if (player.w.points.gte(50)) exp += 0.05;
 		if (hasMilestone("r", 16)) exp += 0.15;
 		if (hasMilestone("r", 21)) exp += 0.15;
 		if (hasMilestone("r", 27)) exp += 0.1;
-		if (player.w.points.gte(50)) exp += 0.05;
+		if (player.cy.unlocks[0] >= 4) exp += 0.05;
+		if (player.cy.unlocks[0] >= 9) exp += 0.6;
 		return [
-			player.w.points.pow(exp).round(),
-			(hasMilestone("d", 57) ? player.w.points.div(50).sub(hasMilestone("d", 58) ? 0 : 1).floor().max(0) : player.w.points.div(100).floor()),
+			(player.t.points.gte(10) ? new Decimal(1.1).pow(player.w.points.mul(exp)) : player.w.points.pow(exp).round()),
+			(hasMilestone("d", 57) ? player.w.points.div(hasMilestone("d", 60) ? 33 : 50).sub(hasMilestone("d", 58) ? 0 : 1).floor().max(0) : player.w.points.div(100).floor()),
 		];
 	},
 	effectDescription() {
+		if (player.t.points.gte(10)) return "which are multiplying change gain, change limit, and influence generator production by " + format(tmp.w.effect[0]) + "x and giving " + formatWhole(tmp.w.effect[1]) + " battle enhancements (of which " + formatWhole(tmp.w.effect[1].sub(player.w.spentE)) + " are unspent)";
 		if (tmp.w.effect[1].gte(1)) return "which are giving " + formatWhole(tmp.w.effect[0]) + " battles (of which " + formatWhole(tmp.w.effect[0].sub(player.w.spent)) + " are unspent) and giving " + formatWhole(tmp.w.effect[1]) + " battle enhancements (of which " + formatWhole(tmp.w.effect[1].sub(player.w.spentE)) + " are unspent)";
 		return "which are giving " + formatWhole(tmp.w.effect[0]) + " battles, of which " + formatWhole(tmp.w.effect[0].sub(player.w.spent)) + " are unspent";
 	},
@@ -153,8 +159,12 @@ addLayer("w", {
 		cols() {return this.rows()},
 		maxRows: warUpgrades.length,
 		maxCols: warUpgrades[0].length,
-		getStartData(id) {return 0},
+		getStartData(id) {
+			if (new Decimal(player?.t.points).gte(10)) return 1;
+			return 0;
+		},
 		getCanClick(data, id) {
+			if (inChallenge("co", 11)) return false;
 			if (!(id == 101 || getGridData("w", id - 1) || getGridData("w", id + 1) || getGridData("w", id - 100) || getGridData("w", id + 100))) return false;
 			if (data == 1 && Math.floor(id / 100) <= getEnhancableGridSize() && id % 100 <= getEnhancableGridSize()) return tmp.w.effect[1].sub(player.w.spentE).gte(warUpgrades[Math.floor(id / 100) - 1][id % 100 - 1].e?.cost || Infinity);
 			if (data == 0) return tmp.w.effect[0].sub(player.w.spent).gte(warUpgrades[Math.floor(id / 100) - 1][id % 100 - 1].cost || Infinity);
@@ -175,7 +185,8 @@ addLayer("w", {
 		getEffect(data, id) {
 			if (!id) return;
 			const upg = warUpgrades[Math.floor(id / 100) - 1][id % 100 - 1];
-			let eff = (data == 2 ? upg.e.effect : upg.effect);
+			let eff = upg.effect;
+			if (data == 2 && upg.e.effect) eff = upg.e.effect;
 			if (typeof eff == "function") return eff();
 			return eff;
 		},
@@ -192,7 +203,7 @@ addLayer("w", {
 	},
 	buyables: {
 		respec(onlyE = false) {
-			if (onlyE) {
+			if (onlyE || player.t.points.gte(10)) {
 				for (const key in player.w.grid)
 					if (Object.hasOwnProperty.call(player.w.grid, key) && player.w.grid[key] > 1)
 						player.w.grid[key] = 1;
@@ -205,11 +216,14 @@ addLayer("w", {
 			player.w.spentE = new Decimal(0);
 			doReset("w", true, true);
 		},
-		respecText() {return "respec battles" + (tmp.w.effect[1].gte(1) ? " and enhancements" : "")},
+		respecText() {
+			if (player.t.points.gte(10)) return "respec enhancements";
+			return "respec battles" + (tmp.w.effect[1].gte(1) ? " and enhancements" : "");
+		},
 	},
 	clickables: {
 		masterButtonPress() {respecBuyables("w", true)},
 		masterButtonText: "respec enhancements",
-		showMasterButton() {return tmp.w.effect[1].gte(1)},
+		showMasterButton() {return tmp.w.effect[1].gte(1) && !player.t.points.gte(10)},
 	},
 });

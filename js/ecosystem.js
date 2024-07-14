@@ -22,14 +22,16 @@ addLayer("ec", {
 	},
 	exponent() {return inChallenge("co", 11) ? 2 : 1},
 	roundUpCost: true,
-	canBuyMax() {return player.l.points.gte(3)},
+	canBuyMax() {return player.l.points.gte(3) || player.cy.unlocked},
 	resetDescription: "Ecologically succeed for ",
 	gainMult() {
 		let mult = new Decimal(1);
 		if (getGridData("w", 104)) mult = mult.div(gridEffect("w", 104));
+		if (tmp.ec.effect[3]) mult = mult.div(tmp.ec.effect[3]);
 		if (tmp.r.effect[6]) mult = mult.div(tmp.r.effect[6]);
 		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
 		if (tmp.co.effect[0]) mult = mult.div(tmp.co.effect[0]);
+		if (tmp.co.effect[5]) mult = mult.div(tmp.co.effect[5]);
 		return mult;
 	},
 	effect() {
@@ -40,9 +42,13 @@ addLayer("ec", {
 			base0.pow(player.ec.points),
 			player.ec.points.mul(5),
 			(player.ec.points.gt(0) ? new Decimal(100).pow(player.ec.points).min(1e300) : new Decimal(0)),
+			(player.ec.challenges[11] >= 20 ? player.ec.points.pow_base(1.01) : new Decimal(1)),
 		];
 	},
-	effectDescription() {return "which are dividing the species requirement by /" + format(tmp.ec.effect[0]) + ", increasing the completion limit of the 10th hybridization by +" + formatWhole(tmp.ec.effect[1]) + ", and generating +" + format(tmp.ec.effect[2]) + "% of potential stimulations per second" + (tmp.ec.effect[2].gte(1e300) ? " (maxed)" : "")},
+	effectDescription() {
+		if (player.ec.challenges[11] >= 20) return "which are dividing the species requirement by /" + format(tmp.ec.effect[0]) + ", increasing the completion limit of the 10th hybridization by +" + formatWhole(tmp.ec.effect[1]) + ", generating +" + format(tmp.ec.effect[2]) + "% of potential stimulations per second" + (tmp.ec.effect[2].gte(1e300) ? " (maxed)" : "") + ", and dividing all row 5 requirements by /" + format(tmp.ec.effect[3]);
+		return "which are dividing the species requirement by /" + format(tmp.ec.effect[0]) + ", increasing the completion limit of the 10th hybridization by +" + formatWhole(tmp.ec.effect[1]) + ", and generating +" + format(tmp.ec.effect[2]) + "% of potential stimulations per second" + (tmp.ec.effect[2].gte(1e300) ? " (maxed)" : "");
+	},
 	tabFormat() {
 		// succeession text
 		let text = "You keep hybridization completions on ecosystem resets.<br><br>After succeeding 1 time, more automation for acclimation is always unlocked<br>and you can bulk species, conscious beings, and domination points.<br><br>The above extra effects will not go away even if this layer is reset.";
@@ -113,7 +119,7 @@ addLayer("ec", {
 	},
 	challenges: {
 		11: {
-			name(x = Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1)) {return "ANACHRONISM " + (["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX"][x])},
+			name(x = Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1)) {return "ANACHRONISM " + (["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX"][x])},
 			fullDisplay() {
 				if (challengeCompletions("sp", 21) >= 18 || hasChallenge("ec", 11)) {
 					let text = "";
@@ -127,7 +133,7 @@ addLayer("ec", {
 				};
 				return "You need 18 completions of the 10th hybridization<br>to unlock ANACHRONISM.";
 			},
-			rewardEffect() {return [0.1, null, 3, 0.125, 0.05, 3, null, null, null, 0.03, 0.45, 0.1, 0.1, 0.075, null, null, null, null, null]},
+			rewardEffect() {return [0.1, null, 3, 0.125, 0.05, 3, null, null, null, 0.03, 0.45, 0.1, 0.1, 0.075, null, null, null, null, null, null]},
 			rewards: [
 				"domination requirement base is decreased by 0.1",
 				() => "three new layers are unlocked" + (player.r.unlocked ? " (" + (player.w.unlocked ? "" : (player.ex.unlocked ? 2 : 1) + "/3 ") + "already unlocked)" : ""),
@@ -148,8 +154,9 @@ addLayer("ec", {
 				() => "something new is unlocked for continents" + (player.co.migrationUnlocked ? " (already unlocked)" : ""),
 				() => "something new is unlocked for territories" + (player.t.controlUnlocked ? " (already unlocked)" : ""),
 				"the first two continent effects are improved",
+				"a new effect for ecosystems is unlocked",
 			],
-			goal() {return [167098, 155454, 155040, 869153600, 2.874e9, 7.992e9, 3.082e11, 4.73e11, 1.228e12, 7.191e12, 9.733e12, 1.359e13, 5.222e13, 4.09e14, 3.783e15, 1.133e18, 2.975e18, 3.206e20, 7.087e21][Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1)] || Infinity},
+			goal() {return [167098, 155454, 155040, 869153600, 2.874e9, 7.992e9, 3.082e11, 4.73e11, 1.228e12, 7.191e12, 9.733e12, 1.359e13, 5.222e13, 4.09e14, 3.783e15, 1.133e18, 2.975e18, 3.206e20, 7.087e21, 1.791e23][Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1)] || Infinity},
 			canComplete() {return player.g.points.gte(this.goal())},
 			enterable() {return challengeCompletions("sp", 21) >= 18 || hasChallenge("ec", 11)},
 			doReset: false,

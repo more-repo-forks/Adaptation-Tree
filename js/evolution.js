@@ -39,7 +39,7 @@ const extraEvolutionEffects = {
 		else return "The base of the last evolution effect is multiplied by 1e1541.<br>You keep the first fourty-one growth enhancements on row 3 resets.";
 	},
 	60() {
-		if (player.l.points.gte(3)) return;
+		if (player.l.points.gte(3) || player.cy.unlocks[0] >= 2) return;
 		else if (player.sp.unlocked) return "Potential growth points are automatically claimed.";
 		else return "A new layer is unlocked.";
 	},

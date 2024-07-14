@@ -3,14 +3,14 @@ const modInfo = {
 	id: "adaptation-tree-yrahcaz7",
 	author: "Yrahcaz7",
 	pointsName: "power",
-	modFiles: ["stimulation.js", "growth.js", "evolution.js", "acclimation.js", "species.js", "consciousness.js", "domination.js", "ecosystem.js", "revolution.js", "expansion.js", "war.js", "leader.js", "continent.js", "territory.js", "technical/tree.js"],
+	modFiles: ["stimulation.js", "growth.js", "evolution.js", "acclimation.js", "species.js", "consciousness.js", "domination.js", "ecosystem.js", "revolution.js", "expansion.js", "war.js", "leader.js", "continent.js", "territory.js", "cycle.js", "technical/tree.js"],
 	initialStartPoints: new Decimal(0),
 	offlineLimit: 1, // in hours
 }
 
 const VERSION = {
-	num: "2.6.2",
-	name: "The Start of Subjugation",
+	num: "3.0.0",
+	name: "The First Cycle",
 };
 
 const winText = "Congratulations!<br>You have reached the end and beaten this game (for now),<br>but there is more content coming soon...";
@@ -72,6 +72,7 @@ function getStatBulk() {
 	if (player.w.points.gte(6)) bulk *= 10;
 	if (player.l.points.gte(4)) bulk *= 10;
 	if (player.t.unlocked) bulk *= 10;
+	if (player.cy.unlocks[0] >= 7) bulk *= 10;
 	return bulk;
 };
 
@@ -86,12 +87,12 @@ let displayThings = [
 		if (tmp.other.oompsMag != 0 && options.showOOMs) return "(" + format(tmp.other.oomps) + " OOM" + (tmp.other.oompsMag < 0 ? "^OOM" : (tmp.other.oompsMag > 1 ? "^" + tmp.other.oompsMag : "")) + "s/sec)";
 		return "(" + format(getPointPotential()) + " max power)";
 	},
-	() => "<br>current endgame is at 3,250,000 " + (player.d.unlocked ? "domination points" : "???"),
+	() => "<br>current endgame is at 9,000,000 " + (player.d.unlocked ? "domination points" : "???"),
 ];
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.d.points.gte(3250000);
+	return player.d.points.gte(9000000);
 };
 
 // Style for the background, can be a function
@@ -108,7 +109,9 @@ function fixOldSave(oldVersion) {
 	for (const key in layers.ex.buyables)
 		if (Object.hasOwnProperty.call(layers.ex.buyables, key) && key < 20)
 			player.ex.extra[key - 11] = new Decimal(player.ex.extra[key - 11] || 0);
-	for (let row = 1; row <= layers.t.grid.rows; row++)
+	for (let row = 1; row <= layers.t.grid.maxRows; row++)
 		for (let col = 1; col <= layers.t.grid.cols; col++)
 			player.t.extra[row * 100 + col] = new Decimal(player.t.extra[row * 100 + col] || 0);
+	for (let index = 0; index < cycleUnlocks.length; index++)
+		if (!player.cy.unlocks[index]) player.cy.unlocks[index] = 0;
 };

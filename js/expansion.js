@@ -36,6 +36,7 @@ function getGeneratorEffect(id) {
 		b.add(x).mul(b.pow(player.ex.points)).mul(b.mul(20).pow_base(player.ex.points)),
 	][level];
 	if (hasBuyable("ex", 21)) eff = eff.mul(buyableEffect("ex", 21));
+	if (tmp.w.effect[0] && player.t.points.gte(10)) eff = eff.mul(tmp.w.effect[0]);
 	if (tmp.l.effect[3]) eff = eff.mul(tmp.l.effect[3]);
 	return eff;
 };
@@ -72,20 +73,25 @@ addLayer("ex", {
 	},
 	exponent() {return inChallenge("co", 11) ? 2 : 1},
 	roundUpCost: true,
-	canBuyMax() {return player.l.points.gte(3)},
+	canBuyMax() {return player.l.points.gte(3) || player.cy.unlocked},
 	resetDescription: "Expand your influence for ",
 	gainMult() {
 		let mult = new Decimal(1);
 		if (getGridData("w", 102)) mult = mult.div(gridEffect("w", 102));
+		if (tmp.ec.effect[3]) mult = mult.div(tmp.ec.effect[3]);
 		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
 		if (tmp.t.effect[0]) mult = mult.div(tmp.t.effect[0]);
+		if (tmp.t.effect[5]) mult = mult.div(tmp.t.effect[5]);
 		return mult;
 	},
 	effect() {
+		let lastExansionEffExp = 1;
+		if (hasMilestone("r", 30)) lastExansionEffExp += 0.75;
+		if (hasMilestone("r", 40)) lastExansionEffExp += 0.25;
 		let eff = [
-			new Decimal(5).pow(player.ex.points),
-			new Decimal(10).pow(player.ex.points),
-			player.ex.points.mul(player.ex.points.gte(3) ? 300 : 100).pow(hasMilestone("r", 30) ? 1.75 : 1).floor(),
+			new Decimal(hasMilestone("r", 40) ? 10 : 5).pow(player.ex.points),
+			new Decimal(hasMilestone("r", 40) ? 1e10 : 10).pow(player.ex.points),
+			player.ex.points.mul(player.ex.points.gte(3) ? 300 : 100).pow(lastExansionEffExp).floor(),
 			new Decimal(1e25).pow(player.ex.influence.pow(0.25)),
 			(hasMilestone("d", 40) ? player.ex.influence.add(1).pow(0.05) : player.ex.influence.add(1).log10().add(1).pow(hasMilestone("d", 33) ? 4.255 : 1)),
 			(hasMilestone("d", 34) ? player.ex.influence.add(1).log10().add(1).pow(hasMilestone("d", 35) ? 0.5 : 0.2) : new Decimal(1)),
@@ -302,7 +308,7 @@ addLayer("ex", {
 			canAfford() {return player.ex.influenceUnlocked && player.ex.influence.gte(this.cost())},
 			buy() {
 				player.ex.influence = player.ex.influence.sub(this.cost());
-				addBuyables(this.layer, this.id, 1);
+				addBuyables(this.layer, this.id, (player.cy.unlocks[0] >= 5 ? 10 : 1));
 			},
 			extra() {
 				let extra = new Decimal(0);

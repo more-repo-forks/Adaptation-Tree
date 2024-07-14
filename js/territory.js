@@ -2,18 +2,25 @@ const controlNodeName = ["Assimilation", "Politics", "Leadership", "Commitment",
 
 const controlNodeReq = [[
 	(x = 0) => x + 3,
-	(x = 0) => new Decimal(10).pow(x ** 2),
+	(x = 0) => new Decimal(10).pow(x ** buyableEffect("t", 12)),
 	(x = 0) => x + 12,
-	(x = 0) => (4 * (x ** 2) + 7) * 11,
+	(x = 0) => (4 * (x ** buyableEffect("t", 12)) + 7) * 11,
 	(x = 0) => x + 11,
-	(x = 0) => (x ** 2 + 3) * 1000,
+	(x = 0) => (x ** buyableEffect("t", 12) + 3) * 1000,
 ], [
 	(x = 0) => (x + (hasMilestone("r", 35) ? 1 : 2)) * 2,
-	(x = 0) => new Decimal(hasMilestone("r", 35) ? 1e7 : 5e7).pow(x ** 2 + 1),
+	(x = 0) => new Decimal(hasMilestone("r", 35) ? 1e7 : 5e7).pow(x ** buyableEffect("t", 12) + 1),
 	(x = 0) => (x + (hasMilestone("r", 35) ? 7 : 8)) * 2,
-	(x = 0) => (x ** 2 + (hasMilestone("r", 35) ? 4 : 5)) * 50,
+	(x = 0) => (x ** buyableEffect("t", 12) + (hasMilestone("r", 35) ? 4 : 5)) * 50,
 	(x = 0) => (x + (hasMilestone("r", 35) ? 6 : 7)) * 2,
-	(x = 0) => (x ** 2 + (hasMilestone("r", 35) ? 4 : 5)) * 2000,
+	(x = 0) => (x ** buyableEffect("t", 12) + (hasMilestone("r", 35) ? 4 : 5)) * 1000,
+], [
+	(x = 0) => (x + 2) * 5,
+	(x = 0) => new Decimal(1e50).pow(x ** buyableEffect("t", 12) + 1),
+	(x = 0) => (x + 3) * 5,
+	(x = 0) => (x ** buyableEffect("t", 12) + 2) * 100,
+	(x = 0) => (x + 2) * 5,
+	(x = 0) => (x ** buyableEffect("t", 12) + 6) * 1000,
 ]];
 
 function getControlNodeTimeSpeed() {
@@ -42,44 +49,54 @@ addLayer("t", {
 	baseAmount() {return player.d.points},
 	requires: new Decimal(100000),
 	type: "static",
-	base: 1.5,
+	base() {
+		let base = 1.5;
+		if (hasMilestone("r", 41)) base -= milestoneEffect("r", 41);
+		return base;
+	},
 	exponent: 1,
 	roundUpCost: true,
-	canBuyMax() {return false},
+	canBuyMax() {return player.cy.unlocked},
 	resetDescription: "Subjugate for ",
 	gainMult() {
 		let mult = new Decimal(1);
 		return mult;
 	},
 	effect() {
+		let controlEff2Exp = 0.1;
+		if (hasMilestone("r", 37)) controlEff2Exp += 0.1;
+		if (getBuyableAmount("t", 12).gte(2)) controlEff2Exp += 0.01;
 		let eff = [
 			new Decimal(10).pow(player.t.points),
 			new Decimal(5).pow(player.t.points),
 			player.t.points.div(4).add(1),
-			player.t.control.add(1).log10().add(1).pow(0.1),
-			(hasMilestone("d", 56) ? player.t.control.add(1).log10().div(10).add(1).pow(hasMilestone("r", 37) ? 0.2 : 0.1) : new Decimal(1)),
+			player.t.control.add(1).log10().add(1).pow(getBuyableAmount("t", 11) ? 0.28 : 0.1),
+			(hasMilestone("d", 56) ? player.t.control.add(1).log10().div(10).add(1).pow(controlEff2Exp) : new Decimal(1)),
+			(hasMilestone("d", 60) ? player.t.control.add(1).log10().add(1) : new Decimal(1)),
 		];
-		if (eff[3].gt(1.42)) eff[3] = eff[3].sub(1.42).div(10).add(1.42);
+		if (eff[3].gt(1.42) && !getBuyableAmount("t", 11).gte(1)) eff[3] = eff[3].sub(1.42).div(10).add(1.42);
 		return eff;
 	},
 	effectDescription() {return "which are dividing the expansion requirement by /" + format(tmp.t.effect[0]) + ", dividing the war requirement by /" + format(tmp.t.effect[1]) + ", and directly multiplying domination point gain by " + format(tmp.t.effect[2]) + "x"},
-	tabFormat: [
-		"main-display",
-		"prestige-button",
-		"resource-display",
-		["display-text", () => {
-			let text = "You keep domination enhancements on continent resets.<br><br>After subjugating 1 time, you bulk 10x stats from rows 3 and below.<br><br>The above extra effect will not go away even if this layer is reset.";
-			if (player.t.controlUnlocked) {
-				text += "<br><br>You have <h2 style='color: #E03330; text-shadow: #E03330 0px 0px 10px'>" + format(player.t.control) + "</h2> control, directly multiplying acclimation point gain by " + format(tmp.t.effect[3]) + "x";
-				if (hasMilestone("d", 56)) text += " and directly multiplying domination point gain by " + format(tmp.t.effect[4]) + "x";
-				text += "<br><br>If two control nodes generate the same thing, the generation is (gen1 + 1)(gen2 + 1).<br>By default, each control node maxes out at 100 seconds of production.";
-			};
-			return text;
-		}],
-		"blank",
-		["contained-grid", "calc(100% - 34px)"],
-		"blank",
-	],
+	tabFormat() {
+		let text = "You keep domination enhancements on continent resets.<br><br>After subjugating 1 time, you bulk 10x stats from rows 3 and below.<br><br>The above extra effect will not go away even if this layer is reset.";
+		if (player.t.points.gte(9)) text += "<br><br>After subjugating 10 times, the first war effect is changed<br>and you always have everything that costs battles.";
+		if (player.t.controlUnlocked) {
+			text += "<br><br>You have <h2 style='color: #E03330; text-shadow: #E03330 0px 0px 10px'>" + format(player.t.control) + "</h2> control, directly multiplying acclimation point gain by " + format(tmp.t.effect[3]) + "x";
+			if (hasMilestone("d", 60)) text += ", directly multiplying domination point gain by " + format(tmp.t.effect[4]) + "x, and dividing the expansion requirement by /" + format(tmp.t.effect[5]);
+			else if (hasMilestone("d", 56)) text += " and directly multiplying domination point gain by " + format(tmp.t.effect[4]) + "x";
+			text += "<br><br>If two control nodes generate the same thing, the generation is (gen1 + 1)(gen2 + 1).<br>By default, each control node maxes out at 100 seconds of production.";
+		};
+		let arr = [
+			"main-display",
+			"prestige-button",
+			"resource-display",
+			["display-text", text],
+			"blank",
+		];
+		if (player.t.controlUnlocked) arr.push(["contained-grid", "calc(100% - 34px)"], "blank", "buyables", "blank");
+		return arr;
+	},
 	layerShown() {return challengeCompletions("ec", 11) >= 16 || player.t.unlocked},
 	hotkeys: [{
 		key: "t",
@@ -96,7 +113,7 @@ addLayer("t", {
 		if (player.t.controlUnlocked) {
 			diff *= getControlNodeTimeSpeed();
 			player.t.control = player.t.control.add(gridEffect("t", 101).mul(diff)).min(gridEffect("t", 101).mul(100));
-			for (let row = 1; row <= layers.t.grid.rows; row++) {
+			for (let row = 1; row <= tmp.t.grid.rows; row++) {
 				for (let col = 1; col <= layers.t.grid.cols; col++) {
 					const id = row * 100 + col;
 					let eff = new Decimal(0);
@@ -109,10 +126,13 @@ addLayer("t", {
 		};
 	},
 	shouldNotify() {
-		if (player.t.controlUnlocked)
-			for (let row = 1; row <= layers.t.grid.rows; row++)
+		if (player.t.controlUnlocked) {
+			for (let row = 1; row <= tmp.t.grid.rows; row++)
 				for (let col = 1; col <= layers.t.grid.cols; col++)
 					if (layers.t.grid.getCanClick(getGridData("t", row * 100 + col), row * 100 + col)) return true;
+			for (const key in tmp.t.buyables)
+				if (tmp.t.buyables[key]?.unlocked && tmp.t.buyables[key]?.canAfford) return true;
+		};
 	},
 	componentStyles: {
 		"prestige-button"() {if (tmp.t.canReset && tmp.t.nodeStyle) return tmp.t.nodeStyle},
@@ -120,7 +140,8 @@ addLayer("t", {
 		"gridable"() {return {"width": "120px", "height": "120px", "border-radius": "0px"}},
 	},
 	grid: {
-		rows: controlNodeReq.length,
+		rows() {return 2 + getBuyableAmount("t", 11).toNumber()},
+		maxRows: controlNodeReq.length,
 		cols: controlNodeReq[0].length,
 		getStartData(id) {return 0},
 		getCanClick(data, id) {
@@ -133,6 +154,7 @@ addLayer("t", {
 			return false;
 		},
 		onClick(data, id) {player.t.grid[id]++},
+		onHold(data, id) {player.t.grid[id]++},
 		getTitle(data, id) {return controlNodeName[id % 100 - 1] + (id >= 200 ? "<sup>" + Math.floor(id / 100) + "</sup>" : "")},
 		getDisplay(data, id) {
 			let text = "producing " + format(gridEffect("t", id)) + " ";
@@ -156,5 +178,32 @@ addLayer("t", {
 			return player.t.extra[id].floor().add(data).mul(new Decimal(10).pow(data - 1));
 		},
 		getUnlocked(id) {return player.t.controlUnlocked},
+	},
+	buyables: {
+		11: {
+			cost() {return [1e80][getBuyableAmount(this.layer, this.id).toNumber()] || Infinity},
+			title: "Greater Control",
+			display() {return "unlock another row of control nodes<br><br>on first buy, also improves the first control effect<br><br>Cost: " + format(this.cost()) + " control<br><br>Bought: " + formatWhole(getBuyableAmount(this.layer, this.id)) + "/" + this.purchaseLimit},
+			purchaseLimit: 1,
+			canAfford() {return player.t.control.gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit)},
+			buy() {
+				player.t.control = player.t.control.sub(this.cost());
+				addBuyables(this.layer, this.id, 1);
+			},
+			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return {"border-color": "#E03330"}},
+		},
+		12: {
+			cost() {return [1e136, 1e207, 1e280][getBuyableAmount(this.layer, this.id).toNumber()] || Infinity},
+			title: "Cheaper Policies",
+			display() {return "decreases the cost scaling of all levels of <b>Politics</b>, <b>Commitment</b>, and <b>Structure</b><br><br>on second buy, also improves the second control effect<br><br>Cost: " + format(this.cost()) + " control<br><br>Bought: " + formatWhole(getBuyableAmount(this.layer, this.id)) + "/" + this.purchaseLimit},
+			effect() {return 1 / (1.5 ** getBuyableAmount(this.layer, this.id).toNumber()) + 1},
+			purchaseLimit: 3,
+			canAfford() {return player.t.control.gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit)},
+			buy() {
+				player.t.control = player.t.control.sub(this.cost());
+				addBuyables(this.layer, this.id, 1);
+			},
+			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return {"border-color": "#E03330"}},
+		},
 	},
 });

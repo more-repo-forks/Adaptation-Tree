@@ -40,7 +40,7 @@ addLayer("g", {
 		if (hasChallenge("e", 18)) base -= 0.01;
 		return base;
 	},
-	exponent() {return inChallenge("co", 11) ? new Decimal(1000).div(player.co.points.add(1)).max(1) : 1},
+	exponent() {return inChallenge("co", 11) ? new Decimal(hasMilestone("r", 43) ? 500 : 1000).div(player.co.points.add(1)).max(1) : 1},
 	canBuyMax() {return hasMilestone("g", 8) || player.e.unlocked},
 	resetDescription: "Grow for ",
 	gainMult() {
@@ -835,7 +835,10 @@ addLayer("g", {
 			requirementDescription: "Growth enhancement V",
 			popupTitle: "Enhancement Acquired!",
 			effect() {return 0.01},
-			effectDescription() {return "growth resets (without respec) no longer reset anything<br>and decrease growth requirement base by 0.01<br>Req: " + formatWhole(this.requirement) + " growth points"},
+			effectDescription() {
+				if (player.cy.unlocks[0] >= 2) return "decrease growth requirement base by 0.01<br>Req: " + formatWhole(this.requirement) + " growth points";
+				else return "growth resets (without respec) no longer reset anything<br>and decrease growth requirement base by 0.01<br>Req: " + formatWhole(this.requirement) + " growth points";
+			},
 			done() {return player.g.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("g", this.id - 1) || player.a.unlocked},
 		},

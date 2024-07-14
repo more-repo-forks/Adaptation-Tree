@@ -69,6 +69,7 @@ addLayer("s", {
 		let gen = 0;
 		if (tmp.e.effect[4]) gen += tmp.e.effect[4].toNumber() / 100;
 		if (tmp.ec.effect[2]) gen += tmp.ec.effect[2].toNumber() / 100;
+		if (player.cy.unlocks[0] >= 3) gen++;
 		return gen;
 	},
 	hotkeys: [{

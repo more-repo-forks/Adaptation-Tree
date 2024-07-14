@@ -57,8 +57,8 @@ addLayer("d", {
 	},
 	effect() {return player.points.add(1).pow(0.025)},
 	effectDescription() {return "of which " + formatWhole(player[this.layer].points.sub(player[this.layer].spent)) + " are unspent"},
-	resetsNothing() {return player.l.points.gte(2)},
-	autoPrestige() {return player.l.points.gte(2)},
+	resetsNothing() {return player.l.points.gte(2) || player.cy.unlocks[0] >= 1},
+	autoPrestige() {return player.l.points.gte(2) || player.cy.unlocks[0] >= 1},
 	tabFormat() {
 		// top text
 		let topText = "<div style='height: 25px; padding-top: ";
@@ -814,7 +814,7 @@ addLayer("d", {
 			popupTitle: "Enhancement Acquired!",
 			effectDescription() {return "expand the enhancable battle grid<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.cy.unlocked},
 		},
 		51: {
 			requirement: 300000,
@@ -822,7 +822,7 @@ addLayer("d", {
 			popupTitle: "Enhancement Acquired!",
 			effectDescription() {return "the 10th hybridization is auto-maxed<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.cy.unlocked},
 		},
 		52: {
 			requirement: 400000,
@@ -834,7 +834,7 @@ addLayer("d", {
 				layers.g.buyables.respec();
 				layers.a.buyables.respec();
 			},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.cy.unlocked},
 		},
 		53: {
 			requirement: 550000,
@@ -842,7 +842,7 @@ addLayer("d", {
 			popupTitle: "Enhancement Acquired!",
 			effectDescription() {return "unlock automation for <b>Generator improvement</b><br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.cy.unlocked},
 		},
 		54: {
 			requirement: 700000,
@@ -851,7 +851,7 @@ addLayer("d", {
 			effect() {return 10},
 			effectDescription() {return "time for control nodes goes ten times faster<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.cy.unlocked},
 		},
 		55: {
 			requirement: 850000,
@@ -863,7 +863,7 @@ addLayer("d", {
 				layers.g.buyables.respec();
 				layers.a.buyables.respec();
 			},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.cy.unlocked},
 		},
 		56: {
 			requirement: 1000000,
@@ -871,7 +871,7 @@ addLayer("d", {
 			popupTitle: "Enhancement Acquired!",
 			effectDescription() {return "unlock another effect for control<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.cy.unlocked},
 		},
 		57: {
 			requirement: 1375000,
@@ -879,7 +879,7 @@ addLayer("d", {
 			popupTitle: "Enhancement Acquired!",
 			effectDescription() {return "improve the second war effect<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.cy.unlocked},
 		},
 		58: {
 			requirement: 2111111,
@@ -887,13 +887,29 @@ addLayer("d", {
 			popupTitle: "Enhancement Acquired!",
 			effectDescription() {return "expand the enhancable battle grid<br>and improve the second war effect<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
-			unlocked() {return hasMilestone("d", this.id - 1)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.cy.unlocked},
 		},
 		59: {
 			requirement: 3250000,
-			requirementDescription: "???",
+			requirementDescription: "THE 7TH ROW APROACHES",
 			popupTitle: "Enhancement Acquired!",
-			effectDescription() {return "coming soon!<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			effectDescription() {return "two new layers are unlocked" + (player.cy.unlocked ? " (" + (false ? "" : "1/2 ") + "already unlocked)" : "") + "<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1) || player.cy.unlocked},
+		},
+		60: {
+			requirement: 5500000,
+			requirementDescription: "The dual enhancement",
+			popupTitle: "Enhancement Acquired!",
+			effectDescription() {return "unlock another effect for control<br>and improve the second war effect<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		61: {
+			requirement: 9000000,
+			requirementDescription: "The coming soon enhancement",
+			popupTitle: "Enhancement Acquired!",
+			effectDescription() {return "effect coming soon<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("d", this.id - 1)},
 		},
