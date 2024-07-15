@@ -36,19 +36,19 @@ const warUpgrades = [[
 	{title: "Revolutionary Armaments", desc: "decreases revolution requirement base by 0.1", effect: 0.1, cost: 40, e: {desc: "decreases revolution requirement base by 0.17", effect: 0.17, cost: 4}},
 	{title: "New Frontiers", desc: "decreases species requirement base by 0.075", effect: 0.075, cost: 55, e: {desc: "decreases species requirement base by 0.09", effect: 0.09, cost: 8}},
 	{title: "Further Exploration", desc: "decreases expansion requirement base by 0.1", effect: 0.1, cost: 300, e: {desc: "decreases expansion requirement base by 0.11", effect: 0.11, cost: 16}},
-	{title: "Enlightened Tactics", desc: "decreases conscious being requirement base by 1", effect: 1, cost: 2500},
+	{title: "Enlightened Tactics", desc: "decreases conscious being requirement base by 1", effect: 1, cost: 2500, e: {desc: "decreases conscious being requirement base by 2", effect: 2, cost: 32}},
 ], [
 	{title: "Further Domination", desc() {return "gives extra FOC, SPE, CLI, and DOM based on wars<br>(currently +" + formatWhole(gridEffect("w", 501)) + ")"}, effect() {return player.w.points}, cost: 150, e: {effect() {return player.w.points.mul(10)}, cost: 4}},
 	{title: "Further Acclimation", desc() {return "gives extra CRA, FER, ANA, and SOV based on wars<br>(currently +" + formatWhole(gridEffect("w", 502)) + ")"}, effect() {return player.w.points.mul(75000)}, cost: 200, e: {effect() {return player.w.points.mul(10000000)}, cost: 4}},
 	{title: "Military Domination", desc() {return "gives extra FOC, SPE, CLI, and DOM based on wars<br>(currently +" + formatWhole(gridEffect("w", 503)) + ")"}, effect() {return player.w.points.mul(2)}, cost: 250, e: {effect() {return player.w.points.mul(25)}, cost: 8}},
 	{title: "Forced Acclimation", desc() {return "gives extra CRA, FER, ANA, and SOV based on wars<br>(currently +" + formatWhole(gridEffect("w", 504)) + ")"}, effect() {return player.w.points.mul(220000)}, cost: 300, e: {effect() {return player.w.points.mul(25000000)}, cost: 16}},
-	{title: "Overpowering Presence", desc() {return "gives extra FOC, SPE, CLI, and DOM based on wars<br>(currently +" + formatWhole(gridEffect("w", 505)) + ")"}, effect() {return player.w.points.mul(5)}, cost: 350},
+	{title: "Overpowering Presence", desc() {return "gives extra FOC, SPE, CLI, and DOM based on wars<br>(currently +" + formatWhole(gridEffect("w", 505)) + ")"}, effect() {return player.w.points.mul(5)}, cost: 350, e: {effect() {return player.w.points.mul(100)}, cost: 32}},
 	{title: "Primal Instincts", desc() {return "gives extra CRA, FER, ANA, and SOV based on wars<br>(currently +" + formatWhole(gridEffect("w", 506)) + ")"}, effect() {return player.w.points.mul(500000)}, cost: 3500},
 ], [
 	{title: "Honed Focus", desc() {return "divides focus+ requirement based on wars<br>(currently /" + format(gridEffect("w", 601)) + ")"}, effect() {return player.w.points.add(1).pow(0.1)}, cost: 1000, e: {effect() {return player.w.points.add(1).pow(0.15)}, cost: 8}},
 	{title: "Public Speaking", desc: "improves the last leader effect", cost: 1500, e: {desc: "improves the last leader effect more", cost: 8}},
 	{title: "Political Upheaval", desc() {return "divides leader requirement based on wars<br>(currently /" + format(gridEffect("w", 603)) + ")"}, effect() {return player.w.points.add(1).pow(0.2)}, cost: 2000, e: {effect() {return player.w.points.add(1).pow(0.3)}, cost: 16}},
-	{title: "Smarter Leaders", desc: "improves the second leader effect", cost: 2500},
+	{title: "Smarter Leaders", desc: "improves the second leader effect", effect: 3, cost: 2500, e: {desc: "improves the second leader effect more", effect: 4.25, cost: 32}},
 	{title: "Finer Focus", desc() {return "divides focus+ requirement based on wars<br>(currently /" + format(gridEffect("w", 605)) + ")"}, effect() {return player.w.points.add(1).pow(0.125)}, cost: 3500},
 	{title: "Public Relations 101", desc: "improves the last leader effect", cost: 4500},
 ]];
@@ -89,6 +89,7 @@ addLayer("w", {
 		if (hasMilestone("r", 18)) base -= milestoneEffect("r", 18);
 		if (hasMilestone("r", 24)) base -= milestoneEffect("r", 24);
 		if (hasMilestone("r", 28)) base -= milestoneEffect("r", 28);
+		if (hasMilestone("r", 58)) base -= milestoneEffect("r", 58);
 		if (getGridData("w", 401)) base -= gridEffect("w", 401);
 		return base;
 	},
@@ -106,17 +107,19 @@ addLayer("w", {
 		return mult;
 	},
 	effect() {
-		let exp = 1.5;
-		if (player.ex.points.gte(9)) exp += 0.1;
-		if (player.w.points.gte(50)) exp += 0.05;
-		if (hasMilestone("r", 16)) exp += 0.15;
-		if (hasMilestone("r", 21)) exp += 0.15;
-		if (hasMilestone("r", 27)) exp += 0.1;
-		if (player.cy.unlocks[0] >= 4) exp += 0.05;
-		if (player.cy.unlocks[0] >= 9) exp += 0.6;
+		let eff1Exp = 1.5;
+		if (player.ex.points.gte(9)) eff1Exp += 0.1;
+		if (player.w.points.gte(50)) eff1Exp += 0.05;
+		if (hasMilestone("r", 16)) eff1Exp += 0.15;
+		if (hasMilestone("r", 21)) eff1Exp += 0.15;
+		if (hasMilestone("r", 27)) eff1Exp += 0.1;
+		if (player.cy.unlocks[0] >= 4) eff1Exp += 0.05;
+		if (player.cy.unlocks[0] >= 9) eff1Exp += 0.6;
+		let eff2Exp = 1;
+		if (hasMilestone("r", 56)) eff2Exp += 0.1;
 		return [
-			(player.t.points.gte(player.cy.unlocks[1] >= 4 ? 6 : 10) ? new Decimal(1.1).pow(player.w.points.mul(exp)) : player.w.points.pow(exp).round()),
-			(hasMilestone("d", 57) ? player.w.points.div(hasMilestone("d", 61) ? 22 : (hasMilestone("d", 60) ? 33 : 50)).sub(hasMilestone("d", 58) ? 0 : 1).floor().max(0) : player.w.points.div(100).floor()),
+			(player.t.points.gte(player.cy.unlocks[1] >= 4 ? 6 : 10) ? new Decimal(1.1).pow(player.w.points.mul(eff1Exp)) : player.w.points.pow(eff1Exp).round()),
+			(hasMilestone("d", 57) ? player.w.points.div(hasMilestone("d", 64) ? 20 : (hasMilestone("d", 61) ? 22 : (hasMilestone("d", 60) ? 33 : 50))).sub(hasMilestone("d", 58) ? 0 : 1).pow(eff2Exp).floor().max(0) : player.w.points.div(100).pow(eff2Exp).floor()),
 		];
 	},
 	effectDescription() {
@@ -124,6 +127,8 @@ addLayer("w", {
 		if (tmp.w.effect[1].gte(1)) return "which are giving " + formatWhole(tmp.w.effect[0]) + " battles (of which " + formatWhole(tmp.w.effect[0].sub(player.w.spent)) + " are unspent) and giving " + formatWhole(tmp.w.effect[1]) + " battle enhancements (of which " + formatWhole(tmp.w.effect[1].sub(player.w.spentE)) + " are unspent)";
 		return "which are giving " + formatWhole(tmp.w.effect[0]) + " battles, of which " + formatWhole(tmp.w.effect[0].sub(player.w.spent)) + " are unspent";
 	},
+	resetsNothing() {return player.cy.unlocks[2] >= 4},
+	autoPrestige() {return player.cy.unlocks[2] >= 4},
 	tabFormat: [
 		"main-display",
 		"prestige-button",

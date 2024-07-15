@@ -50,6 +50,8 @@ addLayer("ec", {
 		if (player.ec.challenges[11] >= 20) return "which are dividing the species requirement by /" + format(tmp.ec.effect[0]) + ", increasing the completion limit of the 10th hybridization by +" + formatWhole(tmp.ec.effect[1]) + ", generating +" + format(tmp.ec.effect[2]) + "% of potential stimulations per second" + (tmp.ec.effect[2].gte(1e300) ? " (maxed)" : "") + ", and dividing all row 5 requirements by /" + format(tmp.ec.effect[3]);
 		return "which are dividing the species requirement by /" + format(tmp.ec.effect[0]) + ", increasing the completion limit of the 10th hybridization by +" + formatWhole(tmp.ec.effect[1]) + ", and generating +" + format(tmp.ec.effect[2]) + "% of potential stimulations per second" + (tmp.ec.effect[2].gte(1e300) ? " (maxed)" : "");
 	},
+	resetsNothing() {return player.cy.unlocks[2] >= 1},
+	autoPrestige() {return player.cy.unlocks[2] >= 1},
 	tabFormat() {
 		// succeession text
 		let text = "You keep hybridization completions on ecosystem resets.<br><br>After succeeding 1 time, more automation for acclimation is always unlocked<br>and you can bulk species, conscious beings, and domination points.<br><br>The above extra effects will not go away even if this layer is reset.";

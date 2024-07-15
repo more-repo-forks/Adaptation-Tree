@@ -28,6 +28,7 @@ addLayer("d", {
 		if (challengeCompletions("ec", 11) >= 1 && challengeEffect("ec", 11)[0]) base -= challengeEffect("ec", 11)[0];
 		if (challengeCompletions("ec", 11) >= 10 && challengeEffect("ec", 11)[9]) base -= challengeEffect("ec", 11)[9];
 		if (hasMilestone("r", 25)) base -= milestoneEffect("r", 25);
+		if (hasMilestone("r", 59)) base -= milestoneEffect("r", 59);
 		if (getGridData("w", 402)) base -= gridEffect("w", 402);
 		return base;
 	},
@@ -929,6 +930,14 @@ addLayer("d", {
 			requirementDescription: "The productive enhancement",
 			popupTitle: "Enhancement Acquired!",
 			effectDescription() {return "improve the settler effects<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		64: {
+			requirement: 45555555,
+			requirementDescription: "The final enhancement",
+			popupTitle: "Enhancement Acquired!",
+			effectDescription() {return "improve the second war effect<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("d", this.id - 1)},
 		},

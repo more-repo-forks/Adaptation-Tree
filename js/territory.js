@@ -77,7 +77,7 @@ addLayer("t", {
 		if (hasMilestone("r", 53)) controlEff3Exp++;
 		if (getBuyableAmount("t", 13).gte(3)) controlEff3Exp += 0.5;
 		let eff = [
-			new Decimal(10).pow(player.t.points),
+			new Decimal(player.cy.unlocks[2] >= 5 ? 12 : 10).pow(player.t.points),
 			new Decimal(5).pow(player.t.points),
 			player.t.points.div(4).add(1),
 			player.t.control.add(1).log10().add(1).pow(getBuyableAmount("t", 11) ? 0.28 : 0.1),

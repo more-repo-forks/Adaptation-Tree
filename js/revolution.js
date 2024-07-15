@@ -62,10 +62,11 @@ addLayer("r", {
 		if (hasMilestone("r", 11)) changeEff3exp = changeEff3exp.add(0.0234);
 		if (hasMilestone("r", 32)) changeEff3exp = changeEff3exp.add(99.8546);
 		if (hasMilestone("r", 46)) changeEff3exp = changeEff3exp.mul(player.r.change.add(1).log10());
+		if (hasMilestone("r", 55)) changeEff3exp = changeEff3exp.add(1).pow(2);
 		let eff = [
 			new Decimal(challengeCompletions("ec", 11) >= 9 ? 10 : 2).pow(player.r.points.pow(hasMilestone("r", 12) ? 1.5 : 1)),
 			new Decimal(5).pow(player.r.points),
-			player.r.points.div(10).add(1).min(2),
+			player.r.points.div(10).add(1).min(hasMilestone("r", 55) ? 10 : 2),
 			player.r.points.pow(2).mul(new Decimal(10).pow(player.r.points.sub(1))).mul((player.r.milestones.length + 1) ** (challengeCompletions("ec", 11) >= 9 ? 5 : 2)),
 			new Decimal(10).pow(player.r.change.pow(hasMilestone("r", 11) ? 0.25 : 0.5)),
 			(hasMilestone("r", 0) ? (hasMilestone("r", 20) ? player.r.change.add(1).pow(changeEff2exp) : player.r.change.add(1).pow(changeEff2exp).log10().add(1)) : new Decimal(1)),
@@ -115,7 +116,9 @@ addLayer("r", {
 		};
 		return eff;
 	},
-	effectDescription() {return "which are dividing the species requirement by /" + format(tmp.r.effect[0]) + ", dividing conscious being requirement by /" + format(tmp.r.effect[1]) + ", multiplying the completion limit of the 10th retrogression by " + format(tmp.r.effect[2]) + "x (" + (tmp.r.effect[2].gte(2) ? "maxed" : "rounded down") + "), and generating " + format(tmp.r.effect[3]) + " change per second (with a limit of " + format(getMaxChange()) + ")"},
+	effectDescription() {return "which are dividing the species requirement by /" + format(tmp.r.effect[0]) + ", dividing conscious being requirement by /" + format(tmp.r.effect[1]) + ", multiplying the completion limit of the 10th retrogression by " + format(tmp.r.effect[2]) + "x (" + (tmp.r.effect[2].gte(hasMilestone("r", 55) ? 10 : 2) ? "maxed" : "rounded down") + "), and generating " + format(tmp.r.effect[3]) + " change per second (with a limit of " + format(getMaxChange()) + ")"},
+	resetsNothing() {return player.cy.unlocks[2] >= 2},
+	autoPrestige() {return player.cy.unlocks[2] >= 2},
 	tabFormat: [
 		"main-display",
 		"prestige-button",
@@ -606,7 +609,55 @@ addLayer("r", {
 			requirement: "1e575",
 			requirementDescription: "55th innovation",
 			popupTitle: "Innovation Acquired!",
-			effectDescription() {return "effect is coming soon!<br>Req: " + formatWhole(this.requirement) + " change"},
+			effect() {return 0.06},
+			effectDescription() {return "decrease the leader requirement base by 0.06<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		55: {
+			requirement: "1e600",
+			requirementDescription: "56th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "increase the maximum of the third revolution effect<br>and improve the third change effect<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		56: {
+			requirement: "1e625",
+			requirementDescription: "57th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "improve the second war effect<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		57: {
+			requirement: "1e650",
+			requirementDescription: "58th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "you bulk 10x influence generators<br>(this resets influence generator amounts)<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			onComplete() {
+				for (const key in player.ex.buyables)
+					if (Object.hasOwnProperty.call(player.ex.buyables, key) && key < 20)
+						player.ex.buyables[key] = new Decimal(0);
+			},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		58: {
+			requirement: "1e675",
+			requirementDescription: "59th innovation",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 0.02},
+			effectDescription() {return "decrease the war requirement base by 0.02<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		59: {
+			requirement: "1e700",
+			requirementDescription: "60th innovation",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 0.001},
+			effectDescription() {return "decrease the domination requirement base by 0.001<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
 			unlocked() {return hasMilestone("r", this.id - 1)},
 		},

@@ -20,6 +20,12 @@ const cycleUnlocks = [[
 	[350, "you keep retrogression completions on all resets"],
 	[375, () => "reduce the battle enhancement costs by " + (player.cy.unlocks[1] >= 10 ? 2 : 1)],
 	[400, "improve the second and fourth ecosystem effects"],
+], [
+	[111, "ecosystem resets (that are not in ANACHRONISM) no longer reset anything<br>you automatically claim potential ecosystems"],
+	[222, "revolution resets no longer reset anything<br>you automatically claim potential revolutions"],
+	[333, "expansion resets no longer reset anything<br>you automatically claim potential expansion points"],
+	[444, "war resets (without respec) no longer reset anything<br>you automatically claim potential wars"],
+	[555, "improve the first territory effect"],
 ]];
 
 function cycleUnlockText(tab) {
@@ -119,6 +125,16 @@ addLayer("cy", {
 				],
 				style: {"margin": "8.5px"},
 				unlocked() {return player.cy.points.gte(2)},
+			},
+			"The Third Cycle": {
+				content: [
+					["display-text", () => {
+						if (player.cy.points.gte(3)) return cycleUnlockText(2);
+						else return "LOCKED";
+					}],
+				],
+				style: {"margin": "8.5px"},
+				unlocked() {return player.cy.points.gte(3)},
 			},
 		},
 	}

@@ -29,6 +29,7 @@ addLayer("l", {
 		if (hasMilestone("r", 42)) base -= milestoneEffect("r", 42);
 		if (hasMilestone("r", 45)) base -= milestoneEffect("r", 45);
 		if (hasMilestone("r", 51)) base -= milestoneEffect("r", 51);
+		if (hasMilestone("r", 54)) base -= milestoneEffect("r", 54);
 		return base;
 	},
 	exponent: 1,
@@ -48,7 +49,7 @@ addLayer("l", {
 		if (getGridData("w", 602) >= 2) lastEffAmt = lastEffAmt.mul(1.6);
 		let eff = [
 			new Decimal(2).pow(amt),
-			new Decimal(getGridData("w", 604) ? 3 : 2).pow(amt),
+			new Decimal(getGridData("w", 604) ? gridEffect("w", 604) : 2).pow(amt),
 			amt.div(4).add(1),
 			(getGridData("w", 602) ? new Decimal(getGridData("w", 606) ? 75 : 3).pow(lastEffAmt) : lastEffAmt.add(1).pow(getGridData("w", 606) ? 7 : 1)),
 		];
