@@ -37,17 +37,22 @@ addLayer("co", {
 	effect() {
 		let amt = player.co.points;
 		if (tmp.cy.effect[0]) amt = amt.add(tmp.cy.effect[0]);
+		let settlerEff2Exp = 0.0125;
+		if (hasMilestone("d", 63)) settlerEff2Exp += 0.0175;
+		let lastSettlerEffExp = 0.25;
+		if (hasMilestone("r", 48)) lastSettlerEffExp += 0.25;
+		if (hasMilestone("d", 63)) lastSettlerEffExp += 0.25;
 		let eff = [
 			new Decimal(challengeCompletions("ec", 11) >= 19 ? 10 : 5).pow(amt),
 			new Decimal(challengeCompletions("ec", 11) >= 19 ? 30 : 10).pow(amt),
 			amt.div(4).add(1),
 			new Decimal(1.02).pow(player.co.settlers),
-			(player.co.points.gte(10) || player.cy.unlocks[0] >= 8 ? player.co.settlers.add(1).pow(0.0125) : new Decimal(1)),
-			(player.co.points.gte(10) && player.cy.unlocks[0] >= 8 ? player.co.settlers.add(1).pow(0.25) : new Decimal(1)),
+			(player.co.points.gte(player.cy.unlocks[1] >= 4 ? 6 : 10) || player.cy.unlocks[0] >= 8 ? player.co.settlers.add(1).pow(settlerEff2Exp) : new Decimal(1)),
+			(player.co.points.gte(player.cy.unlocks[1] >= 4 ? 6 : 10) && player.cy.unlocks[0] >= 8 ? player.co.settlers.add(1).pow(lastSettlerEffExp) : new Decimal(1)),
 		];
 		if (eff[3].gte(500)) eff[3] = eff[3].div(500).pow(0.5).mul(500);
 		if (eff[3].gte(5000)) eff[3] = eff[3].div(5000).pow(0.5).mul(5000);
-		if (eff[3].gte(2000000)) eff[3] = eff[3].div(2000000).pow(0.2).mul(2000000);
+		if (eff[3].gte(2000000)) eff[3] = eff[3].div(2000000).pow(hasMilestone("d", 63) ? 0.5 : 0.2).mul(2000000);
 		return eff;
 	},
 	effectDescription() {return "which are dividing the ecosystem requirement by /" + format(tmp.co.effect[0]) + ", dividing the revolution requirement by /" + format(tmp.co.effect[1]) + ", and directly multiplying species gain by " + format(tmp.co.effect[2]) + "x"},
@@ -57,7 +62,8 @@ addLayer("co", {
 		"resource-display",
 		["display-text", () => {
 			let text = "You keep hybridization completions on continent resets.<br><br>After exploring 1 time, automation for influence is unlocked.<br><br>The above extra effect will not go away even if this layer is reset.";
-			if (player.co.points.gte(9)) text += "<br><br>After exploring 10 times, you unlock another effect for settlers.";
+			if (player.cy.unlocks[1] >= 4 && player.co.points.gte(5)) text += "<br><br>After exploring 6 times, you unlock another effect for settlers.";
+			else if (player.co.points.gte(9)) text += "<br><br>After exploring 10 times, you unlock another effect for settlers.";
 			return text;
 		}],
 		"blank",

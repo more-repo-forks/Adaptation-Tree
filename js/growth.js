@@ -59,8 +59,8 @@ addLayer("g", {
 		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
 		return mult;
 	},
-	resetsNothing() {return hasMilestone("g", 36)},
-	autoPrestige() {return (hasMilestone("g", 36) && player.e.points.gte(60) && player.sp.unlocked) || player.l.points.gte(3)},
+	resetsNothing() {return hasMilestone("g", 36) || player.cy.unlocks[0] >= 2},
+	autoPrestige() {return (hasMilestone("g", 36) && player.e.points.gte(60) && player.sp.unlocked) || player.l.points.gte(3) || player.cy.unlocks[0] >= 2},
 	effectDescription() {return "of which " + formatWhole(player[this.layer].points.sub(player[this.layer].spent)) + " are unspent"},
 	tabFormat() {
 		// top text
@@ -156,7 +156,8 @@ addLayer("g", {
 	doReset(resettingLayer) {
 		if (layers[resettingLayer].row <= this.row) return;
 		let keep = ["autoSTR", "autoWIS", "autoAGI", "autoINT"];
-		if (player.l.points.gte(5)
+		if (player.cy.unlocks[1] >= 1
+			|| player.l.points.gte(5)
 			|| player.r.points.gte(6)
 			|| (layers[resettingLayer].row <= 3 && player.cb.unlocked)
 		) keep.push("milestones", "lastMilestone");

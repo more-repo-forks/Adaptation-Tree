@@ -109,7 +109,7 @@ addLayer("sp", {
 	doReset(resettingLayer) {
 		if (layers[resettingLayer].row <= this.row) return;
 		let keep = [];
-		if (player.l.points.gte(10)
+		if (player.l.points.gte(player.cy.unlocks[1] >= 4 ? 6 : 10)
 			|| resettingLayer == "co"
 			|| (resettingLayer == "l" && player.l.points.gte(4))
 			|| player.r.points.gte(3)
@@ -118,7 +118,7 @@ addLayer("sp", {
 		layerDataReset("sp", keep);
 	},
 	update(diff) {
-		if (hasMilestone("d", 51) && tmp.sp.challenges[21].completionLimit > player.sp.challenges[21]) player.sp.challenges[21] = tmp.sp.challenges[21].completionLimit;
+		if ((hasMilestone("d", 51) || player.cy.unlocks[1] >= 3) && tmp.sp.challenges[21].completionLimit > player.sp.challenges[21]) player.sp.challenges[21] = tmp.sp.challenges[21].completionLimit;
 		else if (player.r.unlocked && canCompleteChallenge("sp", 21) && player.sp.challenges[21] < tmp.sp.challenges[21].completionLimit) player.sp.challenges[21]++;
 	},
 	componentStyles: {

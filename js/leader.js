@@ -28,6 +28,7 @@ addLayer("l", {
 		let base = 2;
 		if (hasMilestone("r", 42)) base -= milestoneEffect("r", 42);
 		if (hasMilestone("r", 45)) base -= milestoneEffect("r", 45);
+		if (hasMilestone("r", 51)) base -= milestoneEffect("r", 51);
 		return base;
 	},
 	exponent: 1,
@@ -59,11 +60,13 @@ addLayer("l", {
 	tabFormat() {
 		let text = "After leading 1 time, more automation for domination is always unlocked,<br>species resets (that are not in hybridizations) no longer reset anything,<br>and you automatically claim potential species.<br><br>The above extra effects will not go away even if this layer is reset.";
 		if (player.l.points.gte(1)) {
-			if (player.cy.unlocks[0] >= 1) text += "<br><br>After leading 2 times, you keep retrogression completions on all resets.";
+			if (player.cy.unlocks[1] >= 9) text += "";
+			else if (player.cy.unlocks[0] >= 1) text += "<br><br>After leading 2 times, you keep retrogression completions on all resets.";
 			else text += "<br><br>After leading 2 times, you keep retrogression completions on all resets,<br>domination resets (without respec) no longer reset anything,<br>and you automatically claim potential domination points.";
 		};
 		if (player.l.points.gte(2)) {
-			if (player.cy.unlocks[0] >= 2) text += "<br><br>After leading 3 times, you keep stimulation upgrades on all resets.";
+			if (player.cy.unlocks[1] >= 2) text += "";
+			else if (player.cy.unlocks[0] >= 2) text += "<br><br>After leading 3 times, you keep stimulation upgrades on all resets.";
 			else if (player.cy.unlocked) text += "<br><br>After leading 3 times, you keep stimulation upgrades on all resets<br>and potential growth points are always automatically claimed.";
 			else text += "<br><br>After leading 3 times, you keep stimulation upgrades on all resets;<br>you can bulk ecosystems, revolutions, expansion points, and wars;<br>and potential growth points are always automatically claimed.";
 		};
@@ -71,8 +74,12 @@ addLayer("l", {
 			if (player.l.points.gte(10)) text += "<br><br>After leading 4 times, you bulk 10x stats from rows 3 and below<br>and you keep domination enhancements on all resets.";
 			else text += "<br><br>After leading 4 times, you bulk 10x stats from rows 3 and below,<br>you keep hybridization completions on leader resets,<br>and you keep domination enhancements on all resets.";
 		};
-		if (player.l.points.gte(4)) text += "<br><br>After leading 5 times, another tier of ANACHRONISM is unlocked,<br>you keep ANACHRONISM completions on all resets,<br>and you keep growth enhancements on all resets.";
-		if (player.l.points.gte(9)) text += "<br><br>After leading 10 times, you keep hybridization completions on all resets.";
+		if (player.l.points.gte(4)) {
+			if (player.cy.unlocks[1] >= 1) text += "<br><br>After leading 5 times, another tier of ANACHRONISM is unlocked<br>and you keep ANACHRONISM completions on all resets.";
+			else text += "<br><br>After leading 5 times, another tier of ANACHRONISM is unlocked,<br>you keep ANACHRONISM completions on all resets,<br>and you keep growth enhancements on all resets.";
+		};
+		if (player.cy.unlocks[1] >= 4 && player.l.points.gte(5)) text += "<br><br>After leading 6 times, you keep hybridization completions on all resets.";
+		else if (player.l.points.gte(9)) text += "<br><br>After leading 10 times, you keep hybridization completions on all resets.";
 		let arr = [
 			"main-display",
 			"prestige-button",

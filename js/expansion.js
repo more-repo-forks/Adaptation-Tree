@@ -41,6 +41,10 @@ function getGeneratorEffect(id) {
 	return eff;
 };
 
+function getGenerator10Effect() {
+	return buyableEffect("ex", 11).pow(0.1);
+};
+
 addLayer("ex", {
 	name: "Expansion",
 	symbol: "EX",
@@ -68,6 +72,7 @@ addLayer("ex", {
 		let base = 5;
 		if (getBuyableAmount("d", 13).gte(tmp.d.buyables[13].purchaseLimit)) base -= tmp.d.buyables[13].completionEffect;
 		if (challengeCompletions("ec", 11) >= 6 && challengeEffect("ec", 11)[5]) base -= challengeEffect("ec", 11)[5];
+		if (hasMilestone("r", 49)) base -= milestoneEffect("r", 49);
 		if (getGridData("w", 405)) base -= gridEffect("w", 405);
 		return base;
 	},
@@ -88,12 +93,14 @@ addLayer("ex", {
 		let lastExansionEffExp = 1;
 		if (hasMilestone("r", 30)) lastExansionEffExp += 0.75;
 		if (hasMilestone("r", 40)) lastExansionEffExp += 0.25;
+		let influenceEff2ExpMult = 1;
+		if (hasMilestone("r", 52)) influenceEff2ExpMult *= 2;
 		let eff = [
 			new Decimal(hasMilestone("r", 40) ? 10 : 5).pow(player.ex.points),
 			new Decimal(hasMilestone("r", 40) ? 1e10 : 10).pow(player.ex.points),
 			player.ex.points.mul(player.ex.points.gte(3) ? 300 : 100).pow(lastExansionEffExp).floor(),
 			new Decimal(1e25).pow(player.ex.influence.pow(0.25)),
-			(hasMilestone("d", 40) ? player.ex.influence.add(1).pow(0.05) : player.ex.influence.add(1).log10().add(1).pow(hasMilestone("d", 33) ? 4.255 : 1)),
+			(hasMilestone("d", 40) ? player.ex.influence.add(1).pow(0.05 * influenceEff2ExpMult) : player.ex.influence.add(1).log10().add(1).pow((hasMilestone("d", 33) ? 4.255 : 1) * influenceEff2ExpMult)),
 			(hasMilestone("d", 34) ? player.ex.influence.add(1).log10().add(1).pow(hasMilestone("d", 35) ? 0.5 : 0.2) : new Decimal(1)),
 		];
 		if (eff[3].gte("1e11111")) eff[3] = eff[3].div("1e11111").pow(1/9).mul("1e11111");
@@ -134,6 +141,14 @@ addLayer("ex", {
 			for (const key in tmp.ex.buyables)
 				if (Object.hasOwnProperty.call(tmp.ex.buyables, key) && key < 20 && tmp.ex.buyables[key].unlocked)
 					arr.push(["buyable", +key], "blank");
+			if (getUnlockedGenerators() >= 7) {
+				let html = "<div style='display: grid'>";
+				html += "<button class='buyable tooltipBox locked' style='width: 500px; height: 60px; border-radius: 0px; background-color: #FFFFFF40' id='buyable-ex-20'>";
+				html += "<h2><s>10th</s> 1st influence generator</h2><br>";
+				html += "<span style='white-space: pre-line'>through the power of 10s, these generators are producing<br>" + format(getGenerator10Effect()) + " 9th influence generators per second</span>";
+				html += "</button></div>";
+				arr.push(["raw-html", html], "blank");
+			};
 			if (player.co.unlocked) arr.push(["row", [
 				["column", [["display-text", "auto<br>IGs"], ["blank", "10px"], ["toggle", ["ex", "autoIG"]]]],
 				["buyables", "3"],
@@ -163,6 +178,7 @@ addLayer("ex", {
 		if (challengeCompletions("ec", 11) >= 7 && !player.ex.influenceUnlocked) player.ex.influenceUnlocked = true;
 		if (player.ex.influenceUnlocked) {
 			diff *= buyableEffect("ex", 31);
+			if (hasMilestone("r", 50)) diff *= milestoneEffect("r", 50);
 			for (const key in layers.ex.buyables) {
 				if (Object.hasOwnProperty.call(layers.ex.buyables, key) && key < 20 && hasBuyable("ex", key) && tmp.ex.buyables[key].unlocked) {
 					let eff = buyableEffect("ex", key);
@@ -174,6 +190,11 @@ addLayer("ex", {
 							player.ex.extra[key - 12] = player.ex.extra[key - 12].add(eff.mul(diff)).min(eff.mul(100));
 					};
 				};
+			};
+			if (getUnlockedGenerators() >= 7) {
+				let eff = getGenerator10Effect();
+				if (player.ex.extra[8].lt(eff.mul(100)))
+					player.ex.extra[8] = player.ex.extra[8].add(eff.mul(diff)).min(eff.mul(100));
 			};
 		};
 	},
@@ -294,7 +315,8 @@ addLayer("ex", {
 				if (hasMilestone("r", 8)) amt = amt.sub(1);
 				let exp = 2;
 				if (challengeCompletions("ec", 11) >= 8) exp -= 0.5;
-				if (getGridData("w", 306)) exp -= 0.025;
+				if (getGridData("w", 306) >= 1) exp -= 0.025;
+				if (getGridData("w", 306) >= 2) exp -= 0.005;
 				return new Decimal(10).pow(amt.pow(exp));
 			},
 			effectBase() {
@@ -330,7 +352,7 @@ addLayer("ex", {
 			canAfford() {return player.ex.influenceUnlocked && player.ex.influence.gte(this.cost())},
 			buy() {
 				player.ex.influence = player.ex.influence.sub(this.cost());
-				addBuyables(this.layer, this.id, 1);
+				addBuyables(this.layer, this.id, (player.cy.unlocks[1] >= 6 ? 10 : 1));
 			},
 			style() {
 				let obj = {"width": "250px", "height": "100px", "border-radius": "25px"};

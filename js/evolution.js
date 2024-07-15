@@ -384,7 +384,8 @@ addLayer("e", {
 	doReset(resettingLayer) {
 		if (layers[resettingLayer].row <= this.row) return;
 		let keep = [];
-		if (player.l.points.gte(2)
+		if (player.cy.unlocks[1] >= 9
+			|| player.l.points.gte(2)
 			|| player.ec.points.gte(3)
 			|| (layers[resettingLayer].row == 3 && player.cb.points.gte(6))
 			|| resettingLayer == "sp"

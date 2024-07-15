@@ -820,7 +820,10 @@ addLayer("d", {
 			requirement: 300000,
 			requirementDescription: "Hybridization enhancement V",
 			popupTitle: "Enhancement Acquired!",
-			effectDescription() {return "the 10th hybridization is auto-maxed<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			effectDescription() {
+				if (player.cy.unlocks[1] >= 3) return "effect overriden by <b>The Second Cycle</b><br>Req: " + formatWhole(this.requirement) + " domination points";
+				else return "the 10th hybridization is auto-maxed<br>Req: " + formatWhole(this.requirement) + " domination points";
+			},
 			done() {return player.d.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("d", this.id - 1) || player.cy.unlocked},
 		},
@@ -907,9 +910,25 @@ addLayer("d", {
 		},
 		61: {
 			requirement: 9000000,
-			requirementDescription: "The coming soon enhancement",
+			requirementDescription: "The choice enhancement",
 			popupTitle: "Enhancement Acquired!",
-			effectDescription() {return "effect coming soon<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			effectDescription() {return "improve the second war effect<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		62: {
+			requirement: 14141414,
+			requirementDescription: "The controlling enhancement",
+			popupTitle: "Enhancement Acquired!",
+			effectDescription() {return "improve the third control effect<br>Req: " + formatWhole(this.requirement) + " domination points"},
+			done() {return player.d.points.gte(this.requirement)},
+			unlocked() {return hasMilestone("d", this.id - 1)},
+		},
+		63: {
+			requirement: 29500000,
+			requirementDescription: "The productive enhancement",
+			popupTitle: "Enhancement Acquired!",
+			effectDescription() {return "improve the settler effects<br>Req: " + formatWhole(this.requirement) + " domination points"},
 			done() {return player.d.points.gte(this.requirement)},
 			unlocked() {return hasMilestone("d", this.id - 1)},
 		},
