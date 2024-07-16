@@ -18,6 +18,8 @@ addLayer("ec", {
 	base() {
 		let base = 1.5;
 		if (challengeCompletions("ec", 11) >= 5 && challengeEffect("ec", 11)[4]) base -= challengeEffect("ec", 11)[4];
+		if (challengeCompletions("ec", 11) >= 22 && challengeEffect("ec", 11)[21]) base -= challengeEffect("ec", 11)[21];
+		if (hasMilestone("r", 60)) base -= milestoneEffect("r", 60);
 		return base;
 	},
 	exponent() {return inChallenge("co", 11) ? 2 : 1},
@@ -122,7 +124,7 @@ addLayer("ec", {
 	},
 	challenges: {
 		11: {
-			name(x = Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1)) {return "ANACHRONISM " + (["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI"][x])},
+			name(x = Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1)) {return "ANACHRONISM " + (["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI", "XXII"][x])},
 			fullDisplay() {
 				if (challengeCompletions("sp", 21) >= 18 || hasChallenge("ec", 11)) {
 					let text = "";
@@ -136,7 +138,7 @@ addLayer("ec", {
 				};
 				return "You need 18 completions of the 10th hybridization<br>to unlock ANACHRONISM.";
 			},
-			rewardEffect() {return [0.1, null, 3, 0.125, 0.05, 3, null, null, null, 0.03, 0.45, 0.1, 0.1, 0.075, null, null, null, null, null, null, 0.01]},
+			rewardEffect() {return [0.1, null, 3, 0.125, 0.05, 3, null, null, null, 0.03, 0.45, 0.1, 0.1, 0.075, null, null, null, null, null, null, 0.01, 0.064]},
 			rewards: [
 				"domination requirement base is decreased by 0.1",
 				() => "three new layers are unlocked" + (player.r.unlocked ? " (" + (player.w.unlocked ? "" : (player.ex.unlocked ? 2 : 1) + "/3 ") + "already unlocked)" : ""),
@@ -159,8 +161,9 @@ addLayer("ec", {
 				"the first two continent effects are improved",
 				"a new effect for ecosystems is unlocked",
 				"war requirement base is decreased by 0.01",
+				"ecosystem requirement base is decreased by 0.064",
 			],
-			goal() {return [167098, 155454, 155040, 869153600, 2.874e9, 7.992e9, 3.082e11, 4.73e11, 1.228e12, 7.191e12, 9.733e12, 1.359e13, 5.222e13, 4.09e14, 3.783e15, 1.133e18, 2.975e18, 3.206e20, 7.087e21, 1.791e23, 4.166e23][Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1)] || Infinity},
+			goal() {return [167098, 155454, 155040, 869153600, 2.874e9, 7.992e9, 3.082e11, 4.73e11, 1.228e12, 7.191e12, 9.733e12, 1.359e13, 5.222e13, 4.09e14, 3.783e15, 1.133e18, 2.975e18, 3.206e20, 7.087e21, 1.791e23, 4.166e23, 1.46e25][Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1)] || Infinity},
 			canComplete() {return player.g.points.gte(this.goal())},
 			enterable() {return challengeCompletions("sp", 21) >= 18 || hasChallenge("ec", 11)},
 			doReset: false,
@@ -173,6 +176,7 @@ addLayer("ec", {
 				if (getGridData("w", 205)) limit += gridEffect("w", 205);
 				if (getGridData("w", 206)) limit += gridEffect("w", 206);
 				if (player.l.points.gte(5)) limit++;
+				limit += buyableEffect("em", 11).toNumber();
 				if (player.ec.activeChallenge == 11 && typeof tmp.ec.challenges[11].completionLimit == "number" && limit > tmp.ec.challenges[11].completionLimit) {
 					Vue.set(player.ec, "activeChallenge", null);
 					this.onExit();

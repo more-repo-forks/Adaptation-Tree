@@ -201,6 +201,7 @@ addLayer("a", {
 			(player.ec.unlocked ? undefined : "respec-button"),
 			"blank",
 			"milestones",
+			"blank",
 		];
 	},
 	layerShown() {return hasMilestone("g", 40) || player.a.unlocked},

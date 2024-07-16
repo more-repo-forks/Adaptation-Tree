@@ -58,6 +58,7 @@ function getWarUpgradeCostE(id) {
 	if (typeof cost != "number") return Infinity;
 	if (player.cy.unlocks[1] >= 5) cost--;
 	if (player.cy.unlocks[1] >= 10) cost--;
+	if (tmp.em) cost -= buyableEffect("em", 14).toNumber();
 	return Math.max(cost, 0);
 };
 
@@ -90,6 +91,8 @@ addLayer("w", {
 		if (hasMilestone("r", 24)) base -= milestoneEffect("r", 24);
 		if (hasMilestone("r", 28)) base -= milestoneEffect("r", 28);
 		if (hasMilestone("r", 58)) base -= milestoneEffect("r", 58);
+		if (hasMilestone("r", 62)) base -= milestoneEffect("r", 62);
+		if (hasMilestone("r", 64)) base -= milestoneEffect("r", 64);
 		if (getGridData("w", 401)) base -= gridEffect("w", 401);
 		return base;
 	},
@@ -174,7 +177,10 @@ addLayer("w", {
 		maxRows: warUpgrades.length,
 		maxCols: warUpgrades[0].length,
 		getStartData(id) {
-			if (player && new Decimal(player.t.points).gte(player.cy.unlocks[1] >= 4 ? 6 : 10)) return 1;
+			if (player && new Decimal(player.t.points).gte(player.cy.unlocks[1] >= 4 ? 6 : 10)) {
+				if (new Decimal(player.l.points).gte(player.cy.unlocks[3] >= 4 ? 7 : 20) && typeof id == "number" && getWarUpgradeCostE(id) <= 0) return 2;
+				return 1;
+			};
 			return 0;
 		},
 		getCanClick(data, id) {
@@ -219,12 +225,12 @@ addLayer("w", {
 		respec(onlyE = false) {
 			if (onlyE || player.t.points.gte(player.cy.unlocks[1] >= 4 ? 6 : 10)) {
 				for (const key in player.w.grid)
-					if (Object.hasOwnProperty.call(player.w.grid, key) && player.w.grid[key] > 1)
-						player.w.grid[key] = 1;
+					if (Object.hasOwnProperty.call(player.w.grid, key))
+						player.w.grid[key] = (player.l.points.gte(player.cy.unlocks[3] >= 4 ? 7 : 20) && getWarUpgradeCostE(key) <= 0 ? 2 : 1);
 			} else {
 				for (const key in player.w.grid)
 					if (Object.hasOwnProperty.call(player.w.grid, key))
-						player.w.grid[key] = tmp.w.grid.getStartData;
+						player.w.grid[key] = 0;
 				player.w.spent = new Decimal(0);
 			};
 			player.w.spentE = new Decimal(0);

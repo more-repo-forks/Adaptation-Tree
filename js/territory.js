@@ -36,6 +36,14 @@ function getControlNodeTimeSpeed() {
 	return timeSpeed;
 }
 
+function getAutoControlTiers() {
+	let autoTiers = 0;
+	if (player.cy.unlocks[3] >= 1) autoTiers++;
+	if (player.cy.unlocks[3] >= 3) autoTiers++;
+	if (player.cy.unlocks[3] >= 5) autoTiers++;
+	return autoTiers;
+};
+
 addLayer("t", {
 	name: "Territory",
 	symbol: "T",
@@ -70,6 +78,9 @@ addLayer("t", {
 		return mult;
 	},
 	effect() {
+		let territoryEff1Base = 10;
+		if (hasMilestone("r", 66)) territoryEff1Base++;
+		if (player.cy.unlocks[2] >= 5) territoryEff1Base += 2;
 		let controlEff2Exp = 0.1;
 		if (hasMilestone("r", 37)) controlEff2Exp += 0.1;
 		if (getBuyableAmount("t", 12).gte(2)) controlEff2Exp += 0.01;
@@ -77,8 +88,8 @@ addLayer("t", {
 		if (hasMilestone("r", 53)) controlEff3Exp++;
 		if (getBuyableAmount("t", 13).gte(3)) controlEff3Exp += 0.5;
 		let eff = [
-			new Decimal(player.cy.unlocks[2] >= 5 ? 12 : 10).pow(player.t.points),
-			new Decimal(5).pow(player.t.points),
+			new Decimal(territoryEff1Base).pow(player.t.points),
+			new Decimal(hasMilestone("r", 66) ? 10 : 5).pow(player.t.points),
 			player.t.points.div(4).add(1),
 			player.t.control.add(1).log10().add(1).pow(getBuyableAmount("t", 11) ? 0.28 : 0.1),
 			(hasMilestone("d", 56) ? player.t.control.add(1).log10().div(10).add(1).pow(controlEff2Exp) : new Decimal(1)),
@@ -126,13 +137,23 @@ addLayer("t", {
 			diff *= getControlNodeTimeSpeed();
 			player.t.control = player.t.control.add(gridEffect("t", 101).mul(diff)).min(gridEffect("t", 101).mul(100));
 			for (let row = 1; row <= tmp.t.grid.rows; row++) {
-				for (let col = 1; col <= layers.t.grid.cols; col++) {
+				for (let col = 1; col <= tmp.t.grid.cols; col++) {
 					const id = row * 100 + col;
 					let eff = new Decimal(0);
 					if (getGridData("t", id + 1) && getGridData("t", id + 100)) eff = gridEffect("t", id + 1).add(1).mul(gridEffect("t", id + 100).add(1));
 					else if (getGridData("t", id + 1)) eff = gridEffect("t", id + 1);
 					else if (getGridData("t", id + 100)) eff = gridEffect("t", id + 100);
 					if (eff) player.t.extra[id] = player.t.extra[id].add(eff.mul(diff)).min(eff.mul(100));
+				};
+			};
+		};
+	},
+	automate() {
+		for (let row = 1; row <= getAutoControlTiers() && row <= tmp.t.grid.rows; row++) {
+			for (let col = 1; col <= tmp.t.grid.cols; col++) {
+				const id = row * 100 + col;
+				if (layers.t.grid.getCanClick(getGridData("t", id), id)) {
+					player.t.grid[id]++;
 				};
 			};
 		};
@@ -195,7 +216,7 @@ addLayer("t", {
 		11: {
 			cost() {return [1e80, "1e498"][getBuyableAmount(this.layer, this.id).toNumber()] || Infinity},
 			title: "Greater Control",
-			display() {return "unlock another row of control nodes<br><br>on first buy, also improves the first control effect<br><br>Cost: " + format(this.cost()) + " control<br><br>Bought: " + formatWhole(getBuyableAmount(this.layer, this.id)) + "/" + this.purchaseLimit},
+			display() {return "unlock another tier of control nodes<br><br>on first buy, also improves the first control effect<br><br>Cost: " + format(this.cost()) + " control<br><br>Bought: " + formatWhole(getBuyableAmount(this.layer, this.id)) + "/" + this.purchaseLimit},
 			purchaseLimit: 2,
 			canAfford() {return player.t.control.gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit)},
 			buy() {
@@ -207,7 +228,7 @@ addLayer("t", {
 		12: {
 			cost() {return [1e136, 1e207, 1e280][getBuyableAmount(this.layer, this.id).toNumber()] || Infinity},
 			title: "Cheaper Policies",
-			display() {return "decreases the cost scaling of all levels of <b>Politics</b>, <b>Commitment</b>, and <b>Structure</b><br><br>on second buy, also improves the second control effect<br><br>Cost: " + format(this.cost()) + " control<br><br>Bought: " + formatWhole(getBuyableAmount(this.layer, this.id)) + "/" + this.purchaseLimit},
+			display() {return "decrease the cost scaling of all tiers of <b>Politics</b>, <b>Commitment</b>, and <b>Structure</b><br><br>on second buy, also improves the second control effect<br><br>Cost: " + format(this.cost()) + " control<br><br>Bought: " + formatWhole(getBuyableAmount(this.layer, this.id)) + "/" + this.purchaseLimit},
 			effect() {return 1 / (1.5 ** getBuyableAmount(this.layer, this.id).toNumber()) + 1},
 			purchaseLimit: 3,
 			canAfford() {return player.t.control.gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit)},
@@ -220,7 +241,7 @@ addLayer("t", {
 		13: {
 			cost() {return ["1e346", "1e400", "1e447", "1e548"][getBuyableAmount(this.layer, this.id).toNumber()] || Infinity},
 			title: "Propaganda Waves",
-			display() {return "decreases the cost of all levels of <b>Assimilation</b>, <b>Leadership</b>, and <b>Capacity</b><br><br>on third buy, also improves the third control effect<br><br>Cost: " + format(this.cost()) + " control<br><br>Bought: " + formatWhole(getBuyableAmount(this.layer, this.id)) + "/" + this.purchaseLimit},
+			display() {return "decrease the cost of all tiers of <b>Assimilation</b>, <b>Leadership</b>, and <b>Capacity</b><br><br>on third buy, also improves the third control effect<br><br>Cost: " + format(this.cost()) + " control<br><br>Bought: " + formatWhole(getBuyableAmount(this.layer, this.id)) + "/" + this.purchaseLimit},
 			effect() {return getBuyableAmount(this.layer, this.id).toNumber()},
 			purchaseLimit: 4,
 			canAfford() {return player.t.control.gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit)},

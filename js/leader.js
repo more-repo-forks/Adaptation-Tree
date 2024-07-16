@@ -30,6 +30,7 @@ addLayer("l", {
 		if (hasMilestone("r", 45)) base -= milestoneEffect("r", 45);
 		if (hasMilestone("r", 51)) base -= milestoneEffect("r", 51);
 		if (hasMilestone("r", 54)) base -= milestoneEffect("r", 54);
+		if (hasMilestone("r", 61)) base -= milestoneEffect("r", 61);
 		return base;
 	},
 	exponent: 1,
@@ -45,6 +46,7 @@ addLayer("l", {
 	effect() {
 		let amt = player.l.points;
 		if (tmp.cy.effect[0]) amt = amt.add(tmp.cy.effect[0]);
+		if (tmp.em.effect[0]) amt = amt.add(tmp.em.effect[0]);
 		let lastEffAmt = new Decimal(amt);
 		if (getGridData("w", 602) >= 2) lastEffAmt = lastEffAmt.mul(1.6);
 		let eff = [
@@ -72,15 +74,19 @@ addLayer("l", {
 			else text += "<br><br>After leading 3 times, you keep stimulation upgrades on all resets;<br>you can bulk ecosystems, revolutions, expansion points, and wars;<br>and potential growth points are always automatically claimed.";
 		};
 		if (player.l.points.gte(3)) {
-			if (player.l.points.gte(10)) text += "<br><br>After leading 4 times, you bulk 10x stats from rows 3 and below<br>and you keep domination enhancements on all resets.";
+			if (player.em.unlocked) text += "<br><br>After leading 4 times, you bulk 10x stats from rows 3 and below.";
+			else if (player.l.points.gte(10)) text += "<br><br>After leading 4 times, you bulk 10x stats from rows 3 and below<br>and you keep domination enhancements on all resets.";
 			else text += "<br><br>After leading 4 times, you bulk 10x stats from rows 3 and below,<br>you keep hybridization completions on leader resets,<br>and you keep domination enhancements on all resets.";
 		};
 		if (player.l.points.gte(4)) {
-			if (player.cy.unlocks[1] >= 1) text += "<br><br>After leading 5 times, another tier of ANACHRONISM is unlocked<br>and you keep ANACHRONISM completions on all resets.";
+			if (player.cy.unlocks[1] >= 8) text += "<br><br>After leading 5 times, another tier of ANACHRONISM is unlocked.";
+			else if (player.cy.unlocks[1] >= 1) text += "<br><br>After leading 5 times, another tier of ANACHRONISM is unlocked<br>and you keep ANACHRONISM completions on all resets.";
 			else text += "<br><br>After leading 5 times, another tier of ANACHRONISM is unlocked,<br>you keep ANACHRONISM completions on all resets,<br>and you keep growth enhancements on all resets.";
 		};
 		if (player.cy.unlocks[1] >= 4 && player.l.points.gte(5)) text += "<br><br>After leading 6 times, you keep hybridization completions on all resets.";
 		else if (player.l.points.gte(9)) text += "<br><br>After leading 10 times, you keep hybridization completions on all resets.";
+		if (player.cy.unlocks[3] >= 4 && player.l.points.gte(6)) text += "<br><br>After leading 7 times, you always have everything that is free in the battle grid.";
+		else if (player.l.points.gte(18)) text += "<br><br>After leading 20 times, you always have everything that is free in the battle grid.";
 		let arr = [
 			"main-display",
 			"prestige-button",

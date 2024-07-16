@@ -78,6 +78,7 @@ addLayer("r", {
 		if (hasMilestone("r", 38)) eff[3] = eff[3].mul(milestoneEffect("r", 38));
 		if (tmp.w.effect[0] && player.t.points.gte(10)) eff[3] = eff[3].mul(tmp.w.effect[0]);
 		if (tmp.l.effect[3]) eff[3] = eff[3].mul(tmp.l.effect[3]);
+		eff[3] = eff[3].pow(buyableEffect("em", 12).add(1));
 		if (hasMilestone("r", 11)) {
 			if (eff[4].gte("e10000000")) eff[4] = eff[4].div("e10000000").pow(0.1).mul("e10000000");
 			if (eff[4].gte("e100000000")) eff[4] = eff[4].div("e100000000").pow(0.1).mul("e100000000");
@@ -136,6 +137,7 @@ addLayer("r", {
 		}],
 		"blank",
 		"milestones",
+		"blank",
 	],
 	layerShown() {return challengeCompletions("ec", 11) >= 2 || player.r.unlocked},
 	hotkeys: [{
@@ -492,7 +494,7 @@ addLayer("r", {
 			popupTitle: "Innovation Acquired!",
 			effectDescription() {return "improve the expansion effects<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
-			unlocked() {return hasMilestone("r", this.id - 1)},
+			unlocked() {return hasMilestone("r", this.id - 1) || player.em.unlocked},
 		},
 		41: {
 			requirement: 1e300,
@@ -501,7 +503,7 @@ addLayer("r", {
 			effect() {return 0.025},
 			effectDescription() {return "decrease the territory requirement base by 0.025<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
-			unlocked() {return hasMilestone("r", this.id - 1)},
+			unlocked() {return hasMilestone("r", this.id - 1) || player.em.unlocked},
 		},
 		42: {
 			requirement: "1e320",
@@ -510,7 +512,7 @@ addLayer("r", {
 			effect() {return 0.05},
 			effectDescription() {return "decrease the leader requirement base by 0.05<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
-			unlocked() {return hasMilestone("r", this.id - 1)},
+			unlocked() {return hasMilestone("r", this.id - 1) || player.em.unlocked},
 		},
 		43: {
 			requirement: "1e340",
@@ -518,7 +520,7 @@ addLayer("r", {
 			popupTitle: "Innovation Acquired!",
 			effectDescription() {return "the growth requirement scales less while in the <b>Migration</b><br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
-			unlocked() {return hasMilestone("r", this.id - 1)},
+			unlocked() {return hasMilestone("r", this.id - 1) || player.em.unlocked},
 		},
 		44: {
 			requirement: "1e360",
@@ -526,7 +528,7 @@ addLayer("r", {
 			popupTitle: "Innovation Acquired!",
 			effectDescription() {return "expand the enhancable battle grid<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
-			unlocked() {return hasMilestone("r", this.id - 1)},
+			unlocked() {return hasMilestone("r", this.id - 1) || player.em.unlocked},
 		},
 		45: {
 			requirement: "1e380",
@@ -535,7 +537,7 @@ addLayer("r", {
 			effect() {return 0.05},
 			effectDescription() {return "decrease the leader requirement base by 0.05<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
-			unlocked() {return hasMilestone("r", this.id - 1)},
+			unlocked() {return hasMilestone("r", this.id - 1) || player.em.unlocked},
 		},
 		46: {
 			requirement: "1e400",
@@ -543,7 +545,7 @@ addLayer("r", {
 			popupTitle: "Innovation Acquired!",
 			effectDescription() {return "improve the change effects<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
-			unlocked() {return hasMilestone("r", this.id - 1)},
+			unlocked() {return hasMilestone("r", this.id - 1) || player.em.unlocked},
 		},
 		47: {
 			requirement: "1e420",
@@ -552,7 +554,7 @@ addLayer("r", {
 			effect() {return 0.0166},
 			effectDescription() {return "decrease the revolution requirement base by 0.0166<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
-			unlocked() {return hasMilestone("r", this.id - 1)},
+			unlocked() {return hasMilestone("r", this.id - 1) || player.em.unlocked},
 		},
 		48: {
 			requirement: "1e440",
@@ -560,7 +562,7 @@ addLayer("r", {
 			popupTitle: "Innovation Acquired!",
 			effectDescription() {return "improve the last settler effect<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
-			unlocked() {return hasMilestone("r", this.id - 1)},
+			unlocked() {return hasMilestone("r", this.id - 1) || player.em.unlocked},
 		},
 		49: {
 			requirement: "1e460",
@@ -569,7 +571,7 @@ addLayer("r", {
 			effect() {return 0.025},
 			effectDescription() {return "decrease the expansion requirement base by 0.025<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
-			unlocked() {return hasMilestone("r", this.id - 1)},
+			unlocked() {return hasMilestone("r", this.id - 1) || player.em.unlocked},
 		},
 		50: {
 			requirement: "1e480",
@@ -578,7 +580,7 @@ addLayer("r", {
 			effect() {return 10},
 			effectDescription() {return "time for influence generators goes ten times faster<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
-			unlocked() {return hasMilestone("r", this.id - 1)},
+			unlocked() {return hasMilestone("r", this.id - 1) || player.em.unlocked},
 		},
 		51: {
 			requirement: "1e500",
@@ -587,7 +589,7 @@ addLayer("r", {
 			effect() {return 0.025},
 			effectDescription() {return "decrease the leader requirement base by 0.025<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
-			unlocked() {return hasMilestone("r", this.id - 1)},
+			unlocked() {return hasMilestone("r", this.id - 1) || player.em.unlocked},
 		},
 		52: {
 			requirement: "1e525",
@@ -595,7 +597,7 @@ addLayer("r", {
 			popupTitle: "Innovation Acquired!",
 			effectDescription() {return "improve the second influence effect<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
-			unlocked() {return hasMilestone("r", this.id - 1)},
+			unlocked() {return hasMilestone("r", this.id - 1) || player.em.unlocked},
 		},
 		53: {
 			requirement: "1e550",
@@ -603,7 +605,7 @@ addLayer("r", {
 			popupTitle: "Innovation Acquired!",
 			effectDescription() {return "improve the third control effect<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
-			unlocked() {return hasMilestone("r", this.id - 1)},
+			unlocked() {return hasMilestone("r", this.id - 1) || player.em.unlocked},
 		},
 		54: {
 			requirement: "1e575",
@@ -612,7 +614,7 @@ addLayer("r", {
 			effect() {return 0.06},
 			effectDescription() {return "decrease the leader requirement base by 0.06<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
-			unlocked() {return hasMilestone("r", this.id - 1)},
+			unlocked() {return hasMilestone("r", this.id - 1) || player.em.unlocked},
 		},
 		55: {
 			requirement: "1e600",
@@ -620,7 +622,7 @@ addLayer("r", {
 			popupTitle: "Innovation Acquired!",
 			effectDescription() {return "increase the maximum of the third revolution effect<br>and improve the third change effect<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
-			unlocked() {return hasMilestone("r", this.id - 1)},
+			unlocked() {return hasMilestone("r", this.id - 1) || player.em.unlocked},
 		},
 		56: {
 			requirement: "1e625",
@@ -628,7 +630,7 @@ addLayer("r", {
 			popupTitle: "Innovation Acquired!",
 			effectDescription() {return "improve the second war effect<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
-			unlocked() {return hasMilestone("r", this.id - 1)},
+			unlocked() {return hasMilestone("r", this.id - 1) || player.em.unlocked},
 		},
 		57: {
 			requirement: "1e650",
@@ -641,7 +643,7 @@ addLayer("r", {
 					if (Object.hasOwnProperty.call(player.ex.buyables, key) && key < 20)
 						player.ex.buyables[key] = new Decimal(0);
 			},
-			unlocked() {return hasMilestone("r", this.id - 1)},
+			unlocked() {return hasMilestone("r", this.id - 1) || player.em.unlocked},
 		},
 		58: {
 			requirement: "1e675",
@@ -650,7 +652,7 @@ addLayer("r", {
 			effect() {return 0.02},
 			effectDescription() {return "decrease the war requirement base by 0.02<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
-			unlocked() {return hasMilestone("r", this.id - 1)},
+			unlocked() {return hasMilestone("r", this.id - 1) || player.em.unlocked},
 		},
 		59: {
 			requirement: "1e700",
@@ -658,6 +660,75 @@ addLayer("r", {
 			popupTitle: "Innovation Acquired!",
 			effect() {return 0.001},
 			effectDescription() {return "decrease the domination requirement base by 0.001<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1) || player.em.unlocked},
+		},
+		60: {
+			requirement: "1e750",
+			requirementDescription: "61st innovation",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 0.05},
+			effectDescription() {return "decrease the ecosystem requirement base by 0.05<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		61: {
+			requirement: "1e800",
+			requirementDescription: "62nd innovation",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 0.01},
+			effectDescription() {return "decrease the leader requirement base by 0.01<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		62: {
+			requirement: "1e850",
+			requirementDescription: "63rd innovation",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 0.01},
+			effectDescription() {return "decrease the war requirement base by 0.01<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		63: {
+			requirement: "1e900",
+			requirementDescription: "64th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "improve the second continent effect<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		64: {
+			requirement: "1e950",
+			requirementDescription: "65th innovation",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 0.01},
+			effectDescription() {return "decrease the war requirement base by 0.01<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		65: {
+			requirement: "1e1000",
+			requirementDescription: "66th innovation",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 0.05},
+			effectDescription() {return "decrease the expansion requirement base by 0.05<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		66: {
+			requirement: "1e1050",
+			requirementDescription: "67th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "improve the first two territory effects<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		67: {
+			requirement: "1e1100",
+			requirementDescription: "68th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "coming soon<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
 			unlocked() {return hasMilestone("r", this.id - 1)},
 		},

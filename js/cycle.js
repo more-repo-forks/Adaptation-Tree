@@ -12,13 +12,13 @@ const cycleUnlocks = [[
 	[50, "you keep growth enhancements on all resets"],
 	[100, "you keep stimulation upgrades on all resets"],
 	[150, "the 10th hybridization is auto-maxed"],
-	[200, "the row 6 [10 resets] effects unlock at 6 resets"],
-	[250, "reduce the battle enhancement costs by 1", null, 10],
+	[200, "the row 6 [10 resets] effects unlocks at 6 resets"],
+	[250, "decrease the battle enhancement costs by 1", null, 10],
 	[275, () => "you bulk 10x <b>Influence empowerment</b>" + (player.cy.unlocks[1] >= 6 ? "" : "<br>(this resets <b>Influence empowerment</b> amount)"), () => setBuyableAmount("ex", 22, new Decimal(0))],
 	[300, "improve the first cycle effect"],
 	[325, "you keep ANACHRONISM completions on all resets"],
 	[350, "you keep retrogression completions on all resets"],
-	[375, () => "reduce the battle enhancement costs by " + (player.cy.unlocks[1] >= 10 ? 2 : 1)],
+	[375, () => "decrease the battle enhancement costs by " + (player.cy.unlocks[1] >= 10 ? 2 : 1)],
 	[400, "improve the second and fourth ecosystem effects"],
 ], [
 	[111, "ecosystem resets (that are not in ANACHRONISM) no longer reset anything<br>you automatically claim potential ecosystems"],
@@ -26,6 +26,13 @@ const cycleUnlocks = [[
 	[333, "expansion resets no longer reset anything<br>you automatically claim potential expansion points"],
 	[444, "war resets (without respec) no longer reset anything<br>you automatically claim potential wars"],
 	[555, "improve the first territory effect"],
+], [
+	[150, "you automatically buy tier 1 control nodes"],
+	[300, () => "you bulk 10x <b>Influence tickspeed</b>" + (player.cy.unlocks[3] >= 2 ? "" : "<br>(this resets <b>Influence tickspeed</b> amount)"), () => setBuyableAmount("ex", 21, new Decimal(0))],
+	[450, "you automatically buy tier 2 control nodes"],
+	[600, "the leader [20 resets] effect unlocks at 7 resets"],
+	[750, "you automatically buy tier 3 control nodes"],
+	[900, "coming soon"],
 ]];
 
 function cycleUnlockText(tab) {
@@ -107,45 +114,31 @@ addLayer("cy", {
 	microtabs: {
 		cycles: {
 			"The First Cycle": {
-				content: [
-					["display-text", () => {
-						if (player.cy.points.gte(1)) return cycleUnlockText(0);
-						else return "LOCKED";
-					}],
-				],
+				content: [["display-text", () => player.cy.points.gte(1) ? cycleUnlockText(0) : "LOCKED"]],
 				style: {"margin": "8.5px"},
 				unlocked() {return player.cy.points.gte(1)},
 			},
 			"The Second Cycle": {
-				content: [
-					["display-text", () => {
-						if (player.cy.points.gte(2)) return cycleUnlockText(1);
-						else return "LOCKED";
-					}],
-				],
+				content: [["display-text", () => player.cy.points.gte(2) ? cycleUnlockText(1) : "LOCKED"]],
 				style: {"margin": "8.5px"},
 				unlocked() {return player.cy.points.gte(2)},
 			},
 			"The Third Cycle": {
-				content: [
-					["display-text", () => {
-						if (player.cy.points.gte(3)) return cycleUnlockText(2);
-						else return "LOCKED";
-					}],
-				],
+				content: [["display-text", () => player.cy.points.gte(3) ? cycleUnlockText(2) : "LOCKED"]],
 				style: {"margin": "8.5px"},
 				unlocked() {return player.cy.points.gte(3)},
 			},
+			"The Fourth Cycle": {
+				content: [["display-text", () => player.cy.points.gte(4) ? cycleUnlockText(3) : "LOCKED"]],
+				style: {"margin": "8.5px"},
+				unlocked() {return player.cy.points.gte(4)},
+			},
+			/* "The Cyclical Cycles": {
+				content: [["display-text", () => player.cy.points.gte(x) ? "coming soon!" : "LOCKED"]],
+				style: {"margin": "8.5px"},
+				buttonStyle: {"border-color": "#E03330", "background-color": "#116022"},
+				unlocked() {return player.cy.points.gte(x)},
+			}, */
 		},
 	}
-});
-
-addNode("blank", {
-	symbol: "EM",
-	branches: ["l", "ex", "t"],
-	position: 1,
-	nodeStyle: {"margin": "0 10px 0 10px", "border-radius": "50%"},
-	tooltipLocked() {return "coming soon!"},
-	row: 6,
-	layerShown() {return hasMilestone("d", 59)},
 });

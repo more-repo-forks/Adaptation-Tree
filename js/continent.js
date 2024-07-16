@@ -37,6 +37,9 @@ addLayer("co", {
 	effect() {
 		let amt = player.co.points;
 		if (tmp.cy.effect[0]) amt = amt.add(tmp.cy.effect[0]);
+		let continentEff2Base = 10;
+		if (challengeCompletions("ec", 11) >= 19) continentEff2Base += 20;
+		if (hasMilestone("r", 63)) continentEff2Base += 15;
 		let settlerEff2Exp = 0.0125;
 		if (hasMilestone("d", 63)) settlerEff2Exp += 0.0175;
 		let lastSettlerEffExp = 0.25;
@@ -44,7 +47,7 @@ addLayer("co", {
 		if (hasMilestone("d", 63)) lastSettlerEffExp += 0.25;
 		let eff = [
 			new Decimal(challengeCompletions("ec", 11) >= 19 ? 10 : 5).pow(amt),
-			new Decimal(challengeCompletions("ec", 11) >= 19 ? 30 : 10).pow(amt),
+			new Decimal(continentEff2Base).pow(amt),
 			amt.div(4).add(1),
 			new Decimal(1.02).pow(player.co.settlers),
 			(player.co.points.gte(player.cy.unlocks[1] >= 4 ? 6 : 10) || player.cy.unlocks[0] >= 8 ? player.co.settlers.add(1).pow(settlerEff2Exp) : new Decimal(1)),

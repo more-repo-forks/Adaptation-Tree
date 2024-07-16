@@ -73,6 +73,7 @@ addLayer("ex", {
 		if (getBuyableAmount("d", 13).gte(tmp.d.buyables[13].purchaseLimit)) base -= tmp.d.buyables[13].completionEffect;
 		if (challengeCompletions("ec", 11) >= 6 && challengeEffect("ec", 11)[5]) base -= challengeEffect("ec", 11)[5];
 		if (hasMilestone("r", 49)) base -= milestoneEffect("r", 49);
+		if (hasMilestone("r", 65)) base -= milestoneEffect("r", 65);
 		if (getGridData("w", 405)) base -= gridEffect("w", 405);
 		return base;
 	},
@@ -87,6 +88,11 @@ addLayer("ex", {
 		if (tmp.l.effect[1]) mult = mult.div(tmp.l.effect[1]);
 		if (tmp.t.effect[0]) mult = mult.div(tmp.t.effect[0]);
 		if (tmp.t.effect[5]) mult = mult.div(tmp.t.effect[5]);
+		return mult;
+	},
+	directMult() {
+		let mult = new Decimal(1);
+		if (tmp.em.effect[1]) mult = mult.mul(tmp.em.effect[1]);
 		return mult;
 	},
 	effect() {
@@ -185,6 +191,7 @@ addLayer("ex", {
 				if (Object.hasOwnProperty.call(layers.ex.buyables, key) && key < 20 && hasBuyable("ex", key) && tmp.ex.buyables[key].unlocked) {
 					let eff = buyableEffect("ex", key);
 					if (key == 11) {
+						eff = eff.pow(buyableEffect("em", 13).add(1));
 						if (player.ex.influence.lt(eff.mul(100)))
 							player.ex.influence = player.ex.influence.add(eff.mul(diff)).min(eff.mul(100));
 					} else {
@@ -332,7 +339,10 @@ addLayer("ex", {
 			canAfford() {return player.ex.influenceUnlocked && player.ex.influence.gte(this.cost())},
 			buy() {
 				player.ex.influence = player.ex.influence.sub(this.cost());
-				addBuyables(this.layer, this.id, (player.cy.unlocks[0] >= 5 ? 10 : 1));
+				let bulk = 1;
+				if (player.cy.unlocks[0] >= 5) bulk *= 10;
+				if (player.cy.unlocks[3] >= 2) bulk *= 10;
+				addBuyables(this.layer, this.id, bulk);
 			},
 			extra() {
 				let extra = new Decimal(0);

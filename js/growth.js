@@ -145,6 +145,7 @@ addLayer("g", {
 			(player.e.points.gte(30) || player.sp.unlocked ? undefined : "respec-button"),
 			"blank",
 			"milestones",
+			"blank",
 		];
 	},
 	layerShown() {return hasUpgrade("s", 35) || player.g.unlocked},
