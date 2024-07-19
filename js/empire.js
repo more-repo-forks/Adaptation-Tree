@@ -23,12 +23,14 @@ addLayer("em", {
 	resetDescription: "Consolidate for ",
 	gainMult() {
 		let mult = new Decimal(1);
+		if (tmp.em.effect[3]) mult = mult.div(tmp.em.effect[3]);
 		return mult;
 	},
 	effect() { return [
 		player.em.points.mul(hasMilestone("em", 1) ? 2 : 1),
 		player.em.points.div(10).add(1),
 		player.em.points.mul(2),
+		new Decimal(player.em.milestones.length + 1).pow(0.171),
 	]},
 	effectDescription() {return "which are increasing leader and territory amounts in their effects by +" + formatWhole(tmp.em.effect[0]) + " and directly multiplying expansion point gain by " + format(tmp.em.effect[1]) + "x"},
 	tabFormat: [
@@ -56,69 +58,6 @@ addLayer("em", {
 		"microtabs"() {return {"box-sizing": "border-box", "width": "fit-content", "max-width": "calc(100% - 34px)", "border": "2px solid #B44990", "padding": "8.5px"}},
 		"tab-button"() {return {"margin": "8.5px"}},
 		"buyable"() {return {"width": "210px", "height": "110px"}},
-	},
-	buyables: {
-		11: {
-			cost() {return getBuyableAmount(this.layer, this.id).add(1).mul(500)},
-			title: "(NAT)URE",
-			display() {return "unlock 1 more ANACHRONISM tier<br><br>Effect: +" + formatWhole(this.effect()) + "<br><br>Req: " + formatWhole(this.cost()) + " ecosystems<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id))},
-			effect() {return getBuyableAmount(this.layer, this.id)},
-			canAfford() {return player.ec.points.gte(this.cost()) && tmp.em.effect[2].sub(player[this.layer].spent).gte(1)},
-			buy() {
-				player[this.layer].spent++;
-				addBuyables(this.layer, this.id, 1);
-			},
-		},
-		12: {
-			cost() {return getBuyableAmount(this.layer, this.id).add(1).mul(500)},
-			title: "(PRO)GRESS",
-			display() {return "increase change gain exponent by 0.05<br><br>Effect: +" + format(this.effect()) + "<br><br>Req: " + formatWhole(this.cost()) + " revolutions<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id))},
-			effect() {return getBuyableAmount(this.layer, this.id).mul(0.05)},
-			canAfford() {return player.r.points.gte(this.cost()) && tmp.em.effect[2].sub(player[this.layer].spent).gte(1)},
-			buy() {
-				player[this.layer].spent++;
-				addBuyables(this.layer, this.id, 1);
-			},
-		},
-		13: {
-			cost() {return getBuyableAmount(this.layer, this.id).add(1).mul(500)},
-			effectBase() {
-				let base = 0.1;
-				if (hasMilestone("em", 0)) base += milestoneEffect("em", 0);
-				return base;
-			},
-			effect() {return getBuyableAmount(this.layer, this.id).mul(this.effectBase())},
-			title: "(EXT)ENSION",
-			display() {return "increase influence gain exponent by " + format(this.effectBase()) + "<br><br>Effect: +" + format(this.effect()) + "<br><br>Req: " + formatWhole(this.cost()) + " expansion points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id))},
-			canAfford() {return player.ex.points.gte(this.cost()) && tmp.em.effect[2].sub(player[this.layer].spent).gte(1)},
-			buy() {
-				player[this.layer].spent++;
-				addBuyables(this.layer, this.id, 1);
-			},
-		},
-		14: {
-			cost() {return getBuyableAmount(this.layer, this.id).add(1).mul(500)},
-			title: "(COM)BAT",
-			display() {return "decrease the battle enhancement costs by 2<br><br>Effect: -" + formatWhole(this.effect()) + "<br><br>Req: " + formatWhole(this.cost()) + " control<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id))},
-			effect() {return getBuyableAmount(this.layer, this.id).mul(2)},
-			canAfford() {return player.w.points.gte(this.cost()) && tmp.em.effect[2].sub(player[this.layer].spent).gte(1)},
-			buy() {
-				player[this.layer].spent++;
-				addBuyables(this.layer, this.id, 1);
-			},
-		},
-		respec() {
-			setBuyableAmount("em", 11, new Decimal(0));
-			setBuyableAmount("em", 12, new Decimal(0));
-			setBuyableAmount("em", 13, new Decimal(0));
-			setBuyableAmount("em", 14, new Decimal(0));
-			player.em.spent = new Decimal(0);
-			doReset("co", true, true);
-			doReset("l", true, true);
-			doReset("t", true, true);
-		},
-		respecText: "respec aspect points",
-		respecMessage: 'Are you sure you want to respec? This will force you to do "Continent", "Leader", and "Territory" resets as well!',
 	},
 	microtabs: {
 		features: {
@@ -164,12 +103,85 @@ addLayer("em", {
 			"Phases": {
 				content() {
 					if (player.em.points.lt(2)) return [["display-text", "LOCKED"]];
-					return ["milestones"];
+					return [["display-text", "You have <h2 style='color: #B44990; text-shadow: #B44990 0px 0px 10px'>" + formatWhole(player.em.milestones.length) + "</h2> phases, which are dividing empire requirement by /" + format(tmp.em.effect[3])], "blank", "milestones"];
 				},
 				style: {"margin": "8.5px"},
 				unlocked() {return player.em.points.gte(2)},
 			},
 		},
+	},
+	buyables: {
+		11: {
+			cost() {return getBuyableAmount(this.layer, this.id).add(1).mul(hasMilestone("em", 6) ? 450 : 500)},
+			effect() {
+				let eff = getBuyableAmount(this.layer, this.id);
+				if (hasMilestone("em", 2)) eff = eff.add(milestoneEffect("em", 2));
+				return eff;
+			},
+			title: "(NAT)URE",
+			display() {return "unlock 1 more ANACHRONISM tier<br><br>Effect: +" + formatWhole(this.effect()) + "<br><br>Req: " + formatWhole(this.cost()) + " ecosystems<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id))},
+			canAfford() {return player.ec.points.gte(this.cost()) && tmp.em.effect[2].sub(player[this.layer].spent).gte(1)},
+			buy() {
+				player[this.layer].spent++;
+				addBuyables(this.layer, this.id, 1);
+			},
+		},
+		12: {
+			cost() {return getBuyableAmount(this.layer, this.id).add(1).mul(hasMilestone("em", 4) ? 450 : 500)},
+			effect() {return getBuyableAmount(this.layer, this.id).mul(0.05)},
+			title: "(PRO)GRESS",
+			display() {return "increase change gain exponent by 0.05<br><br>Effect: +" + format(this.effect()) + "<br><br>Req: " + formatWhole(this.cost()) + " revolutions<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id))},
+			canAfford() {return player.r.points.gte(this.cost()) && tmp.em.effect[2].sub(player[this.layer].spent).gte(1)},
+			buy() {
+				player[this.layer].spent++;
+				addBuyables(this.layer, this.id, 1);
+			},
+		},
+		13: {
+			cost() {return getBuyableAmount(this.layer, this.id).add(1).mul(500)},
+			effectBase() {
+				let base = 0.1;
+				if (hasMilestone("em", 0)) base += milestoneEffect("em", 0);
+				return base;
+			},
+			effect() {return getBuyableAmount(this.layer, this.id).mul(this.effectBase())},
+			title: "(EXT)ENSION",
+			display() {return "increase influence gain exponent by " + format(this.effectBase()) + "<br><br>Effect: +" + format(this.effect()) + "<br><br>Req: " + formatWhole(this.cost()) + " expansion points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id))},
+			canAfford() {return player.ex.points.gte(this.cost()) && tmp.em.effect[2].sub(player[this.layer].spent).gte(1)},
+			buy() {
+				player[this.layer].spent++;
+				addBuyables(this.layer, this.id, 1);
+			},
+		},
+		14: {
+			cost() {return getBuyableAmount(this.layer, this.id).add(1).mul(500)},
+			effectBase() {
+				let base = 2;
+				if (hasMilestone("em", 3)) base += milestoneEffect("em", 3);
+				if (hasMilestone("em", 5)) base += milestoneEffect("em", 5);
+				return base;
+			},
+			effect() {return getBuyableAmount(this.layer, this.id).mul(this.effectBase())},
+			title: "(COM)BAT",
+			display() {return "decrease the battle enhancement costs by " + formatWhole(this.effectBase()) + "<br><br>Effect: -" + formatWhole(this.effect()) + "<br><br>Req: " + formatWhole(this.cost()) + " wars<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id))},
+			canAfford() {return player.w.points.gte(this.cost()) && tmp.em.effect[2].sub(player[this.layer].spent).gte(1)},
+			buy() {
+				player[this.layer].spent++;
+				addBuyables(this.layer, this.id, 1);
+			},
+		},
+		respec() {
+			setBuyableAmount("em", 11, new Decimal(0));
+			setBuyableAmount("em", 12, new Decimal(0));
+			setBuyableAmount("em", 13, new Decimal(0));
+			setBuyableAmount("em", 14, new Decimal(0));
+			player.em.spent = new Decimal(0);
+			doReset("co", true, true);
+			doReset("l", true, true);
+			doReset("t", true, true);
+		},
+		respecText: "respec aspect points",
+		respecMessage: 'Are you sure you want to respec? This will force you to do "Continent", "Leader", and "Territory" resets as well!',
 	},
 	milestones: {
 		0: {
@@ -187,7 +199,50 @@ addLayer("em", {
 			popupTitle: "Innovation Acquired!",
 			effectDescription() {return "improve the first empire effect<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.ex.influence.gte(this.requirement)},
-			unlocked() {return player.em.points.gte(2)},
+			unlocked() {return hasMilestone("em", this.id - 1)},
+		},
+		2: {
+			requirement: "1e700000",
+			requirementDescription: "NAT phase I",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 1},
+			effectDescription() {return "increase the effect of NAT by 1<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.ex.influence.gte(this.requirement)},
+			unlocked() {return hasMilestone("em", this.id - 1)},
+		},
+		3: {
+			requirement: "1e800000",
+			requirementDescription: "COM phase I",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 1},
+			effectDescription() {return "increase the base effect of COM by 1<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.ex.influence.gte(this.requirement)},
+			unlocked() {return hasMilestone("em", this.id - 1)},
+		},
+		4: {
+			requirement: "1e900000",
+			requirementDescription: "PRO phase I",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "decrease the cost scaling of PRO<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.ex.influence.gte(this.requirement)},
+			unlocked() {return hasMilestone("em", this.id - 1)},
+		},
+		5: {
+			requirement: "e1000000",
+			requirementDescription: "COM phase II",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 1},
+			effectDescription() {return "increase the base effect of COM by 1<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.ex.influence.gte(this.requirement)},
+			unlocked() {return hasMilestone("em", this.id - 1)},
+		},
+		6: {
+			requirement: "e1100000",
+			requirementDescription: "NAT phase II",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "decrease the cost scaling of NAT<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.ex.influence.gte(this.requirement)},
+			unlocked() {return hasMilestone("em", this.id - 1)},
 		},
 	},
 });

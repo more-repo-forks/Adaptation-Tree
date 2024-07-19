@@ -25,11 +25,11 @@ const warUpgrades = [[
 	{title: "Futuristic Tactics", desc: "unlocks another ANACHRONISM tier", effect: 1, cost: 1500, e: {desc: "unlocks two more ANACHRONISM tiers", effect: 2, cost: 8}},
 ], [
 	{title: "Enroaching Influence", desc: "unlocks another influence generator", effect: 1, cost: 4, e: {desc: "unlocks two more influence generators", effect: 2, cost: 1}},
-	{title: "Greater Empowerment", desc: "reduces <b>Influence empowerment</b>'s cost", cost: 8, effect: 1.5, e: {desc: "reduces <b>Influence empowerment</b>'s cost more", effect: 1.45, cost: 1}},
+	{title: "Greater Empowerment", desc: "reduces <b>Influence empowerment</b>'s cost scaling", cost: 8, effect: 1.5, e: {desc: "reduces <b>Influence empowerment</b>'s cost scaling more", effect: 1.45, cost: 1}},
 	{title: "Surrounding Influence", desc: "unlocks another influence generator", effect: 1, cost: 16, e: {desc: "unlocks two more influence generators", effect: 2, cost: 2}},
-	{title: "Generator Recycling", desc: "reduces the costs of influence generators", cost: 40, e: {desc: "reduces the costs of influence generators more", cost: 4}},
+	{title: "Generator Recycling", desc: "reduces the cost scaling of influence generators", cost: 40, e: {desc: "reduces the cost scaling of influence generators more", cost: 4}},
 	{title: "Overarching Influence", desc: "unlocks another influence generator", effect: 1, cost: 250, e: {desc: "unlocks two more influence generators", effect: 2, cost: 8}},
-	{title: "Greater Tickspeed", desc: "reduces <b>Influence tickspeed</b>'s cost", cost: 2000, e: {desc: "reduces <b>Influence tickspeed</b>'s cost more", cost: 16}},
+	{title: "Greater Tickspeed", desc: "reduces <b>Influence tickspeed</b>'s cost scaling", cost: 2000, e: {desc: "reduces <b>Influence tickspeed</b>'s cost scaling more", cost: 16}},
 ], [
 	{title: "Conflict Escalation", desc: "decreases war requirement base by 0.025", effect: 0.025, cost: 25, e: {desc: "decreases war requirement base by 0.03", effect: 0.03, cost: 2}},
 	{title: "Battle Domination", desc: "decreases domination requirement base by 0.313", effect: 0.313, cost: 30, e: {desc: "decreases domination requirement base by 0.33", effect: 0.33, cost: 2}},
@@ -43,14 +43,14 @@ const warUpgrades = [[
 	{title: "Military Domination", desc() {return "gives extra FOC, SPE, CLI, and DOM based on wars<br>(currently +" + formatWhole(gridEffect("w", 503)) + ")"}, effect() {return player.w.points.mul(2)}, cost: 250, e: {effect() {return player.w.points.mul(25)}, cost: 8}},
 	{title: "Forced Acclimation", desc() {return "gives extra CRA, FER, ANA, and SOV based on wars<br>(currently +" + formatWhole(gridEffect("w", 504)) + ")"}, effect() {return player.w.points.mul(220000)}, cost: 300, e: {effect() {return player.w.points.mul(25000000)}, cost: 16}},
 	{title: "Overpowering Presence", desc() {return "gives extra FOC, SPE, CLI, and DOM based on wars<br>(currently +" + formatWhole(gridEffect("w", 505)) + ")"}, effect() {return player.w.points.mul(5)}, cost: 350, e: {effect() {return player.w.points.mul(100)}, cost: 32}},
-	{title: "Primal Instincts", desc() {return "gives extra CRA, FER, ANA, and SOV based on wars<br>(currently +" + formatWhole(gridEffect("w", 506)) + ")"}, effect() {return player.w.points.mul(500000)}, cost: 3500},
+	{title: "Primal Instincts", desc() {return "gives extra CRA, FER, ANA, and SOV based on wars<br>(currently +" + formatWhole(gridEffect("w", 506)) + ")"}, effect() {return player.w.points.mul(500000)}, cost: 3500, e: {effect() {return player.w.points.mul(100000000)}, cost: 64}},
 ], [
 	{title: "Honed Focus", desc() {return "divides focus+ requirement based on wars<br>(currently /" + format(gridEffect("w", 601)) + ")"}, effect() {return player.w.points.add(1).pow(0.1)}, cost: 1000, e: {effect() {return player.w.points.add(1).pow(0.15)}, cost: 8}},
 	{title: "Public Speaking", desc: "improves the last leader effect", cost: 1500, e: {desc: "improves the last leader effect more", cost: 8}},
 	{title: "Political Upheaval", desc() {return "divides leader requirement based on wars<br>(currently /" + format(gridEffect("w", 603)) + ")"}, effect() {return player.w.points.add(1).pow(0.2)}, cost: 2000, e: {effect() {return player.w.points.add(1).pow(0.3)}, cost: 16}},
 	{title: "Smarter Leaders", desc: "improves the second leader effect", effect: 3, cost: 2500, e: {desc: "improves the second leader effect more", effect: 4.25, cost: 32}},
-	{title: "Finer Focus", desc() {return "divides focus+ requirement based on wars<br>(currently /" + format(gridEffect("w", 605)) + ")"}, effect() {return player.w.points.add(1).pow(0.125)}, cost: 3500},
-	{title: "Public Relations 101", desc: "improves the last leader effect", cost: 4500},
+	{title: "Finer Focus", desc() {return "divides focus+ requirement based on wars<br>(currently /" + format(gridEffect("w", 605)) + ")"}, effect() {return player.w.points.add(1).pow(0.125)}, cost: 3500, e: {effect() {return player.w.points.add(1).pow(0.2)}, cost: 64}},
+	{title: "Public Relations 101", desc: "improves the last leader effect", cost: 4500, e: {desc: "improves the last leader effect more", cost: 128}},
 ]];
 
 function getWarUpgradeCostE(id) {
@@ -120,6 +120,7 @@ addLayer("w", {
 		if (player.cy.unlocks[0] >= 9) eff1Exp += 0.6;
 		let eff2Exp = 1;
 		if (hasMilestone("r", 56)) eff2Exp += 0.1;
+		if (hasMilestone("r", 69)) eff2Exp += 0.1;
 		return [
 			(player.t.points.gte(player.cy.unlocks[1] >= 4 ? 6 : 10) ? new Decimal(1.1).pow(player.w.points.mul(eff1Exp)) : player.w.points.pow(eff1Exp).round()),
 			(hasMilestone("d", 57) ? player.w.points.div(hasMilestone("d", 64) ? 20 : (hasMilestone("d", 61) ? 22 : (hasMilestone("d", 60) ? 33 : 50))).sub(hasMilestone("d", 58) ? 0 : 1).pow(eff2Exp).floor().max(0) : player.w.points.div(100).pow(eff2Exp).floor()),

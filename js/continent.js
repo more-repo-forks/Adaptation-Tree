@@ -25,7 +25,11 @@ addLayer("co", {
 	baseAmount() {return player.sp.points},
 	requires: new Decimal(100000),
 	type: "static",
-	base: 1.5,
+	base() {
+		let base = 1.5;
+		if (challengeCompletions("ec", 11) >= 24 && challengeEffect("ec", 11)[23]) base -= challengeEffect("ec", 11)[23];
+		return base;
+	},
 	exponent: 1,
 	roundUpCost: true,
 	canBuyMax() {return player.cy.unlocked},
@@ -37,16 +41,22 @@ addLayer("co", {
 	effect() {
 		let amt = player.co.points;
 		if (tmp.cy.effect[0]) amt = amt.add(tmp.cy.effect[0]);
+		let continentEff1Base = 5;
+		if (challengeCompletions("ec", 11) >= 19) continentEff1Base += 5;
+		if (challengeCompletions("ec", 11) >= 23) continentEff1Base += 10;
 		let continentEff2Base = 10;
 		if (challengeCompletions("ec", 11) >= 19) continentEff2Base += 20;
+		if (challengeCompletions("ec", 11) >= 23) continentEff2Base += 20;
 		if (hasMilestone("r", 63)) continentEff2Base += 15;
 		let settlerEff2Exp = 0.0125;
 		if (hasMilestone("d", 63)) settlerEff2Exp += 0.0175;
 		let lastSettlerEffExp = 0.25;
-		if (hasMilestone("r", 48)) lastSettlerEffExp += 0.25;
 		if (hasMilestone("d", 63)) lastSettlerEffExp += 0.25;
+		if (hasMilestone("r", 48)) lastSettlerEffExp += 0.25;
+		if (hasMilestone("r", 67)) lastSettlerEffExp += 0.75;
+		if (hasMilestone("r", 70)) lastSettlerEffExp += 0.5;
 		let eff = [
-			new Decimal(challengeCompletions("ec", 11) >= 19 ? 10 : 5).pow(amt),
+			new Decimal(continentEff1Base).pow(amt),
 			new Decimal(continentEff2Base).pow(amt),
 			amt.div(4).add(1),
 			new Decimal(1.02).pow(player.co.settlers),
@@ -55,7 +65,12 @@ addLayer("co", {
 		];
 		if (eff[3].gte(500)) eff[3] = eff[3].div(500).pow(0.5).mul(500);
 		if (eff[3].gte(5000)) eff[3] = eff[3].div(5000).pow(0.5).mul(5000);
-		if (eff[3].gte(2000000)) eff[3] = eff[3].div(2000000).pow(hasMilestone("d", 63) ? 0.5 : 0.2).mul(2000000);
+		if (eff[3].gte(2000000)) {
+			let exp = 0.2;
+			if (hasMilestone("d", 63)) exp += 0.3;
+			if (hasMilestone("r", 71)) exp += 0.1;
+			eff[3] = eff[3].div(2000000).pow(exp).mul(2000000);
+		};
 		return eff;
 	},
 	effectDescription() {return "which are dividing the ecosystem requirement by /" + format(tmp.co.effect[0]) + ", dividing the revolution requirement by /" + format(tmp.co.effect[1]) + ", and directly multiplying species gain by " + format(tmp.co.effect[2]) + "x"},

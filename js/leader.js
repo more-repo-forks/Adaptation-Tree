@@ -26,6 +26,7 @@ addLayer("l", {
 	type: "static",
 	base() {
 		let base = 2;
+		if (challengeCompletions("ec", 11) >= 24 && challengeEffect("ec", 11)[23]) base -= challengeEffect("ec", 11)[23];
 		if (hasMilestone("r", 42)) base -= milestoneEffect("r", 42);
 		if (hasMilestone("r", 45)) base -= milestoneEffect("r", 45);
 		if (hasMilestone("r", 51)) base -= milestoneEffect("r", 51);

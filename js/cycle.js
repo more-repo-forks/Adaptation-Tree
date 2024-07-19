@@ -32,7 +32,8 @@ const cycleUnlocks = [[
 	[450, "you automatically buy tier 2 control nodes"],
 	[600, "the leader [20 resets] effect unlocks at 7 resets"],
 	[750, "you automatically buy tier 3 control nodes"],
-	[900, "coming soon"],
+	[900, "you keep hybridization completions on all resets"],
+	[1050, "you automatically buy tier 4 control nodes"],
 ]];
 
 function cycleUnlockText(tab) {
