@@ -55,6 +55,7 @@ addLayer("co", {
 		if (hasMilestone("r", 48)) lastSettlerEffExp += 0.25;
 		if (hasMilestone("r", 67)) lastSettlerEffExp += 0.75;
 		if (hasMilestone("r", 70)) lastSettlerEffExp += 0.5;
+		if (hasMilestone("r", 73)) lastSettlerEffExp += 0.5;
 		let eff = [
 			new Decimal(continentEff1Base).pow(amt),
 			new Decimal(continentEff2Base).pow(amt),

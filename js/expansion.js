@@ -17,7 +17,7 @@ function getGeneratorCost(id) {
 	return amt.pow_base(GENERATOR_COST_BASES[id - 11]).round();
 };
 
-const GENERATOR_IMPROVEMENTS = ["(b + x) * b<sup>2</sup>", "(b + x) * b<sup>3</sup> * 2<sup>b</sup>", "(b + x) * b<sup>5</sup> * 3<sup>b</sup>", "(10b + x) * b<sup>12</sup> * 5<sup>b</sup>", "(b * EX + x) * b<sup>EX</sup> * 10<sup>b</sup>", "(b + x) * b<sup>55</sup> * EX<sup>b</sup>", "(b + x) * b<sup>EX</sup> * EX<sup>6.6b</sup>", "(b + x) * b<sup>EX</sup> * EX<sup>9b</sup>", "(b + x) * b<sup>EX</sup> * EX<sup>10b</sup>", "(b + x) * b<sup>EX</sup> * EX<sup>20b</sup>"];
+const GENERATOR_IMPROVEMENTS = ["(b + x) * b<sup>2</sup>", "(b + x) * b<sup>3</sup> * 2<sup>b</sup>", "(b + x) * b<sup>5</sup> * 3<sup>b</sup>", "(10b + x) * b<sup>12</sup> * 5<sup>b</sup>", "(b * EX + x) * b<sup>EX</sup> * 10<sup>b</sup>", "(b + x) * b<sup>55</sup> * EX<sup>b</sup>", "(b + x) * b<sup>EX</sup> * EX<sup>6.6b</sup>", "(b + x) * b<sup>EX</sup> * EX<sup>9b</sup>", "(b + x) * b<sup>EX</sup> * EX<sup>10b</sup>", "(b + x) * b<sup>EX</sup> * EX<sup>20b</sup>", "(b + x) * b<sup>EX</sup> * EX<sup>22b</sup>"];
 
 function getGeneratorEffect(id) {
 	let level = getBuyableAmount("ex", 31).toNumber();
@@ -34,6 +34,7 @@ function getGeneratorEffect(id) {
 		b.add(x).mul(b.pow(player.ex.points)).mul(b.mul(9).pow_base(player.ex.points)),
 		b.add(x).mul(b.pow(player.ex.points)).mul(b.mul(10).pow_base(player.ex.points)),
 		b.add(x).mul(b.pow(player.ex.points)).mul(b.mul(20).pow_base(player.ex.points)),
+		b.add(x).mul(b.pow(player.ex.points)).mul(b.mul(22).pow_base(player.ex.points)),
 	][level];
 	if (hasBuyable("ex", 21)) eff = eff.mul(buyableEffect("ex", 21));
 	if (tmp.w.effect[0] && player.t.points.gte(10)) eff = eff.mul(tmp.w.effect[0]);
@@ -331,6 +332,7 @@ addLayer("ex", {
 			effectBase() {
 				let base = new Decimal(2);
 				base = base.add(buyableEffect("ex", 22));
+				if (tmp.cy.effect[4]) base = base.add(tmp.cy.effect[4]);
 				return base;
 			},
 			effect() {return getBuyableAmount(this.layer, this.id).add(this.extra()).pow_base(this.effectBase())},
@@ -373,16 +375,20 @@ addLayer("ex", {
 			},
 		},
 		31: {
-			cost() {return new Decimal([7.7e77, 1.11e111, 2.02e202, "3.45e345", "6.6e660", "1.055e1055", "2.211e2211", "5e5000", "9e9000"][getBuyableAmount(this.layer, this.id)] || Infinity)},
+			cost() {return new Decimal([7.7e77, 1.11e111, 2.02e202, "3.45e345", "6.6e660", "1.055e1055", "2.211e2211", "5e5000", "9e9000", "e1000000"][getBuyableAmount(this.layer, this.id)] || Infinity)},
 			effect() {return getBuyableAmount(this.layer, this.id).toNumber() + 1},
 			title: "Generator improvement",
 			display() {
 				let amt = getBuyableAmount(this.layer, this.id).toNumber();
-				if (GENERATOR_IMPROVEMENTS[amt + 1]) return "improve the generator formulas and time for generators goes faster, but reset influence and all non-bought generators<br><br>Next: " + GENERATOR_IMPROVEMENTS[amt] + " --> " + GENERATOR_IMPROVEMENTS[amt + 1] + " and " + formatWhole(this.effect()) + "x --> " + formatWhole(this.effect() + 1) + "x<br><br>Cost: " + format(this.cost()) + " influence<br><br>Bought: " + formatWhole(amt) + "/" + formatWhole(this.purchaseLimit);
-				return "improve the generator formulas and time for generators goes faster, but reset influence and all non-bought generators<br><br>Effects: " + GENERATOR_IMPROVEMENTS[0] + " --> " + GENERATOR_IMPROVEMENTS[amt] + " and 1x --> " + formatWhole(this.effect()) + "x<br><br>Bought: " + formatWhole(amt) + "/" + formatWhole(this.purchaseLimit);
+				if (GENERATOR_IMPROVEMENTS[amt + 1]) return "improve the generator formulas and time for generators goes faster, but reset influence and all non-bought generators<br><br>Next: " + GENERATOR_IMPROVEMENTS[amt] + " --> " + GENERATOR_IMPROVEMENTS[amt + 1] + " and " + formatWhole(this.effect()) + "x --> " + formatWhole(this.effect() + 1) + "x<br><br>Cost: " + format(this.cost()) + " influence<br><br>Bought: " + formatWhole(amt) + "/" + formatWhole(this.purchaseLimit());
+				return "improve the generator formulas and time for generators goes faster, but reset influence and all non-bought generators<br><br>Effects: " + GENERATOR_IMPROVEMENTS[0] + " --> " + GENERATOR_IMPROVEMENTS[amt] + " and 1x --> " + formatWhole(this.effect()) + "x<br><br>Bought: " + formatWhole(amt) + "/" + formatWhole(this.purchaseLimit());
 			},
-			purchaseLimit: GENERATOR_IMPROVEMENTS.length - 1,
-			canAfford() {return player.ex.influenceUnlocked && player.ex.influence.gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit)},
+			purchaseLimit() {
+				let limit = 9;
+				if (hasMilestone("r", 75)) limit += milestoneEffect("r", 75);
+				return limit;
+			},
+			canAfford() {return player.ex.influenceUnlocked && player.ex.influence.gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit())},
 			buy() {
 				player.ex.influence = new Decimal(0);
 				for (const key in layers.ex.buyables)
@@ -392,7 +398,7 @@ addLayer("ex", {
 			},
 			style() {
 				let obj = {"width": "400px", "height": "110px", "border-radius": "25px"};
-				if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) obj["border-color"] = "#B44990";
+				if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit())) obj["border-color"] = "#B44990";
 				else if (this.canAfford()) obj.background = tmp.ex.nodeStyle.background;
 				return obj;
 			},

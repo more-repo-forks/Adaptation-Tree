@@ -47,6 +47,12 @@ function cycleUnlockText(tab) {
 	return text;
 };
 
+function getCyclicalGenReqScale() {
+	let scale = 100;
+	if (hasMilestone("r", 76)) scale -= 55;
+	return scale;
+};
+
 addLayer("cy", {
 	name: "Cycle",
 	symbol: "CY",
@@ -56,6 +62,8 @@ addLayer("cy", {
 		unlocked: false,
 		points: new Decimal(0),
 		unlocks: [],
+		power: new Decimal(0),
+		generators: [],
 	}},
 	color: "#EE7770",
 	nodeStyle() {if (tmp.cy.canReset || player.cy.unlocked) return {"background": "border-box linear-gradient(to right, #116022, #EE7770, #E03330)"}},
@@ -77,6 +85,9 @@ addLayer("cy", {
 	effect() { return [
 		player.cy.points.mul(player.cy.unlocks[1] >= 7 ? 2 : 1),
 		player.cy.points.div(10).add(1),
+		(player.cy.points.gte(5) ? player.cy.power.add(1).pow(0.25) : new Decimal(1)),
+		(player.cy.points.gte(5) ? player.cy.power.add(1).pow(2) : new Decimal(1)),
+		(player.cy.points.gte(5) ? player.cy.power.add(1).log10().mul(10) : new Decimal(0)),
 	]},
 	effectDescription() {return "which are increasing continent and leader amounts in their effects by +" + formatWhole(tmp.cy.effect[0]) + " and directly multiplying revolution gain by " + format(tmp.cy.effect[1]) + "x"},
 	tabFormat: [
@@ -104,6 +115,21 @@ addLayer("cy", {
 			if (cycleUnlocks[cycle][player.cy.unlocks[cycle]] && player.r.points.gte(cycleUnlocks[cycle][player.cy.unlocks[cycle]][0])) {
 				if (cycleUnlocks[cycle][player.cy.unlocks[cycle]][2]) cycleUnlocks[cycle][player.cy.unlocks[cycle]][2]();
 				player.cy.unlocks[cycle]++;
+			};
+		};
+		if (player.cy.points.gte(5)) {
+			if (hasMilestone("r", 74)) diff *= milestoneEffect("r", 74);
+			let cyclicalUnlocks = player.r.points.div(getCyclicalGenReqScale()).floor().toNumber();
+			if (cyclicalUnlocks > player.cy.generators.length) player.cy.generators.push(new Decimal(1));
+			for (let index = 0; index < player.cy.generators.length; index++) {
+				let eff = player.cy.generators[index];
+				if (index == 0) {
+					if (player.cy.power.lt(eff.mul(100)))
+						player.cy.power = player.cy.power.add(eff.mul(diff)).min(eff.mul(100));
+				} else {
+					if (player.cy.generators[index - 1].lt(eff.mul(100)))
+						player.cy.generators[index - 1] = player.cy.generators[index - 1].add(eff.mul(diff)).min(eff.mul(100));
+				};
 			};
 		};
 	},
@@ -134,12 +160,37 @@ addLayer("cy", {
 				style: {"margin": "8.5px"},
 				unlocked() {return player.cy.points.gte(4)},
 			},
-			/* "The Cyclical Cycles": {
-				content: [["display-text", () => player.cy.points.gte(x) ? "coming soon!" : "LOCKED"]],
+			"The Cyclical Cycles": {
+				content: [["display-text", () => {
+					if (player.cy.points.gte(5)) {
+						let text = "";
+						text += "You have <h2 style='color: #EE7770; text-shadow: #EE7770 0px 0px 10px'>" + format(player.cy.power) + "</h2> cyclical power, which is dividing the ecosystem requirement by /" + format(tmp.cy.effect[2]) + ", multiplying change and limit by " + format(tmp.cy.effect[3]) + "x, and increasing the effect of <b>Influence tickspeed</b> by +" + format(tmp.cy.effect[4]);
+						text += "<br><br>Each cyclical generator produces 1 of the previous generator per second,";
+						text += "<br>except each cyclical generator 1 produces 1 cyclical power per second.";
+						text += "<br><br>By default, each cyclical generator maxes out at 100 seconds of production.";
+						if (player.cy.generators.length > 11) {
+							text += "<br>";
+							for (let index = 0; index < 5; index++)
+								text += "<br>You have " + format(player.cy.generators[index]) + " cyclical generator " + (index + 1);
+							text += "<br>...";
+							for (let index = player.cy.generators.length - 5; index < player.cy.generators.length; index++)
+								text += "<br>You have " + format(player.cy.generators[index]) + " cyclical generator " + (index + 1);
+						} else {
+							for (let index = 0; index < player.cy.generators.length; index++) {
+								if (index == 0) text += "<br>";
+								text += "<br>You have " + format(player.cy.generators[index]) + " cyclical generator " + (index + 1);
+							};
+						};
+						text += "<br><br>The next cyclical generator will unlock at " + formatWhole((player.cy.generators.length + 1) * getCyclicalGenReqScale()) + " revolutions";
+						return text;
+					} else {
+						return "LOCKED";
+					};
+				}]],
 				style: {"margin": "8.5px"},
-				buttonStyle: {"border-color": "#E03330", "background-color": "#116022"},
-				unlocked() {return player.cy.points.gte(x)},
-			}, */
+				buttonStyle: {"border-color": "#D44C44", "background-color": "#EE7770", "color": "#0F0F0F", "text-shadow": "none"},
+				unlocked() {return player.cy.points.gte(5)},
+			},
 		},
 	}
 });

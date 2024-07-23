@@ -1,3 +1,27 @@
+function getAcclimationStatCost(id) {
+	let amt = getBuyableAmount("a", id).add(1);
+	if (hasChallenge("sp", 18)) amt = amt.sub(1);
+	if (amt.gte(1e10)) return amt.pow(2).div(2e8);
+	if (hasMilestone("r", 2)) return amt.mul(50);
+	return amt;
+};
+
+function getAcclimationStatLimit() {
+	if (hasMilestone("r", 72)) return Infinity;
+	return 1e10;
+};
+
+function getAcclimationExtraStats() {
+	let extra = new Decimal(0);
+	if (hasMilestone("a", 43)) extra = extra.add(milestoneEffect("a", 43));
+	if (hasMilestone("a", 67)) extra = extra.add(milestoneEffect("a", 67));
+	if (getGridData("w", 502)) extra = extra.add(gridEffect("w", 502));
+	if (getGridData("w", 504)) extra = extra.add(gridEffect("w", 504));
+	if (getGridData("w", 506)) extra = extra.add(gridEffect("w", 506));
+	if (tmp.ex.effect[2]) extra = extra.add(tmp.ex.effect[2]);
+	return extra;
+};
+
 addLayer("a", {
 	name: "Acclimation",
 	symbol: "A",
@@ -258,12 +282,7 @@ addLayer("a", {
 	},
 	buyables: {
 		11: {
-			cost() {
-				let cost = getBuyableAmount(this.layer, this.id).add(1);
-				if (hasChallenge("sp", 18)) cost = cost.sub(1);
-				if (hasMilestone("r", 2)) cost = cost.mul(50);
-				return cost;
-			},
+			cost() {return getAcclimationStatCost(this.id)},
 			effectBase() {
 				let base = new Decimal(10);
 				if (hasMilestone("a", 0)) base = base.mul(milestoneEffect("a", 0));
@@ -278,9 +297,9 @@ addLayer("a", {
 			},
 			effect() {return getBuyableAmount(this.layer, this.id).add(this.extra()).pow_base(this.effectBase())},
 			title: "(CRA)FTSMANSHIP",
-			display() {return "multiply population maximum by " + format(this.effectBase()) + (this.effectBase().gte(1000000) ? "" : "<br>(population max also influences gain)") + "<br><br>Effect: " + format(this.effect()) + "x<br><br>Cost: " + formatWhole(this.cost()) + " acclimation points<br><br>Level: " + (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit) ? "1e10/1e10" : formatWhole(getBuyableAmount(this.layer, this.id))) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
-			purchaseLimit: 1e10,
-			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit) && !inChallenge("sp", 11)},
+			display() {return "multiply population maximum by " + format(this.effectBase()) + (this.effectBase().gte(1000000) ? "" : "<br>(population max also influences gain)") + "<br><br>Effect: " + format(this.effect()) + "x<br><br>Cost: " + formatWhole(this.cost()) + " acclimation points<br><br>Level: " + (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit()) ? "1e10/1e10" : formatWhole(getBuyableAmount(this.layer, this.id))) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
+			purchaseLimit() {return getAcclimationStatLimit()},
+			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit()) && !inChallenge("sp", 11)},
 			buy() {
 				if (!hasMilestone("r", 2)) player[this.layer].spent = player[this.layer].spent.add(this.cost());
 				addBuyables(this.layer, this.id, getStatBulk());
@@ -291,23 +310,13 @@ addLayer("a", {
 				if (hasMilestone("a", 20)) extra = extra.add(milestoneEffect("a", 20));
 				if (hasMilestone("a", 22)) extra = extra.add(milestoneEffect("a", 22));
 				if (hasMilestone("a", 24)) extra = extra.add(milestoneEffect("a", 24));
-				if (hasMilestone("a", 43)) extra = extra.add(milestoneEffect("a", 43));
-				if (hasMilestone("a", 67)) extra = extra.add(milestoneEffect("a", 67));
-				if (getGridData("w", 502)) extra = extra.add(gridEffect("w", 502));
-				if (getGridData("w", 504)) extra = extra.add(gridEffect("w", 504));
-				if (getGridData("w", 506)) extra = extra.add(gridEffect("w", 506));
-				if (tmp.ex.effect[2]) extra = extra.add(tmp.ex.effect[2]);
+				extra = extra.add(getAcclimationExtraStats());
 				return extra.floor();
 			},
-			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return {"border-color": "#B44990"}},
+			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit())) return {"border-color": "#B44990"}},
 		},
 		12: {
-			cost() {
-				let cost = getBuyableAmount(this.layer, this.id).add(1);
-				if (hasChallenge("sp", 18)) cost = cost.sub(1);
-				if (hasMilestone("r", 2)) cost = cost.mul(50);
-				return cost;
-			},
+			cost() {return getAcclimationStatCost(this.id)},
 			effectBase() {
 				let base = new Decimal(5);
 				if (hasMilestone("a", 15)) base = base.mul(milestoneEffect("a", 15));
@@ -319,9 +328,9 @@ addLayer("a", {
 			},
 			effect() {return getBuyableAmount(this.layer, this.id).add(this.extra()).pow_base(this.effectBase())},
 			title: "(FER)TILITY",
-			display() {return "multiply population gain by " + format(this.effectBase()) + "<br><br>Effect: " + format(this.effect()) + "x<br><br>Cost: " + formatWhole(this.cost()) + " acclimation points<br><br>Level: " + (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit) ? "1e10/1e10" : formatWhole(getBuyableAmount(this.layer, this.id))) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
-			purchaseLimit: 1e10,
-			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit) && !inChallenge("sp", 11)},
+			display() {return "multiply population gain by " + format(this.effectBase()) + "<br><br>Effect: " + format(this.effect()) + "x<br><br>Cost: " + formatWhole(this.cost()) + " acclimation points<br><br>Level: " + (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit()) ? "1e10/1e10" : formatWhole(getBuyableAmount(this.layer, this.id))) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
+			purchaseLimit() {return getAcclimationStatLimit()},
+			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit()) && !inChallenge("sp", 11)},
 			buy() {
 				if (!hasMilestone("r", 2)) player[this.layer].spent = player[this.layer].spent.add(this.cost());
 				addBuyables(this.layer, this.id, getStatBulk());
@@ -333,23 +342,13 @@ addLayer("a", {
 				if (hasMilestone("a", 18)) extra = extra.add(milestoneEffect("a", 18));
 				if (hasMilestone("a", 20)) extra = extra.add(milestoneEffect("a", 20));
 				if (hasMilestone("a", 22)) extra = extra.add(milestoneEffect("a", 22));
-				if (hasMilestone("a", 43)) extra = extra.add(milestoneEffect("a", 43));
-				if (hasMilestone("a", 67)) extra = extra.add(milestoneEffect("a", 67));
-				if (getGridData("w", 502)) extra = extra.add(gridEffect("w", 502));
-				if (getGridData("w", 504)) extra = extra.add(gridEffect("w", 504));
-				if (getGridData("w", 506)) extra = extra.add(gridEffect("w", 506));
-				if (tmp.ex.effect[2]) extra = extra.add(tmp.ex.effect[2]);
+				extra = extra.add(getAcclimationExtraStats());
 				return extra.floor();
 			},
-			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return {"border-color": "#B44990"}},
+			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit())) return {"border-color": "#B44990"}},
 		},
 		13: {
-			cost() {
-				let cost = getBuyableAmount(this.layer, this.id).add(1);
-				if (hasChallenge("sp", 18)) cost = cost.sub(1);
-				if (hasMilestone("r", 2)) cost = cost.mul(50);
-				return cost;
-			},
+			cost() {return getAcclimationStatCost(this.id)},
 			effectBase() {
 				let base = new Decimal(1.25);
 				if (hasMilestone("a", 1)) base = base.add(milestoneEffect("a", 1));
@@ -365,9 +364,9 @@ addLayer("a", {
 			},
 			effect() {return getBuyableAmount(this.layer, this.id).add(this.extra()).pow_base(this.effectBase())},
 			title: "(ANA)LYTICITY",
-			display() {return "divide acclimation requirement by " + format(this.effectBase()) + "<br><br>Effect: /" + format(this.effect()) + "<br><br>Cost: " + formatWhole(this.cost()) + " acclimation points<br><br>Level: " + (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit) ? "1e10/1e10" : formatWhole(getBuyableAmount(this.layer, this.id))) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
-			purchaseLimit: 1e10,
-			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit) && !inChallenge("sp", 12)},
+			display() {return "divide acclimation requirement by " + format(this.effectBase()) + "<br><br>Effect: /" + format(this.effect()) + "<br><br>Cost: " + formatWhole(this.cost()) + " acclimation points<br><br>Level: " + (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit()) ? "1e10/1e10" : formatWhole(getBuyableAmount(this.layer, this.id))) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
+			purchaseLimit() {return getAcclimationStatLimit()},
+			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit()) && !inChallenge("sp", 12)},
 			buy() {
 				if (!hasMilestone("r", 2)) player[this.layer].spent = player[this.layer].spent.add(this.cost());
 				addBuyables(this.layer, this.id, getStatBulk());
@@ -377,23 +376,13 @@ addLayer("a", {
 				if (hasMilestone("a", 18)) extra = extra.add(milestoneEffect("a", 18));
 				if (hasMilestone("a", 22)) extra = extra.add(milestoneEffect("a", 22));
 				if (hasMilestone("a", 24)) extra = extra.add(milestoneEffect("a", 24));
-				if (hasMilestone("a", 43)) extra = extra.add(milestoneEffect("a", 43));
-				if (hasMilestone("a", 67)) extra = extra.add(milestoneEffect("a", 67));
-				if (getGridData("w", 502)) extra = extra.add(gridEffect("w", 502));
-				if (getGridData("w", 504)) extra = extra.add(gridEffect("w", 504));
-				if (getGridData("w", 506)) extra = extra.add(gridEffect("w", 506));
-				if (tmp.ex.effect[2]) extra = extra.add(tmp.ex.effect[2]);
+				extra = extra.add(getAcclimationExtraStats());
 				return extra.floor();
 			},
-			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return {"border-color": "#B44990"}},
+			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit())) return {"border-color": "#B44990"}},
 		},
 		14: {
-			cost() {
-				let cost = getBuyableAmount(this.layer, this.id).add(1);
-				if (hasChallenge("sp", 18)) cost = cost.sub(1);
-				if (hasMilestone("r", 2)) cost = cost.mul(50);
-				return cost;
-			},
+			cost() {return getAcclimationStatCost(this.id)},
 			effectBase() {
 				let base = new Decimal(3);
 				if (hasMilestone("a", 2)) base = base.mul(milestoneEffect("a", 2));
@@ -408,9 +397,9 @@ addLayer("a", {
 			},
 			effect() {return getBuyableAmount(this.layer, this.id).add(this.extra()).pow_base(this.effectBase())},
 			title: "(SOV)EREIGNTY",
-			display() {return "multiply population amount in population effects by " + format(this.effectBase()) + "<br><br>Effect: " + format(this.effect()) + "x<br><br>Cost: " + formatWhole(this.cost()) + " acclimation points<br><br>Level: " + (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit) ? "1e10/1e10" : formatWhole(getBuyableAmount(this.layer, this.id))) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
-			purchaseLimit: 1e10,
-			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit) && !inChallenge("sp", 11)},
+			display() {return "multiply population amount in population effects by " + format(this.effectBase()) + "<br><br>Effect: " + format(this.effect()) + "x<br><br>Cost: " + formatWhole(this.cost()) + " acclimation points<br><br>Level: " + (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit()) ? "1e10/1e10" : formatWhole(getBuyableAmount(this.layer, this.id))) + (this.extra().eq(0) ? "" : " + " + formatWhole(this.extra()))},
+			purchaseLimit() {return getAcclimationStatLimit()},
+			canAfford() {return player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit()) && !inChallenge("sp", 11)},
 			buy() {
 				if (!hasMilestone("r", 2)) player[this.layer].spent = player[this.layer].spent.add(this.cost());
 				addBuyables(this.layer, this.id, getStatBulk());
@@ -421,15 +410,10 @@ addLayer("a", {
 				if (hasMilestone("a", 18)) extra = extra.add(milestoneEffect("a", 18));
 				if (hasMilestone("a", 20)) extra = extra.add(milestoneEffect("a", 20));
 				if (hasMilestone("a", 24)) extra = extra.add(milestoneEffect("a", 24));
-				if (hasMilestone("a", 43)) extra = extra.add(milestoneEffect("a", 43));
-				if (hasMilestone("a", 67)) extra = extra.add(milestoneEffect("a", 67));
-				if (getGridData("w", 502)) extra = extra.add(gridEffect("w", 502));
-				if (getGridData("w", 504)) extra = extra.add(gridEffect("w", 504));
-				if (getGridData("w", 506)) extra = extra.add(gridEffect("w", 506));
-				if (tmp.ex.effect[2]) extra = extra.add(tmp.ex.effect[2]);
+				extra = extra.add(getAcclimationExtraStats());
 				return extra.floor();
 			},
-			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return {"border-color": "#B44990"}},
+			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit())) return {"border-color": "#B44990"}},
 		},
 		respec() {
 			setBuyableAmount("a", 11, new Decimal(0));

@@ -35,6 +35,7 @@ addLayer("ec", {
 		if (tmp.co.effect[0]) mult = mult.div(tmp.co.effect[0]);
 		if (tmp.co.effect[5]) mult = mult.div(tmp.co.effect[5]);
 		if (tmp.t.effect[5] && hasMilestone("d", 62)) mult = mult.div(tmp.t.effect[5]);
+		if (tmp.cy.effect[2]) mult = mult.div(tmp.cy.effect[2]);
 		return mult;
 	},
 	effect() {

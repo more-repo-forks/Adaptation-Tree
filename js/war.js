@@ -93,6 +93,8 @@ addLayer("w", {
 		if (hasMilestone("r", 58)) base -= milestoneEffect("r", 58);
 		if (hasMilestone("r", 62)) base -= milestoneEffect("r", 62);
 		if (hasMilestone("r", 64)) base -= milestoneEffect("r", 64);
+		if (hasMilestone("r", 77)) base -= milestoneEffect("r", 77);
+		if (hasMilestone("r", 78)) base -= milestoneEffect("r", 78);
 		if (getGridData("w", 401)) base -= gridEffect("w", 401);
 		return base;
 	},

@@ -9,7 +9,7 @@ const modInfo = {
 }
 
 const VERSION = {
-	num: "3.1.1",
+	num: "3.1.2",
 	name: "The Consolidation",
 };
 
@@ -87,12 +87,12 @@ let displayThings = [
 		if (tmp.other.oompsMag != 0 && options.showOOMs) return "(" + format(tmp.other.oomps) + " OOM" + (tmp.other.oompsMag < 0 ? "^OOM" : (tmp.other.oompsMag > 1 ? "^" + tmp.other.oompsMag : "")) + "s/sec)";
 		return "(" + format(getPointPotential()) + " max power)";
 	},
-	() => "<br>current endgame is at 1e1377 " + (player.r.unlocked ? "change" : "???"),
+	() => "<br>current endgame is at 1e2000 " + (player.r.unlocked ? "change" : "???"),
 ];
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.r.change.gte("1e1377");
+	return player.r.change.gte("1e2000");
 };
 
 // Style for the background, can be a function
@@ -114,4 +114,6 @@ function fixOldSave(oldVersion) {
 			player.t.extra[row * 100 + col] = new Decimal(player.t.extra[row * 100 + col] || 0);
 	for (let index = 0; index < cycleUnlocks.length; index++)
 		if (!player.cy.unlocks[index]) player.cy.unlocks[index] = 0;
+	for (let index = 0; index < player.cy.generators.length; index++)
+		player.cy.generators[index] = new Decimal(player.cy.generators[index] || 0);
 };

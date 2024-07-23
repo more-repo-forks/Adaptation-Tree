@@ -50,6 +50,7 @@ addLayer("l", {
 		if (tmp.em.effect[0]) amt = amt.add(tmp.em.effect[0]);
 		let lastEffAmt = new Decimal(amt);
 		if (getGridData("w", 602) >= 2) lastEffAmt = lastEffAmt.mul(1.6);
+		if (getGridData("w", 606) >= 2) lastEffAmt = lastEffAmt.mul(2.1);
 		let eff = [
 			new Decimal(2).pow(amt),
 			new Decimal(getGridData("w", 604) ? gridEffect("w", 604) : 2).pow(amt),
