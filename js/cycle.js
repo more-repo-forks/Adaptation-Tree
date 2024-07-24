@@ -15,17 +15,17 @@ const cycleUnlocks = [[
 	[200, "the row 6 [10 resets] effects unlocks at 6 resets"],
 	[250, "decrease the battle enhancement costs by 1", null, 10],
 	[275, () => "you bulk 10x <b>Influence empowerment</b>" + (player.cy.unlocks[1] >= 6 ? "" : "<br>(this resets <b>Influence empowerment</b> amount)"), () => setBuyableAmount("ex", 22, new Decimal(0))],
-	[300, "improve the first cycle effect"],
+	[300, "the first cycle effect is improved"],
 	[325, "you keep ANACHRONISM completions on all resets"],
 	[350, "you keep retrogression completions on all resets"],
 	[375, () => "decrease the battle enhancement costs by " + (player.cy.unlocks[1] >= 10 ? 2 : 1)],
-	[400, "improve the second and fourth ecosystem effects"],
+	[400, "the second and fourth ecosystem effects are improved"],
 ], [
 	[111, "ecosystem resets (that are not in ANACHRONISM) no longer reset anything<br>you automatically claim potential ecosystems"],
 	[222, "revolution resets no longer reset anything<br>you automatically claim potential revolutions"],
 	[333, "expansion resets no longer reset anything<br>you automatically claim potential expansion points"],
 	[444, "war resets (without respec) no longer reset anything<br>you automatically claim potential wars"],
-	[555, "improve the first territory effect"],
+	[555, "the first territory effect is improved"],
 ], [
 	[150, "you automatically buy tier 1 control nodes"],
 	[300, () => "you bulk 10x <b>Influence tickspeed</b>" + (player.cy.unlocks[3] >= 2 ? "" : "<br>(this resets <b>Influence tickspeed</b> amount)"), () => setBuyableAmount("ex", 21, new Decimal(0))],
@@ -34,6 +34,7 @@ const cycleUnlocks = [[
 	[750, "you automatically buy tier 3 control nodes"],
 	[900, "you keep hybridization completions on all resets"],
 	[1050, "you automatically buy tier 4 control nodes"],
+	[1200, "the first empire effect is improved"],
 ]];
 
 function cycleUnlockText(tab) {

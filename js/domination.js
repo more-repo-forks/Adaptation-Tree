@@ -1,3 +1,12 @@
+function getDominationExtraStats(extra) {
+	if (hasMilestone("d", 37)) extra = extra.add(milestoneEffect("d", 37));
+	if (getGridData("w", 501)) extra = extra.add(gridEffect("w", 501));
+	if (getGridData("w", 503)) extra = extra.add(gridEffect("w", 503));
+	if (getGridData("w", 505)) extra = extra.add(gridEffect("w", 505));
+	if (player.l.focusUnlocked) extra = extra.add(clickableEffect("l", 12));
+	return extra.floor();
+};
+
 addLayer("d", {
 	name: "Domination",
 	symbol: "D",
@@ -60,84 +69,7 @@ addLayer("d", {
 	effectDescription() {return "of which " + formatWhole(player[this.layer].points.sub(player[this.layer].spent)) + " are unspent"},
 	resetsNothing() {return player.l.points.gte(2) || player.cy.unlocks[0] >= 1},
 	autoPrestige() {return player.l.points.gte(2) || player.cy.unlocks[0] >= 1},
-	tabFormat() {
-		// top text
-		let topText = "<div style='height: 25px; padding-top: ";
-		if (hasMilestone("r", 14) || player.l.unlocked) topText += "20px'>";
-		else topText += "5px'>";
-		if (getClickableState("d", 14)) topText += "Only extra levels";
-		else if (getClickableState("d", 13)) topText += "Only base levels";
-		else topText += "All levels";
-		// stat svg display
-		let max = 1;
-		if (getClickableState("d", 13)) max += getBuyableAmount("d", 11).max(getBuyableAmount("d", 12)).max(getBuyableAmount("d", 13)).max(getBuyableAmount("d", 14)).toNumber();
-		else if (getClickableState("d", 14)) max += tmp.d.buyables[11].extra.max(tmp.d.buyables[12].extra).max(tmp.d.buyables[13].extra).max(tmp.d.buyables[14].extra).toNumber();
-		else max += getBuyableAmount("d", 11).add(tmp.d.buyables[11].extra).max(getBuyableAmount("d", 12).add(tmp.d.buyables[12].extra)).max(getBuyableAmount("d", 13).add(tmp.d.buyables[13].extra)).max(getBuyableAmount("d", 14).add(tmp.d.buyables[14].extra)).toNumber();
-		if (max < 2) max = 2;
-		let statText = "<svg viewBox='0 0 100 100' style='width: 200px; height: 200px'>";
-		statText += "<line x1='6' y1='6' x2='94' y2='94' fill='none' stroke='#404040'/>";
-		statText += "<line x1='6' y1='94' x2='94' y2='6' fill='none' stroke='#404040'/>";
-		let rectMax = max;
-		if (rectMax >= 16) rectMax = max / (2 ** Math.floor(Math.log2(max) - 3));
-		for (let index = 0; index < rectMax; index++) {
-			let low = Math.min((index / rectMax * 45) + 5.5, 50);
-			let high = Math.max(((rectMax - index) / rectMax * 90) - 1, 0);
-			statText += "<rect x='" + low + "' y='" + low + "' width=" + high + " height='" + high + "' rx='1' ry='1' fill='none' stroke='#808080'/>";
-		};
-		// normal stats
-		let stats = (getClickableState("d", 14) ? [1, 1, 1, 1] : [
-			getBuyableAmount("d", 11).toNumber() + 1,
-			getBuyableAmount("d", 13).toNumber() + 1,
-			getBuyableAmount("d", 14).toNumber() + 1,
-			getBuyableAmount("d", 12).toNumber() + 1,
-		]);
-		let statPoint0 = 50 - Math.max(stats[0] / max * 45 - 0.5, 0);
-		let statPoint2 = 50 + Math.max(stats[2] / max * 45 - 0.5, 0);
-		if (!getClickableState("d", 14)) statText += "<polyline points='" + statPoint0 + "," + statPoint0 + " " + (50 + Math.max(stats[1] / max * 45 - 0.5, 0)) + "," + (50 - Math.max(stats[1] / max * 45 - 0.5, 0)) + " " + statPoint2 + "," + statPoint2 + " " + (50 - Math.max(stats[3] / max * 45 - 0.5, 0)) + "," + (50 + Math.max(stats[3] / max * 45 - 0.5, 0)) + " " + statPoint0 + "," + statPoint0 + "' fill='#ffffff40' stroke='#ffffff' stroke-linejoin='round' stroke-linecap='round'/>";
-		// extra stats
-		if (!getClickableState("d", 13)) {
-			stats[0] += tmp.d.buyables[11].extra.toNumber();
-			stats[1] += tmp.d.buyables[13].extra.toNumber();
-			stats[2] += tmp.d.buyables[14].extra.toNumber();
-			stats[3] += tmp.d.buyables[12].extra.toNumber();
-			statPoint0 = 50 - Math.max(stats[0] / max * 45 - 0.5, 0);
-			statPoint2 = 50 + Math.max(stats[2] / max * 45 - 0.5, 0);
-		};
-		statText += "<polyline points='" + statPoint0 + "," + statPoint0 + " " + (50 + Math.max(stats[1] / max * 45 - 0.5, 0)) + "," + (50 - Math.max(stats[1] / max * 45 - 0.5, 0)) + " " + statPoint2 + "," + statPoint2 + " " + (50 - Math.max(stats[3] / max * 45 - 0.5, 0)) + "," + (50 + Math.max(stats[3] / max * 45 - 0.5, 0)) + " " + statPoint0 + "," + statPoint0 + "' fill='#ffffff40' stroke='#ffffff' stroke-linejoin='round' stroke-linecap='round'/>";
-		// buyable columns
-		let cols = [];
-		cols[1] = [
-			["display-text", topText + "</div>"],
-			["display-text", statText + "</svg>"],
-			["row", [
-				["clickable", 13],
-				["clickable", 14],
-			]],
-		];
-		if (hasMilestone("r", 14) || player.l.unlocked) {
-			cols[0] = [["buyable", 11], ["blank", "10px"], ["toggle", ["d", "autoFOC"]], ["blank", "25px"], ["buyable", 12], ["blank", "10px"], ["toggle", ["d", "autoSPE"]]];
-			cols[2] = [["buyable", 13], ["blank", "10px"], ["toggle", ["d", "autoCLI"]], ["blank", "25px"], ["buyable", 14], ["blank", "10px"], ["toggle", ["d", "autoDOM"]]];
-			cols[1].push(["blank", "15px"], "respec-button");
-		} else {
-			cols[0] = [["buyable", 11], ["blank", "75px"], ["buyable", 12]];
-			cols[2] = [["buyable", 13], ["blank", "75px"], ["buyable", 14]];
-		};
-		// return
-		return [
-			"main-display",
-			"prestige-button",
-			"resource-display",
-			["display-text", "You keep all acclimation enhancements on domination resets.<br><br>After dominating 1 time, you automatically claim potential evolutions,<br>evolution resets (that are not in retrogressions) no longer reset anything,<br>and power gain is multiplied by your current power plus 1 exponentiated by 0.025.<br><br>The above extra effects will not go away even if this layer is reset."],
-			"blank",
-			["row", [
-				["column", cols[0]], ["column", cols[1]], ["column", cols[2]],
-			]],
-			(hasMilestone("r", 14) || player.l.unlocked ? undefined : "respec-button"),
-			"blank",
-			"milestones",
-			"blank",
-		];
-	},
+	tabFormat() {return getStatDisplay("d", hasMilestone("r", 14) || player.l.unlocked, "You keep all acclimation enhancements on domination resets.<br><br>After dominating 1 time, you automatically claim potential evolutions,<br>evolution resets (that are not in retrogressions) no longer reset anything,<br>and power gain is multiplied by your current power plus 1 exponentiated by 0.025.<br><br>The above extra effects will not go away even if this layer is reset.")},
 	layerShown() {return hasChallenge("sp", 15) || player.d.unlocked},
 	hotkeys: [{
 		key: "d",
@@ -174,7 +106,7 @@ addLayer("d", {
 	},
 	buyables: {
 		11: {
-			cost() {return getBuyableAmount(this.layer, this.id).add(1)},
+			cost(amt) {return amt.add(1)},
 			effectBase() {
 				let base = new Decimal(2.5);
 				if (hasMilestone("d", 0)) base = base.mul(milestoneEffect("d", 0));
@@ -192,8 +124,9 @@ addLayer("d", {
 			title: "DOMINATE (FOC)US",
 			display() {
 				if (!player.d.unlocks[0]) return "<br>requires 11 conscious beings to unlock";
-				if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return "Normal effect: divides focus requirement by " + format(this.effect()) + "<br><br>Complete domination effect: decreases the focus requirement base by " + format(this.completionEffect()) + "<br><br>Progress: " + format(100) + "%";
-				return "divide focus requirement by " + format(this.effectBase()) + "<br><br>Effect: /" + format(this.effect()) + "<br><br>Cost: " + formatWhole(this.cost()) + " domination points<br><br>Progress: " + format(getBuyableAmount(this.layer, this.id) * 20) + "%";
+				const b = tmp[this.layer].buyables[this.id];
+				if (getBuyableAmount(this.layer, this.id).gte(b.purchaseLimit)) return "Normal effect: divides focus requirement by " + format(b.effect) + "<br><br>Complete domination effect: decreases the focus requirement base by " + format(b.completionEffect) + "<br><br>Progress: " + format(100) + "%";
+				return "divide focus requirement by " + format(b.effectBase) + "<br><br>Effect: /" + format(b.effect) + "<br><br>Cost: " + formatWhole(b.cost) + " domination points<br><br>Progress: " + format(getBuyableAmount(this.layer, this.id) * 20) + "%";
 			},
 			purchaseLimit: 5,
 			canAfford() {return player.d.unlocks[0] && player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit)},
@@ -201,19 +134,11 @@ addLayer("d", {
 				player[this.layer].spent = player[this.layer].spent.add(this.cost());
 				addBuyables(this.layer, this.id, 1);
 			},
-			extra() {
-				let extra = new Decimal(0);
-				if (hasMilestone("d", 37)) extra = extra.add(milestoneEffect("d", 37));
-				if (getGridData("w", 501)) extra = extra.add(gridEffect("w", 501));
-				if (getGridData("w", 503)) extra = extra.add(gridEffect("w", 503));
-				if (getGridData("w", 505)) extra = extra.add(gridEffect("w", 505));
-				if (player.l.focusUnlocked) extra = extra.add(clickableEffect("l", 12));
-				return extra.floor();
-			},
+			extra() {return getDominationExtraStats(new Decimal(0))},
 			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return {"border-color": "#E03330"}},
 		},
 		12: {
-			cost() {return getBuyableAmount(this.layer, this.id).add(1)},
+			cost(amt) {return amt.add(1)},
 			effectBase() {
 				let base = new Decimal(1.2);
 				if (hasMilestone("d", 3)) base = base.mul(milestoneEffect("d", 3));
@@ -233,8 +158,9 @@ addLayer("d", {
 			title: "DOMINATE (SPE)CIES",
 			display() {
 				if (!player.d.unlocks[1]) return "<br>requires 14 species to unlock";
-				if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return "Normal effect: divides species requirement by " + format(this.effect()) + "<br><br>Complete domination effect: decreases the species requirement base by " + format(this.completionEffect()) + "<br><br>Progress: " + format(100) + "%";
-				return "divide species requirement by " + format(this.effectBase()) + "<br><br>Effect: /" + format(this.effect()) + "<br><br>Cost: " + formatWhole(this.cost()) + " domination points<br><br>Progress: " + format(getBuyableAmount(this.layer, this.id) * 10) + "%";
+				const b = tmp[this.layer].buyables[this.id];
+				if (getBuyableAmount(this.layer, this.id).gte(b.purchaseLimit)) return "Normal effect: divides species requirement by " + format(b.effect) + "<br><br>Complete domination effect: decreases the species requirement base by " + format(b.completionEffect) + "<br><br>Progress: " + format(100) + "%";
+				return "divide species requirement by " + format(b.effectBase) + "<br><br>Effect: /" + format(b.effect) + "<br><br>Cost: " + formatWhole(b.cost) + " domination points<br><br>Progress: " + format(getBuyableAmount(this.layer, this.id) * 10) + "%";
 			},
 			purchaseLimit: 10,
 			canAfford() {return player.d.unlocks[1] && player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit)},
@@ -244,18 +170,13 @@ addLayer("d", {
 			},
 			extra() {
 				let extra = new Decimal(0);
-				if (hasMilestone("d", 37)) extra = extra.add(milestoneEffect("d", 37));
 				if (hasMilestone("d", 48)) extra = extra.add(milestoneEffect("d", 48));
-				if (getGridData("w", 501)) extra = extra.add(gridEffect("w", 501));
-				if (getGridData("w", 503)) extra = extra.add(gridEffect("w", 503));
-				if (getGridData("w", 505)) extra = extra.add(gridEffect("w", 505));
-				if (player.l.focusUnlocked) extra = extra.add(clickableEffect("l", 12));
-				return extra.floor();
+				return getDominationExtraStats(extra);
 			},
 			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return {"border-color": "#E03330"}},
 		},
 		13: {
-			cost() {return getBuyableAmount(this.layer, this.id).add(1)},
+			cost(amt) {return amt.add(1)},
 			effectBase() {
 				let base = new Decimal(1000);
 				if (hasMilestone("d", 1)) base = base.mul(milestoneEffect("d", 1));
@@ -275,8 +196,9 @@ addLayer("d", {
 			title: "DOMINATE (CLI)MATE",
 			display() {
 				if (!player.d.unlocks[2]) return "<br>requires 270 acclimation points to unlock";
-				if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return "Normal effect: divides acclimation requirement by " + format(this.effect()) + "<br><br>Complete domination effect: decreases the expansion requirement base by " + format(this.completionEffect()) + "<br><br>Progress: " + format(100) + "%";
-				return "divide acclimation requirement by " + format(this.effectBase()) + "<br><br>Effect: /" + format(this.effect()) + "<br><br>Cost: " + formatWhole(this.cost()) + " domination points<br><br>Progress: " + format(getBuyableAmount(this.layer, this.id) * 20 / 3) + "%";
+				const b = tmp[this.layer].buyables[this.id];
+				if (getBuyableAmount(this.layer, this.id).gte(b.purchaseLimit)) return "Normal effect: divides acclimation requirement by " + format(b.effect) + "<br><br>Complete domination effect: decreases the expansion requirement base by " + format(b.completionEffect) + "<br><br>Progress: " + format(100) + "%";
+				return "divide acclimation requirement by " + format(b.effectBase) + "<br><br>Effect: /" + format(b.effect) + "<br><br>Cost: " + formatWhole(b.cost) + " domination points<br><br>Progress: " + format(getBuyableAmount(this.layer, this.id) * 20 / 3) + "%";
 			},
 			purchaseLimit: 15,
 			canAfford() {return player.d.unlocks[2] && player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit)},
@@ -286,18 +208,13 @@ addLayer("d", {
 			},
 			extra() {
 				let extra = new Decimal(0);
-				if (hasMilestone("d", 37)) extra = extra.add(milestoneEffect("d", 37));
 				if (hasMilestone("d", 48)) extra = extra.add(milestoneEffect("d", 48));
-				if (getGridData("w", 501)) extra = extra.add(gridEffect("w", 501));
-				if (getGridData("w", 503)) extra = extra.add(gridEffect("w", 503));
-				if (getGridData("w", 505)) extra = extra.add(gridEffect("w", 505));
-				if (player.l.focusUnlocked) extra = extra.add(clickableEffect("l", 12));
-				return extra.floor();
+				return getDominationExtraStats(extra);
 			},
 			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return {"border-color": "#E03330"}},
 		},
 		14: {
-			cost() {return getBuyableAmount(this.layer, this.id).add(1)},
+			cost(amt) {return amt.add(1)},
 			effectBase() {
 				let base = new Decimal(2);
 				if (hasMilestone("d", 2)) base = base.mul(milestoneEffect("d", 2));
@@ -320,8 +237,9 @@ addLayer("d", {
 			title: "TOTAL (DOM)INATION",
 			display() {
 				if (!player.d.unlocks[3]) return "<br>requires 12 conscious beings, 16 species, 325 acclimation points, and 1 domination point to unlock";
-				if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return "Normal effect: divides domination requirement by " + format(this.effect()) + "<br><br>Complete domination effect: divides the war requirement based on stats at 100% (currently&nbsp;/" + format(this.completionEffect()) + ")<br><br>Progress: " + format(100) + "%";
-				return "divide domination requirement by " + format(this.effectBase()) + "<br><br>Effect: /" + format(this.effect()) + "<br><br>Cost: " + formatWhole(this.cost()) + " domination points<br><br>Progress: " + format(getBuyableAmount(this.layer, this.id) * 5) + "%";
+				const b = tmp[this.layer].buyables[this.id];
+				if (getBuyableAmount(this.layer, this.id).gte(b.purchaseLimit)) return "Normal effect: divides domination requirement by " + format(b.effect) + "<br><br>Complete domination effect: divides the war requirement based on stats at 100% (currently&nbsp;/" + format(b.completionEffect) + ")<br><br>Progress: " + format(100) + "%";
+				return "divide domination requirement by " + format(b.effectBase) + "<br><br>Effect: /" + format(b.effect) + "<br><br>Cost: " + formatWhole(b.cost) + " domination points<br><br>Progress: " + format(getBuyableAmount(this.layer, this.id) * 5) + "%";
 			},
 			purchaseLimit: 20,
 			canAfford() {return player.d.unlocks[3] && player[this.layer].points.sub(player[this.layer].spent).gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit)},
@@ -331,13 +249,8 @@ addLayer("d", {
 			},
 			extra() {
 				let extra = new Decimal(0);
-				if (hasMilestone("d", 37)) extra = extra.add(milestoneEffect("d", 37));
 				if (hasMilestone("d", 48)) extra = extra.add(milestoneEffect("d", 48));
-				if (getGridData("w", 501)) extra = extra.add(gridEffect("w", 501));
-				if (getGridData("w", 503)) extra = extra.add(gridEffect("w", 503));
-				if (getGridData("w", 505)) extra = extra.add(gridEffect("w", 505));
-				if (player.l.focusUnlocked) extra = extra.add(clickableEffect("l", 12));
-				return extra.floor();
+				return getDominationExtraStats(extra);
 			},
 			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit)) return {"border-color": "#E03330"}},
 		},

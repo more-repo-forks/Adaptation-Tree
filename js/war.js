@@ -190,7 +190,7 @@ addLayer("w", {
 			if (inChallenge("co", 11)) return false;
 			if (!(id == 101 || getGridData("w", id - 1) || getGridData("w", id + 1) || getGridData("w", id - 100) || getGridData("w", id + 100))) return false;
 			if (data == 1 && Math.floor(id / 100) <= getEnhancableGridSize() && id % 100 <= getEnhancableGridSize()) return tmp.w.effect[1].sub(player.w.spentE).gte(getWarUpgradeCostE(id));
-			if (data == 0) return tmp.w.effect[0].sub(player.w.spent).gte(warUpgrades[Math.floor(id / 100) - 1][id % 100 - 1].cost || Infinity);
+			if (data == 0) return tmp.w.effect[0].sub(player.w.spent).gte(warUpgrades[Math.floor(id / 100) - 1][id % 100 - 1].cost);
 			return false;
 		},
 		onClick(data, id) {
@@ -203,7 +203,7 @@ addLayer("w", {
 			if (!(id == 101 || getGridData("w", id - 1) || getGridData("w", id + 1) || getGridData("w", id - 100) || getGridData("w", id + 100))) return "";
 			const upg = warUpgrades[Math.floor(id / 100) - 1][id % 100 - 1];
 			let desc = (data == 2 && upg.e.desc ? upg.e.desc : upg.desc);
-			return (typeof desc == "function" ? desc() : desc) + "<br><br>Cost: " + (data > 0 && Math.floor(id / 100) <= getEnhancableGridSize() && id % 100 <= getEnhancableGridSize() ? formatWhole(getWarUpgradeCostE(id)) + " battle enhancements" : formatWhole(upg.cost || Infinity) + " battles");
+			return (typeof desc == "function" ? desc() : desc) + "<br><br>Cost: " + (data > 0 && Math.floor(id / 100) <= getEnhancableGridSize() && id % 100 <= getEnhancableGridSize() ? formatWhole(getWarUpgradeCostE(id)) + " battle enhancement" + (getWarUpgradeCostE(id) == 1 ? "" : "s") : formatWhole(upg.cost) + " battle" + (upg.cost == 1 ? "" : "s"));
 		},
 		getEffect(data, id) {
 			if (!id) return;

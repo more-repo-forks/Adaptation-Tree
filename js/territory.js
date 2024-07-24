@@ -87,6 +87,8 @@ addLayer("t", {
 		return mult;
 	},
 	effect() {
+		let amt = player.t.points;
+		if (tmp.em.effect[0] && player.cy.unlocks[3] >= 8) amt = amt.add(tmp.em.effect[0]);
 		let territoryEff1Base = 10;
 		if (hasMilestone("r", 66)) territoryEff1Base++;
 		if (player.cy.unlocks[2] >= 5) territoryEff1Base += 2;
@@ -97,9 +99,9 @@ addLayer("t", {
 		if (hasMilestone("r", 53)) controlEff3Exp++;
 		if (getBuyableAmount("t", 13).gte(3)) controlEff3Exp += 0.5;
 		let eff = [
-			new Decimal(territoryEff1Base).pow(player.t.points),
-			new Decimal(hasMilestone("r", 66) ? 10 : 5).pow(player.t.points),
-			player.t.points.div(4).add(1),
+			new Decimal(territoryEff1Base).pow(amt),
+			new Decimal(hasMilestone("r", 66) ? 10 : 5).pow(amt),
+			amt.div(4).add(1),
 			player.t.control.add(1).log10().add(1).pow(getBuyableAmount("t", 11) ? 0.28 : 0.1),
 			(hasMilestone("d", 56) ? player.t.control.add(1).log10().div(10).add(1).pow(controlEff2Exp) : new Decimal(1)),
 			(hasMilestone("d", 60) ? player.t.control.add(1).log10().add(1).pow(controlEff3Exp) : new Decimal(1)),
