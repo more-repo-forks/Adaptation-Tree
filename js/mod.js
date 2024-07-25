@@ -9,8 +9,8 @@ const modInfo = {
 }
 
 const VERSION = {
-	num: "3.1.3",
-	name: "The Imperial Age",
+	num: "3.2.0",
+	name: "Micromanagement",
 };
 
 const winText = "Congratulations!<br>You have reached the end and beaten this game (for now),<br>but there is more content coming soon...";
@@ -87,12 +87,12 @@ let displayThings = [
 		if (tmp.other.oompsMag != 0 && options.showOOMs) return "(" + format(tmp.other.oomps) + " OOM" + (tmp.other.oompsMag < 0 ? "^OOM" : (tmp.other.oompsMag > 1 ? "^" + tmp.other.oompsMag : "")) + "s/sec)";
 		return "(" + format(getPointPotential()) + " max power)";
 	},
-	() => "<br>current endgame is at 1e2000 " + (player.r.unlocked ? "change" : "???"),
+	() => "<br>current endgame is at 1e3200 " + (player.r.unlocked ? "change" : "???"),
 ];
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.r.change.gte("1e2000");
+	return player.r.change.gte("1e3200");
 };
 
 // Style for the background, can be a function

@@ -13,6 +13,7 @@ function getGrowthExtraStats(extra) {
 	if (inChallenge("e", 21)) return new Decimal(0);
 	if (tmp.a.effect[2]) extra = extra.add(tmp.a.effect[2]);
 	if (tmp.cb.effect[2]) extra = extra.mul(tmp.cb.effect[2]);
+	if (tmp.em.effect[4]) extra = extra.pow(tmp.em.effect[4]);
 	return extra.floor();
 };
 

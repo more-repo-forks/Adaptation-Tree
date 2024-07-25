@@ -4,6 +4,7 @@ function getDominationExtraStats(extra) {
 	if (getGridData("w", 503)) extra = extra.add(gridEffect("w", 503));
 	if (getGridData("w", 505)) extra = extra.add(gridEffect("w", 505));
 	if (player.l.focusUnlocked) extra = extra.add(clickableEffect("l", 12));
+	if (tmp.em.effect[4]) extra = extra.pow(tmp.em.effect[4]);
 	return extra.floor();
 };
 

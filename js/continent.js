@@ -1,5 +1,5 @@
 function getSettlerGain() {
-	return player.cb.points.div(100).floor();
+	return player.cb.points.div(player.cy.unlocks[3] >= 12 ? 10 : 100).floor();
 };
 
 function getSettlerMax() {
@@ -56,6 +56,7 @@ addLayer("co", {
 		if (hasMilestone("r", 67)) lastSettlerEffExp += 0.75;
 		if (hasMilestone("r", 70)) lastSettlerEffExp += 0.5;
 		if (hasMilestone("r", 73)) lastSettlerEffExp += 0.5;
+		if (hasMilestone("r", 84)) lastSettlerEffExp += 1.5;
 		let eff = [
 			new Decimal(continentEff1Base).pow(amt),
 			new Decimal(continentEff2Base).pow(amt),

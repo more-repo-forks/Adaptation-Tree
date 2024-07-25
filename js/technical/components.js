@@ -209,17 +209,13 @@ function loadVue() {
 	// data = name of microtab family
 	Vue.component("microtabs", {
 		props: ["layer", "data"],
-		computed: {
-			currentTab() {return player.subtabs[layer][data]}
-		},
+		computed: {currentTab() {return player.subtabs[layer][data]}},
 		template: components.microtabs,
 	});
 	// data = id
 	Vue.component("bar", {
 		props: ["layer", "data"],
-		computed: {
-			style() {return constructBarStyle(this.layer, this.data)}
-		},
+		computed: {style() {return constructBarStyle(this.layer, this.data)}},
 		template: components.bar,
 	});
 	// data = optionally, array of rows to show

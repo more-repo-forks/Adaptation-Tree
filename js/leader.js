@@ -165,7 +165,12 @@ addLayer("l", {
 			title: "Focus on domination",
 			effect() {
 				let eff = (getClickableState("l", 12) || 0) * 25;
-				if (eff >= 3333) eff = ((eff / 3333) ** 0.3) * 3333;
+				if (eff >= 3333) {
+					let exp = 0.3;
+					if (hasMilestone("r", 85)) exp += 0.2;
+					if (hasMilestone("r", 87)) exp += 0.2;
+					eff = ((eff / 3333) ** exp) * 3333;
+				};
 				return Math.round(eff);
 			},
 			canClick() {return (getClickableState("l", 11) || 0) + (getClickableState("l", 12) || 0) < tmp.l.effect[4]},

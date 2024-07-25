@@ -35,6 +35,10 @@ const cycleUnlocks = [[
 	[900, "you keep hybridization completions on all resets"],
 	[1050, "you automatically buy tier 4 control nodes"],
 	[1200, "the first empire effect is improved"],
+	[1350, "you automatically buy tier 5 control nodes"],
+	[1500, () => "you bulk 10x the first 2 tiers of <b>Politics</b>" + (player.cy.unlocks[3] >= 10 ? "" : "<br>(this resets <b>Politics<sup>1</sup></b> and <b>Politics<sup>2</sup></b> amounts)"), () => {setGridData("t", 102, 0); setGridData("t", 202, 0)}],
+	[1650, "you automatically buy tier 6 control nodes"],
+	[1800, "multiply settler gain (but not limit) by 10x"],
 ]];
 
 function cycleUnlockText(tab) {
@@ -86,7 +90,7 @@ addLayer("cy", {
 	effect() { return [
 		player.cy.points.mul(player.cy.unlocks[1] >= 7 ? 2 : 1),
 		player.cy.points.div(10).add(1),
-		(player.cy.points.gte(5) ? player.cy.power.add(1).pow(0.25) : new Decimal(1)),
+		(player.cy.points.gte(5) ? player.cy.power.add(1).pow(hasMilestone("r", 82) ? 0.5 : 0.25) : new Decimal(1)),
 		(player.cy.points.gte(5) ? player.cy.power.add(1).pow(2) : new Decimal(1)),
 		(player.cy.points.gte(5) ? player.cy.power.add(1).log10().mul(10) : new Decimal(0)),
 	]},
@@ -142,22 +146,22 @@ addLayer("cy", {
 	microtabs: {
 		cycles: {
 			"The First Cycle": {
-				content: [["display-text", () => player.cy.points.gte(1) ? cycleUnlockText(0) : "LOCKED"]],
+				content: [["display-text", () => player.cy.points.gte(1) ? cycleUnlockText(0) : "Reach 1 cycle to unlock The First Cycle"]],
 				style: {"margin": "8.5px"},
 				unlocked() {return player.cy.points.gte(1)},
 			},
 			"The Second Cycle": {
-				content: [["display-text", () => player.cy.points.gte(2) ? cycleUnlockText(1) : "LOCKED"]],
+				content: [["display-text", () => player.cy.points.gte(2) ? cycleUnlockText(1) : "Reach 2 cycles to unlock The Second Cycle"]],
 				style: {"margin": "8.5px"},
 				unlocked() {return player.cy.points.gte(2)},
 			},
 			"The Third Cycle": {
-				content: [["display-text", () => player.cy.points.gte(3) ? cycleUnlockText(2) : "LOCKED"]],
+				content: [["display-text", () => player.cy.points.gte(3) ? cycleUnlockText(2) : "Reach 3 cycles to unlock The Third Cycle"]],
 				style: {"margin": "8.5px"},
 				unlocked() {return player.cy.points.gte(3)},
 			},
 			"The Fourth Cycle": {
-				content: [["display-text", () => player.cy.points.gte(4) ? cycleUnlockText(3) : "LOCKED"]],
+				content: [["display-text", () => player.cy.points.gte(4) ? cycleUnlockText(3) : "Reach 4 cycles to unlock The Fourth Cycle"]],
 				style: {"margin": "8.5px"},
 				unlocked() {return player.cy.points.gte(4)},
 			},
@@ -185,7 +189,7 @@ addLayer("cy", {
 						text += "<br><br>The next cyclical generator will unlock at " + formatWhole((player.cy.generators.length + 1) * getCyclicalGenReqScale()) + " revolutions";
 						return text;
 					} else {
-						return "LOCKED";
+						return "Reach 5 cycles to unlock The Cyclical Cycles";
 					};
 				}]],
 				style: {"margin": "8.5px"},

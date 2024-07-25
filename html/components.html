@@ -103,7 +103,7 @@ milestone: `<td v-if="tmp[layer].milestones && tmp[layer].milestones[data] !== u
 	<h3 v-html="tmp[layer].milestones[data].requirementDescription"></h3><br>
 	<span v-html="run(layers[layer].milestones[data].effectDescription, layers[layer].milestones[data])"></span><br>
 	<tooltip v-if="tmp[layer].milestones[data].tooltip" :text="tmp[layer].milestones[data].tooltip"></tooltip>
-	<span v-if="(tmp[layer].milestones[data].toggles)&&(hasMilestone(layer, data))" v-for="toggle in tmp[layer].milestones[data].toggles"><toggle :layer="layer" :data="toggle" v-bind:style="tmp[layer].componentStyles.toggle"></toggle>&nbsp;</span>
+	<span v-if="(tmp[layer].milestones[data].toggles) && (hasMilestone(layer, data))" v-for="toggle in tmp[layer].milestones[data].toggles"><toggle :layer="layer" :data="toggle" v-bind:style="tmp[layer].componentStyles.toggle"></toggle>&nbsp;</span>
 </td>`,
 
 toggle: `<button class="smallUpg can" v-bind:style="{'background-color': tmp[data[0]].color}" v-on:click="toggleAuto(data)">{{player[data[0]][data[1]] ? "ON" : "OFF"}}</button>`,
@@ -120,11 +120,13 @@ resource_display: `<div style="margin-top: -13px">
 </div>`,
 
 buyables: `<div v-if="tmp[layer].buyables" class="upgTable">
-	<respec-button v-if="tmp[layer].buyables.respec && !(tmp[layer].buyables.showRespec !== undefined && tmp[layer].buyables.showRespec == false)" :layer="layer" v-bind:style="[{'margin-bottom': '12px'}, tmp[layer].componentStyles['respec-button']]"></respec-button>
+	<respec-button v-if="tmp[layer].buyables.respec && (tmp[layer].buyables.showRespec === undefined || tmp[layer].buyables.showRespec)" :layer="layer" v-bind:style="[{'margin-bottom': '12px'}, tmp[layer].componentStyles['respec-button']]"></respec-button>
 	<div v-for="row in (data === undefined ? tmp[layer].buyables.rows : data)" class="upgRow">
-		<div v-for="col in tmp[layer].buyables.cols"><div v-if="tmp[layer].buyables[row * 10 + col] !== undefined && tmp[layer].buyables[row * 10 + col].unlocked" class="upgAlign" v-bind:style="{'margin-left': '7px', 'margin-right': '7px', 'height': (data ? data : 'inherit')}">
-			<buyable :layer="layer" :data="row * 10 + col"></buyable>
-		</div></div><br>
+		<div v-for="col in tmp[layer].buyables.cols">
+			<div v-if="tmp[layer].buyables[row * 10 + col] !== undefined && tmp[layer].buyables[row * 10 + col].unlocked" class="upgAlign" v-bind:style="{'margin-left': '7px', 'margin-right': '7px', 'height': (data ? data : 'inherit')}">
+				<buyable :layer="layer" :data="row * 10 + col"></buyable>
+			</div>
+		</div><br>
 	</div>
 </div>`,
 
@@ -137,12 +139,12 @@ buyable: `<div v-if="tmp[layer].buyables && tmp[layer].buyables[data] !== undefi
 		<node-mark :layer="layer" :data='tmp[layer].buyables[data].marked'></node-mark>
 		<tooltip v-if="tmp[layer].buyables[data].tooltip" :text="tmp[layer].buyables[data].tooltip"></tooltip>
 	</button>
-	<br v-if="(tmp[layer].buyables[data].sellOne !== undefined && !(tmp[layer].buyables[data].canSellOne !== undefined && tmp[layer].buyables[data].canSellOne == false)) || (tmp[layer].buyables[data].sellAll && !(tmp[layer].buyables[data].canSellAll !== undefined && tmp[layer].buyables[data].canSellAll == false))">
-	<sell-one :layer="layer" :data="data" v-bind:style="tmp[layer].componentStyles['sell-one']" v-if="(tmp[layer].buyables[data].sellOne)&& !(tmp[layer].buyables[data].canSellOne !== undefined && tmp[layer].buyables[data].canSellOne == false)"></sell-one>
-	<sell-all :layer="layer" :data="data" v-bind:style="tmp[layer].componentStyles['sell-all']" v-if="(tmp[layer].buyables[data].sellAll)&& !(tmp[layer].buyables[data].canSellAll !== undefined && tmp[layer].buyables[data].canSellAll == false)"></sell-all>
+	<br v-if="(tmp[layer].buyables[data].sellOne !== undefined && (tmp[layer].buyables[data].canSellOne === undefined || tmp[layer].buyables[data].canSellOne)) || (tmp[layer].buyables[data].sellAll && (tmp[layer].buyables[data].canSellAll === undefined || tmp[layer].buyables[data].canSellAll))">
+	<sell-one :layer="layer" :data="data" v-bind:style="tmp[layer].componentStyles['sell-one']" v-if="(tmp[layer].buyables[data].sellOne) && (tmp[layer].buyables[data].canSellOne === undefined || tmp[layer].buyables[data].canSellOne)"></sell-one>
+	<sell-all :layer="layer" :data="data" v-bind:style="tmp[layer].componentStyles['sell-all']" v-if="(tmp[layer].buyables[data].sellAll) && (tmp[layer].buyables[data].canSellAll === undefined || tmp[layer].buyables[data].canSellAll)"></sell-all>
 </div>`,
 
-respec_button: `<div v-if="tmp[layer].buyables && tmp[layer].buyables.respec && !(tmp[layer].buyables.showRespec !== undefined && tmp[layer].buyables.showRespec == false)">
+respec_button: `<div v-if="tmp[layer].buyables && tmp[layer].buyables.respec && (tmp[layer].buyables.showRespec === undefined || tmp[layer].buyables.showRespec)">
 	<div class="tooltipBox respecCheckbox">
 		<input type="checkbox" v-model="player[layer].noRespecConfirm">
 		<tooltip v-bind:text="'Disable respec confirmation'"></tooltip>
@@ -151,7 +153,7 @@ respec_button: `<div v-if="tmp[layer].buyables && tmp[layer].buyables.respec && 
 </div>`,
 
 clickables: `<div v-if="tmp[layer].clickables" class="upgTable">
-	<master-button v-if="tmp[layer].clickables.masterButtonPress && !(tmp[layer].clickables.showMasterButton !== undefined && tmp[layer].clickables.showMasterButton == false)" :layer="layer" v-bind:style="[{'margin-bottom': '12px'}, tmp[layer].componentStyles['master-button']]"></master-button>
+	<master-button v-if="tmp[layer].clickables.masterButtonPress && (tmp[layer].clickables.showMasterButton === undefined || tmp[layer].clickables.showMasterButton)" :layer="layer" v-bind:style="[{'margin-bottom': '12px'}, tmp[layer].componentStyles['master-button']]"></master-button>
 	<div v-for="row in (data === undefined ? tmp[layer].clickables.rows : data)" class="upgRow">
 		<div v-for="col in tmp[layer].clickables.cols">
 			<div v-if="tmp[layer].clickables[row * 10 + col] !== undefined && tmp[layer].clickables[row * 10 + col].unlocked" class="upgAlign" v-bind:style="{'margin-left': '7px', 'margin-right': '7px', 'height': (data ? data : 'inherit')}">
@@ -170,7 +172,7 @@ clickable: `<button v-if="tmp[layer].clickables && tmp[layer].clickables[data] !
 	<tooltip v-if="tmp[layer].clickables[data].tooltip" :text="tmp[layer].clickables[data].tooltip"></tooltip>
 </button>`,
 
-master_button: `<button v-if="tmp[layer].clickables && tmp[layer].clickables.masterButtonPress && !(tmp[layer].clickables.showMasterButton !== undefined && tmp[layer].clickables.showMasterButton == false)" v-on:click="run(tmp[layer].clickables.masterButtonPress, tmp[layer].clickables)" v-bind:class="{longUpg: true, can: player[layer].unlocked, locked: !player[layer].unlocked}">{{tmp[layer].clickables.masterButtonText ? tmp[layer].clickables.masterButtonText : "Click me!"}}</button>`,
+master_button: `<button v-if="tmp[layer].clickables && tmp[layer].clickables.masterButtonPress && (tmp[layer].clickables.showMasterButton === undefined || tmp[layer].clickables.showMasterButton)" v-on:click="run(tmp[layer].clickables.masterButtonPress, tmp[layer].clickables)" v-bind:class="{longUpg: true, can: player[layer].unlocked, locked: !player[layer].unlocked}">{{tmp[layer].clickables.masterButtonText ? tmp[layer].clickables.masterButtonText : "Click me!"}}</button>`,
 
 grid: `<div v-if="tmp[layer].grid" class="upgTable">
 	<div v-for="row in (data === undefined ? Math.min(tmp[layer].grid.rows, tmp[layer].grid.maxRows) : data)" class="upgRow">
@@ -292,9 +294,9 @@ drop_down: `<select v-model="player[layer][data[0]]">
 	<option v-for="item in data[1]" v-bind:value="item">{{item}}</option>
 </select>`,
 
-sell_one: `<button v-if="tmp[layer].buyables && tmp[layer].buyables[data].sellOne && !(tmp[layer].buyables[data].canSellOne !== undefined && tmp[layer].buyables[data].canSellOne == false)" v-on:click="run(tmp[layer].buyables[data].sellOne, tmp[layer].buyables[data])" v-bind:class="{longUpg: true, can: player[layer].unlocked, locked: !player[layer].unlocked}">{{tmp[layer].buyables.sellOneText ? tmp[layer].buyables.sellOneText : "Sell One"}}</button>`,
+sell_one: `<button v-if="tmp[layer].buyables && tmp[layer].buyables[data].sellOne && (tmp[layer].buyables[data].canSellOne === undefined || tmp[layer].buyables[data].canSellOne)" v-on:click="run(tmp[layer].buyables[data].sellOne, tmp[layer].buyables[data])" v-bind:class="{longUpg: true, can: player[layer].unlocked, locked: !player[layer].unlocked}">{{tmp[layer].buyables.sellOneText ? tmp[layer].buyables.sellOneText : "Sell One"}}</button>`,
 
-sell_all: `<button v-if="tmp[layer].buyables && tmp[layer].buyables[data].sellAll && !(tmp[layer].buyables[data].canSellAll !== undefined && tmp[layer].buyables[data].canSellAll == false)" v-on:click="run(tmp[layer].buyables[data].sellAll, tmp[layer].buyables[data])" v-bind:class="{longUpg: true, can: player[layer].unlocked, locked: !player[layer].unlocked}">{{tmp[layer].buyables.sellAllText ? tmp[layer].buyables.sellAllText : "Sell All"}}</button>`,
+sell_all: `<button v-if="tmp[layer].buyables && tmp[layer].buyables[data].sellAll && (tmp[layer].buyables[data].canSellAll === undefined || tmp[layer].buyables[data].canSellAll)" v-on:click="run(tmp[layer].buyables[data].sellAll, tmp[layer].buyables[data])" v-bind:class="{longUpg: true, can: player[layer].unlocked, locked: !player[layer].unlocked}">{{tmp[layer].buyables.sellAllText ? tmp[layer].buyables.sellAllText : "Sell All"}}</button>`,
 
 node_mark: `<div v-if='data'>
 	<div v-if='data === true' class='star' v-bind:style='{

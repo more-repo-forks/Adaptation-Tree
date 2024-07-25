@@ -6,27 +6,27 @@ const controlNodeReq = [[
 	(x = 0) => Math.max(x + 12 - getBuyableAmount("t", 13).toNumber(), 0),
 	(x = 0) => (4 * (x ** buyableEffect("t", 12)) + 7) * 11,
 	(x = 0) => Math.max(x + 11 - getBuyableAmount("t", 13).toNumber(), 0),
-	(x = 0) => (x ** buyableEffect("t", 12) + 3) * 1000,
+	(x = 0) => (x ** buyableEffect("t", 12) + 3) * (hasMilestone("r", 88) ? 600 : 1000),
 ], [
 	(x = 0) => Math.max(x + (hasMilestone("r", 35) ? 1 : 2) - getBuyableAmount("t", 13).toNumber(), 0) * 2,
 	(x = 0) => new Decimal(hasMilestone("r", 35) ? 1e7 : 5e7).pow(x ** buyableEffect("t", 12) + 1),
 	(x = 0) => Math.max(x + (hasMilestone("r", 35) ? 7 : 8) - getBuyableAmount("t", 13).toNumber(), 0) * 2,
 	(x = 0) => (x ** buyableEffect("t", 12) + (hasMilestone("r", 35) ? 4 : 5)) * 50,
 	(x = 0) => Math.max(x + (hasMilestone("r", 35) ? 6 : 7) - getBuyableAmount("t", 13).toNumber(), 0) * 2,
-	(x = 0) => (x ** buyableEffect("t", 12) + (hasMilestone("r", 35) ? 4 : 5)) * 1000,
+	(x = 0) => (x ** buyableEffect("t", 12) + (hasMilestone("r", 35) ? 4 : 5)) * (hasMilestone("r", 88) ? 750 : 1000),
 ], [
-	(x = 0) => Math.max(x + 2 - getBuyableAmount("t", 13).toNumber(), 0) * 5,
+	(x = 0) => Math.max(x + (hasMilestone("r", 88) ? 1 : 2) - getBuyableAmount("t", 13).toNumber(), 0) * 5,
 	(x = 0) => new Decimal(1e50).pow(x ** buyableEffect("t", 12) + 1),
-	(x = 0) => Math.max(x + 3 - getBuyableAmount("t", 13).toNumber(), 0) * 5,
+	(x = 0) => Math.max(x + (hasMilestone("r", 88) ? 2 : 3) - getBuyableAmount("t", 13).toNumber(), 0) * 5,
 	(x = 0) => (x ** buyableEffect("t", 12) + 2) * 100,
 	(x = 0) => Math.max(x + 2 - getBuyableAmount("t", 13).toNumber(), 0) * 5,
 	(x = 0) => (x ** buyableEffect("t", 12) + 6) * 1000,
 ], [
-	(x = 0) => Math.max(x + 4 - getBuyableAmount("t", 13).toNumber(), 0) * 8,
+	(x = 0) => Math.max(x + (hasMilestone("r", 88) ? 3 : 4) - getBuyableAmount("t", 13).toNumber(), 0) * 8,
 	(x = 0) => new Decimal(1e200).pow(x ** buyableEffect("t", 12) + 1),
-	(x = 0) => Math.max(x + 5 - getBuyableAmount("t", 13).toNumber(), 0) * 8,
+	(x = 0) => Math.max(x + (hasMilestone("r", 88) ? 4 : 5) - getBuyableAmount("t", 13).toNumber(), 0) * 8,
 	(x = 0) => (x ** buyableEffect("t", 12) + 2) * 150,
-	(x = 0) => Math.max(x + 5 - getBuyableAmount("t", 13).toNumber(), 0) * 8,
+	(x = 0) => Math.max(x + (hasMilestone("r", 88) ? 4 : 5) - getBuyableAmount("t", 13).toNumber(), 0) * 8,
 	(x = 0) => (x ** buyableEffect("t", 12) + 4) * 2000,
 ], [
 	(x = 0) => Math.max(x + 5 - getBuyableAmount("t", 13).toNumber(), 0) * 12,
@@ -35,6 +35,13 @@ const controlNodeReq = [[
 	(x = 0) => (x ** buyableEffect("t", 12) + 4) * 250,
 	(x = 0) => Math.max(x + 6 - getBuyableAmount("t", 13).toNumber(), 0) * 12,
 	(x = 0) => (x ** buyableEffect("t", 12) + 5) * 5000,
+], [
+	(x = 0) => Math.max(x + 6 - getBuyableAmount("t", 13).toNumber(), 0) * 16,
+	(x = 0) => new Decimal(hasMilestone("r", 88) ? "1e2000" : "1e5000").pow(x ** buyableEffect("t", 12) + 1),
+	(x = 0) => Math.max(x + 7 - getBuyableAmount("t", 13).toNumber(), 0) * 16,
+	(x = 0) => (x ** buyableEffect("t", 12) + 5) * 2000,
+	(x = 0) => Math.max(x + 7 - getBuyableAmount("t", 13).toNumber(), 0) * 16,
+	(x = 0) => (x ** buyableEffect("t", 12) + 4) * 20000,
 ]];
 
 function getControlNodeTimeSpeed() {
@@ -49,7 +56,15 @@ function getAutoControlTiers() {
 	if (player.cy.unlocks[3] >= 3) autoTiers++;
 	if (player.cy.unlocks[3] >= 5) autoTiers++;
 	if (player.cy.unlocks[3] >= 7) autoTiers++;
+	if (player.cy.unlocks[3] >= 9) autoTiers++;
+	if (player.cy.unlocks[3] >= 11) autoTiers++;
 	return autoTiers;
+};
+
+function getControlImprovementLimit(limit) {
+	if (hasMilestone("r", 68)) limit += milestoneEffect("r", 68);
+	if (hasMilestone("r", 86)) limit += milestoneEffect("r", 86);
+	return limit;
 };
 
 addLayer("t", {
@@ -91,7 +106,11 @@ addLayer("t", {
 		if (tmp.em.effect[0] && player.cy.unlocks[3] >= 8) amt = amt.add(tmp.em.effect[0]);
 		let territoryEff1Base = 10;
 		if (hasMilestone("r", 66)) territoryEff1Base++;
+		if (hasMilestone("r", 79)) territoryEff1Base++;
 		if (player.cy.unlocks[2] >= 5) territoryEff1Base += 2;
+		let controlEff1Exp = 0.1;
+		if (hasMilestone("r", 89)) controlEff1Exp += 0.01;
+		if (getBuyableAmount("t", 11).gte(1)) controlEff1Exp += 0.18;
 		let controlEff2Exp = 0.1;
 		if (hasMilestone("r", 37)) controlEff2Exp += 0.1;
 		if (getBuyableAmount("t", 12).gte(2)) controlEff2Exp += 0.01;
@@ -102,7 +121,7 @@ addLayer("t", {
 			new Decimal(territoryEff1Base).pow(amt),
 			new Decimal(hasMilestone("r", 66) ? 10 : 5).pow(amt),
 			amt.div(4).add(1),
-			player.t.control.add(1).log10().add(1).pow(getBuyableAmount("t", 11) ? 0.28 : 0.1),
+			player.t.control.add(1).log10().add(1).pow(controlEff1Exp),
 			(hasMilestone("d", 56) ? player.t.control.add(1).log10().div(10).add(1).pow(controlEff2Exp) : new Decimal(1)),
 			(hasMilestone("d", 60) ? player.t.control.add(1).log10().add(1).pow(controlEff3Exp) : new Decimal(1)),
 		];
@@ -163,9 +182,8 @@ addLayer("t", {
 		for (let row = 1; row <= getAutoControlTiers() && row <= tmp.t.grid.rows; row++) {
 			for (let col = 1; col <= tmp.t.grid.cols; col++) {
 				const id = row * 100 + col;
-				if (layers.t.grid.getCanClick(getGridData("t", id), id)) {
-					player.t.grid[id]++;
-				};
+				if (layers.t.grid.getCanClick(getGridData("t", id), id))
+					layers.t.grid.onClick(getGridData("t", id), id);
 			};
 		};
 	},
@@ -197,9 +215,12 @@ addLayer("t", {
 			if (id % 100 == 1) return player.t.points.gte(controlNodeReq[Math.floor(id / 100) - 1][id % 100 - 1](data));
 			return false;
 		},
-		onClick(data, id) {player.t.grid[id]++},
-		onHold(data, id) {player.t.grid[id]++},
-		getTitle(data, id) {return controlNodeName[id % 100 - 1] + (id >= 200 ? "<sup>" + Math.floor(id / 100) + "</sup>" : "")},
+		onClick(data, id) {
+			if (player.cy.unlocks[3] >= 10 && (id == 102 || id == 202)) player.t.grid[id] += 10;
+			else player.t.grid[id]++;
+		},
+		onHold(data, id) {this.onClick(data, id)},
+		getTitle(data, id) {return controlNodeName[id % 100 - 1] + "<sup>" + Math.floor(id / 100) + "</sup>"},
 		getDisplay(data, id) {
 			let text = "producing " + format(gridEffect("t", id)) + " ";
 			if (id == 101) text += "control";
@@ -225,14 +246,10 @@ addLayer("t", {
 	},
 	buyables: {
 		11: {
-			cost() {return [1e80, "1e498", "1e1920"][getBuyableAmount(this.layer, this.id).toNumber()] || Infinity},
+			cost() {return [1e80, "1e498", "1e1920", "1e11777"][getBuyableAmount(this.layer, this.id).toNumber()] || Infinity},
 			title: "Greater Control",
 			display() {return "unlock another tier of control nodes<br><br>on first buy, also improves the first control effect" + (getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit()) ? "<br><br>Cost: " + format(this.cost()) + " control" : "") + "<br><br>Bought: " + formatWhole(getBuyableAmount(this.layer, this.id)) + "/" + this.purchaseLimit()},
-			purchaseLimit() {
-				let limit = 2;
-				if (hasMilestone("r", 68)) limit += milestoneEffect("r", 68);
-				return limit;
-			},
+			purchaseLimit() {return getControlImprovementLimit(2)},
 			canAfford() {return player.t.control.gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit())},
 			buy() {
 				player.t.control = player.t.control.sub(this.cost());
@@ -241,15 +258,15 @@ addLayer("t", {
 			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit())) return {"border-color": "#E03330"}},
 		},
 		12: {
-			cost() {return [1e136, 1e207, 1e280, "1e2211"][getBuyableAmount(this.layer, this.id).toNumber()] || Infinity},
+			cost() {return [1e136, 1e207, 1e280, "1e2211", "1e10899"][getBuyableAmount(this.layer, this.id).toNumber()] || Infinity},
 			title: "Cheaper Policies",
-			display() {return "decrease the cost scaling of all tiers of <b>Politics</b>, <b>Commitment</b>, and <b>Structure</b><br><br>on second buy, also improves the second control effect" + (getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit()) ? "<br><br>Cost: " + format(this.cost()) + " control" : "") + "<br><br>Bought: " + formatWhole(getBuyableAmount(this.layer, this.id)) + "/" + this.purchaseLimit()},
-			effect() {return 1 / (1.5 ** getBuyableAmount(this.layer, this.id).toNumber()) + 1},
-			purchaseLimit() {
-				let limit = 3;
-				if (hasMilestone("r", 68)) limit += milestoneEffect("r", 68);
-				return limit;
+			display() {return "reduce the cost scaling of all tiers of <b>Politics</b>, <b>Commitment</b>, and <b>Structure</b><br><br>on second buy, also improves the second control effect" + (getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit()) ? "<br><br>Cost: " + format(this.cost()) + " control" : "") + "<br><br>Bought: " + formatWhole(getBuyableAmount(this.layer, this.id)) + "/" + this.purchaseLimit()},
+			effect() {
+				let amt = getBuyableAmount(this.layer, this.id).toNumber();
+				if (amt >= 4) amt = (amt - 4) / 8 + 4;
+				return 1 / (1.5 ** amt) + 1;
 			},
+			purchaseLimit() {return getControlImprovementLimit(3)},
 			canAfford() {return player.t.control.gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit())},
 			buy() {
 				player.t.control = player.t.control.sub(this.cost());
@@ -258,15 +275,11 @@ addLayer("t", {
 			style() {if (getBuyableAmount(this.layer, this.id).gte(this.purchaseLimit())) return {"border-color": "#E03330"}},
 		},
 		13: {
-			cost() {return ["1e346", "1e400", "1e447", "1e548", "1e2000"][getBuyableAmount(this.layer, this.id).toNumber()] || Infinity},
+			cost() {return ["1e346", "1e400", "1e447", "1e548", "1e2000", "1e10000"][getBuyableAmount(this.layer, this.id).toNumber()] || Infinity},
 			title: "Propaganda Waves",
-			display() {return "decrease the cost of all tiers of <b>Assimilation</b>, <b>Leadership</b>, and <b>Capacity</b><br><br>on third buy, also improves the third control effect" + (getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit()) ? "<br><br>Cost: " + format(this.cost()) + " control" : "") + "<br><br>Bought: " + formatWhole(getBuyableAmount(this.layer, this.id)) + "/" + this.purchaseLimit()},
+			display() {return "reduce the cost of all tiers of <b>Assimilation</b>, <b>Leadership</b>, and <b>Capacity</b><br><br>on third buy, also improves the third control effect" + (getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit()) ? "<br><br>Cost: " + format(this.cost()) + " control" : "") + "<br><br>Bought: " + formatWhole(getBuyableAmount(this.layer, this.id)) + "/" + this.purchaseLimit()},
 			effect() {return getBuyableAmount(this.layer, this.id).toNumber()},
-			purchaseLimit() {
-				let limit = 4;
-				if (hasMilestone("r", 68)) limit += milestoneEffect("r", 68);
-				return limit;
-			},
+			purchaseLimit() {return getControlImprovementLimit(4)},
 			canAfford() {return player.t.control.gte(this.cost()) && getBuyableAmount(this.layer, this.id).lt(this.purchaseLimit())},
 			buy() {
 				player.t.control = player.t.control.sub(this.cost());

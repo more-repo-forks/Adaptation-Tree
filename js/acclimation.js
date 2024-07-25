@@ -17,6 +17,7 @@ function getAcclimationExtraStats(extra) {
 	if (getGridData("w", 504)) extra = extra.add(gridEffect("w", 504));
 	if (getGridData("w", 506)) extra = extra.add(gridEffect("w", 506));
 	if (tmp.ex.effect[2]) extra = extra.add(tmp.ex.effect[2]);
+	if (tmp.em.effect[4]) extra = extra.pow(tmp.em.effect[4]);
 	return extra.floor();
 };
 

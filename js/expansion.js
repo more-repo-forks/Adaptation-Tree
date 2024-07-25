@@ -118,8 +118,8 @@ addLayer("ex", {
 		if (eff[3].gte("1e88888")) eff[3] = eff[3].div("1e88888").pow(8/9).mul("1e88888");
 		if (eff[3].gte("1e200000")) eff[3] = eff[3].div("1e200000").pow(0.0055).mul("1e200000");
 		if (eff[3].gte("1e500000")) eff[3] = eff[3].div("1e500000").pow(0.01).mul("1e500000");
-		if (eff[3].gte("1e1000000")) eff[3] = eff[3].div("1e1000000").log10().add(1).pow(10000).mul("1e1000000");
-		if (eff[3].gte("1e5555555")) eff[3] = eff[3].div("1e5555555").pow(5/9).mul("1e5555555");
+		if (eff[3].gte("1e1000000")) eff[3] = eff[3].div("1e1000000").log10().add(1).pow(hasMilestone("r", 81) ? 100000 : 10000).mul("1e1000000");
+		if (eff[3].gte("1e5555555") && !hasMilestone("r", 81)) eff[3] = eff[3].div("1e5555555").pow(5/9).mul("1e5555555");
 		return eff;
 	},
 	effectDescription() {return "which are dividing the conscious being requirement by /" + format(tmp.ex.effect[0]) + ", dividing the domination requirement by /" + format(tmp.ex.effect[1]) + ", and giving " + formatWhole(tmp.ex.effect[2]) + " extra CRA, FER, ANA, and SOV"},
@@ -396,7 +396,10 @@ addLayer("ex", {
 			canAfford() {return player.ex.influenceUnlocked && player.ex.influence.gte(this.cost())},
 			buy() {
 				player.ex.influence = player.ex.influence.sub(this.cost());
-				addBuyables(this.layer, this.id, (player.cy.unlocks[1] >= 6 ? 10 : 1));
+				let bulk = 1;
+				if (hasMilestone("r", 83)) bulk *= 10;
+				if (player.cy.unlocks[1] >= 6) bulk *= 10;
+				addBuyables(this.layer, this.id, bulk);
 			},
 			style() {
 				let obj = {"width": "250px", "height": "100px", "border-radius": "25px"};

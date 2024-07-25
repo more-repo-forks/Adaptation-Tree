@@ -26,7 +26,7 @@ function drawTree() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	let queuedBranches = [[], [], [], []];
 	for (layer in layers) {
-		if (tmp[layer].layerShown == true && tmp[layer].branches) {
+		if (tmp[layer].layerShown && tmp[layer].branches) {
 			for (branch in tmp[layer].branches) {
 				if (layoutInfo.orderBranches) {
 					let data = tmp[layer].branches[branch];

@@ -125,7 +125,7 @@ addLayer("ec", {
 	},
 	challenges: {
 		11: {
-			name(x = Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1)) {return "ANACHRONISM " + (["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI", "XXII", "XXIII", "XXIV"][x])},
+			name(x = Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1)) {return "ANACHRONISM " + (["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI", "XXII", "XXIII", "XXIV", "XXV", "XXVI"][x])},
 			fullDisplay() {
 				if (challengeCompletions("sp", 21) >= 18 || hasChallenge("ec", 11)) {
 					let text = "";
@@ -139,7 +139,7 @@ addLayer("ec", {
 				};
 				return "You need 18 completions of the 10th hybridization<br>to unlock ANACHRONISM.";
 			},
-			rewardEffect() {return [0.1, null, 3, 0.125, 0.05, 3, null, null, null, 0.03, 0.45, 0.1, 0.1, 0.075, null, null, null, null, null, null, 0.01, 0.064, null, 0.02]},
+			rewardEffect() {return [0.1, null, 3, 0.125, 0.05, 3, null, null, null, 0.03, 0.45, 0.1, 0.1, 0.075, null, null, null, null, null, null, 0.01, 0.064, null, 0.02, null]},
 			rewards: [
 				"domination requirement base is decreased by 0.1",
 				() => "three new layers are unlocked" + (player.r.unlocked ? " (" + (player.w.unlocked ? "" : (player.ex.unlocked ? 2 : 1) + "/3 ") + "already unlocked)" : ""),
@@ -165,8 +165,9 @@ addLayer("ec", {
 				"ecosystem requirement base is decreased by 0.064",
 				"the first two continent effects are improved again",
 				"row 6 resource requirement bases are decreased by 0.02",
+				"a new faction growth option is unlocked",
 			],
-			goal() {return [167098, 155454, 155040, 869153600, 2.874e9, 7.992e9, 3.082e11, 4.73e11, 1.228e12, 7.191e12, 9.733e12, 1.359e13, 5.222e13, 4.09e14, 3.783e15, 1.133e18, 2.975e18, 3.206e20, 7.087e21, 1.791e23, 4.166e23, 1.46e25, 5.956e25, 1.938e26][Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1)] || Infinity},
+			goal() {return [167098, 155454, 155040, 869153600, 2.874e9, 7.992e9, 3.082e11, 4.73e11, 1.228e12, 7.191e12, 9.733e12, 1.359e13, 5.222e13, 4.09e14, 3.783e15, 1.133e18, 2.975e18, 3.206e20, 7.087e21, 1.791e23, 4.166e23, 1.46e25, 5.956e25, 1.938e26, 2.89e27][Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1)] || Infinity},
 			canComplete() {return player.g.points.gte(this.goal())},
 			enterable() {return challengeCompletions("sp", 21) >= 18 || hasChallenge("ec", 11)},
 			doReset: false,

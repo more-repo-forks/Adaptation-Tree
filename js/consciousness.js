@@ -64,6 +64,7 @@ addLayer("cb", {
 		if (hasChallenge("sp", 14)) pow2 += 0.5;
 		if (hasMilestone("a", 62)) pow2 += 0.5;
 		if (hasMilestone("d", 25)) pow2 += milestoneEffect("d", 25).toNumber();
+		if (hasMilestone("r", 80)) pow2 *= 1000;
 		// effects
 		let eff = (inChallenge("sp", 16) ? [new Decimal(1), new Decimal(1), new Decimal(1)] : [
 			new Decimal(hasChallenge("sp", 18) ? 150 : 100).pow(player.cb.points),
