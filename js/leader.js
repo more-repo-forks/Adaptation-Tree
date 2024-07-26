@@ -169,6 +169,7 @@ addLayer("l", {
 					let exp = 0.3;
 					if (hasMilestone("r", 85)) exp += 0.2;
 					if (hasMilestone("r", 87)) exp += 0.2;
+					if (hasMilestone("r", 93)) exp += 0.1;
 					eff = ((eff / 3333) ** exp) * 3333;
 				};
 				return Math.round(eff);

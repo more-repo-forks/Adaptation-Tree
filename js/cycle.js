@@ -87,13 +87,18 @@ addLayer("cy", {
 		let mult = new Decimal(1);
 		return mult;
 	},
-	effect() { return [
-		player.cy.points.mul(player.cy.unlocks[1] >= 7 ? 2 : 1),
-		player.cy.points.div(10).add(1),
-		(player.cy.points.gte(5) ? player.cy.power.add(1).pow(hasMilestone("r", 82) ? 0.5 : 0.25) : new Decimal(1)),
-		(player.cy.points.gte(5) ? player.cy.power.add(1).pow(2) : new Decimal(1)),
-		(player.cy.points.gte(5) ? player.cy.power.add(1).log10().mul(10) : new Decimal(0)),
-	]},
+	effect() {
+		let powerEff1Exp = 0.25;
+		if (challengeCompletions("ec", 11) >= 26) powerEff1Exp += 0.25;
+		if (hasMilestone("r", 82)) powerEff1Exp += 0.25;
+		return [
+			player.cy.points.mul(player.cy.unlocks[1] >= 7 ? 2 : 1),
+			player.cy.points.div(10).add(1),
+			(player.cy.points.gte(5) ? player.cy.power.add(1).pow(powerEff1Exp) : new Decimal(1)),
+			(player.cy.points.gte(5) ? player.cy.power.add(1).pow(challengeCompletions("ec", 11) >= 26 ? 3 : 2) : new Decimal(1)),
+			(player.cy.points.gte(5) ? player.cy.power.add(1).log10().mul(10) : new Decimal(0)),
+		];
+	},
 	effectDescription() {return "which are increasing continent and leader amounts in their effects by +" + formatWhole(tmp.cy.effect[0]) + " and directly multiplying revolution gain by " + format(tmp.cy.effect[1]) + "x"},
 	tabFormat: [
 		"main-display",

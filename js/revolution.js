@@ -921,7 +921,95 @@ addLayer("r", {
 			requirement: "1e3200",
 			requirementDescription: "91st innovation",
 			popupTitle: "Innovation Acquired!",
-			effectDescription() {return "coming soon<br>Req: " + formatWhole(this.requirement) + " change"},
+			effectDescription() {return "reduce the cost and/or cost scaling of some control nodes<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		91: {
+			requirement: "1e3400",
+			requirementDescription: "92nd innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "you bulk 10x <b>Influence tickspeed</b><br>(this resets <b>Influence tickspeed</b> amount)<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			onComplete() {player.ex.buyables[21] = new Decimal(0)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		92: {
+			requirement: "1e3600",
+			requirementDescription: "93rd innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "improve the last settler effect<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		93: {
+			requirement: "1e3800",
+			requirementDescription: "94th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "weaken the softcap of the domination focus+ effect<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		94: {
+			requirement: "1e4000",
+			requirementDescription: "95th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "you bulk 10x influence generators<br>(this resets influence generator amounts)<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			onComplete() {
+				for (const key in player.ex.buyables)
+					if (Object.hasOwnProperty.call(player.ex.buyables, key) && key < 20)
+						player.ex.buyables[key] = new Decimal(0);
+			},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		95: {
+			requirement: "1e4400",
+			requirementDescription: "96th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "improve the last settler effect<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		96: {
+			requirement: "1e4800",
+			requirementDescription: "97th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "you bulk 10x stats from rows 3 and below<br>(this respecs growth and acclimation points)<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			onComplete() {
+				layers.g.buyables.respec();
+				layers.a.buyables.respec();
+			},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		97: {
+			requirement: "1e5200",
+			requirementDescription: "98th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "you bulk 10x all tiers of <b>Politics</b> and <b>Commitment</b><br>(this resets all <b>Politics</b> and <b>Commitment</b> amounts)<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			onComplete() {
+				for (let row = 1; row <= tmp.t.grid.rows; row++) {
+					setGridData("t", row * 100 + 2, 0);
+					setGridData("t", row * 100 + 4, 0);
+				};
+			},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		98: {
+			requirement: "1e5600",
+			requirementDescription: "99th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "improve the first two territory effects<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		99: {
+			requirement: "1e6000",
+			requirementDescription: "100th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "coming soon!<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
 			unlocked() {return hasMilestone("r", this.id - 1)},
 		},

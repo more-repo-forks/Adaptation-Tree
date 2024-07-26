@@ -1,5 +1,6 @@
 function getFactionSize() {
-	return buyableEffect("em", 21).add(buyableEffect("em", 22));
+	if (hasMilestone("em", 12) && player.em.points.gte(4)) return buyableEffect("em", 21).add(buyableEffect("em", 22));
+	return new Decimal(0);
 };
 
 addLayer("em", {
@@ -35,7 +36,7 @@ addLayer("em", {
 			player.em.points.mul(hasMilestone("em", 1) ? 2 : 1),
 			player.em.points.div(10).add(1),
 			player.em.points.mul(2),
-			new Decimal(player.em.milestones.length + 1).pow(0.171),
+			new Decimal(player.em.milestones.length + 1).pow(hasMilestone("em", 18) ? 0.237 : 0.171),
 			(hasMilestone("em", 12) && player.em.points.gte(4) ? getFactionSize().div(100).add(1) : new Decimal(1)),
 		];
 		if (eff[4].gte(1.02)) eff[4] = eff[4].sub(1.02).div(5).add(1.02);
@@ -64,6 +65,11 @@ addLayer("em", {
 		if (layers[resettingLayer].row <= this.row) return;
 		let keep = [];
 		layerDataReset("em", keep);
+	},
+	shouldNotify() {
+		if (hasMilestone("em", 12) && player.em.points.gte(4))
+			for (const key in tmp.em.buyables)
+				if (key > 20 && tmp.em.buyables[key]?.unlocked && tmp.em.buyables[key]?.canAfford) return true;
 	},
 	componentStyles: {
 		"prestige-button"() {if (tmp.em.canReset && tmp.em.nodeStyle) return tmp.em.nodeStyle},
@@ -105,7 +111,7 @@ addLayer("em", {
 				content() {
 					if (player.em.points.lt(4)) return [["display-text", "Reach 4 empires to unlock Factions"]];
 					return [
-						["display-text", "You have <h2 style='color: #B44990; text-shadow: #B44990 0px 0px 10px'>" + formatWhole(getFactionSize()) + "</h2>/" + formatWhole(player.l.points) + " leaders in your faction, which exponentiates extra stats from rows 3 and below by ^" + format(tmp.em.effect[4])],
+						["display-text", "You have <h2 style='color: #B44990; text-shadow: #B44990 0px 0px 10px'>" + formatWhole(getFactionSize()) + "</h2>/" + formatWhole(player.l.points) + " leaders in your faction, which exponentiates extra stats from rows 4 and below by ^" + format(tmp.em.effect[4])],
 						"blank",
 						["row", [["buyable", 21], ["buyable", 22]]],
 					];
@@ -122,6 +128,7 @@ addLayer("em", {
 				let eff = amt.mul(1);
 				if (hasMilestone("em", 2)) eff = eff.add(milestoneEffect("em", 2));
 				if (hasMilestone("em", 10)) eff = eff.add(milestoneEffect("em", 10));
+				if (hasMilestone("em", 19)) eff = eff.add(milestoneEffect("em", 19));
 				return eff;
 			},
 			title: "(ECO)SYSTEM ASPECT",
@@ -142,13 +149,18 @@ addLayer("em", {
 				let base = 0.05;
 				if (hasMilestone("em", 8)) base += milestoneEffect("em", 8);
 				if (hasMilestone("em", 14)) base += milestoneEffect("em", 14);
+				if (hasMilestone("em", 17)) base += milestoneEffect("em", 17);
 				return base;
 			},
-			effect(amt) {return amt.mul(this.effectBase())},
+			effect(amt) {
+				let eff = amt.mul(this.effectBase());
+				if (eff.gte(0.5)) eff = eff.sub(0.5).div(2).add(0.5);
+				return eff;
+			},
 			title: "(REV)OLUTION ASPECT",
 			display() {
 				const b = tmp[this.layer].buyables[this.id];
-				return "increase change gain exponent by " + format(b.effectBase) + " (also influence limit)<br><br>Effect: +" + format(b.effect) + "<br><br>Req: " + formatWhole(b.cost) + " revolutions<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id));
+				return "increase change gain exponent by " + format(b.effectBase) + " (also influence limit)<br><br>Effect: +" + format(b.effect) + (b.effect.gte(0.5) ? " (softcapped)" : "") + "<br><br>Req: " + formatWhole(b.cost) + " revolutions<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id));
 			},
 			canAfford() {return player.r.points.gte(this.cost()) && tmp.em.effect[2].sub(player[this.layer].spent).gte(1)},
 			buy() {
@@ -165,13 +177,19 @@ addLayer("em", {
 				if (hasMilestone("em", 7)) base += milestoneEffect("em", 7);
 				if (hasMilestone("em", 13)) base += milestoneEffect("em", 13);
 				if (hasMilestone("em", 15)) base += milestoneEffect("em", 15);
+				if (hasMilestone("em", 21)) base += milestoneEffect("em", 21);
 				return base;
 			},
-			effect(amt) {return amt.mul(this.effectBase())},
+			effect(amt) {
+				let eff = amt.mul(this.effectBase());
+				if (eff.gte(1)) eff = eff.sub(1).div(2).add(1);
+				return eff;
+			},
 			title: "(EXP)ANSION ASPECT",
 			display() {
 				const b = tmp[this.layer].buyables[this.id];
-				return "increase influence gain exponent by " + format(b.effectBase) + "<br><br>Effect: +" + format(b.effect) + "<br><br>Req: " + formatWhole(b.cost) + " expansion points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id))},
+				return "increase influence gain exponent by " + format(b.effectBase) + "<br><br>Effect: +" + format(b.effect) + (b.effect.gte(1) ? " (softcapped)" : "") + "<br><br>Req: " + formatWhole(b.cost) + " expansion points<br><br>Level: " + formatWhole(getBuyableAmount(this.layer, this.id));
+			},
 			canAfford() {return player.ex.points.gte(this.cost()) && tmp.em.effect[2].sub(player[this.layer].spent).gte(1)},
 			buy() {
 				player[this.layer].spent++;
@@ -186,6 +204,8 @@ addLayer("em", {
 				if (hasMilestone("em", 3)) base += milestoneEffect("em", 3);
 				if (hasMilestone("em", 5)) base += milestoneEffect("em", 5);
 				if (hasMilestone("em", 11)) base += milestoneEffect("em", 11);
+				if (hasMilestone("em", 16)) base += milestoneEffect("em", 16);
+				if (hasMilestone("em", 20)) base += milestoneEffect("em", 20);
 				return base;
 			},
 			effect(amt) {return amt.mul(this.effectBase())},
@@ -383,6 +403,59 @@ addLayer("em", {
 			popupTitle: "Innovation Acquired!",
 			effect() {return 0.01},
 			effectDescription() {return "increase the base effect of EXP by 0.01<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.ex.influence.gte(this.requirement)},
+			unlocked() {return hasMilestone("em", this.id - 1)},
+		},
+		16: {
+			requirement: "e2800000",
+			requirementDescription: "WAR phase IV",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 2},
+			effectDescription() {return "increase the base effect of WAR by 2<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.ex.influence.gte(this.requirement)},
+			unlocked() {return hasMilestone("em", this.id - 1)},
+		},
+		17: {
+			requirement: "e3000000",
+			requirementDescription: "REV phase IV",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 0.01},
+			effectDescription() {return "increase the base effect of REV by 0.01<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.ex.influence.gte(this.requirement)},
+			unlocked() {return hasMilestone("em", this.id - 1)},
+		},
+		18: {
+			requirement: "e3400000",
+			requirementDescription: "Empire phase IV",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "improve the phase effect<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.ex.influence.gte(this.requirement)},
+			unlocked() {return hasMilestone("em", this.id - 1)},
+		},
+		19: {
+			requirement: "e3800000",
+			requirementDescription: "ECO phase IV",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 1},
+			effectDescription() {return "increase the effect of ECO by 1<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.ex.influence.gte(this.requirement)},
+			unlocked() {return hasMilestone("em", this.id - 1)},
+		},
+		20: {
+			requirement: "e4200000",
+			requirementDescription: "WAR phase V",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 2},
+			effectDescription() {return "increase the base effect of WAR by 2<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.ex.influence.gte(this.requirement)},
+			unlocked() {return hasMilestone("em", this.id - 1)},
+		},
+		21: {
+			requirement: "e4600000",
+			requirementDescription: "EXP phase V",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 0.02},
+			effectDescription() {return "increase the base effect of EXP by 0.02<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.ex.influence.gte(this.requirement)},
 			unlocked() {return hasMilestone("em", this.id - 1)},
 		},

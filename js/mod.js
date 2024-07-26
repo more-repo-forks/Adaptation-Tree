@@ -9,7 +9,7 @@ const modInfo = {
 }
 
 const VERSION = {
-	num: "3.2.0",
+	num: "3.2.1",
 	name: "Micromanagement",
 };
 
@@ -66,6 +66,7 @@ function getStatBulk() {
 	let bulk = 1;
 	if (hasMilestone("d", 52)) bulk *= 10;
 	if (hasMilestone("d", 55)) bulk *= 10;
+	if (hasMilestone("r", 96)) bulk *= 10;
 	if (player.r.points.gte(9)) bulk *= 10;
 	if (player.ex.points.gte(6)) bulk *= 10;
 	if (player.ex.points.gte(9)) bulk *= 10;
@@ -87,12 +88,12 @@ let displayThings = [
 		if (tmp.other.oompsMag != 0 && options.showOOMs) return "(" + format(tmp.other.oomps) + " OOM" + (tmp.other.oompsMag < 0 ? "^OOM" : (tmp.other.oompsMag > 1 ? "^" + tmp.other.oompsMag : "")) + "s/sec)";
 		return "(" + format(getPointPotential()) + " max power)";
 	},
-	() => "<br>current endgame is at 1e3200 " + (player.r.unlocked ? "change" : "???"),
+	() => "<br>current endgame is at 1e6000 " + (player.r.unlocked ? "change" : "???"),
 ];
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.r.change.gte("1e3200");
+	return player.r.change.gte("1e6000");
 };
 
 // Style for the background, can be a function

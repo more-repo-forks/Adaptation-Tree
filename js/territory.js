@@ -1,18 +1,18 @@
 const controlNodeName = ["Assimilation", "Politics", "Leadership", "Commitment", "Capacity", "Structure"];
 
 const controlNodeReq = [[
-	(x = 0) => Math.max(x + 3 - getBuyableAmount("t", 13).toNumber(), 0),
+	(x = 0) => Math.max(x + (hasMilestone("r", 90) ? 0 : 3) - getBuyableAmount("t", 13).toNumber(), 0),
 	(x = 0) => new Decimal(10).pow(x ** buyableEffect("t", 12)),
-	(x = 0) => Math.max(x + 12 - getBuyableAmount("t", 13).toNumber(), 0),
+	(x = 0) => Math.max(x + (hasMilestone("r", 90) ? 6 : 11) - getBuyableAmount("t", 13).toNumber(), 0),
 	(x = 0) => (4 * (x ** buyableEffect("t", 12)) + 7) * 11,
-	(x = 0) => Math.max(x + 11 - getBuyableAmount("t", 13).toNumber(), 0),
+	(x = 0) => Math.max(x + (hasMilestone("r", 90) ? 6 : 11) - getBuyableAmount("t", 13).toNumber(), 0),
 	(x = 0) => (x ** buyableEffect("t", 12) + 3) * (hasMilestone("r", 88) ? 600 : 1000),
 ], [
 	(x = 0) => Math.max(x + (hasMilestone("r", 35) ? 1 : 2) - getBuyableAmount("t", 13).toNumber(), 0) * 2,
 	(x = 0) => new Decimal(hasMilestone("r", 35) ? 1e7 : 5e7).pow(x ** buyableEffect("t", 12) + 1),
-	(x = 0) => Math.max(x + (hasMilestone("r", 35) ? 7 : 8) - getBuyableAmount("t", 13).toNumber(), 0) * 2,
+	(x = 0) => Math.max(x + (hasMilestone("r", 35) ? (hasMilestone("r", 90) ? 4 : 7) : 8) - getBuyableAmount("t", 13).toNumber(), 0) * 2,
 	(x = 0) => (x ** buyableEffect("t", 12) + (hasMilestone("r", 35) ? 4 : 5)) * 50,
-	(x = 0) => Math.max(x + (hasMilestone("r", 35) ? 6 : 7) - getBuyableAmount("t", 13).toNumber(), 0) * 2,
+	(x = 0) => Math.max(x + (hasMilestone("r", 35) ? (hasMilestone("r", 90) ? 3 : 6) : 7) - getBuyableAmount("t", 13).toNumber(), 0) * 2,
 	(x = 0) => (x ** buyableEffect("t", 12) + (hasMilestone("r", 35) ? 4 : 5)) * (hasMilestone("r", 88) ? 750 : 1000),
 ], [
 	(x = 0) => Math.max(x + (hasMilestone("r", 88) ? 1 : 2) - getBuyableAmount("t", 13).toNumber(), 0) * 5,
@@ -41,7 +41,7 @@ const controlNodeReq = [[
 	(x = 0) => Math.max(x + 7 - getBuyableAmount("t", 13).toNumber(), 0) * 16,
 	(x = 0) => (x ** buyableEffect("t", 12) + 5) * 2000,
 	(x = 0) => Math.max(x + 7 - getBuyableAmount("t", 13).toNumber(), 0) * 16,
-	(x = 0) => (x ** buyableEffect("t", 12) + 4) * 20000,
+	(x = 0) => (x ** buyableEffect("t", 12) + (hasMilestone("r", 90) ? 3 : 4)) * 20000,
 ]];
 
 function getControlNodeTimeSpeed() {
@@ -107,7 +107,11 @@ addLayer("t", {
 		let territoryEff1Base = 10;
 		if (hasMilestone("r", 66)) territoryEff1Base++;
 		if (hasMilestone("r", 79)) territoryEff1Base++;
+		if (hasMilestone("r", 98)) territoryEff1Base += 6;
 		if (player.cy.unlocks[2] >= 5) territoryEff1Base += 2;
+		let territoryEff2Base = 5;
+		if (hasMilestone("r", 66)) territoryEff2Base += 5;
+		if (hasMilestone("r", 98)) territoryEff2Base += 20;
 		let controlEff1Exp = 0.1;
 		if (hasMilestone("r", 89)) controlEff1Exp += 0.01;
 		if (getBuyableAmount("t", 11).gte(1)) controlEff1Exp += 0.18;
@@ -119,7 +123,7 @@ addLayer("t", {
 		if (getBuyableAmount("t", 13).gte(3)) controlEff3Exp += 0.5;
 		let eff = [
 			new Decimal(territoryEff1Base).pow(amt),
-			new Decimal(hasMilestone("r", 66) ? 10 : 5).pow(amt),
+			new Decimal(territoryEff2Base).pow(amt),
 			amt.div(4).add(1),
 			player.t.control.add(1).log10().add(1).pow(controlEff1Exp),
 			(hasMilestone("d", 56) ? player.t.control.add(1).log10().div(10).add(1).pow(controlEff2Exp) : new Decimal(1)),
@@ -216,8 +220,10 @@ addLayer("t", {
 			return false;
 		},
 		onClick(data, id) {
-			if (player.cy.unlocks[3] >= 10 && (id == 102 || id == 202)) player.t.grid[id] += 10;
-			else player.t.grid[id]++;
+			let bulk = 1;
+			if (hasMilestone("r", 97) && (id % 100 == 2 || id % 100 == 4)) bulk *= 10;
+			if (player.cy.unlocks[3] >= 10 && (id == 102 || id == 202)) bulk *= 10;
+			player.t.grid[id] += bulk;
 		},
 		onHold(data, id) {this.onClick(data, id)},
 		getTitle(data, id) {return controlNodeName[id % 100 - 1] + "<sup>" + Math.floor(id / 100) + "</sup>"},

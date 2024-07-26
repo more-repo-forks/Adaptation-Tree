@@ -44,6 +44,13 @@ function expansionGen10Effect() {
 	return buyableEffect("ex", 11).pow(0.1);
 };
 
+function getExpansionGenBulk() {
+	let bulk = 1;
+	if (hasMilestone("r", 57)) bulk *= 10;
+	if (hasMilestone("r", 94)) bulk *= 10;
+	return bulk;
+};
+
 addLayer("ex", {
 	name: "Expansion",
 	symbol: "EX",
@@ -239,7 +246,7 @@ addLayer("ex", {
 				return "these generators are producing " + format(g.effect) + " influence per second<br><br><div style='display: flex'><div>Req: " + formatWhole(g.cost) + " expansion points</div><div>Bought: " + formatWhole(getBuyableAmount(this.layer, this.id)) + (player[this.layer].extra[this.id - 11].gte(1) ? " + " + formatWhole(player[this.layer].extra[this.id - 11].floor()) : "") + "</div></div>";
 			},
 			canAfford() {return player.ex.influenceUnlocked && player[this.layer].points.gte(this.cost())},
-			buy() {addBuyables(this.layer, this.id, (hasMilestone("r", 57) ? 10 : 1))},
+			buy() {addBuyables(this.layer, this.id, getExpansionGenBulk())},
 			style() {if (this.canAfford()) return tmp.ex.nodeStyle},
 		},
 		12: {
@@ -251,7 +258,7 @@ addLayer("ex", {
 				return "these generators are producing " + format(g.effect) + " 1st influence generators per second<br><br><div style='display: flex'><div>Req: " + formatWhole(g.cost) + " expansion points</div><div>Bought: " + formatWhole(getBuyableAmount(this.layer, this.id)) + (player[this.layer].extra[this.id - 11].gte(1) ? " + " + formatWhole(player[this.layer].extra[this.id - 11].floor()) : "") + "</div></div>";
 			},
 			canAfford() {return player.ex.influenceUnlocked && player[this.layer].points.gte(this.cost())},
-			buy() {addBuyables(this.layer, this.id, (hasMilestone("r", 57) ? 10 : 1))},
+			buy() {addBuyables(this.layer, this.id, getExpansionGenBulk())},
 			style() {if (this.canAfford()) return tmp.ex.nodeStyle},
 		},
 		13: {
@@ -263,7 +270,7 @@ addLayer("ex", {
 				return "these generators are producing " + format(g.effect) + " 2nd influence generators per second<br><br><div style='display: flex'><div>Req: " + formatWhole(g.cost) + " expansion points</div><div>Bought: " + formatWhole(getBuyableAmount(this.layer, this.id)) + (player[this.layer].extra[this.id - 11].gte(1) ? " + " + formatWhole(player[this.layer].extra[this.id - 11].floor()) : "") + "</div></div>";
 			},
 			canAfford() {return player.ex.influenceUnlocked && player[this.layer].points.gte(this.cost())},
-			buy() {addBuyables(this.layer, this.id, (hasMilestone("r", 57) ? 10 : 1))},
+			buy() {addBuyables(this.layer, this.id, getExpansionGenBulk())},
 			style() {if (this.canAfford()) return tmp.ex.nodeStyle},
 		},
 		14: {
@@ -275,7 +282,7 @@ addLayer("ex", {
 				return "these generators are producing " + format(g.effect) + " 3rd influence generators per second<br><br><div style='display: flex'><div>Req: " + formatWhole(g.cost) + " expansion points</div><div>Bought: " + formatWhole(getBuyableAmount(this.layer, this.id)) + (player[this.layer].extra[this.id - 11].gte(1) ? " + " + formatWhole(player[this.layer].extra[this.id - 11].floor()) : "") + "</div></div>";
 			},
 			canAfford() {return player.ex.influenceUnlocked && player[this.layer].points.gte(this.cost())},
-			buy() {addBuyables(this.layer, this.id, (hasMilestone("r", 57) ? 10 : 1))},
+			buy() {addBuyables(this.layer, this.id, getExpansionGenBulk())},
 			style() {if (this.canAfford()) return tmp.ex.nodeStyle},
 			unlocked() {return getUnlockedExpansionGens() >= 1},
 		},
@@ -288,7 +295,7 @@ addLayer("ex", {
 				return "these generators are producing " + format(g.effect) + " 4th influence generators per second<br><br><div style='display: flex'><div>Req: " + formatWhole(g.cost) + " expansion points</div><div>Bought: " + formatWhole(getBuyableAmount(this.layer, this.id)) + (player[this.layer].extra[this.id - 11].gte(1) ? " + " + formatWhole(player[this.layer].extra[this.id - 11].floor()) : "") + "</div></div>";
 			},
 			canAfford() {return player.ex.influenceUnlocked && player[this.layer].points.gte(this.cost())},
-			buy() {addBuyables(this.layer, this.id, (hasMilestone("r", 57) ? 10 : 1))},
+			buy() {addBuyables(this.layer, this.id, getExpansionGenBulk())},
 			style() {if (this.canAfford()) return tmp.ex.nodeStyle},
 			unlocked() {return getUnlockedExpansionGens() >= 2},
 		},
@@ -301,7 +308,7 @@ addLayer("ex", {
 				return "these generators are producing " + format(g.effect) + " 5th influence generators per second<br><br><div style='display: flex'><div>Req: " + formatWhole(g.cost) + " expansion points</div><div>Bought: " + formatWhole(getBuyableAmount(this.layer, this.id)) + (player[this.layer].extra[this.id - 11].gte(1) ? " + " + formatWhole(player[this.layer].extra[this.id - 11].floor()) : "") + "</div></div>";
 			},
 			canAfford() {return player.ex.influenceUnlocked && player[this.layer].points.gte(this.cost())},
-			buy() {addBuyables(this.layer, this.id, (hasMilestone("r", 57) ? 10 : 1))},
+			buy() {addBuyables(this.layer, this.id, getExpansionGenBulk())},
 			style() {if (this.canAfford()) return tmp.ex.nodeStyle},
 			unlocked() {return getUnlockedExpansionGens() >= 3},
 		},
@@ -314,7 +321,7 @@ addLayer("ex", {
 				return "these generators are producing " + format(g.effect) + " 6th influence generators per second<br><br><div style='display: flex'><div>Req: " + formatWhole(g.cost) + " expansion points</div><div>Bought: " + formatWhole(getBuyableAmount(this.layer, this.id)) + (player[this.layer].extra[this.id - 11].gte(1) ? " + " + formatWhole(player[this.layer].extra[this.id - 11].floor()) : "") + "</div></div>";
 			},
 			canAfford() {return player.ex.influenceUnlocked && player[this.layer].points.gte(this.cost())},
-			buy() {addBuyables(this.layer, this.id, (hasMilestone("r", 57) ? 10 : 1))},
+			buy() {addBuyables(this.layer, this.id, getExpansionGenBulk())},
 			style() {if (this.canAfford()) return tmp.ex.nodeStyle},
 			unlocked() {return getUnlockedExpansionGens() >= 4},
 		},
@@ -327,7 +334,7 @@ addLayer("ex", {
 				return "these generators are producing " + format(g.effect) + " 7th influence generators per second<br><br><div style='display: flex'><div>Req: " + formatWhole(g.cost) + " expansion points</div><div>Bought: " + formatWhole(getBuyableAmount(this.layer, this.id)) + (player[this.layer].extra[this.id - 11].gte(1) ? " + " + formatWhole(player[this.layer].extra[this.id - 11].floor()) : "") + "</div></div>";
 			},
 			canAfford() {return player.ex.influenceUnlocked && player[this.layer].points.gte(this.cost())},
-			buy() {addBuyables(this.layer, this.id, (hasMilestone("r", 57) ? 10 : 1))},
+			buy() {addBuyables(this.layer, this.id, getExpansionGenBulk())},
 			style() {if (this.canAfford()) return tmp.ex.nodeStyle},
 			unlocked() {return getUnlockedExpansionGens() >= 5},
 		},
@@ -340,7 +347,7 @@ addLayer("ex", {
 				return "these generators are producing " + format(g.effect) + " 8th influence generators per second<br><br><div style='display: flex'><div>Req: " + formatWhole(g.cost) + " expansion points</div><div>Bought: " + formatWhole(getBuyableAmount(this.layer, this.id)) + (player[this.layer].extra[this.id - 11].gte(1) ? " + " + formatWhole(player[this.layer].extra[this.id - 11].floor()) : "") + "</div></div>";
 			},
 			canAfford() {return player.ex.influenceUnlocked && player[this.layer].points.gte(this.cost())},
-			buy() {addBuyables(this.layer, this.id, (hasMilestone("r", 57) ? 10 : 1))},
+			buy() {addBuyables(this.layer, this.id, getExpansionGenBulk())},
 			style() {if (this.canAfford()) return tmp.ex.nodeStyle},
 			unlocked() {return getUnlockedExpansionGens() >= 6},
 		},
@@ -369,6 +376,7 @@ addLayer("ex", {
 			buy() {
 				player.ex.influence = player.ex.influence.sub(this.cost());
 				let bulk = 1;
+				if (hasMilestone("r", 91)) bulk *= 10;
 				if (player.cy.unlocks[0] >= 5) bulk *= 10;
 				if (player.cy.unlocks[3] >= 2) bulk *= 10;
 				addBuyables(this.layer, this.id, bulk);
