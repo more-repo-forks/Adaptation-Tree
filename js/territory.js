@@ -111,13 +111,16 @@ addLayer("t", {
 		if (hasMilestone("r", 79)) territoryEff1Base++;
 		if (hasMilestone("r", 98)) territoryEff1Base += 6;
 		if (hasMilestone("r", 105)) territoryEff1Base += 30;
+		if (hasMilestone("r", 113)) territoryEff1Base += 50;
 		if (player.cy.unlocks[2] >= 5) territoryEff1Base += 2;
 		let territoryEff2Base = 5;
 		if (hasMilestone("r", 66)) territoryEff2Base += 5;
 		if (hasMilestone("r", 98)) territoryEff2Base += 20;
 		if (hasMilestone("r", 105)) territoryEff2Base += 70;
+		if (hasMilestone("r", 113)) territoryEff2Base += 150;
 		let controlEff1Exp = 0.1;
 		if (hasMilestone("r", 89)) controlEff1Exp += 0.01;
+		if (hasMilestone("r", 111)) controlEff1Exp += 0.005;
 		if (getBuyableAmount("t", 11).gte(1)) controlEff1Exp += 0.18;
 		let controlEff2Exp = 0.1;
 		if (hasMilestone("r", 37)) controlEff2Exp += 0.1;

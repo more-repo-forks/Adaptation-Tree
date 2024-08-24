@@ -62,6 +62,7 @@ addLayer("r", {
 		if (hasMilestone("r", 11)) changeEff3exp = changeEff3exp.add(0.0234);
 		if (hasMilestone("r", 32)) changeEff3exp = changeEff3exp.add(99.8546);
 		if (hasMilestone("r", 46)) changeEff3exp = changeEff3exp.mul(player.r.change.add(1).log10());
+		if (hasMilestone("r", 110)) changeEff3exp = changeEff3exp.mul(2);
 		if (hasMilestone("r", 55)) changeEff3exp = changeEff3exp.add(1).pow(2);
 		let eff = [
 			new Decimal(challengeCompletions("ec", 11) >= 9 ? 10 : 2).pow(player.r.points.pow(hasMilestone("r", 12) ? 1.5 : 1)),
@@ -70,7 +71,7 @@ addLayer("r", {
 			player.r.points.pow(2).mul(new Decimal(10).pow(player.r.points.sub(1))).mul((player.r.milestones.length + 1) ** (challengeCompletions("ec", 11) >= 9 ? 5 : 2)),
 			new Decimal(10).pow(player.r.change.pow(hasMilestone("r", 11) ? 0.25 : 0.5)),
 			(hasMilestone("r", 0) ? (hasMilestone("r", 20) ? player.r.change.add(1).pow(changeEff2exp) : player.r.change.add(1).pow(changeEff2exp).log10().add(1)) : new Decimal(1)),
-			(hasMilestone("r", 1) ? player.r.change.add(1).pow(changeEff3exp).log10().add(1) : new Decimal(1)),
+			(hasMilestone("r", 1) ? (hasMilestone("r", 108) ? player.r.change.add(1).pow(changeEff3exp.pow(0.1).div(10000)) : player.r.change.add(1).pow(changeEff3exp).log10().add(1)) : new Decimal(1)),
 			(hasMilestone("r", 4) ? new Decimal(222).pow(player.r.change.pow(0.2)) : new Decimal(1)),
 		];
 		if (hasMilestone("r", 5)) eff[3] = eff[3].mul(milestoneEffect("r", 5));
@@ -99,6 +100,8 @@ addLayer("r", {
 				if (hasMilestone("r", 32)) exp *= 100;
 				if (hasMilestone("r", 46)) exp *= 10;
 				if (hasMilestone("r", 81)) exp *= 1000;
+				if (hasMilestone("r", 109)) exp *= 10;
+				if (hasMilestone("r", 110)) exp *= 10;
 				eff[4] = eff[4].div("e1e11").log10().add(1).pow(exp).mul("e1e11");
 			};
 		} else {
@@ -115,6 +118,7 @@ addLayer("r", {
 			let exp = 100000;
 			if (hasMilestone("r", 26)) exp *= 10;
 			if (hasMilestone("r", 46)) exp *= 2.5;
+			if (hasMilestone("r", 109)) exp *= 10;
 			eff[7] = eff[7].div("e10000000").log10().add(1).pow(exp).mul("e10000000");
 		};
 		return eff;
@@ -1089,7 +1093,55 @@ addLayer("r", {
 			requirement: "1e12000",
 			requirementDescription: "109th innovation",
 			popupTitle: "Innovation Acquired!",
-			effectDescription() {return "coming soon<br>Req: " + formatWhole(this.requirement) + " change"},
+			effectDescription() {return "improve the third change effect<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		109: {
+			requirement: "1e13000",
+			requirementDescription: "110th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "improve the first and last change effects<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		110: {
+			requirement: "1e14000",
+			requirementDescription: "111th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "improve the first and third change effects<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		111: {
+			requirement: "1e15000",
+			requirementDescription: "112th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "improve the first control effect<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		112: {
+			requirement: "1e17500",
+			requirementDescription: "113th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "improve the second cyclical power effect<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		113: {
+			requirement: "1e20000",
+			requirementDescription: "114th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "improve the first two territory effects<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
+		114: {
+			requirement: "1e22500",
+			requirementDescription: "115th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "improve the second cyclical power effect<br>Req: " + formatWhole(this.requirement) + " change"},
 			done() {return player.r.change.gte(this.requirement)},
 			unlocked() {return hasMilestone("r", this.id - 1)},
 		},

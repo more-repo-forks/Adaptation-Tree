@@ -100,13 +100,17 @@ addLayer("cy", {
 		if (challengeCompletions("ec", 11) >= 26) powerEff1Exp += 0.25;
 		if (hasMilestone("r", 82)) powerEff1Exp += 0.25;
 		if (hasMilestone("r", 102)) powerEff1Exp += 0.25;
+		let powerEff2Exp = 2;
+		if (challengeCompletions("ec", 11) >= 26) powerEff2Exp++;
+		if (hasMilestone("r", 112)) powerEff2Exp++;
+		if (hasMilestone("r", 114)) powerEff2Exp++;
 		return [
 			player.cy.points.mul(player.cy.unlocks[1] >= 7 ? 2 : 1),
 			player.cy.points.div(10).add(1),
 			(player.cy.points.gte(5) ? player.cy.power.add(1).pow(powerEff1Exp) : new Decimal(1)),
-			(player.cy.points.gte(5) ? player.cy.power.add(1).pow(challengeCompletions("ec", 11) >= 26 ? 3 : 2) : new Decimal(1)),
+			(player.cy.points.gte(5) ? player.cy.power.add(1).pow(powerEff2Exp) : new Decimal(1)),
 			(player.cy.points.gte(5) ? player.cy.power.add(1).log10().mul(10) : new Decimal(0)),
-			(player.cy.cores.gt(0) ? player.cy.cores.div(100).add(1) : new Decimal(1)),
+			(player.cy.cores.gt(0) ? player.cy.cores.pow(2).div(100).add(1) : new Decimal(1)),
 		];
 	},
 	effectDescription() {return "which are increasing continent and leader amounts in their effects by +" + formatWhole(tmp.cy.effect[0]) + " and directly multiplying revolution gain by " + format(tmp.cy.effect[1]) + "x"},

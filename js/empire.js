@@ -1,5 +1,5 @@
 function getFactionSize() {
-	if (hasMilestone("em", 12) && player.em.points.gte(4)) return buyableEffect("em", 21).add(buyableEffect("em", 22));
+	if (hasMilestone("em", 12) && player.em.points.gte(4)) return buyableEffect("em", 21).add(buyableEffect("em", 22)).min(player.l.points);
 	return new Decimal(0);
 };
 
@@ -138,6 +138,8 @@ addLayer("em", {
 				if (hasMilestone("em", 10)) eff = eff.add(milestoneEffect("em", 10));
 				if (hasMilestone("em", 19)) eff = eff.add(milestoneEffect("em", 19));
 				if (hasMilestone("em", 24)) eff = eff.add(milestoneEffect("em", 24));
+				if (hasMilestone("em", 29)) eff = eff.add(milestoneEffect("em", 29));
+				if (hasMilestone("em", 33)) eff = eff.add(milestoneEffect("em", 33));
 				return eff;
 			},
 			title: "(ECO)SYSTEM ASPECT",
@@ -161,6 +163,7 @@ addLayer("em", {
 				if (hasMilestone("em", 17)) base += milestoneEffect("em", 17);
 				if (hasMilestone("em", 22)) base += milestoneEffect("em", 22);
 				if (hasMilestone("em", 26)) base += milestoneEffect("em", 26);
+				if (hasMilestone("em", 32)) base += milestoneEffect("em", 32);
 				return base;
 			},
 			effect(amt) {
@@ -184,12 +187,14 @@ addLayer("em", {
 			cost(amt) {return amt.add(1).mul(hasMilestone("em", 9) ? 450 : 500)},
 			effectBase() {
 				let base = 0.1;
+				if (challengeCompletions("ec", 11) >= 29 && challengeEffect("ec", 11)[28]) base += challengeEffect("ec", 11)[28];
 				if (hasMilestone("em", 0)) base += milestoneEffect("em", 0);
 				if (hasMilestone("em", 7)) base += milestoneEffect("em", 7);
 				if (hasMilestone("em", 13)) base += milestoneEffect("em", 13);
 				if (hasMilestone("em", 15)) base += milestoneEffect("em", 15);
 				if (hasMilestone("em", 21)) base += milestoneEffect("em", 21);
 				if (hasMilestone("em", 25)) base += milestoneEffect("em", 25);
+				if (hasMilestone("em", 31)) base += milestoneEffect("em", 31);
 				return base;
 			},
 			effect(amt) {
@@ -219,6 +224,7 @@ addLayer("em", {
 				if (hasMilestone("em", 16)) base += milestoneEffect("em", 16);
 				if (hasMilestone("em", 20)) base += milestoneEffect("em", 20);
 				if (hasMilestone("em", 27)) base += milestoneEffect("em", 27);
+				if (hasMilestone("em", 30)) base += milestoneEffect("em", 30);
 				return base;
 			},
 			effect(amt) {return amt.mul(this.effectBase())},
@@ -236,6 +242,8 @@ addLayer("em", {
 		},
 		21: {
 			cost(amt) {
+				if (amt.gte(20)) return new Decimal("1e40000").pow(amt.sub(14));
+				if (amt.gte(15)) return new Decimal("1e20000").pow(amt.sub(9));
 				if (amt.gte(10)) return new Decimal("1e10000").pow(amt.sub(4));
 				return new Decimal("1e5000").pow(amt.add(1));
 			},
@@ -533,6 +541,59 @@ addLayer("em", {
 			requirementDescription: "Empire phase VI",
 			popupTitle: "Innovation Acquired!",
 			effectDescription() {return "unlock something new for empires" + (hasMilestone("em", 28) && player.em.points.gte(8) ? " (already unlocked)" : "") + "<br>Req: " + formatWhole(this.requirement) + " influence"},
+			done() {return player.ex.influence.gte(this.requirement)},
+			unlocked() {return hasMilestone("em", this.id - 1)},
+		},
+		29: {
+			requirement: "e12000000",
+			requirementDescription: "ECO phase VI",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 1},
+			effectDescription() {return "increase the effect of ECO by 1<br>Req: " + formatWhole(this.requirement) + " influence"},
+			done() {return player.ex.influence.gte(this.requirement)},
+			unlocked() {return hasMilestone("em", this.id - 1)},
+		},
+		30: {
+			requirement: "e13000000",
+			requirementDescription: "WAR phase VII",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 5},
+			effectDescription() {return "increase the base effect of WAR by 5<br>Req: " + formatWhole(this.requirement) + " influence"},
+			done() {return player.ex.influence.gte(this.requirement)},
+			unlocked() {return hasMilestone("em", this.id - 1)},
+		},
+		31: {
+			requirement: "e15000000",
+			requirementDescription: "EXP phase VII",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 0.02},
+			effectDescription() {return "increase the base effect of EXP by 0.02<br>Req: " + formatWhole(this.requirement) + " influence"},
+			done() {return player.ex.influence.gte(this.requirement)},
+			unlocked() {return hasMilestone("em", this.id - 1)},
+		},
+		32: {
+			requirement: "e17000000",
+			requirementDescription: "REV phase VII",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 0.01},
+			effectDescription() {return "increase the base effect of REV by 0.01<br>Req: " + formatWhole(this.requirement) + " influence"},
+			done() {return player.ex.influence.gte(this.requirement)},
+			unlocked() {return hasMilestone("em", this.id - 1)},
+		},
+		33: {
+			requirement: "e19000000",
+			requirementDescription: "ECO phase VII",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 1},
+			effectDescription() {return "increase the effect of ECO by 1<br>Req: " + formatWhole(this.requirement) + " influence"},
+			done() {return player.ex.influence.gte(this.requirement)},
+			unlocked() {return hasMilestone("em", this.id - 1)},
+		},
+		34: {
+			requirement: "e21000000",
+			requirementDescription: "Empire phase VI",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "coming soon<br>Req: " + formatWhole(this.requirement) + " influence"},
 			done() {return player.ex.influence.gte(this.requirement)},
 			unlocked() {return hasMilestone("em", this.id - 1)},
 		},

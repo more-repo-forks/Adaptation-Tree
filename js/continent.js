@@ -81,6 +81,8 @@ addLayer("co", {
 			eff[3] = eff[3].div(2000000).pow(exp).mul(2000000);
 		};
 		if (eff[3].gte("1e333")) eff[3] = eff[3].div("1e333").pow(1/3).mul("1e333");
+		if (eff[3].gte("1e450")) eff[3] = eff[3].div("1e450").pow(0.45).mul("1e450");
+		if (eff[3].gte("1e600")) eff[3] = eff[3].div("1e600").pow(0.6).mul("1e600");
 		return eff;
 	},
 	effectDescription() {return "which are dividing the ecosystem requirement by /" + format(tmp.co.effect[0]) + ", dividing the revolution requirement by /" + format(tmp.co.effect[1]) + ", and directly multiplying species gain by " + format(tmp.co.effect[2]) + "x"},
@@ -127,7 +129,7 @@ addLayer("co", {
 				let text = "";
 				text += "Entering the Migration does a continent reset.";
 				text += "<br><br>While in the Migration:";
-				text += "<br><br>Power and stimulation gain is log<sub>10</sub>(gain) + 1";
+				text += "<br><br>Power and stimulation gain are log<sub>10</sub>(gain) + 1";
 				text += "<br><br>Requirements of all resources from rows 2-5 scale much faster";
 				text += "<br>(growth scaling is based on continents up to " + (hasMilestone("r", 43) ? "500" : "1,000") + ")";
 				text += "<br><br>You cannot buy anything in the battle grid";

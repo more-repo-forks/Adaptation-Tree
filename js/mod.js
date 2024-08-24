@@ -9,7 +9,7 @@ const modInfo = {
 }
 
 const VERSION = {
-	num: "3.2.2",
+	num: "3.2.3",
 	name: "Micromanagement",
 };
 
@@ -89,12 +89,12 @@ let displayThings = [
 		if (tmp.other.oompsMag != 0 && options.showOOMs) return "(" + format(tmp.other.oomps) + " OOM" + (tmp.other.oompsMag < 0 ? "^OOM" : (tmp.other.oompsMag > 1 ? "^" + tmp.other.oompsMag : "")) + "s/sec)";
 		return "(" + format(getPointPotential()) + " max power)";
 	},
-	() => "<br>current endgame is at 1e12,000 " + (player.r.unlocked ? "change" : "???"),
+	() => "<br>current endgame is at 1e21,000,000 " + (player.ex.unlocked ? "influence" : "???"),
 ];
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.r.change.gte("1e12000");
+	return player.ex.influence.gte("1e21000000");
 };
 
 // Style for the background, can be a function
