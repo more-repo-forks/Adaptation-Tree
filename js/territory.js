@@ -47,6 +47,7 @@ const controlNodeReq = [[
 function getControlNodeTimeSpeed() {
 	let timeSpeed = 1;
 	if (hasMilestone("d", 54)) timeSpeed *= milestoneEffect("d", 54);
+	if (hasMilestone("r", 104)) timeSpeed *= milestoneEffect("r", 104);
 	return timeSpeed;
 }
 
@@ -91,6 +92,7 @@ addLayer("t", {
 		let base = 1.5;
 		if (challengeCompletions("ec", 11) >= 24 && challengeEffect("ec", 11)[23]) base -= challengeEffect("ec", 11)[23];
 		if (hasMilestone("r", 41)) base -= milestoneEffect("r", 41);
+		if (hasMilestone("r", 106)) base -= milestoneEffect("r", 106);
 		return base;
 	},
 	exponent: 1,
@@ -108,10 +110,12 @@ addLayer("t", {
 		if (hasMilestone("r", 66)) territoryEff1Base++;
 		if (hasMilestone("r", 79)) territoryEff1Base++;
 		if (hasMilestone("r", 98)) territoryEff1Base += 6;
+		if (hasMilestone("r", 105)) territoryEff1Base += 30;
 		if (player.cy.unlocks[2] >= 5) territoryEff1Base += 2;
 		let territoryEff2Base = 5;
 		if (hasMilestone("r", 66)) territoryEff2Base += 5;
 		if (hasMilestone("r", 98)) territoryEff2Base += 20;
+		if (hasMilestone("r", 105)) territoryEff2Base += 70;
 		let controlEff1Exp = 0.1;
 		if (hasMilestone("r", 89)) controlEff1Exp += 0.01;
 		if (getBuyableAmount("t", 11).gte(1)) controlEff1Exp += 0.18;
@@ -194,7 +198,7 @@ addLayer("t", {
 	shouldNotify() {
 		if (player.t.controlUnlocked) {
 			for (let row = 1; row <= tmp.t.grid.rows; row++)
-				for (let col = 1; col <= layers.t.grid.cols; col++)
+				for (let col = 1; col <= tmp.t.grid.cols; col++)
 					if (layers.t.grid.getCanClick(getGridData("t", row * 100 + col), row * 100 + col)) return true;
 			for (const key in tmp.t.buyables)
 				if (tmp.t.buyables[key]?.unlocked && tmp.t.buyables[key]?.canAfford) return true;

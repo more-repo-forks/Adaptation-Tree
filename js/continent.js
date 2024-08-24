@@ -30,6 +30,7 @@ addLayer("co", {
 	base() {
 		let base = 1.5;
 		if (challengeCompletions("ec", 11) >= 24 && challengeEffect("ec", 11)[23]) base -= challengeEffect("ec", 11)[23];
+		if (hasMilestone("r", 106)) base -= milestoneEffect("r", 106);
 		return base;
 	},
 	exponent: 1,
@@ -61,6 +62,8 @@ addLayer("co", {
 		if (hasMilestone("r", 84)) lastSettlerEffExp += 1.5;
 		if (hasMilestone("r", 92)) lastSettlerEffExp += 1.5;
 		if (hasMilestone("r", 95)) lastSettlerEffExp += 1.5;
+		if (hasMilestone("r", 99)) lastSettlerEffExp += 2;
+		if (hasMilestone("r", 107)) lastSettlerEffExp += 4;
 		let eff = [
 			new Decimal(continentEff1Base).pow(amt),
 			new Decimal(continentEff2Base).pow(amt),
@@ -77,6 +80,7 @@ addLayer("co", {
 			if (hasMilestone("r", 71)) exp += 0.1;
 			eff[3] = eff[3].div(2000000).pow(exp).mul(2000000);
 		};
+		if (eff[3].gte("1e333")) eff[3] = eff[3].div("1e333").pow(1/3).mul("1e333");
 		return eff;
 	},
 	effectDescription() {return "which are dividing the ecosystem requirement by /" + format(tmp.co.effect[0]) + ", dividing the revolution requirement by /" + format(tmp.co.effect[1]) + ", and directly multiplying species gain by " + format(tmp.co.effect[2]) + "x"},

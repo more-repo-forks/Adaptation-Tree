@@ -32,11 +32,14 @@ addLayer("em", {
 		return mult;
 	},
 	effect() {
+		let phaseEffExp = 0.171;
+		if (hasMilestone("em", 18)) phaseEffExp += 0.066;
+		if (hasMilestone("em", 23)) phaseEffExp += 0.025;
 		let eff = [
 			player.em.points.mul(hasMilestone("em", 1) ? 2 : 1),
 			player.em.points.div(10).add(1),
 			player.em.points.mul(2),
-			new Decimal(player.em.milestones.length + 1).pow(hasMilestone("em", 18) ? 0.237 : 0.171),
+			new Decimal(player.em.milestones.length + 1).pow(phaseEffExp),
 			(hasMilestone("em", 12) && player.em.points.gte(4) ? getFactionSize().div(100).add(1) : new Decimal(1)),
 		];
 		if (eff[4].gte(1.02)) eff[4] = eff[4].sub(1.02).div(5).add(1.02);
@@ -119,6 +122,11 @@ addLayer("em", {
 				style: {"margin": "8.5px"},
 				unlocked() {return hasMilestone("em", 12)},
 			},
+			"???": {
+				content: [["display-text", "Reach 8 empires to unlock ???"]],
+				style: {"margin": "8.5px"},
+				unlocked() {return hasMilestone("em", 28)},
+			},
 		},
 	},
 	buyables: {
@@ -129,6 +137,7 @@ addLayer("em", {
 				if (hasMilestone("em", 2)) eff = eff.add(milestoneEffect("em", 2));
 				if (hasMilestone("em", 10)) eff = eff.add(milestoneEffect("em", 10));
 				if (hasMilestone("em", 19)) eff = eff.add(milestoneEffect("em", 19));
+				if (hasMilestone("em", 24)) eff = eff.add(milestoneEffect("em", 24));
 				return eff;
 			},
 			title: "(ECO)SYSTEM ASPECT",
@@ -150,6 +159,8 @@ addLayer("em", {
 				if (hasMilestone("em", 8)) base += milestoneEffect("em", 8);
 				if (hasMilestone("em", 14)) base += milestoneEffect("em", 14);
 				if (hasMilestone("em", 17)) base += milestoneEffect("em", 17);
+				if (hasMilestone("em", 22)) base += milestoneEffect("em", 22);
+				if (hasMilestone("em", 26)) base += milestoneEffect("em", 26);
 				return base;
 			},
 			effect(amt) {
@@ -178,6 +189,7 @@ addLayer("em", {
 				if (hasMilestone("em", 13)) base += milestoneEffect("em", 13);
 				if (hasMilestone("em", 15)) base += milestoneEffect("em", 15);
 				if (hasMilestone("em", 21)) base += milestoneEffect("em", 21);
+				if (hasMilestone("em", 25)) base += milestoneEffect("em", 25);
 				return base;
 			},
 			effect(amt) {
@@ -206,6 +218,7 @@ addLayer("em", {
 				if (hasMilestone("em", 11)) base += milestoneEffect("em", 11);
 				if (hasMilestone("em", 16)) base += milestoneEffect("em", 16);
 				if (hasMilestone("em", 20)) base += milestoneEffect("em", 20);
+				if (hasMilestone("em", 27)) base += milestoneEffect("em", 27);
 				return base;
 			},
 			effect(amt) {return amt.mul(this.effectBase())},
@@ -222,7 +235,10 @@ addLayer("em", {
 			style: {"width": "210px", "height": "110px"},
 		},
 		21: {
-			cost(amt) {return new Decimal("1e5000").pow(amt.add(1))},
+			cost(amt) {
+				if (amt.gte(10)) return new Decimal("1e10000").pow(amt.sub(4));
+				return new Decimal("1e5000").pow(amt.add(1));
+			},
 			effect(amt) {return amt},
 			title: "Political Manipulation",
 			display() {
@@ -272,7 +288,7 @@ addLayer("em", {
 			requirementDescription: "EXP phase I",
 			popupTitle: "Innovation Acquired!",
 			effect() {return 0.1},
-			effectDescription() {return "increase the base effect of EXP by 0.1<br>Req: " + formatWhole(this.requirement) + " change"},
+			effectDescription() {return "increase the base effect of EXP by 0.1<br>Req: " + formatWhole(this.requirement) + " influence"},
 			done() {return player.ex.influence.gte(this.requirement)},
 			unlocked() {return player.em.points.gte(2)},
 		},
@@ -280,7 +296,7 @@ addLayer("em", {
 			requirement: "1e600000",
 			requirementDescription: "Empire phase I",
 			popupTitle: "Innovation Acquired!",
-			effectDescription() {return "improve the first empire effect<br>Req: " + formatWhole(this.requirement) + " change"},
+			effectDescription() {return "improve the first empire effect<br>Req: " + formatWhole(this.requirement) + " influence"},
 			done() {return player.ex.influence.gte(this.requirement)},
 			unlocked() {return hasMilestone("em", this.id - 1)},
 		},
@@ -289,7 +305,7 @@ addLayer("em", {
 			requirementDescription: "ECO phase I",
 			popupTitle: "Innovation Acquired!",
 			effect() {return 1},
-			effectDescription() {return "increase the effect of ECO by 1<br>Req: " + formatWhole(this.requirement) + " change"},
+			effectDescription() {return "increase the effect of ECO by 1<br>Req: " + formatWhole(this.requirement) + " influence"},
 			done() {return player.ex.influence.gte(this.requirement)},
 			unlocked() {return hasMilestone("em", this.id - 1)},
 		},
@@ -298,7 +314,7 @@ addLayer("em", {
 			requirementDescription: "WAR phase I",
 			popupTitle: "Innovation Acquired!",
 			effect() {return 1},
-			effectDescription() {return "increase the base effect of WAR by 1<br>Req: " + formatWhole(this.requirement) + " change"},
+			effectDescription() {return "increase the base effect of WAR by 1<br>Req: " + formatWhole(this.requirement) + " influence"},
 			done() {return player.ex.influence.gte(this.requirement)},
 			unlocked() {return hasMilestone("em", this.id - 1)},
 		},
@@ -306,7 +322,7 @@ addLayer("em", {
 			requirement: "1e900000",
 			requirementDescription: "REV phase I",
 			popupTitle: "Innovation Acquired!",
-			effectDescription() {return "reduce the requirement scaling of REV<br>Req: " + formatWhole(this.requirement) + " change"},
+			effectDescription() {return "reduce the requirement scaling of REV<br>Req: " + formatWhole(this.requirement) + " influence"},
 			done() {return player.ex.influence.gte(this.requirement)},
 			unlocked() {return hasMilestone("em", this.id - 1)},
 		},
@@ -315,7 +331,7 @@ addLayer("em", {
 			requirementDescription: "WAR phase II",
 			popupTitle: "Innovation Acquired!",
 			effect() {return 1},
-			effectDescription() {return "increase the base effect of WAR by 1<br>Req: " + formatWhole(this.requirement) + " change"},
+			effectDescription() {return "increase the base effect of WAR by 1<br>Req: " + formatWhole(this.requirement) + " influence"},
 			done() {return player.ex.influence.gte(this.requirement)},
 			unlocked() {return hasMilestone("em", this.id - 1)},
 		},
@@ -323,7 +339,7 @@ addLayer("em", {
 			requirement: "e1100000",
 			requirementDescription: "ECO phase II",
 			popupTitle: "Innovation Acquired!",
-			effectDescription() {return "reduce the requirement scaling of ECO<br>Req: " + formatWhole(this.requirement) + " change"},
+			effectDescription() {return "reduce the requirement scaling of ECO<br>Req: " + formatWhole(this.requirement) + " influence"},
 			done() {return player.ex.influence.gte(this.requirement)},
 			unlocked() {return hasMilestone("em", this.id - 1)},
 		},
@@ -332,7 +348,7 @@ addLayer("em", {
 			requirementDescription: "EXP phase II",
 			popupTitle: "Innovation Acquired!",
 			effect() {return 0.02},
-			effectDescription() {return "increase the base effect of EXP by 0.02<br>Req: " + formatWhole(this.requirement) + " change"},
+			effectDescription() {return "increase the base effect of EXP by 0.02<br>Req: " + formatWhole(this.requirement) + " influence"},
 			done() {return player.ex.influence.gte(this.requirement)},
 			unlocked() {return hasMilestone("em", this.id - 1)},
 		},
@@ -341,7 +357,7 @@ addLayer("em", {
 			requirementDescription: "REV phase II",
 			popupTitle: "Innovation Acquired!",
 			effect() {return 0.03},
-			effectDescription() {return "increase the base effect of REV by 0.03<br>Req: " + formatWhole(this.requirement) + " change"},
+			effectDescription() {return "increase the base effect of REV by 0.03<br>Req: " + formatWhole(this.requirement) + " influence"},
 			done() {return player.ex.influence.gte(this.requirement)},
 			unlocked() {return hasMilestone("em", this.id - 1)},
 		},
@@ -349,7 +365,7 @@ addLayer("em", {
 			requirement: "e1400000",
 			requirementDescription: "Empire phase II",
 			popupTitle: "Innovation Acquired!",
-			effectDescription() {return "reduce the requirement scaling of EXP and WAR<br>Req: " + formatWhole(this.requirement) + " change"},
+			effectDescription() {return "reduce the requirement scaling of EXP and WAR<br>Req: " + formatWhole(this.requirement) + " influence"},
 			done() {return player.ex.influence.gte(this.requirement)},
 			unlocked() {return hasMilestone("em", this.id - 1)},
 		},
@@ -358,7 +374,7 @@ addLayer("em", {
 			requirementDescription: "ECO phase III",
 			popupTitle: "Innovation Acquired!",
 			effect() {return 1},
-			effectDescription() {return "increase the effect of ECO by 1<br>Req: " + formatWhole(this.requirement) + " change"},
+			effectDescription() {return "increase the effect of ECO by 1<br>Req: " + formatWhole(this.requirement) + " influence"},
 			done() {return player.ex.influence.gte(this.requirement)},
 			unlocked() {return hasMilestone("em", this.id - 1)},
 		},
@@ -367,7 +383,7 @@ addLayer("em", {
 			requirementDescription: "WAR phase III",
 			popupTitle: "Innovation Acquired!",
 			effect() {return 2},
-			effectDescription() {return "increase the base effect of WAR by 2<br>Req: " + formatWhole(this.requirement) + " change"},
+			effectDescription() {return "increase the base effect of WAR by 2<br>Req: " + formatWhole(this.requirement) + " influence"},
 			done() {return player.ex.influence.gte(this.requirement)},
 			unlocked() {return hasMilestone("em", this.id - 1)},
 		},
@@ -375,7 +391,7 @@ addLayer("em", {
 			requirement: "e2000000",
 			requirementDescription: "Empire phase III",
 			popupTitle: "Innovation Acquired!",
-			effectDescription() {return "unlock something new for empires<br>Req: " + formatWhole(this.requirement) + " change"},
+			effectDescription() {return "unlock something new for empires" + (hasMilestone("em", 12) && player.em.points.gte(4) ? " (already unlocked)" : "") + "<br>Req: " + formatWhole(this.requirement) + " influence"},
 			done() {return player.ex.influence.gte(this.requirement)},
 			unlocked() {return hasMilestone("em", this.id - 1)},
 		},
@@ -384,7 +400,7 @@ addLayer("em", {
 			requirementDescription: "EXP phase III",
 			popupTitle: "Innovation Acquired!",
 			effect() {return 0.03},
-			effectDescription() {return "increase the base effect of EXP by 0.03<br>Req: " + formatWhole(this.requirement) + " change"},
+			effectDescription() {return "increase the base effect of EXP by 0.03<br>Req: " + formatWhole(this.requirement) + " influence"},
 			done() {return player.ex.influence.gte(this.requirement)},
 			unlocked() {return hasMilestone("em", this.id - 1)},
 		},
@@ -393,7 +409,7 @@ addLayer("em", {
 			requirementDescription: "REV phase III",
 			popupTitle: "Innovation Acquired!",
 			effect() {return 0.02},
-			effectDescription() {return "increase the base effect of REV by 0.02<br>Req: " + formatWhole(this.requirement) + " change"},
+			effectDescription() {return "increase the base effect of REV by 0.02<br>Req: " + formatWhole(this.requirement) + " influence"},
 			done() {return player.ex.influence.gte(this.requirement)},
 			unlocked() {return hasMilestone("em", this.id - 1)},
 		},
@@ -402,7 +418,7 @@ addLayer("em", {
 			requirementDescription: "EXP phase IV",
 			popupTitle: "Innovation Acquired!",
 			effect() {return 0.01},
-			effectDescription() {return "increase the base effect of EXP by 0.01<br>Req: " + formatWhole(this.requirement) + " change"},
+			effectDescription() {return "increase the base effect of EXP by 0.01<br>Req: " + formatWhole(this.requirement) + " influence"},
 			done() {return player.ex.influence.gte(this.requirement)},
 			unlocked() {return hasMilestone("em", this.id - 1)},
 		},
@@ -411,7 +427,7 @@ addLayer("em", {
 			requirementDescription: "WAR phase IV",
 			popupTitle: "Innovation Acquired!",
 			effect() {return 2},
-			effectDescription() {return "increase the base effect of WAR by 2<br>Req: " + formatWhole(this.requirement) + " change"},
+			effectDescription() {return "increase the base effect of WAR by 2<br>Req: " + formatWhole(this.requirement) + " influence"},
 			done() {return player.ex.influence.gte(this.requirement)},
 			unlocked() {return hasMilestone("em", this.id - 1)},
 		},
@@ -420,7 +436,7 @@ addLayer("em", {
 			requirementDescription: "REV phase IV",
 			popupTitle: "Innovation Acquired!",
 			effect() {return 0.01},
-			effectDescription() {return "increase the base effect of REV by 0.01<br>Req: " + formatWhole(this.requirement) + " change"},
+			effectDescription() {return "increase the base effect of REV by 0.01<br>Req: " + formatWhole(this.requirement) + " influence"},
 			done() {return player.ex.influence.gte(this.requirement)},
 			unlocked() {return hasMilestone("em", this.id - 1)},
 		},
@@ -428,7 +444,7 @@ addLayer("em", {
 			requirement: "e3400000",
 			requirementDescription: "Empire phase IV",
 			popupTitle: "Innovation Acquired!",
-			effectDescription() {return "improve the phase effect<br>Req: " + formatWhole(this.requirement) + " change"},
+			effectDescription() {return "improve the phase effect<br>Req: " + formatWhole(this.requirement) + " influence"},
 			done() {return player.ex.influence.gte(this.requirement)},
 			unlocked() {return hasMilestone("em", this.id - 1)},
 		},
@@ -437,7 +453,7 @@ addLayer("em", {
 			requirementDescription: "ECO phase IV",
 			popupTitle: "Innovation Acquired!",
 			effect() {return 1},
-			effectDescription() {return "increase the effect of ECO by 1<br>Req: " + formatWhole(this.requirement) + " change"},
+			effectDescription() {return "increase the effect of ECO by 1<br>Req: " + formatWhole(this.requirement) + " influence"},
 			done() {return player.ex.influence.gte(this.requirement)},
 			unlocked() {return hasMilestone("em", this.id - 1)},
 		},
@@ -446,7 +462,7 @@ addLayer("em", {
 			requirementDescription: "WAR phase V",
 			popupTitle: "Innovation Acquired!",
 			effect() {return 2},
-			effectDescription() {return "increase the base effect of WAR by 2<br>Req: " + formatWhole(this.requirement) + " change"},
+			effectDescription() {return "increase the base effect of WAR by 2<br>Req: " + formatWhole(this.requirement) + " influence"},
 			done() {return player.ex.influence.gte(this.requirement)},
 			unlocked() {return hasMilestone("em", this.id - 1)},
 		},
@@ -455,7 +471,68 @@ addLayer("em", {
 			requirementDescription: "EXP phase V",
 			popupTitle: "Innovation Acquired!",
 			effect() {return 0.02},
-			effectDescription() {return "increase the base effect of EXP by 0.02<br>Req: " + formatWhole(this.requirement) + " change"},
+			effectDescription() {return "increase the base effect of EXP by 0.02<br>Req: " + formatWhole(this.requirement) + " influence"},
+			done() {return player.ex.influence.gte(this.requirement)},
+			unlocked() {return hasMilestone("em", this.id - 1)},
+		},
+		22: {
+			requirement: "e5000000",
+			requirementDescription: "REV phase V",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 0.01},
+			effectDescription() {return "increase the base effect of REV by 0.01<br>Req: " + formatWhole(this.requirement) + " influence"},
+			done() {return player.ex.influence.gte(this.requirement)},
+			unlocked() {return hasMilestone("em", this.id - 1)},
+		},
+		23: {
+			requirement: "e6000000",
+			requirementDescription: "Empire phase V",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "improve the phase effect<br>Req: " + formatWhole(this.requirement) + " influence"},
+			done() {return player.ex.influence.gte(this.requirement)},
+			unlocked() {return hasMilestone("em", this.id - 1)},
+		},
+		24: {
+			requirement: "e7000000",
+			requirementDescription: "ECO phase V",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 1},
+			effectDescription() {return "increase the effect of ECO by 1<br>Req: " + formatWhole(this.requirement) + " influence"},
+			done() {return player.ex.influence.gte(this.requirement)},
+			unlocked() {return hasMilestone("em", this.id - 1)},
+		},
+		25: {
+			requirement: "e8000000",
+			requirementDescription: "EXP phase VI",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 0.02},
+			effectDescription() {return "increase the base effect of EXP by 0.02<br>Req: " + formatWhole(this.requirement) + " influence"},
+			done() {return player.ex.influence.gte(this.requirement)},
+			unlocked() {return hasMilestone("em", this.id - 1)},
+		},
+		26: {
+			requirement: "e9000000",
+			requirementDescription: "REV phase VI",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 0.03},
+			effectDescription() {return "increase the base effect of REV by 0.03<br>Req: " + formatWhole(this.requirement) + " influence"},
+			done() {return player.ex.influence.gte(this.requirement)},
+			unlocked() {return hasMilestone("em", this.id - 1)},
+		},
+		27: {
+			requirement: "e10000000",
+			requirementDescription: "WAR phase VI",
+			popupTitle: "Innovation Acquired!",
+			effect() {return 5},
+			effectDescription() {return "increase the base effect of WAR by 5<br>Req: " + formatWhole(this.requirement) + " influence"},
+			done() {return player.ex.influence.gte(this.requirement)},
+			unlocked() {return hasMilestone("em", this.id - 1)},
+		},
+		28: {
+			requirement: "e11000000",
+			requirementDescription: "Empire phase VI",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "unlock something new for empires" + (hasMilestone("em", 28) && player.em.points.gte(8) ? " (already unlocked)" : "") + "<br>Req: " + formatWhole(this.requirement) + " influence"},
 			done() {return player.ex.influence.gte(this.requirement)},
 			unlocked() {return hasMilestone("em", this.id - 1)},
 		},

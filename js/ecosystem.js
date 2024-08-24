@@ -19,6 +19,7 @@ addLayer("ec", {
 		let base = 1.5;
 		if (challengeCompletions("ec", 11) >= 5 && challengeEffect("ec", 11)[4]) base -= challengeEffect("ec", 11)[4];
 		if (challengeCompletions("ec", 11) >= 22 && challengeEffect("ec", 11)[21]) base -= challengeEffect("ec", 11)[21];
+		if (challengeCompletions("ec", 11) >= 28 && challengeEffect("ec", 11)[27]) base -= challengeEffect("ec", 11)[27];
 		if (hasMilestone("r", 60)) base -= milestoneEffect("r", 60);
 		return base;
 	},
@@ -98,7 +99,7 @@ addLayer("ec", {
 			for (let index = 0; index < challengeCompletions("ec", 11); index++) {
 				if (index > 0) rewards += "<br>";
 				let reward = layers.ec.challenges[11].rewards[index];
-				rewards += layers.ec.challenges[11].name(index) + " reward: " + (typeof reward == "function" ? reward() : reward);
+				rewards += layers.ec.challenges[11].name(index + 1) + " reward: " + (typeof reward == "function" ? reward() : reward);
 			};
 			arr.push(["display-text", rewards], "blank");
 		};
@@ -125,7 +126,12 @@ addLayer("ec", {
 	},
 	challenges: {
 		11: {
-			name(x = Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1)) {return "ANACHRONISM " + (["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI", "XXII", "XXIII", "XXIV", "XXV", "XXVI", "XXVII", "XXVIII", "XXIX", "XXX"][x])},
+			name(x = Math.min(challengeCompletions("ec", 11) + 1, tmp.ec.challenges[11].completionLimit)) {
+				let text = "ANACHRONISM ";
+				if (x >= 10) text += ["X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"][Math.floor(x / 10) % 10 - 1];
+				if (x % 10 >= 1) text += ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"][x % 10 - 1];
+				return text;
+			},
 			fullDisplay() {
 				if (challengeCompletions("sp", 21) >= 18 || hasChallenge("ec", 11)) {
 					let text = "";
@@ -139,7 +145,7 @@ addLayer("ec", {
 				};
 				return "You need 18 completions of the 10th hybridization<br>to unlock ANACHRONISM.";
 			},
-			rewardEffect() {return [0.1, null, 3, 0.125, 0.05, 3, null, null, null, 0.03, 0.45, 0.1, 0.1, 0.075, null, null, null, null, null, null, 0.01, 0.064, null, 0.02, null, null]},
+			rewardEffect() {return [0.1, null, 3, 0.125, 0.05, 3, null, null, null, 0.03, 0.45, 0.1, 0.1, 0.075, null, null, null, null, null, null, 0.01, 0.064, null, 0.02, null, null, 0.01, 0.025]},
 			rewards: [
 				"domination requirement base is decreased by 0.1",
 				() => "three new layers are unlocked" + (player.r.unlocked ? " (" + (player.w.unlocked ? "" : (player.ex.unlocked ? 2 : 1) + "/3 ") + "already unlocked)" : ""),
@@ -167,8 +173,10 @@ addLayer("ec", {
 				"row 6 resource requirement bases are decreased by 0.02",
 				"a new faction growth option is unlocked",
 				"the first two cyclical power effects are improved",
+				"expansion requirement base is decreased by 0.01",
+				"ecosystem requirement base is decreased by 0.025",
 			],
-			goal() {return [167098, 155454, 155040, 869153600, 2.874e9, 7.992e9, 3.082e11, 4.73e11, 1.228e12, 7.191e12, 9.733e12, 1.359e13, 5.222e13, 4.09e14, 3.783e15, 1.133e18, 2.975e18, 3.206e20, 7.087e21, 1.791e23, 4.166e23, 1.46e25, 5.956e25, 1.938e26, 2.89e27, 1.586e28][Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1)] || Infinity},
+			goal() {return [167098, 155454, 155040, 869153600, 2.874e9, 7.992e9, 3.082e11, 4.73e11, 1.228e12, 7.191e12, 9.733e12, 1.359e13, 5.222e13, 4.09e14, 3.783e15, 1.133e18, 2.975e18, 3.206e20, 7.087e21, 1.791e23, 4.166e23, 1.46e25, 5.956e25, 1.938e26, 2.89e27, 1.586e28, 1.266e29, 3.765e29][Math.min(challengeCompletions("ec", 11), tmp.ec.challenges[11].completionLimit - 1)] || Infinity},
 			canComplete() {return player.g.points.gte(this.goal())},
 			enterable() {return challengeCompletions("sp", 21) >= 18 || hasChallenge("ec", 11)},
 			doReset: false,

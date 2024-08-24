@@ -163,6 +163,11 @@ addLayer("w", {
 		let keep = [];
 		layerDataReset("w", keep);
 	},
+	shouldNotify() {
+		for (let row = 1; row <= tmp.w.grid.rows; row++)
+			for (let col = 1; col <= tmp.w.grid.cols; col++)
+				if (layers.w.grid.getCanClick(getGridData("w", row * 100 + col), row * 100 + col)) return true;
+	},
 	componentStyles: {
 		"contained-grid"() {return {"box-sizing": "border-box", "border": "2px solid #C77055", "padding": "16px"}},
 		"gridable"() {return {"width": "120px", "height": "120px", "border-radius": "0px"}},

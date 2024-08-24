@@ -78,8 +78,10 @@ addLayer("ex", {
 		let base = 5;
 		if (getBuyableAmount("d", 13).gte(tmp.d.buyables[13].purchaseLimit)) base -= tmp.d.buyables[13].completionEffect;
 		if (challengeCompletions("ec", 11) >= 6 && challengeEffect("ec", 11)[5]) base -= challengeEffect("ec", 11)[5];
+		if (challengeCompletions("ec", 11) >= 27 && challengeEffect("ec", 11)[26]) base -= challengeEffect("ec", 11)[26];
 		if (hasMilestone("r", 49)) base -= milestoneEffect("r", 49);
 		if (hasMilestone("r", 65)) base -= milestoneEffect("r", 65);
+		if (hasMilestone("r", 100)) base -= milestoneEffect("r", 100);
 		if (getGridData("w", 405)) base -= gridEffect("w", 405);
 		return base;
 	},

@@ -52,7 +52,14 @@ function cycleUnlockText(tab) {
 	return text;
 };
 
-function getCyclicalGenReqScale() {
+function getCyclicalGeneratorTimeSpeed() {
+	let timeSpeed = 1;
+	if (hasMilestone("r", 74)) timeSpeed *= milestoneEffect("r", 74);
+	if (hasMilestone("r", 103)) timeSpeed *= milestoneEffect("r", 103);
+	return timeSpeed;
+};
+
+function getCyclicalReqScale() {
 	let scale = 100;
 	if (hasMilestone("r", 76)) scale -= 55;
 	return scale;
@@ -69,6 +76,7 @@ addLayer("cy", {
 		unlocks: [],
 		power: new Decimal(0),
 		generators: [],
+		cores: new Decimal(0),
 	}},
 	color: "#EE7770",
 	nodeStyle() {if (tmp.cy.canReset || player.cy.unlocked) return {"background": "border-box linear-gradient(to right, #116022, #EE7770, #E03330)"}},
@@ -91,12 +99,14 @@ addLayer("cy", {
 		let powerEff1Exp = 0.25;
 		if (challengeCompletions("ec", 11) >= 26) powerEff1Exp += 0.25;
 		if (hasMilestone("r", 82)) powerEff1Exp += 0.25;
+		if (hasMilestone("r", 102)) powerEff1Exp += 0.25;
 		return [
 			player.cy.points.mul(player.cy.unlocks[1] >= 7 ? 2 : 1),
 			player.cy.points.div(10).add(1),
 			(player.cy.points.gte(5) ? player.cy.power.add(1).pow(powerEff1Exp) : new Decimal(1)),
 			(player.cy.points.gte(5) ? player.cy.power.add(1).pow(challengeCompletions("ec", 11) >= 26 ? 3 : 2) : new Decimal(1)),
 			(player.cy.points.gte(5) ? player.cy.power.add(1).log10().mul(10) : new Decimal(0)),
+			(player.cy.cores.gt(0) ? player.cy.cores.div(100).add(1) : new Decimal(1)),
 		];
 	},
 	effectDescription() {return "which are increasing continent and leader amounts in their effects by +" + formatWhole(tmp.cy.effect[0]) + " and directly multiplying revolution gain by " + format(tmp.cy.effect[1]) + "x"},
@@ -128,11 +138,16 @@ addLayer("cy", {
 			};
 		};
 		if (player.cy.points.gte(5)) {
-			if (hasMilestone("r", 74)) diff *= milestoneEffect("r", 74);
-			let cyclicalUnlocks = player.r.points.div(getCyclicalGenReqScale()).floor().toNumber();
-			if (cyclicalUnlocks > player.cy.generators.length) player.cy.generators.push(new Decimal(1));
+			diff *= getCyclicalGeneratorTimeSpeed();
+			if (player.cy.generators.length >= 100) {
+				let potentialCores = player.r.points.div(getCyclicalReqScale()).floor().sub(100).max(0);
+				if (potentialCores.gt(player.cy.cores)) player.cy.cores = potentialCores;
+			} else {
+				let cyclicalUnlocks = player.r.points.div(getCyclicalReqScale()).floor().min(100).toNumber();
+				if (cyclicalUnlocks > player.cy.generators.length) player.cy.generators.push(new Decimal(1));
+			};
 			for (let index = 0; index < player.cy.generators.length; index++) {
-				let eff = player.cy.generators[index];
+				let eff = player.cy.generators[index].mul(tmp.cy.effect[5]);
 				if (index == 0) {
 					if (player.cy.power.lt(eff.mul(100)))
 						player.cy.power = player.cy.power.add(eff.mul(diff)).min(eff.mul(100));
@@ -191,7 +206,9 @@ addLayer("cy", {
 								text += "<br>You have " + format(player.cy.generators[index]) + " cyclical generator " + (index + 1);
 							};
 						};
-						text += "<br><br>The next cyclical generator will unlock at " + formatWhole((player.cy.generators.length + 1) * getCyclicalGenReqScale()) + " revolutions";
+						if (player.cy.cores.gt(0)) text += "<br><br>You have <h2 style='color: #EE7770; text-shadow: #EE7770 0px 0px 10px'>" + formatWhole(player.cy.cores) + "</h2> cyclical cores, which are multiplying cyclical generator production by " + format(tmp.cy.effect[5]) + "x";
+						if (player.cy.generators.length >= 100) text += "<br><br>" + (player.cy.cores.gt(0) ? "The next cyclical core will be gained" : "Cyclical cores will unlock") + " at " + formatWhole(player.cy.cores.add(101).mul(getCyclicalReqScale())) + " revolutions";
+						else text += "<br><br>The next cyclical generator will unlock at " + formatWhole((player.cy.generators.length + 1) * getCyclicalReqScale()) + " revolutions";
 						return text;
 					} else {
 						return "Reach 5 cycles to unlock The Cyclical Cycles";

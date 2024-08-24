@@ -32,6 +32,7 @@ addLayer("l", {
 		if (hasMilestone("r", 51)) base -= milestoneEffect("r", 51);
 		if (hasMilestone("r", 54)) base -= milestoneEffect("r", 54);
 		if (hasMilestone("r", 61)) base -= milestoneEffect("r", 61);
+		if (hasMilestone("r", 106)) base -= milestoneEffect("r", 106);
 		return base;
 	},
 	exponent: 1,
