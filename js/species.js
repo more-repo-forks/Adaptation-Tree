@@ -83,7 +83,7 @@ addLayer("sp", {
 			player.sp.points.mul(5).add(1).pow(exp2),
 		];
 	},
-	effectDescription() {return "which are dividing the evolution requirement by /" + format(tmp.sp.effect[0]) + ", multiplying the extra STR, WIS, AGI, and INT from evolutions by " + format(tmp.sp.effect[1]) + "x, and exponentiating evolution amount in the last evolution effect by ^" + format(tmp.sp.effect[2])},
+	effectDescription() {return "which are dividing the evolution requirement by /" + format(tmp.sp.effect[0]) + "; multiplying the extra STR, WIS, AGI, and INT from evolutions by " + format(tmp.sp.effect[1]) + "x; and exponentiating evolution amount in the last evolution effect by ^" + format(tmp.sp.effect[2])},
 	resetsNothing() {return player.l.unlocked},
 	autoPrestige() {return player.l.unlocked},
 	tabFormat: [

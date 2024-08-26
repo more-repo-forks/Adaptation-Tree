@@ -1145,5 +1145,13 @@ addLayer("r", {
 			done() {return player.r.change.gte(this.requirement)},
 			unlocked() {return hasMilestone("r", this.id - 1)},
 		},
+		115: {
+			requirement: "1e25000",
+			requirementDescription: "116th innovation",
+			popupTitle: "Innovation Acquired!",
+			effectDescription() {return "improve the third economic sector effect<br>Req: " + formatWhole(this.requirement) + " change"},
+			done() {return player.r.change.gte(this.requirement)},
+			unlocked() {return hasMilestone("r", this.id - 1)},
+		},
 	},
 });

@@ -9,8 +9,8 @@ const modInfo = {
 }
 
 const VERSION = {
-	num: "3.2.3",
-	name: "Micromanagement",
+	num: "3.3.0",
+	name: "The Economy",
 };
 
 const winText = "Congratulations!<br>You have reached the end and beaten this game (for now),<br>but there is more content coming soon...";

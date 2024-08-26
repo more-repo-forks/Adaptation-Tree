@@ -110,7 +110,7 @@ addLayer("cy", {
 			(player.cy.points.gte(5) ? player.cy.power.add(1).pow(powerEff1Exp) : new Decimal(1)),
 			(player.cy.points.gte(5) ? player.cy.power.add(1).pow(powerEff2Exp) : new Decimal(1)),
 			(player.cy.points.gte(5) ? player.cy.power.add(1).log10().mul(10) : new Decimal(0)),
-			(player.cy.cores.gt(0) ? player.cy.cores.pow(2).div(100).add(1) : new Decimal(1)),
+			(player.cy.cores.gt(0) ? player.cy.cores.add(tmp.em.effect[7] ? tmp.em.effect[7] : 0).pow(2).div(100).add(1) : new Decimal(1)),
 		];
 	},
 	effectDescription() {return "which are increasing continent and leader amounts in their effects by +" + formatWhole(tmp.cy.effect[0]) + " and directly multiplying revolution gain by " + format(tmp.cy.effect[1]) + "x"},
@@ -210,7 +210,7 @@ addLayer("cy", {
 								text += "<br>You have " + format(player.cy.generators[index]) + " cyclical generator " + (index + 1);
 							};
 						};
-						if (player.cy.cores.gt(0)) text += "<br><br>You have <h2 style='color: #EE7770; text-shadow: #EE7770 0px 0px 10px'>" + formatWhole(player.cy.cores) + "</h2> cyclical cores, which are multiplying cyclical generator production by " + format(tmp.cy.effect[5]) + "x";
+						if (player.cy.cores.gt(0)) text += "<br><br>You have <h2 style='color: #EE7770; text-shadow: #EE7770 0px 0px 10px'>" + formatWhole(player.cy.cores) + "</h2>" + (tmp.em.effect[7] ? "+" + formatWhole(tmp.em.effect[7]) : "") + " cyclical cores, which are multiplying cyclical generator production by " + format(tmp.cy.effect[5]) + "x";
 						if (player.cy.generators.length >= 100) text += "<br><br>" + (player.cy.cores.gt(0) ? "The next cyclical core will be gained" : "Cyclical cores will unlock") + " at " + formatWhole(player.cy.cores.add(101).mul(getCyclicalReqScale())) + " revolutions";
 						else text += "<br><br>The next cyclical generator will unlock at " + formatWhole((player.cy.generators.length + 1) * getCyclicalReqScale()) + " revolutions";
 						return text;
